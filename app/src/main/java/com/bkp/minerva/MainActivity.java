@@ -2,7 +2,6 @@ package com.bkp.minerva;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -27,12 +26,12 @@ import com.bkp.minerva.fragments.Recent;
 /**
  * Main activity.
  */
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
-        Recent.OnFragmentInteractionListener, Library.OnFragmentInteractionListener,
-        Lists.OnFragmentInteractionListener, PowerSearch.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     // Views.
     @Bind(R.id.drawer_layout)
     DrawerLayout mDrawer;
+    @Bind(R.id.toolbar)
+    Toolbar mToolbar;
     @Bind(R.id.nav_view)
     NavigationView mNavigationView;
     @Bind(R.id.main_frag_cont)
@@ -53,14 +52,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ButterKnife.bind(this);
 
         // Set up toolbar.
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(mToolbar);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
         // Set up the nav drawer and its toggle.
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.navigation_drawer_open,
+        initDrawer();
+    }
+
+
+    private void initDrawer() {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, mToolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close) {
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
@@ -173,25 +176,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             FragmentManager fragMan = getSupportFragmentManager();
             fragMan.beginTransaction().replace(R.id.main_frag_cont, fragment).commit();
         }
-    }
-
-    @Override
-    public void onRecentFragmentInteraction(Uri uri) {
-
-    }
-
-    @Override
-    public void onLibraryFragmentInteraction(Uri uri) {
-
-    }
-
-    @Override
-    public void onListsFragmentInteraction(Uri uri) {
-
-    }
-
-    @Override
-    public void onPowerSearchFragmentInteraction(Uri uri) {
-
     }
 }
