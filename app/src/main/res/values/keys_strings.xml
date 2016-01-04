@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_drawer_sel_id" translatable="false">NAV_DRAWER_SELECTED_ID</string>
+</resources>
