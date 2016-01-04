@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Light theme colors -->
-    <color name="lt_colorPrimary">#3F51B5</color>
-    <color name="lt_colorPrimaryDark">#303F9F</color>
-    <color name="lt_colorAccent">#FF4081</color>
+    <color name="colorPrimary">#4caf50</color>
+    <color name="colorPrimaryDark">#388e3c</color>
+    <color name="colorPrimaryLight">#c8e6c9</color>
+    <color name="colorAccent">#FF5252</color>
+
+    <!-- text color: white -->
+    <color name="textColorPrimary">#DE000000</color>
+    <color name="textColorSecondary">#9E9E9E</color>
+    <!-- inverse text color: 87% black -->
+    <color name="textColorPrimaryInverse">#FFFFFF</color>
+    <color name="textColorSecondaryInverse">#9E9E9E</color>
 </resources>
