@@ -1,6 +1,7 @@
 <resources>
     <!-- General -->
     <string name="app_name">Minerva</string>
+    <string name="tag_line">Organize your books with ease!</string>
 
     <!-- Nav Drawer Items -->
     <string name="nav_item_recent">Recent</string>
