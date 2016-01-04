@@ -82,6 +82,6 @@ public class Library extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onLibraryFragmentInteraction(Uri uri);
     }
 }

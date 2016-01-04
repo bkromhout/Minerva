@@ -2,6 +2,7 @@ package com.bkp.minerva;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -26,7 +27,9 @@ import com.bkp.minerva.fragments.Recent;
 /**
  * Main activity.
  */
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
+        Recent.OnFragmentInteractionListener, Library.OnFragmentInteractionListener,
+        Lists.OnFragmentInteractionListener, PowerSearch.OnFragmentInteractionListener {
     // Views.
     @Bind(R.id.drawer_layout)
     DrawerLayout mDrawer;
@@ -170,5 +173,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             FragmentManager fragMan = getSupportFragmentManager();
             fragMan.beginTransaction().replace(R.id.main_frag_cont, fragment).commit();
         }
+    }
+
+    @Override
+    public void onRecentFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onLibraryFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onListsFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onPowerSearchFragmentInteraction(Uri uri) {
+
     }
 }
