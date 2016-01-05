@@ -5,10 +5,10 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-        <item name="android:textColorPrimary">@color/textColorPrimaryInverse</item>
-        <item name="android:textColorSecondary">@color/textColorPrimaryInverse</item>
-        <item name="android:textColorPrimaryInverse">@color/textColorPrimary</item>
-        <item name="android:textColorSecondaryInverse">@color/textColorPrimary</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="android:textColorSecondary">@color/textColorPrimary</item>
+        <item name="android:textColorPrimaryInverse">@color/textColorPrimaryInverse</item>
+        <item name="android:textColorSecondaryInverse">@color/textColorPrimaryInverse</item>
 
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
     </style>
@@ -16,14 +16,14 @@
     <!-- For the Hamburger Icon -->
     <style name="DrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
         <item name="spinBars">true</item>
-        <item name="color">@color/textColorPrimaryInverse</item>
+        <item name="color">@color/textColorPrimary</item>
     </style>
 
     <!-- Toolbar -->
     <style name="AppTheme.Toolbar" parent="Widget.AppCompat.Toolbar">
         <item name="android:background">@color/colorPrimary</item>
-        <item name="popupTheme">@style/AppTheme.PopupOverlay</item>
-        <item name="theme">@style/AppTheme.AppBarOverlay</item>
+        <item name="android:popupTheme">@style/AppTheme.PopupOverlay</item>
+        <item name="android:theme">@style/AppTheme.AppBarOverlay</item>
     </style>
 
     <!-- AppBar -->
@@ -31,6 +31,5 @@
 
     <!-- PopupMenu -->
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat">
-
     </style>
 </resources>

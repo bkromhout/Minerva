@@ -2,11 +2,13 @@ package com.bkp.minerva;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -65,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initDrawer();
     }
 
-
     private void initDrawer() {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, mToolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close) {
@@ -87,6 +88,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        //EventBus.getDefault().register(this); // TODO turn on once we have event handlers in here.
+    }
+
+    @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync drawer toggle.
@@ -96,6 +103,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (menu != null) {
+            // Make sure all icons are tinted the correct color.
+            for (int i = 0; i < menu.size(); i++)
+                menu.getItem(i).getIcon()
+                    .setColorFilter(ContextCompat.getColor(this, R.color.textColorPrimary), PorterDuff.Mode.SRC_IN);
+            // And use a bit of reflection to ensure we show icons even in the overflow menu.
             if (menu.getClass().equals(MenuBuilder.class)) {
                 try {
                     Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
@@ -127,6 +139,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onBackPressed() {
         if (mDrawer.isDrawerOpen(GravityCompat.START)) mDrawer.closeDrawer(GravityCompat.START);
         else super.onBackPressed();
+    }
+
+    @Override
+    protected void onStop() {
+        //EventBus.getDefault().unregister(this);  // TODO turn on once we have event handlers in here.
+        super.onStop();
     }
 
     @Override

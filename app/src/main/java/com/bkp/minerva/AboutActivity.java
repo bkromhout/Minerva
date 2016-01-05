@@ -3,6 +3,7 @@ package com.bkp.minerva;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 public class AboutActivity extends AppCompatActivity {
 
@@ -19,4 +20,17 @@ public class AboutActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
     }
 
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // This isn't really kosher, but since the about activity isn't something which needs proper Up
+                // navigation, we'd rather treat it like the back button.
+                onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }
