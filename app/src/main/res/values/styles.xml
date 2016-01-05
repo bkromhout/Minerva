@@ -1,47 +1,36 @@
 <resources>
-    <!-- Base Theme -->
-    <!-- Light Theme -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-
-        <item name="android:textColorPrimary">@color/textColorPrimary</item>
-        <item name="android:textColorSecondary">@color/textColorSecondary</item>
-        <item name="android:textColorPrimaryInverse">@color/textColorPrimaryInverse</item>
-        <item name="android:textColorSecondaryInverse">@color/textColorSecondaryInverse</item>
-
-        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-    </style>
-    <!-- Dark Theme -->
-    <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
+    <!-- Default is a dark theme -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
         <item name="android:textColorPrimary">@color/textColorPrimaryInverse</item>
-        <item name="android:textColorSecondary">@color/textColorSecondaryInverse</item>
+        <item name="android:textColorSecondary">@color/textColorPrimaryInverse</item>
         <item name="android:textColorPrimaryInverse">@color/textColorPrimary</item>
-        <item name="android:textColorSecondaryInverse">@color/textColorSecondary</item>
+        <item name="android:textColorSecondaryInverse">@color/textColorPrimary</item>
 
-        <item name="drawerArrowStyle">@style/DrawerArrowStyle.Dark</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
     </style>
 
     <!-- For the Hamburger Icon -->
-    <!-- Light -->
     <style name="DrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
-        <item name="spinBars">true</item>
-        <item name="color">@color/textColorPrimary</item>
-    </style>
-    <!-- Dark -->
-    <style name="DrawerArrowStyle.Dark" parent="@style/Widget.AppCompat.DrawerArrowToggle">
         <item name="spinBars">true</item>
         <item name="color">@color/textColorPrimaryInverse</item>
     </style>
 
+    <!-- Toolbar -->
+    <style name="AppTheme.Toolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="popupTheme">@style/AppTheme.PopupOverlay</item>
+        <item name="theme">@style/AppTheme.AppBarOverlay</item>
+    </style>
 
+    <!-- AppBar -->
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+    <!-- PopupMenu -->
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat">
 
+    </style>
 </resources>

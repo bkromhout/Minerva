@@ -11,7 +11,9 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +24,8 @@ import com.bkp.minerva.fragments.Library;
 import com.bkp.minerva.fragments.Lists;
 import com.bkp.minerva.fragments.PowerSearch;
 import com.bkp.minerva.fragments.Recent;
+
+import java.lang.reflect.Method;
 
 /**
  * Main activity.
@@ -46,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTheme(R.style.AppTheme_Dark);
+        setTheme(R.style.AppTheme);
         // Create and bind views.
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -74,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
         mDrawerToggle.setDrawerIndicatorEnabled(true);
@@ -90,10 +94,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (menu != null) {
+            if (menu.getClass().equals(MenuBuilder.class)) {
+                try {
+                    Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
+                    m.setAccessible(true);
+                    m.invoke(menu, true);
+                } catch (Exception e) {
+                    Log.e(getClass().getSimpleName(), "onMenuOpened...unable to set icons for overflow menu", e);
+                }
+            }
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
