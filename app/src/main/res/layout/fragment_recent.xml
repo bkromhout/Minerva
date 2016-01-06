@@ -19,6 +19,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_read"
+            android:tint="@color/textColorPrimary"
+            android:clickable="true"
+            android:contentDescription="@string/acc_fab_resume_reading"
             app:layout_anchor="@id/recycler"
             app:layout_anchorGravity="bottom|right|end"
             app:layout_behavior="com.bkp.minerva.util.ScrollAwareFABBehavior"/>

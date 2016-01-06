@@ -68,8 +68,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initDrawer() {
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, mToolbar, R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close) {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, mToolbar, R.string.acc_navigation_drawer_open,
+                R.string.acc_navigation_drawer_close) {
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);

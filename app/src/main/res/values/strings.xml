@@ -3,6 +3,10 @@
     <string name="app_name">Minerva</string>
     <string name="tag_line">Organize your books with ease!</string>
 
+    <!-- Main Activity -->
+    <string name="acc_navigation_drawer_open">Open navigation drawer</string>
+    <string name="acc_navigation_drawer_close">Close navigation drawer</string>
+
     <!-- Nav Drawer Items -->
     <string name="nav_item_recent">Recent</string>
     <string name="nav_item_library">Library</string>
@@ -12,6 +16,7 @@
     <string name="nav_item_about">About</string>
 
     <!-- Recent -->
+    <string name="acc_fab_resume_reading">Resume reading</string>
 
     <!-- Library -->
     <!-- Library Menu Items -->
@@ -26,10 +31,6 @@
 
     <!-- About -->
     <string name="title_activity_about">About</string>
-
-    <!-- Accessibility Strings -->
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
