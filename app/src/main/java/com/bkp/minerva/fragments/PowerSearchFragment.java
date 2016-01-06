@@ -8,19 +8,19 @@ import com.bkp.minerva.R;
 /**
  *
  */
-public class Recent extends Fragment {
+public class PowerSearchFragment extends Fragment {
 
-    public Recent() {
+    public PowerSearchFragment() {
         // Required empty public constructor
     }
 
     /**
      * Use this factory method to create a new instance of this fragment using the provided parameters.
-     * @return A new instance of fragment Recent.
+     * @return A new instance of {@link PowerSearchFragment}.
      */
     // TODO: Rename and change types and number of parameters
-    public static Recent newInstance() {
-        Recent fragment = new Recent();
+    public static PowerSearchFragment newInstance() {
+        PowerSearchFragment fragment = new PowerSearchFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -35,12 +35,13 @@ public class Recent extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_recent, container, false);
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_power_search, container, false);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.recent, menu);
+        inflater.inflate(R.menu.power_search, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 

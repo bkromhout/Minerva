@@ -22,10 +22,10 @@ import android.view.View;
 import android.widget.FrameLayout;
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import com.bkp.minerva.fragments.Library;
-import com.bkp.minerva.fragments.Lists;
-import com.bkp.minerva.fragments.PowerSearch;
-import com.bkp.minerva.fragments.Recent;
+import com.bkp.minerva.fragments.AllListsFragment;
+import com.bkp.minerva.fragments.LibraryFragment;
+import com.bkp.minerva.fragments.PowerSearchFragment;
+import com.bkp.minerva.fragments.RecentFragment;
 
 import java.lang.reflect.Method;
 
@@ -33,6 +33,13 @@ import java.lang.reflect.Method;
  * Main activity.
  */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    /**
+     * Represents the different fragments which we can switch to.
+     */
+    public enum Frag {
+        RECENT, LIBRARY, ALL_LISTS, POWER_SEARCH, LIST
+    }
+
     // Views.
     @Bind(R.id.drawer_layout)
     DrawerLayout mDrawer;
@@ -65,6 +72,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Set up the nav drawer and its toggle.
         initDrawer();
+
+        // Ensure that the same fragment is selected as was last time.
+        // TODO actually save/restore this using shared preferences so it persists across app runs.
+        if (savedInstanceState == null) {
+            // Make sure we show the library fragment if we don't have a saved instance state.
+            mNavigationView.setCheckedItem(R.id.nav_library);
+            switchFragments(Frag.LIBRARY, null);
+        }
     }
 
     private void initDrawer() {
@@ -85,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDrawerToggle.setDrawerIndicatorEnabled(true);
         mDrawer.setDrawerListener(mDrawerToggle);
         mNavigationView.setNavigationItemSelectedListener(this);
+        // Make sure that if we deactivate the toggle we still have a handler for the up button.
+        mDrawerToggle.setToolbarNavigationClickListener(v -> onBackPressed());
     }
 
     @Override
@@ -149,15 +166,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle nav drawer
+        // Handle nav drawer.
         if (mDrawerToggle.onOptionsItemSelected(item)) return true;
-
         // Handle other options.
         switch (item.getItemId()) {
             default:
                 break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -167,13 +182,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (item.getItemId()) {
             case R.id.nav_recent:
+                switchFragments(Frag.RECENT, null);
+                break;
             case R.id.nav_library:
+                Log.d("YO!", "don't do this!!");
+                switchFragments(Frag.LIBRARY, null);
+                break;
             case R.id.nav_lists:
+                switchFragments(Frag.ALL_LISTS, null);
+                break;
             case R.id.nav_power_search:
-                switchFragments(item.getItemId());
+                switchFragments(Frag.POWER_SEARCH, null);
                 break;
             case R.id.nav_settings:
-
+                // TODO
                 break;
             case R.id.nav_about:
                 startActivity(new Intent(this, AboutActivity.class));
@@ -185,31 +207,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     /**
      * Switch fragments based on the id of the item that was clicked in the nav drawer.
-     * @param itemId Nav drawer item id.
+     * @param frag Which fragment to switch to.
+     * @param b    A bundle of additional arguments.
      */
-    private void switchFragments(int itemId) {
+    private void switchFragments(Frag frag, Bundle b) {
         // Figure out which fragment to switch to.
         Fragment fragment = null;
-        switch (itemId) {
-            case R.id.nav_recent:
-                fragment = Recent.newInstance();
+        switch (frag) {
+            case RECENT:
+                fragment = RecentFragment.newInstance();
                 setTitle(R.string.nav_item_recent);
                 break;
-            case R.id.nav_library:
-                fragment = Library.newInstance();
+            case LIBRARY:
+                fragment = LibraryFragment.newInstance();
                 setTitle(R.string.nav_item_library);
                 break;
-            case R.id.nav_lists:
-                fragment = Lists.newInstance();
+            case ALL_LISTS:
+                fragment = AllListsFragment.newInstance();
                 setTitle(R.string.nav_item_lists);
                 break;
-            case R.id.nav_power_search:
-                fragment = PowerSearch.newInstance();
+            case POWER_SEARCH:
+                fragment = PowerSearchFragment.newInstance();
                 setTitle(R.string.nav_item_power_search);
+                break;
+            case LIST:
+                //TODO
                 break;
         }
 
-        // Switch to the new fragment and change the title.
+        // Switch to the new fragment.
         if (fragment != null) {
             FragmentManager fragMan = getSupportFragmentManager();
             fragMan.beginTransaction().replace(R.id.main_frag_cont, fragment).commit();

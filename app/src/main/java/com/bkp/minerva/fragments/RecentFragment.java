@@ -8,19 +8,19 @@ import com.bkp.minerva.R;
 /**
  *
  */
-public class Lists extends Fragment {
+public class RecentFragment extends Fragment {
 
-    public Lists() {
+    public RecentFragment() {
         // Required empty public constructor
     }
 
     /**
      * Use this factory method to create a new instance of this fragment using the provided parameters.
-     * @return A new instance of fragment Recent.
+     * @return A new instance of {@link RecentFragment}.
      */
     // TODO: Rename and change types and number of parameters
-    public static Lists newInstance() {
-        Lists fragment = new Lists();
+    public static RecentFragment newInstance() {
+        RecentFragment fragment = new RecentFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -35,13 +35,12 @@ public class Lists extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_lists, container, false);
+        return inflater.inflate(R.layout.fragment_recent, container, false);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.lists, menu);
+        inflater.inflate(R.menu.recent, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 

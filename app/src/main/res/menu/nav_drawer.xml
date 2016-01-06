@@ -14,7 +14,7 @@
                 android:title="@string/nav_item_library"/>
         <item
                 android:id="@+id/nav_lists"
-                android:icon="@drawable/ic_list"
+                android:icon="@drawable/ic_lists"
                 android:title="@string/nav_item_lists"/>
         <item
                 android:id="@+id/nav_power_search"
