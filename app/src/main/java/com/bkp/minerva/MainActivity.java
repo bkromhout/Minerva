@@ -22,10 +22,9 @@ import android.view.View;
 import android.widget.FrameLayout;
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import com.bkp.minerva.fragments.AllListsFragment;
-import com.bkp.minerva.fragments.LibraryFragment;
-import com.bkp.minerva.fragments.PowerSearchFragment;
-import com.bkp.minerva.fragments.RecentFragment;
+import com.bkp.minerva.fragments.*;
+import com.bkp.minerva.prefs.DefaultPrefs;
+import net.orange_box.storebox.StoreBox;
 
 import java.lang.reflect.Method;
 
@@ -33,12 +32,12 @@ import java.lang.reflect.Method;
  * Main activity.
  */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    /**
-     * Represents the different fragments which we can switch to.
-     */
-    public enum Frag {
-        RECENT, LIBRARY, ALL_LISTS, POWER_SEARCH, LIST
-    }
+    // Represents the various fragments that this activity can show.
+    public static final int FRAG_RECENT = 0;
+    public static final int FRAG_LIBRARY = 1;
+    public static final int FRAG_ALL_LISTS = 2;
+    public static final int FRAG_POWER_SEARCH = 3;
+    public static final int FRAG_LIST = 4;
 
     // Views.
     @Bind(R.id.drawer_layout)
@@ -51,6 +50,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     FrameLayout mFragCont;
 
     /**
+     * Instance of the default preferences.
+     */
+    DefaultPrefs defaultPrefs;
+    /**
      * Nav Drawer Toggle (burger menu).
      */
     ActionBarDrawerToggle mDrawerToggle;
@@ -59,8 +62,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Get default preferences.
+        defaultPrefs = StoreBox.create(this, DefaultPrefs.class);
+
+        // Set theme, create and bind views.
         setTheme(R.style.AppTheme);
-        // Create and bind views.
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
@@ -76,9 +82,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Ensure that the same fragment is selected as was last time.
         // TODO actually save/restore this using shared preferences so it persists across app runs.
         if (savedInstanceState == null) {
-            // Make sure we show the library fragment if we don't have a saved instance state.
-            mNavigationView.setCheckedItem(R.id.nav_library);
-            switchFragments(Frag.LIBRARY, null);
+            // Make sure we show the library fragment if we don't have a saved instance state, don't have a saved
+            // current fragment, or if the saved current fragment would need some bundle to help populate it.
+            int frag = defaultPrefs.getCurrFrag(-1);
+            //mNavigationView.setCheckedItem(R.id.nav_library); // TODO hopefully this just works... we'll see though?
+            switchFragments(frag != -1 ? frag : FRAG_LIBRARY, null);
         }
     }
 
@@ -182,17 +190,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (item.getItemId()) {
             case R.id.nav_recent:
-                switchFragments(Frag.RECENT, null);
+                switchFragments(FRAG_RECENT, null);
                 break;
             case R.id.nav_library:
-                Log.d("YO!", "don't do this!!");
-                switchFragments(Frag.LIBRARY, null);
+                switchFragments(FRAG_LIBRARY, null);
                 break;
             case R.id.nav_lists:
-                switchFragments(Frag.ALL_LISTS, null);
+                switchFragments(FRAG_ALL_LISTS, null);
                 break;
             case R.id.nav_power_search:
-                switchFragments(Frag.POWER_SEARCH, null);
+                switchFragments(FRAG_POWER_SEARCH, null);
                 break;
             case R.id.nav_settings:
                 // TODO
@@ -210,28 +217,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param frag Which fragment to switch to.
      * @param b    A bundle of additional arguments.
      */
-    private void switchFragments(Frag frag, Bundle b) {
+    private void switchFragments(int frag, Bundle b) {
         // Figure out which fragment to switch to.
+        Bundle b2;
         Fragment fragment = null;
         switch (frag) {
-            case RECENT:
+            case FRAG_RECENT:
                 fragment = RecentFragment.newInstance();
                 setTitle(R.string.nav_item_recent);
                 break;
-            case LIBRARY:
+            case FRAG_LIBRARY:
                 fragment = LibraryFragment.newInstance();
                 setTitle(R.string.nav_item_library);
                 break;
-            case ALL_LISTS:
+            case FRAG_ALL_LISTS:
                 fragment = AllListsFragment.newInstance();
                 setTitle(R.string.nav_item_lists);
                 break;
-            case POWER_SEARCH:
+            case FRAG_POWER_SEARCH:
                 fragment = PowerSearchFragment.newInstance();
                 setTitle(R.string.nav_item_power_search);
                 break;
-            case LIST:
-                //TODO
+            case FRAG_LIST:
+                // Figure out what we need to pass to the fragment.
+                b2 = new Bundle();
+                if (b != null) {
+                    b2.putAll(b);
+                    // Save list sel.
+                    defaultPrefs.setCurrListSel(b2.getString(ListFragment.KEY_UNIQUE_SEL));
+                } else {
+                    // Get last displayed list.
+                    b2.putString(ListFragment.KEY_UNIQUE_SEL, defaultPrefs.getCurrListSel(null));
+                }
+                //TODO Make sure that we turn off the toggle (aka, make it an up arrow)
+                //TODO create a new instance of the fragment.
                 break;
         }
 
@@ -240,5 +259,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             FragmentManager fragMan = getSupportFragmentManager();
             fragMan.beginTransaction().replace(R.id.main_frag_cont, fragment).commit();
         }
+
+        // Save things to prefs.
+        defaultPrefs.setCurrFrag(frag);
     }
 }
