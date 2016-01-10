@@ -20,28 +20,29 @@
     <string name="acc_navigation_drawer_open">Open navigation drawer</string>
     <string name="acc_navigation_drawer_close">Close navigation drawer</string>
 
-    <!-- Recent -->
+    <!-- Recent Fragment -->
     <string name="action_resume_reading">Resume reading</string>
 
-    <!-- Library -->
+    <!-- Library Fragment -->
     <string name="action_import">Import</string>
     <string name="action_filter">Filter</string>
     <string name="action_view_opts">View options</string>
 
-    <!-- All Lists -->
+    <!-- All Lists Fragment -->
     <string name="action_new_list">New list</string>
 
-    <!-- List -->
+    <!-- List Activity -->
+    <string name="title_activity_list">Book List</string>
 
-    <!-- Power Search -->
+    <!-- Power Search Fragment -->
 
-    <!-- Settings -->
+    <!-- Book Info Activity -->
+
+    <!-- Settings Activity -->
     <string name="title_activity_settings">Settings</string>
 
-    <!-- About -->
+    <!-- About Activity -->
     <string name="title_activity_about">About</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_info">Book Info</string>
 
 </resources>

@@ -25,6 +25,20 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="MainActivity"/>
         </activity>
+        <activity
+                android:name=".ListActivity"
+                android:label="@string/title_activity_list"
+                android:parentActivityName=".MainActivity"
+                android:theme="@style/AppTheme">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="com.bkp.minerva.MainActivity"/>
+        </activity>
+        <activity
+                android:name=".BookInfoActivity"
+                android:label="@string/title_activity_info"
+                android:theme="@style/AppTheme">
+        </activity>
     </application>
 
 </manifest>

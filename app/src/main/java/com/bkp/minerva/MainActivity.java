@@ -22,7 +22,10 @@ import android.view.View;
 import android.widget.FrameLayout;
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import com.bkp.minerva.fragments.*;
+import com.bkp.minerva.fragments.AllListsFragment;
+import com.bkp.minerva.fragments.LibraryFragment;
+import com.bkp.minerva.fragments.PowerSearchFragment;
+import com.bkp.minerva.fragments.RecentFragment;
 import com.bkp.minerva.prefs.DefaultPrefs;
 import net.orange_box.storebox.StoreBox;
 
@@ -37,7 +40,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final int FRAG_LIBRARY = 1;
     public static final int FRAG_ALL_LISTS = 2;
     public static final int FRAG_POWER_SEARCH = 3;
-    public static final int FRAG_LIST = 4;
 
     // Views.
     @Bind(R.id.drawer_layout)
@@ -86,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // current fragment, or if the saved current fragment would need some bundle to help populate it.
             int frag = defaultPrefs.getCurrFrag(-1);
             //mNavigationView.setCheckedItem(R.id.nav_library); // TODO hopefully this just works... we'll see though?
-            switchFragments(frag != -1 ? frag : FRAG_LIBRARY, null);
+            switchFragments(frag != -1 ? frag : FRAG_LIBRARY);
         }
     }
 
@@ -128,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (menu != null) {
-            // Make sure all icons are tinted the correct color.
+            // Make sure all icons are tinted the correct color, including those in the overflow menu.
             for (int i = 0; i < menu.size(); i++)
                 menu.getItem(i).getIcon()
                     .setColorFilter(ContextCompat.getColor(this, R.color.textColorPrimary), PorterDuff.Mode.SRC_IN);
@@ -178,6 +180,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (mDrawerToggle.onOptionsItemSelected(item)) return true;
         // Handle other options.
         switch (item.getItemId()) {
+            case android.R.id.home:
+                // For non-base fragments, the up arrow will be shown instead of the drawer toggle, so we want it to
+                // act like the back button.
+                onBackPressed();
+                return true;
             default:
                 break;
         }
@@ -187,19 +194,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             case R.id.nav_recent:
-                switchFragments(FRAG_RECENT, null);
+                switchFragments(FRAG_RECENT);
                 break;
             case R.id.nav_library:
-                switchFragments(FRAG_LIBRARY, null);
+                switchFragments(FRAG_LIBRARY);
                 break;
             case R.id.nav_lists:
-                switchFragments(FRAG_ALL_LISTS, null);
+                switchFragments(FRAG_ALL_LISTS);
                 break;
             case R.id.nav_power_search:
-                switchFragments(FRAG_POWER_SEARCH, null);
+                switchFragments(FRAG_POWER_SEARCH);
                 break;
             case R.id.nav_settings:
                 // TODO
@@ -215,11 +221,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     /**
      * Switch fragments based on the id of the item that was clicked in the nav drawer.
      * @param frag Which fragment to switch to.
-     * @param b    A bundle of additional arguments.
      */
-    private void switchFragments(int frag, Bundle b) {
+    private void switchFragments(int frag) {
         // Figure out which fragment to switch to.
-        Bundle b2;
         Fragment fragment = null;
         switch (frag) {
             case FRAG_RECENT:
@@ -237,20 +241,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case FRAG_POWER_SEARCH:
                 fragment = PowerSearchFragment.newInstance();
                 setTitle(R.string.nav_item_power_search);
-                break;
-            case FRAG_LIST:
-                // Figure out what we need to pass to the fragment.
-                b2 = new Bundle();
-                if (b != null) {
-                    b2.putAll(b);
-                    // Save list sel.
-                    defaultPrefs.setCurrListSel(b2.getString(ListFragment.KEY_UNIQUE_SEL));
-                } else {
-                    // Get last displayed list.
-                    b2.putString(ListFragment.KEY_UNIQUE_SEL, defaultPrefs.getCurrListSel(null));
-                }
-                //TODO Make sure that we turn off the toggle (aka, make it an up arrow)
-                //TODO create a new instance of the fragment.
                 break;
         }
 

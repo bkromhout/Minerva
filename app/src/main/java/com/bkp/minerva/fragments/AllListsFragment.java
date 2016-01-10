@@ -49,4 +49,6 @@ public class AllListsFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);
     }
+
+    // TODO add method to open list activity.
 }
