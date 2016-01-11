@@ -12,6 +12,8 @@
 
     <!-- Cards -->
     <dimen name="book_card_height">180dp</dimen>
+    <dimen name="book_card_no_cover_height">128dp</dimen>
+    <dimen name="book_card_compact_height">64dp</dimen>
     <dimen name="list_card_height">56dp</dimen>
     <dimen name="card_elevation">6dp</dimen>
     <dimen name="card_margin_top">3dp</dimen>

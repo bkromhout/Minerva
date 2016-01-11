@@ -105,13 +105,16 @@
                     android:textColor="@color/grey200"
                     android:text="@string/rating"/>
 
-            <include
-                    layout="@layout/star_bar"
-                    android:id="@+id/rating_cont"
+            <RatingBar
+                    android:id="@+id/rating"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/description"
-                    android:layout_toEndOf="@id/lbl_rating"/>
+                    android:layout_toEndOf="@id/lbl_rating"
+                    android:progressTint="@color/grey200"
+                    android:numStars="5"
+                    android:rating="3"
+                    style="@android:style/Widget.Material.RatingBar.Small"/>
 
             <!-- TODO figure out tags layout here -->
         </RelativeLayout>

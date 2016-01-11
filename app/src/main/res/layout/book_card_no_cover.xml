@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/book_card_no_cover_height"
+        android:layout_marginTop="@dimen/card_margin_top"
+        android:layout_marginEnd="@dimen/card_margin_right"
+        android:layout_marginBottom="@dimen/card_margin_bottom"
+        android:layout_marginStart="@dimen/card_margin_left"
+        card_view:cardElevation="@dimen/card_elevation"
+        card_view:cardBackgroundColor="@color/cardview_dark_background">
+
+    <RelativeLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+
+        <android.support.v7.widget.ButtonBarLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:orientation="vertical">
+
+            <ImageButton
+                    android:id="@+id/btn_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:tint="@color/textColorSecondary"
+                    android:backgroundTint="@color/cardview_dark_background"
+                    android:src="@drawable/ic_info_unfilled"
+                    android:contentDescription="@string/acc_book_info"/>
+
+            <ImageButton
+                    android:id="@+id/btn_quick_tag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:tint="@color/textColorSecondary"
+                    android:backgroundTint="@color/cardview_dark_background"
+                    android:src="@drawable/ic_tag"
+                    android:contentDescription="@string/acc_quick_tag"/>
+        </android.support.v7.widget.ButtonBarLayout>
+    </RelativeLayout>
+</android.support.v7.widget.CardView>
