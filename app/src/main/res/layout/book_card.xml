@@ -26,6 +26,95 @@
                 android:background="@color/grey800"
                 android:src="@drawable/epub_logo_color"
                 android:contentDescription="@string/acc_book_cover"/>
+
+        <android.support.v7.widget.ButtonBarLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_below="@id/cover_image">
+
+            <ImageButton
+                    android:id="@+id/btn_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:tint="@color/textColorSecondary"
+                    android:backgroundTint="@color/cardview_dark_background"
+                    android:src="@drawable/ic_info_unfilled"
+                    android:contentDescription="@string/acc_book_info"/>
+
+            <ImageButton
+                    android:id="@+id/btn_quick_tag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:tint="@color/textColorSecondary"
+                    android:backgroundTint="@color/cardview_dark_background"
+                    android:src="@drawable/ic_tag"
+                    android:contentDescription="@string/acc_quick_tag"/>
+        </android.support.v7.widget.ButtonBarLayout>
+
+        <RelativeLayout
+                android:id="@+id/details"
+                android:layout_toEndOf="@id/cover_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp">
+
+            <TextView
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textStyle="bold"
+                    style="@style/TextAppearance.AppCompat.Medium"
+                    android:text="@string/dummy_title"/>
+
+            <TextView
+                    android:id="@+id/author"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/title"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:text="@string/dummy_author"/>
+
+            <View
+                    android:id="@+id/sep1"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@id/author"
+                    android:background="@color/grey800"/>
+
+            <TextView
+                    android:id="@+id/description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/sep1"
+                    android:layout_marginBottom="2dp"
+                    android:maxLines="3"
+                    android:ellipsize="end"
+                    android:textColor="@color/grey500"
+                    android:text="@string/dummy_desc"/>
+
+            <TextView
+                    android:id="@+id/lbl_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="2dp"
+                    android:layout_below="@id/description"
+                    android:textColor="@color/grey200"
+                    android:text="@string/rating"/>
+
+            <include
+                    layout="@layout/star_bar"
+                    android:id="@+id/rating_cont"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/description"
+                    android:layout_toEndOf="@id/lbl_rating"/>
+
+            <!-- TODO figure out tags layout here -->
+        </RelativeLayout>
     </RelativeLayout>
 
 </android.support.v7.widget.CardView>

@@ -47,5 +47,13 @@
 
     <!-- Book Card -->
     <string name="acc_book_cover">Book cover image</string>
+    <string name="acc_book_info">View book info</string>
+    <string name="acc_quick_tag">Quick tag</string>
+    <string name="dummy_title">The Title of a Book</string>
+    <string name="dummy_author">Firstname Lastname</string>
+    <string name="dummy_desc">This is a fairly sizable dummy portion of text which is useful for showing in textviews
+        which would probably hold a fair amount of text. For example, perhaps you have a textview which shows the
+        description of a book? This would be a good string to have there!</string>
+    <string name="rating">Rating:</string>
 
 </resources>

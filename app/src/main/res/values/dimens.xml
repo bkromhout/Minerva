@@ -19,6 +19,6 @@
     <dimen name="card_margin_bottom">3dp</dimen>
     <dimen name="card_margin_left">4dp</dimen>
 
-    <dimen name="large_cover_width">123dp</dimen>
-    <dimen name="large_cover_height">164dp</dimen>
+    <dimen name="large_cover_width">96dp</dimen>
+    <dimen name="large_cover_height">128dp</dimen>
 </resources>
