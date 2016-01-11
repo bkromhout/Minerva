@@ -45,4 +45,7 @@
     <string name="title_activity_about">About</string>
     <string name="title_activity_info">Book Info</string>
 
+    <!-- Book Card -->
+    <string name="acc_book_cover">Book cover image</string>
+
 </resources>

@@ -11,7 +11,14 @@
     <dimen name="nav_header_height">160dp</dimen>
 
     <!-- Cards -->
-    <dimen name="book_card_height">192dp</dimen>
+    <dimen name="book_card_height">180dp</dimen>
     <dimen name="list_card_height">56dp</dimen>
     <dimen name="card_elevation">6dp</dimen>
+    <dimen name="card_margin_top">3dp</dimen>
+    <dimen name="card_margin_right">4dp</dimen>
+    <dimen name="card_margin_bottom">3dp</dimen>
+    <dimen name="card_margin_left">4dp</dimen>
+
+    <dimen name="large_cover_width">123dp</dimen>
+    <dimen name="large_cover_height">164dp</dimen>
 </resources>
