@@ -16,13 +16,70 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-
-
-        <android.support.v7.widget.ButtonBarLayout
-                android:layout_width="wrap_content"
+        <RelativeLayout
+                android:id="@+id/details"
+                android:layout_toEndOf="@id/cover_image"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_alignParentBottom="true"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="2dp"
+                android:layout_toStartOf="@+id/buttons">
+
+            <TextView
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textStyle="bold"
+                    style="@style/TextAppearance.AppCompat.Medium"
+                    android:text="@string/dummy_title"/>
+
+            <TextView
+                    android:id="@+id/author"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/title"
+                    android:layout_toStartOf="@id/rating"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:text="@string/dummy_author"/>
+
+            <RatingBar
+                    android:id="@+id/rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_above="@id/sep1"
+                    android:progressTint="@color/grey200"
+                    android:numStars="5"
+                    android:rating="3"
+                    style="@android:style/Widget.Material.RatingBar.Small"/>
+
+            <View
+                    android:id="@+id/sep1"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@id/author"
+                    android:background="@color/grey800"/>
+
+            <TextView
+                    android:id="@+id/description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/sep1"
+                    android:layout_marginBottom="2dp"
+                    android:maxLines="3"
+                    android:ellipsize="end"
+                    android:textColor="@color/grey500"
+                    android:text="@string/dummy_desc"/>
+        </RelativeLayout>
+
+        <android.support.v7.widget.ButtonBarLayout
+                android:id="@id/buttons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:orientation="vertical">
 
@@ -44,5 +101,21 @@
                     android:src="@drawable/ic_tag"
                     android:contentDescription="@string/acc_quick_tag"/>
         </android.support.v7.widget.ButtonBarLayout>
+
+        <RelativeLayout
+                android:id="@+id/tags"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_below="@id/details">
+
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="test text"/>
+            <!-- TODO figure out tags layout here...maybe just a textview?? idk. -->
+        </RelativeLayout>
     </RelativeLayout>
 </android.support.v7.widget.CardView>
