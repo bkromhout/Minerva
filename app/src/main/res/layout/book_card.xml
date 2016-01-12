@@ -135,7 +135,7 @@
                     app:tagPaddingBottom="1dp"
                     app:tagPaddingLeft="2dp"
                     app:rowMargin="1dp"
-                    app:rowGravity="center"
+                    app:rowGravity="left"
                     app:rowDistribution="random"
                     app:rowMode="wrap"
                     app:rowsQuantity="2"/>
