@@ -26,10 +26,10 @@
                 android:id="@+id/rg_sort_opts"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checkedButton="@id/sort_title">
+                android:checkedButton="@+id/sort_title">
 
             <RadioButton
-                    android:id="@+id/sort_title"
+                    android:id="@id/sort_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/sort_title"/>
@@ -53,28 +53,31 @@
                     android:text="@string/sort_rating"/>
         </RadioGroup>
 
-        <android.support.v7.widget.ButtonBarLayout
+        <RadioGroup
+                android:id="@+id/rg_sort_mode"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:checkedButton="@+id/sort_asc">
 
-            <ImageButton
-                    android:id="@+id/btn_sort_asc"
+            <RadioButton
+                    android:id="@id/sort_asc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:contentDescription="@string/acc_sort_asc"
-                    android:tint="@color/colorAccent"
-                    android:backgroundTint="@android:color/transparent"
-                    android:src="@drawable/ic_sort_ascending"/>
+                    android:layout_margin="12dp"
+                    android:buttonTint="@color/rb_icon_color_sel"
+                    android:buttonTintMode="src_in"
+                    android:button="@drawable/ic_sort_ascending"/>
 
-            <ImageButton
-                    android:id="@+id/btn_sort_desc"
+            <RadioButton
+                    android:id="@+id/sort_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:contentDescription="@string/acc_sort_desc"
-                    android:tint="@color/grey200"
-                    android:backgroundTint="@android:color/transparent"
-                    android:src="@drawable/ic_sort_descending"/>
-        </android.support.v7.widget.ButtonBarLayout>
+                    android:layout_margin="12dp"
+                    android:buttonTint="@color/rb_icon_color_sel"
+                    android:buttonTintMode="src_in"
+                    android:button="@drawable/ic_sort_descending"/>
+        </RadioGroup>
     </LinearLayout>
 
     <LinearLayout
@@ -100,10 +103,10 @@
                 android:id="@+id/rg_card_opts"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checkedButton="@id/card_normal">
+                android:checkedButton="@+id/card_normal">
 
             <RadioButton
-                    android:id="@+id/card_normal"
+                    android:id="@id/card_normal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/card_normal"/>

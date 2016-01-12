@@ -1,9 +1,16 @@
 package com.bkp.minerva.fragments;
 
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.view.menu.MenuBuilder;
+import android.util.Log;
 import android.view.*;
+import butterknife.ButterKnife;
 import com.bkp.minerva.R;
+
+import java.lang.reflect.Method;
 
 /**
  *
@@ -35,7 +42,32 @@ public class RecentFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_recent, container, false);
+        // Inflate the layout for this fragment, then bind views.
+        View root = inflater.inflate(R.layout.fragment_recent, container, false);
+        ButterKnife.bind(this, root);
+        return root;
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        if (menu != null) {
+            // Make sure all icons are tinted the correct color, including those in the overflow menu.
+            for (int i = 0; i < menu.size(); i++)
+                menu.getItem(i).getIcon()
+                    .setColorFilter(ContextCompat.getColor(getContext(), R.color.textColorPrimary),
+                            PorterDuff.Mode.SRC_IN);
+            // And use a bit of reflection to ensure we show icons even in the overflow menu.
+            if (menu.getClass().equals(MenuBuilder.class)) {
+                try {
+                    Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
+                    m.setAccessible(true);
+                    m.invoke(menu, true);
+                } catch (Exception e) {
+                    Log.e(getClass().getSimpleName(), "onMenuOpened...unable to set icons for overflow menu", e);
+                }
+            }
+        }
+        super.onPrepareOptionsMenu(menu);
     }
 
     @Override

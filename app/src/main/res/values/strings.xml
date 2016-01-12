@@ -2,6 +2,8 @@
     <!-- General -->
     <string name="app_name">Minerva</string>
     <string name="tag_line">Organize your books with ease!</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 
     <!-- Common action Strings (may be used in multiple places) -->
     <string name="action_delete">Delete</string>
@@ -26,15 +28,13 @@
     <!-- Library Fragment -->
     <string name="action_import">Import</string>
     <string name="action_filter">Filter</string>
-    <string name="action_view_opts">View options</string>
+    <string name="action_view_opts">View Options</string>
 
     <string name="lbl_sort_opts">Sort By</string>
     <string name="sort_title">Title</string>
     <string name="sort_author">Author</string>
     <string name="sort_time_added">Time Added</string>
     <string name="sort_rating">Rating</string>
-    <string name="acc_sort_asc">Sort Ascending</string>
-    <string name="acc_sort_desc">Sort Descending</string>
 
     <string name="lbl_card_opts">Card Style</string>
     <string name="card_normal">Normal</string>

@@ -1,13 +1,19 @@
 package com.bkp.minerva;
 
+import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+
+import java.lang.reflect.Method;
 
 public class ListActivity extends AppCompatActivity {
     // Key strings for the bundle passed when this activity is started.
@@ -66,6 +72,27 @@ public class ListActivity extends AppCompatActivity {
         }
 
         // TODO use sel string to somehow get the list from the database.
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (menu != null) {
+            // Make sure all icons are tinted the correct color, including those in the overflow menu.
+            for (int i = 0; i < menu.size(); i++)
+                menu.getItem(i).getIcon()
+                    .setColorFilter(ContextCompat.getColor(this, R.color.textColorPrimary), PorterDuff.Mode.SRC_IN);
+            // And use a bit of reflection to ensure we show icons even in the overflow menu.
+            if (menu.getClass().equals(MenuBuilder.class)) {
+                try {
+                    Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
+                    m.setAccessible(true);
+                    m.invoke(menu, true);
+                } catch (Exception e) {
+                    Log.e(getClass().getSimpleName(), "onMenuOpened...unable to set icons for overflow menu", e);
+                }
+            }
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
