@@ -35,7 +35,6 @@
                 android:layout_height="wrap_content"
                 android:src="@mipmap/ic_launcher"/>
 
-        <!-- TODO actually make this real. -->
         <TextView
                 android:id="@+id/about_app_name"
                 android:layout_width="wrap_content"
@@ -45,6 +44,8 @@
                 style="@style/Base.TextAppearance.AppCompat.Large"
                 android:textStyle="bold"
                 android:text="@string/app_name"/>
+
+        <!-- TODO actually make this real. -->
     </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

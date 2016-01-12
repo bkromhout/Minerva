@@ -11,4 +11,69 @@
         card_view:cardElevation="@dimen/card_elevation"
         card_view:cardBackgroundColor="@color/cardview_dark_background">
 
+    <RelativeLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp">
+
+        <RelativeLayout
+                android:id="@+id/details"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/btn_info">
+
+            <TextView
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@+id/ic_star"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textStyle="bold"
+                    style="@style/TextAppearance.AppCompat.Medium"
+                    android:text="@string/dummy_title"/>
+
+            <TextView
+                    android:id="@+id/author"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/title"
+                    android:layout_toStartOf="@id/ic_star"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:text="@string/dummy_author"/>
+
+            <ImageView
+                    android:id="@id/ic_star"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignBottom="@id/title"
+                    android:baselineAlignBottom="true"
+                    android:tint="@color/grey200"
+                    android:src="@drawable/ic_stars"/>
+
+            <TextView
+                    android:id="@+id/rating_txt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/ic_star"
+                    android:layout_toEndOf="@id/author"
+                    android:gravity="center_horizontal"
+                    android:text="@string/dummy_rating"/>
+        </RelativeLayout>
+
+        <ImageButton
+                android:id="@id/btn_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:tint="@color/textColorSecondary"
+                android:backgroundTint="@color/cardview_dark_background"
+                android:src="@drawable/ic_info_unfilled"
+                android:contentDescription="@string/acc_book_info"/>
+    </RelativeLayout>
 </android.support.v7.widget.CardView>
