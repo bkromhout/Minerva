@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="wrap_content"
+                android:id="@+id/library_view_opts_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
                 android:padding="4dp">
 
     <LinearLayout
             android:id="@+id/sort_opts"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
-            android:orientation="vertical"
-            android:gravity="center_horizontal">
+            android:layout_marginEnd="40dp"
+            android:orientation="vertical">
 
         <TextView
                 android:id="@+id/lbl_sort_opts"
@@ -85,8 +86,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/sort_opts"
-            android:orientation="vertical"
-            android:gravity="center_horizontal">
+            android:orientation="vertical">
 
         <TextView
                 android:id="@+id/lbl_card_opts"
