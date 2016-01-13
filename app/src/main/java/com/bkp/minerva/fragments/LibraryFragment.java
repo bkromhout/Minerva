@@ -133,7 +133,7 @@ public class LibraryFragment extends Fragment {
      * Show the view options dialog when the FAB is clicked.
      */
     @OnClick(R.id.fab)
-    private void onFabClick() {
+    void onFabClick() {
         // Inflate dialog view and get views.
         View view = LayoutInflater.from(getContext()).inflate(R.layout.library_view_opts, null);
         final RadioGroup rgSortType = ButterKnife.findById(view, R.id.rg_sort_type);

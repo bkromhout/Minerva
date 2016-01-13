@@ -12,5 +12,8 @@
         <item name="android:textColorSecondaryInverse">@color/textColorPrimaryInverse</item>
 
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        
+        <!-- For Material Dialogs -->
+        <item name="md_content_gravity">center</item>
     </style>
 </resources>
