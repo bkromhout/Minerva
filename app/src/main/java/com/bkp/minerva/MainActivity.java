@@ -251,6 +251,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         // Save things to prefs.
-        defaultPrefs.setCurrFrag(frag);
+        defaultPrefs.putCurrFrag(frag);
     }
 }

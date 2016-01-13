@@ -8,13 +8,14 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.view.menu.MenuBuilder;
 import android.util.Log;
 import android.view.*;
-import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkp.minerva.R;
+import com.bkp.minerva.prefs.LibraryPrefs;
+import net.orange_box.storebox.StoreBox;
 
 import java.lang.reflect.Method;
 
@@ -23,9 +24,15 @@ import java.lang.reflect.Method;
  */
 public class LibraryFragment extends Fragment {
 
+
     // Views
     @Bind(R.id.fab)
     FloatingActionButton fabViewOpts;
+
+    /**
+     * Instance of library fragment's preferences.
+     */
+    LibraryPrefs libraryPrefs;
 
     public LibraryFragment() {
         // Required empty public constructor
@@ -48,6 +55,8 @@ public class LibraryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         // We have menu items we'd like to add.
         setHasOptionsMenu(true);
+
+        libraryPrefs = StoreBox.create(getContext(), LibraryPrefs.class);
     }
 
     @Override
@@ -112,12 +121,16 @@ public class LibraryFragment extends Fragment {
                 .negativeText(R.string.cancel)
                 .onPositive((dialog, which) -> {
                     View view = dialog.getCustomView();
-                    RadioGroup rgSortOpts = ButterKnife.findById(view, R.id.rg_sort_opts);
-                    RadioGroup rgCardOpts = (RadioGroup) view.findViewById(R.id.rg_card_opts);
+                    assert view != null;
+                    RadioGroup rgSortType = ButterKnife.findById(view, R.id.rg_sort_type);
+                    RadioGroup rgSortDir = ButterKnife.findById(view, R.id.rg_sort_dir);
+                    RadioGroup rgCardType = ButterKnife.findById(view, R.id.rg_card_type);
 
+                    // TODO finish OK button handler.
                 })
                 .cancelable(true)
                 .build();
-        View
+
+        // TODO finish setting up dialog's views using prefs and showing dialog
     }
 }

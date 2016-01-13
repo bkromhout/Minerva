@@ -22,11 +22,11 @@ public interface DefaultPrefs {
     int getCurrFrag(int defValue);
 
     /**
-     * Get the int which specifies the fragment that is currently being shown in {@link com.bkp.minerva.MainActivity}.
+     * Put the int which specifies the fragment that is currently being shown in {@link com.bkp.minerva.MainActivity}.
      * @param currFrag Frag int.
      */
     @KeyByString(CURR_FRAG)
-    void setCurrFrag(int currFrag);
+    DefaultPrefs putCurrFrag(int currFrag);
 
     /**
      * Get the a string which uniquely identifies the list that was last shown in the list fragment.
@@ -37,9 +37,9 @@ public interface DefaultPrefs {
     String getCurrListSel(String defValue);
 
     /**
-     * Get the a string which uniquely identifies the list that was last shown in the list fragment.
+     * Put the a string which uniquely identifies the list that was last shown in the list fragment.
      * @param currList Unique list selector string.
      */
     @KeyByString(CURR_LIST_SEL)
-    void setCurrListSel(String currList);
+    DefaultPrefs putCurrListSel(String currList);
 }
