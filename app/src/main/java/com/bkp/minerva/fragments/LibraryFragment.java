@@ -50,11 +50,6 @@ public class LibraryFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of this fragment using the provided parameters.
-     * @return A new instance of {@link LibraryFragment}.
-     */
-    // TODO: Rename and change types and number of parameters
     public static LibraryFragment newInstance() {
         LibraryFragment fragment = new LibraryFragment();
         Bundle args = new Bundle();
