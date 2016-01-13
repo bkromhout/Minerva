@@ -16,7 +16,7 @@ import butterknife.OnClick;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkp.minerva.C;
 import com.bkp.minerva.R;
-import com.tumblr.remember.Remember;
+import com.bkp.minerva.prefs.LibraryPrefs;
 
 import java.lang.reflect.Method;
 
@@ -24,15 +24,14 @@ import java.lang.reflect.Method;
  *
  */
 public class LibraryFragment extends Fragment {
-    // Preference key strings.
-    public static final String SORT_TYPE = "SORT_TYPE";
-    public static final String SORT_DIR = "SORT_DIRECTION";
-    public static final String CARD_TYPE = "CARD_TYPE";
-
     // Views
     @Bind(R.id.fab)
     FloatingActionButton fabViewOpts;
 
+    /**
+     * Preferences.
+     */
+    private LibraryPrefs libraryPrefs;
     /**
      * The current sort type.
      */
@@ -63,6 +62,7 @@ public class LibraryFragment extends Fragment {
         // We have menu items we'd like to add.
         setHasOptionsMenu(true);
         // Read prefs to fill in vars.
+        libraryPrefs = LibraryPrefs.get();
         readPrefs();
     }
 
@@ -70,9 +70,9 @@ public class LibraryFragment extends Fragment {
      * Read preferences into variables.
      */
     private void readPrefs() {
-        sortType = Remember.getString(SORT_TYPE, C.SORT_TITLE);
-        sortDir = Remember.getString(SORT_DIR, C.SORT_ASC);
-        cardType = Remember.getString(CARD_TYPE, C.CARD_NORMAL);
+        sortType = libraryPrefs.getSortType(C.SORT_TITLE);
+        sortDir = libraryPrefs.getSortDir(C.SORT_ASC);
+        cardType = libraryPrefs.getCardType(C.CARD_NORMAL);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class LibraryFragment extends Fragment {
      * Initialize the UI.
      */
     private void initUi() {
-
+        // TODO Set up recyclerview
     }
 
     @Override
@@ -149,11 +149,11 @@ public class LibraryFragment extends Fragment {
                 .onPositive((dialog, which) -> {
                     // Figure out choices.
                     sortType = strFromId(rgSortType.getCheckedRadioButtonId());
-                    Remember.putString(SORT_TYPE, sortType);
                     sortDir = strFromId(rgSortDir.getCheckedRadioButtonId());
-                    Remember.putString(SORT_DIR, sortDir);
                     cardType = strFromId(rgCardType.getCheckedRadioButtonId());
-                    Remember.putString(CARD_TYPE, cardType);
+                    // Persist them.
+                    libraryPrefs.putLibraryViewOpts(sortType, sortDir, cardType);
+
                     // TODO refresh recycler view
                 })
                 .cancelable(true)
