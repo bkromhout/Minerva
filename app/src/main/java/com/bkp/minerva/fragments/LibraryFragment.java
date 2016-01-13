@@ -149,7 +149,6 @@ public class LibraryFragment extends Fragment {
         // Construct material dialog.
         new MaterialDialog.Builder(getContext())
                 .title(R.string.action_view_opts)
-                .iconRes(R.drawable.ic_eye)
                 .customView(view, false)
                 .positiveText(R.string.ok)
                 .negativeText(R.string.cancel)
