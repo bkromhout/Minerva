@@ -145,6 +145,7 @@ public class LibraryFragment extends Fragment {
         rgSortDir.check(idFromStr(sortDir));
         rgCardType.check(idFromStr(cardType));
 
+        // TODO figure out why it isn't centered.
         // Construct material dialog.
         new MaterialDialog.Builder(getContext())
                 .title(R.string.action_view_opts)
@@ -204,9 +205,7 @@ public class LibraryFragment extends Fragment {
      * @param str String constant.
      * @return A view ID.
      */
-    private
-    @IdRes
-    Integer idFromStr(String str) {
+    private Integer idFromStr(String str) {
         switch (str) {
             // Sort types.
             case C.SORT_TITLE:
