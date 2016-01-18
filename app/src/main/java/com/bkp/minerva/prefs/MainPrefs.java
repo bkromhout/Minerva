@@ -14,6 +14,10 @@ public class MainPrefs {
     private final static String CURR_FRAG = "CURR_FRAG";
     private final static String CURR_LIST_SEL = "CURR_LIST_UNIQUE_SEL";
 
+    private final static String LIB_DIR = "LIB_DIR_";
+    private final static String LIB_AUTO_IMPORT = "LIB_AUTO_IMPORT_";
+
+
     /**
      * Static instance.
      */
@@ -22,6 +26,12 @@ public class MainPrefs {
      * Shared Preferences.
      */
     private SharedPreferences mPrefs;
+    /**
+     * Which library is currently being used.
+     * <p>
+     * TODO later we'll manipulate this.
+     */
+    private static String currLibNum = "1";
 
     // No public construction allowed.
     private MainPrefs() {
@@ -70,5 +80,39 @@ public class MainPrefs {
      */
     public void putCurrListSel(String currListSel) {
         mPrefs.edit().putString(CURR_LIST_SEL, currListSel).apply();
+    }
+
+    /**
+     * Get the library directory path.
+     * @param defValue The default value to return if nothing is set.
+     * @return Library directory path.
+     */
+    public String getLibDir(String defValue) {
+        return mPrefs.getString(LIB_DIR + currLibNum, defValue);
+    }
+
+    /**
+     * Put the library directory.
+     * @param libDir Library directory path.
+     */
+    public void putLibDir(String libDir) {
+        mPrefs.edit().putString(LIB_DIR + currLibNum, libDir).apply();
+    }
+
+    /**
+     * Get the boolean telling us whether or not auto-import is turned on.
+     * @param defValue The default value to return if nothing is set.
+     * @return Auto-import boolean.
+     */
+    public boolean getLibAutoImport(boolean defValue) {
+        return mPrefs.getBoolean(LIB_AUTO_IMPORT + currLibNum, defValue);
+    }
+
+    /**
+     * Put the library auto-import boolean.
+     * @param libAutoImport Auto-import boolean.
+     */
+    public void putLibAutoImport(boolean libAutoImport) {
+        mPrefs.edit().putBoolean(LIB_AUTO_IMPORT + currLibNum, libAutoImport).apply();
     }
 }

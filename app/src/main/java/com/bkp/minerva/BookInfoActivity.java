@@ -20,7 +20,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
     // Views.
     @Bind(R.id.toolbar)
-    Toolbar mToolbar;
+    Toolbar toolbar;
 
     /**
      * Unique string to help find the correct book to display from the DB.
@@ -36,7 +36,7 @@ public class BookInfoActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         // Set up toolbar.
-        setSupportActionBar(mToolbar);
+        setSupportActionBar(toolbar);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);

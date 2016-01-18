@@ -42,22 +42,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // Views.
     @Bind(R.id.drawer_layout)
-    DrawerLayout mDrawer;
+    DrawerLayout drawer;
     @Bind(R.id.toolbar)
-    Toolbar mToolbar;
+    Toolbar toolbar;
     @Bind(R.id.nav_view)
-    NavigationView mNavigationView;
+    NavigationView navigationView;
     @Bind(R.id.main_frag_cont)
-    FrameLayout mFragCont;
+    FrameLayout fragCont;
 
     /**
      * Instance of the default preferences.
      */
-    MainPrefs mainPrefs;
+    private MainPrefs mainPrefs;
     /**
      * Nav Drawer Toggle (burger menu).
      */
-    ActionBarDrawerToggle mDrawerToggle;
+    private ActionBarDrawerToggle drawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ButterKnife.bind(this);
 
         // Set up toolbar.
-        setSupportActionBar(mToolbar);
+        setSupportActionBar(toolbar);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -81,18 +81,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initDrawer();
 
         // Ensure that the same fragment is selected as was last time.
-        // TODO actually save/restore this using shared preferences so it persists across app runs.
         if (savedInstanceState == null) {
             // Make sure we show the library fragment if we don't have a saved instance state, don't have a saved
             // current fragment, or if the saved current fragment would need some bundle to help populate it.
             int frag = mainPrefs.getCurrFrag(-1);
-            //mNavigationView.setCheckedItem(R.id.nav_library); // TODO hopefully this just works... we'll see though?
+            //navigationView.setCheckedItem(R.id.nav_library); // TODO hopefully this just works... we'll see though?
             switchFragments(frag != -1 ? frag : FRAG_LIBRARY);
         }
     }
 
     private void initDrawer() {
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, mToolbar, R.string.acc_navigation_drawer_open,
+        drawerToggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.acc_navigation_drawer_open,
                 R.string.acc_navigation_drawer_close) {
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
@@ -106,11 +105,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
-        mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawer.setDrawerListener(mDrawerToggle);
-        mNavigationView.setNavigationItemSelectedListener(this);
+        drawerToggle.setDrawerIndicatorEnabled(true);
+        drawer.setDrawerListener(drawerToggle);
+        navigationView.setNavigationItemSelectedListener(this);
         // Make sure that if we deactivate the toggle we still have a handler for the up button.
-        mDrawerToggle.setToolbarNavigationClickListener(v -> onBackPressed());
+        drawerToggle.setToolbarNavigationClickListener(v -> onBackPressed());
     }
 
     @Override
@@ -123,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync drawer toggle.
-        mDrawerToggle.syncState();
+        drawerToggle.syncState();
     }
 
     @Override
@@ -158,12 +157,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         // Keep the drawer toggle informed.
-        mDrawerToggle.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
     public void onBackPressed() {
-        if (mDrawer.isDrawerOpen(GravityCompat.START)) mDrawer.closeDrawer(GravityCompat.START);
+        if (drawer.isDrawerOpen(GravityCompat.START)) drawer.closeDrawer(GravityCompat.START);
         else super.onBackPressed();
     }
 
@@ -176,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle nav drawer.
-        if (mDrawerToggle.onOptionsItemSelected(item)) return true;
+        if (drawerToggle.onOptionsItemSelected(item)) return true;
         // Handle other options.
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -207,13 +206,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 switchFragments(FRAG_POWER_SEARCH);
                 break;
             case R.id.nav_settings:
-                // TODO
+                startActivity(new Intent(this, SettingsActivity.class));
                 break;
             case R.id.nav_about:
                 startActivity(new Intent(this, AboutActivity.class));
                 break;
         }
-        mDrawer.closeDrawer(GravityCompat.START);
+        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 

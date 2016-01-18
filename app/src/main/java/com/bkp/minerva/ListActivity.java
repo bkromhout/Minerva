@@ -21,9 +21,9 @@ public class ListActivity extends AppCompatActivity {
 
     // Views.
     @Bind(R.id.toolbar)
-    Toolbar mToolbar;
+    Toolbar toolbar;
     @Bind(R.id.recycler)
-    RecyclerView mRecycler;
+    RecyclerView recycler;
 
     /**
      * Unique string to help find the correct list to display from the DB.
@@ -39,7 +39,7 @@ public class ListActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         // Set up toolbar.
-        setSupportActionBar(mToolbar);
+        setSupportActionBar(toolbar);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
