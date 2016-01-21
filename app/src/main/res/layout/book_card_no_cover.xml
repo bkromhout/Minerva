@@ -98,7 +98,7 @@
                     android:layout_height="wrap_content"
                     android:tint="@color/textColorSecondary"
                     android:backgroundTint="@color/cardview_dark_background"
-                    android:src="@drawable/ic_tag"
+                    android:src="@drawable/ic_tags"
                     android:contentDescription="@string/acc_quick_tag"/>
         </android.support.v7.widget.ButtonBarLayout>
 
