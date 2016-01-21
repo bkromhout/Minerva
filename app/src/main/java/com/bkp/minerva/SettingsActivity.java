@@ -1,16 +1,17 @@
 package com.bkp.minerva;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
 import com.bkp.minerva.prefs.MainPrefs;
@@ -56,8 +57,10 @@ public class SettingsActivity extends AppCompatActivity implements FolderChooser
     private void initUi() {
         // Set up library directory textview.
         tvLibDir.setText(prefs.getLibDir(getString(R.string.lib_dir_def)));
-        // Need to programmatically set the compound drawable tint.
-        DrawableCompat.setTint(tvLibDir.getCompoundDrawables()[2], ContextCompat.getColor(this, R.color.grey200));
+        // Need to programmatically add the drawable.
+        Drawable drawable = ContextCompat.getDrawable(this, R.drawable.ic_folder_filled);
+        DrawableCompat.setTint(drawable, ContextCompat.getColor(this, R.color.grey200));
+        tvLibDir.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, drawable, null);
 
         // Set up the auto-import checked textview. TODO make this affect something!
         ctvLibDirAutoImport.setChecked(prefs.getLibAutoImport(false));
@@ -102,10 +105,11 @@ public class SettingsActivity extends AppCompatActivity implements FolderChooser
 
     /**
      * What to do when the library auto import setting is toggled.
-     * @param checked True if view is now checked, otherwise false.
+     * @param view The view that was clicked.
      */
-    @OnCheckedChanged(R.id.lib_dir_auto_import)
-    void onLibAutoImportToggle(boolean checked) {
-        prefs.putLibAutoImport(checked);
+    @OnClick(R.id.lib_dir_auto_import)
+    void onLibAutoImportClick(View view) {
+        // TODO why in the world does clicking this do nothing...drawable issue?
+        prefs.putLibAutoImport(((CheckedTextView) view).isChecked());
     }
 }

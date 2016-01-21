@@ -46,7 +46,6 @@
                 android:layout_below="@id/lbl_lib_dir"
                 android:maxLines="1"
                 android:ellipsize="end"
-                android:drawableEnd="@drawable/ic_folder_filled"
                 android:gravity="center_vertical"
                 tools:text="/path/to/some/folder/with/epubs"/>
 
