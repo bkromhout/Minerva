@@ -13,6 +13,7 @@ import android.widget.RadioGroup;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkp.minerva.C;
 import com.bkp.minerva.R;
@@ -143,7 +144,9 @@ public class LibraryFragment extends Fragment {
         // Construct material dialog.
         new MaterialDialog.Builder(getContext())
                 .title(R.string.action_view_opts)
+                .titleGravity(GravityEnum.CENTER)
                 .customView(view, false)
+                .contentGravity(GravityEnum.CENTER)
                 .positiveText(R.string.ok)
                 .negativeText(R.string.cancel)
                 .onPositive((dialog, which) -> {
