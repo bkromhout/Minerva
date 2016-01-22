@@ -71,10 +71,11 @@
     <!-- Settings Activity -->
     <string name="title_activity_settings">Settings</string>
 
-    <string name="lbl_lib_dir">Library Folder</string>
+    <string name="cat_title_lib_dir">Library Folder Settings</string>
+    <string name="title_lib_dir">Library Folder</string>
     <string name="lib_dir_def">[Not Set]</string>
-    <string name="acc_lib_dir_btn">Choose library folder</string>
-    <string name="lib_dir_auto_import">Import files each time apps starts</string>
+    <string name="title_auto_import">Auto Import</string>
+    <string name="summary_auto_import">If enabled, will check the library folder each time the app starts and import new files</string>
 
     <!-- About Activity -->
     <string name="title_activity_about">About</string>

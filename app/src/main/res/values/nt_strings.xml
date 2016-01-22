@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- This file contains non-translatable strings ONLY!! -->
+
+    <!-- Preference keys. -->
+    <string name="key_lib_dir">LIB_DIR</string>
+    <string name="key_auto_import">AUTO_IMPORT</string>
+</resources>

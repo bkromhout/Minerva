@@ -156,7 +156,6 @@ public class LibraryFragment extends Fragment {
 
                     // TODO refresh recycler view
                 })
-                .cancelable(true)
                 .show();
     }
 

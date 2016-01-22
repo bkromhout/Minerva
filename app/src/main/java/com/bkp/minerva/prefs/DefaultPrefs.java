@@ -3,6 +3,7 @@ package com.bkp.minerva.prefs;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import com.bkp.minerva.Minerva;
+import com.bkp.minerva.R;
 
 /**
  * Preferences class for {@link com.bkp.minerva.MainActivity}.
@@ -12,8 +13,8 @@ public class DefaultPrefs {
     private final static String CURR_FRAG = "CURR_FRAG";
     private final static String CURR_LIST_SEL = "CURR_LIST_UNIQUE_SEL";
 
-    private final static String LIB_DIR = "LIB_DIR_";
-    private final static String LIB_AUTO_IMPORT = "LIB_AUTO_IMPORT_";
+    public final static String LIB_DIR = Minerva.getAppCtx().getString(R.string.key_lib_dir);
+    private final static String LIB_AUTO_IMPORT = Minerva.getAppCtx().getString(R.string.key_auto_import);
 
     /**
      * Static instance.
@@ -23,12 +24,6 @@ public class DefaultPrefs {
      * Shared Preferences.
      */
     private SharedPreferences mPrefs;
-    /**
-     * Which library is currently being used.
-     * <p>
-     * TODO later we'll manipulate this.
-     */
-    private static String currLibNum = "1";
 
     // No public construction allowed.
     private DefaultPrefs() {
@@ -85,7 +80,7 @@ public class DefaultPrefs {
      * @return Library directory path.
      */
     public String getLibDir(String defValue) {
-        return mPrefs.getString(LIB_DIR + currLibNum, defValue);
+        return mPrefs.getString(LIB_DIR, defValue);
     }
 
     /**
@@ -93,7 +88,7 @@ public class DefaultPrefs {
      * @param libDir Library directory path.
      */
     public void putLibDir(String libDir) {
-        mPrefs.edit().putString(LIB_DIR + currLibNum, libDir).apply();
+        mPrefs.edit().putString(LIB_DIR, libDir).apply();
     }
 
     /**
@@ -102,7 +97,7 @@ public class DefaultPrefs {
      * @return Auto-import boolean.
      */
     public boolean getLibAutoImport(boolean defValue) {
-        return mPrefs.getBoolean(LIB_AUTO_IMPORT + currLibNum, defValue);
+        return mPrefs.getBoolean(LIB_AUTO_IMPORT, defValue);
     }
 
     /**
@@ -110,6 +105,6 @@ public class DefaultPrefs {
      * @param libAutoImport Auto-import boolean.
      */
     public void putLibAutoImport(boolean libAutoImport) {
-        mPrefs.edit().putBoolean(LIB_AUTO_IMPORT + currLibNum, libAutoImport).apply();
+        mPrefs.edit().putBoolean(LIB_AUTO_IMPORT, libAutoImport).apply();
     }
 }

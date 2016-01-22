@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/cat_title_lib_dir">
+
+        <Preference
+                android:title="@string/title_lib_dir"
+                android:summary="@string/lib_dir_def"
+                android:key="@string/key_lib_dir"/>
+
+        <CheckBoxPreference
+                android:title="@string/title_auto_import"
+                android:summary="@string/summary_auto_import"
+                android:key="@string/key_auto_import"/>
+    </PreferenceCategory>
+</PreferenceScreen>
