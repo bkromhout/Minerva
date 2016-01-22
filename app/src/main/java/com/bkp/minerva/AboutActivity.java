@@ -5,6 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+/**
+ * TODO
+ */
 public class AboutActivity extends AppCompatActivity {
 
     @Override

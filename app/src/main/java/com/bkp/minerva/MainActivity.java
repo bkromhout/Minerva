@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Get prefs.
         defaultPrefs = DefaultPrefs.get();
-
         // Set theme, create and bind views.
         setTheme(R.style.AppTheme);
         setContentView(R.layout.activity_main);
@@ -91,6 +90,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    /**
+     * Initializes the Navigation Drawer.
+     */
     private void initDrawer() {
         drawerToggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.acc_navigation_drawer_open,
                 R.string.acc_navigation_drawer_close) {

@@ -14,6 +14,9 @@ import butterknife.ButterKnife;
 
 import java.lang.reflect.Method;
 
+/**
+ * TODO
+ */
 public class BookInfoActivity extends AppCompatActivity {
     // Key strings for the bundle passed when this activity is started.
     public static final String BOOK_SEL_STR = "BOOK_SEL_STR";
