@@ -1,10 +1,10 @@
 package com.bkp.minerva;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -28,6 +29,10 @@ import com.bkp.minerva.fragments.LibraryFragment;
 import com.bkp.minerva.fragments.PowerSearchFragment;
 import com.bkp.minerva.fragments.RecentFragment;
 import com.bkp.minerva.prefs.DefaultPrefs;
+import com.bkp.minerva.util.Util;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.listener.single.PermissionListener;
+import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener;
 
 import java.lang.reflect.Method;
 
@@ -86,8 +91,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // current fragment, or if the saved current fragment would need some bundle to help populate it.
             int frag = defaultPrefs.getCurrFrag(-1);
             switchFragments(frag != -1 ? frag : FRAG_LIBRARY);
-            navigationView.setCheckedItem(navIdFromFragConst(frag));
+            navigationView.setCheckedItem(Util.navIdFromFragConst(frag));
         }
+
+        // Check permissions.
+        checkPerms(fragCont);
     }
 
     /**
@@ -256,24 +264,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     /**
-     * Takes a fragment constant integer (see the top of {@link MainActivity}) and returns the Android resource ID for
-     * the item in the nav drawer which corresponds to that fragment.
-     * @param frag Fragment integer constant.
-     * @return Nav drawer item resource ID.
+     * Create the permission listeners for the app.
      */
-    @IdRes
-    private static int navIdFromFragConst(int frag) {
-        switch (frag) {
-            case FRAG_RECENT:
-                return R.id.nav_recent;
-            case FRAG_LIBRARY:
-                return R.id.nav_library;
-            case FRAG_ALL_LISTS:
-                return R.id.nav_all_lists;
-            case FRAG_POWER_SEARCH:
-                return R.id.nav_power_search;
-            default:
-                return -1;
-        }
+    private void checkPerms(ViewGroup rootView) {
+        // Create permission listeners.
+        PermissionListener extStoragePermListener = SnackbarOnDeniedPermissionListener.Builder
+                .with(rootView, R.string.read_ext_storage_reason)
+                .withOpenSettingsButton(R.string.settings)
+                .build();
+
+        // Handle config changes.
+        Dexter.continuePendingRequestIfPossible(extStoragePermListener);
+
+        // If we aren't already requesting permissions, start the process.
+        if (!Dexter.isRequestOngoing())
+            Dexter.checkPermission(extStoragePermListener, Manifest.permission.READ_EXTERNAL_STORAGE);
     }
 }

@@ -7,7 +7,10 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
+import android.support.annotation.IdRes;
 import android.support.v4.content.ContextCompat;
+import com.bkp.minerva.MainActivity;
+import com.bkp.minerva.R;
 
 /**
  * Utility functions class.
@@ -35,5 +38,27 @@ public class Util {
         Intent intent = new Intent(ctx, actClass);
         intent.putExtras(params);
         ctx.startActivity(intent);
+    }
+
+    /**
+     * Takes a fragment constant integer (see the top of {@link MainActivity}) and returns the Android resource ID for
+     * the item in the nav drawer which corresponds to that fragment.
+     * @param frag Fragment integer constant.
+     * @return Nav drawer item resource ID.
+     */
+    @IdRes
+    public static int navIdFromFragConst(int frag) {
+        switch (frag) {
+            case MainActivity.FRAG_RECENT:
+                return R.id.nav_recent;
+            case MainActivity.FRAG_LIBRARY:
+                return R.id.nav_library;
+            case MainActivity.FRAG_ALL_LISTS:
+                return R.id.nav_all_lists;
+            case MainActivity.FRAG_POWER_SEARCH:
+                return R.id.nav_power_search;
+            default:
+                return -1;
+        }
     }
 }
