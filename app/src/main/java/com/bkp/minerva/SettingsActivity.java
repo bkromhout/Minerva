@@ -14,7 +14,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
-import com.bkp.minerva.prefs.MainPrefs;
+import com.bkp.minerva.prefs.DefaultPrefs;
 
 import java.io.File;
 
@@ -29,14 +29,14 @@ public class SettingsActivity extends AppCompatActivity implements FolderChooser
     /**
      * Preferences wrapper.
      */
-    private MainPrefs prefs;
+    private DefaultPrefs prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Get prefs.
-        prefs = MainPrefs.get();
+        prefs = DefaultPrefs.get();
 
         // Create and bind views.
         setContentView(R.layout.activity_settings);

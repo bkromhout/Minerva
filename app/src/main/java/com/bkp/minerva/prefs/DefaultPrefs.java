@@ -1,15 +1,13 @@
 package com.bkp.minerva.prefs;
 
-import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import com.bkp.minerva.Minerva;
 
 /**
  * Preferences class for {@link com.bkp.minerva.MainActivity}.
  */
-public class MainPrefs {
-    // File name.
-    private static final String FILE_NAME = "main";
+public class DefaultPrefs {
     // Key strings.
     private final static String CURR_FRAG = "CURR_FRAG";
     private final static String CURR_LIST_SEL = "CURR_LIST_UNIQUE_SEL";
@@ -17,11 +15,10 @@ public class MainPrefs {
     private final static String LIB_DIR = "LIB_DIR_";
     private final static String LIB_AUTO_IMPORT = "LIB_AUTO_IMPORT_";
 
-
     /**
      * Static instance.
      */
-    private static MainPrefs INSTANCE = null;
+    private static DefaultPrefs INSTANCE = null;
     /**
      * Shared Preferences.
      */
@@ -34,17 +31,17 @@ public class MainPrefs {
     private static String currLibNum = "1";
 
     // No public construction allowed.
-    private MainPrefs() {
+    private DefaultPrefs() {
         // Get shared preferences.
-        this.mPrefs = Minerva.getAppCtx().getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
+        this.mPrefs = PreferenceManager.getDefaultSharedPreferences(Minerva.getAppCtx());
     }
 
     /**
      * Get an instance.
-     * @return {@link MainPrefs}.
+     * @return {@link DefaultPrefs}.
      */
-    public static MainPrefs get() {
-        if (INSTANCE == null) INSTANCE = new MainPrefs();
+    public static DefaultPrefs get() {
+        if (INSTANCE == null) INSTANCE = new DefaultPrefs();
         return INSTANCE;
     }
 

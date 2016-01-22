@@ -26,7 +26,7 @@ import com.bkp.minerva.fragments.AllListsFragment;
 import com.bkp.minerva.fragments.LibraryFragment;
 import com.bkp.minerva.fragments.PowerSearchFragment;
 import com.bkp.minerva.fragments.RecentFragment;
-import com.bkp.minerva.prefs.MainPrefs;
+import com.bkp.minerva.prefs.DefaultPrefs;
 
 import java.lang.reflect.Method;
 
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     /**
      * Instance of the default preferences.
      */
-    private MainPrefs mainPrefs;
+    private DefaultPrefs defaultPrefs;
     /**
      * Nav Drawer Toggle (burger menu).
      */
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
 
         // Get prefs.
-        mainPrefs = MainPrefs.get();
+        defaultPrefs = DefaultPrefs.get();
 
         // Set theme, create and bind views.
         setTheme(R.style.AppTheme);
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (savedInstanceState == null) {
             // Make sure we show the library fragment if we don't have a saved instance state, don't have a saved
             // current fragment, or if the saved current fragment would need some bundle to help populate it.
-            int frag = mainPrefs.getCurrFrag(-1);
+            int frag = defaultPrefs.getCurrFrag(-1);
             //navigationView.setCheckedItem(R.id.nav_library); // TODO hopefully this just works... we'll see though?
             switchFragments(frag != -1 ? frag : FRAG_LIBRARY);
         }
@@ -249,6 +249,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         // Save things to prefs.
-        mainPrefs.putCurrFrag(frag);
+        defaultPrefs.putCurrFrag(frag);
     }
 }
