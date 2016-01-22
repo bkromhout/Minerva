@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -85,8 +86,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Make sure we show the library fragment if we don't have a saved instance state, don't have a saved
             // current fragment, or if the saved current fragment would need some bundle to help populate it.
             int frag = defaultPrefs.getCurrFrag(-1);
-            //navigationView.setCheckedItem(R.id.nav_library); // TODO hopefully this just works... we'll see though?
             switchFragments(frag != -1 ? frag : FRAG_LIBRARY);
+            navigationView.setCheckedItem(navIdFromFragConst(frag));
         }
     }
 
@@ -199,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_library:
                 switchFragments(FRAG_LIBRARY);
                 break;
-            case R.id.nav_lists:
+            case R.id.nav_all_lists:
                 switchFragments(FRAG_ALL_LISTS);
                 break;
             case R.id.nav_power_search:
@@ -250,5 +251,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Save things to prefs.
         defaultPrefs.putCurrFrag(frag);
+    }
+
+    /**
+     * Takes a fragment constant integer (see the top of {@link MainActivity}) and returns the Android resource ID for
+     * the item in the nav drawer which corresponds to that fragment.
+     * @param frag Fragment integer constant.
+     * @return Nav drawer item resource ID.
+     */
+    @IdRes
+    private static int navIdFromFragConst(int frag) {
+        switch (frag) {
+            case FRAG_RECENT:
+                return R.id.nav_recent;
+            case FRAG_LIBRARY:
+                return R.id.nav_library;
+            case FRAG_ALL_LISTS:
+                return R.id.nav_all_lists;
+            case FRAG_POWER_SEARCH:
+                return R.id.nav_power_search;
+            default:
+                return -1;
+        }
     }
 }
