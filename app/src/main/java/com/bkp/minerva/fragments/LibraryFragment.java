@@ -178,7 +178,7 @@ public class LibraryFragment extends Fragment {
     }
 
     /**
-     * Convert a view ID to the string constant that that view represents. Super nifty for
+     * Convert a view ID to the string constant that that view represents.
      * @param id A view ID.
      * @return A string constant.
      */
