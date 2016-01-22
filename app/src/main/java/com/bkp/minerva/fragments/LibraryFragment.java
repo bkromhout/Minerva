@@ -122,7 +122,13 @@ public class LibraryFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.action_import:
+                onImportClick();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     /**
@@ -160,6 +166,15 @@ public class LibraryFragment extends Fragment {
                     // TODO refresh recycler view
                 })
                 .show();
+    }
+
+    /**
+     * Called when the Import menu item is clicked.
+     */
+    private void onImportClick() {
+        // Check to see if library folder has been chosen and is valid
+
+
     }
 
     /**
