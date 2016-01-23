@@ -64,11 +64,13 @@ public class Util {
         }
     }
 
+
+
     /**
      * Opens the system app settings activity. Usually used so that the user can grant permissions.
      * @param context The context to use to build the intent.
      */
-    public static void openSystemAppSettings(Context context) {
+    public static void openAppInfo(Context context) {
         Intent myAppSettings = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                 Uri.parse("package:" + context.getPackageName()));
         myAppSettings.addCategory(Intent.CATEGORY_DEFAULT);

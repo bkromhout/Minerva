@@ -68,6 +68,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Nav Drawer Toggle (burger menu).
      */
     private ActionBarDrawerToggle drawerToggle;
+    /**
+     * Permission listener for the Read External Storage permission.
+     */
+    PermissionListener storagePL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,8 +93,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Set up the nav drawer and its toggle.
         initDrawer();
 
-        // Check permissions now.
-        checkPerms();
+        // Handle permissions. Make sure we continue a request process if applicable.
+        initPLs();
+        Dexter.continuePendingRequestIfPossible(storagePL);
 
         // Ensure that the same fragment is selected as was last time.
         if (savedInstanceState == null) {
@@ -127,6 +132,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerToggle.setToolbarNavigationClickListener(v -> onBackPressed());
     }
 
+    /**
+     * Create PermissionListeners.
+     */
+    private void initPLs() {
+        storagePL = new EmptyPermissionListener() {
+            @Override
+            public void onPermissionDenied(PermissionDeniedResponse response) {
+                super.onPermissionDenied(response);
+                // For a regular denial, just show the snackbar. For a permanent denial, show a dialog which has a
+                // link to the app info screen.
+                if (!response.isPermanentlyDenied()) showPermNagSnackbar();
+                else showRationaleDialog(null);
+            }
+
+            @Override
+            public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+                super.onPermissionRationaleShouldBeShown(permission, token);
+                if (permission.getName().equals(Manifest.permission.READ_EXTERNAL_STORAGE))
+                    showRationaleDialog(token);
+            }
+        };
+    }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (menu != null) {
@@ -158,7 +186,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
+        // Register for events.
         //EventBus.getDefault().register(this); // TODO turn on once we have event handlers in here.
+
+        // Check for permissions if not already doing so.
+        if (!Dexter.isRequestOngoing()) Dexter.checkPermission(storagePL, Manifest.permission.READ_EXTERNAL_STORAGE);
     }
 
     @Override
@@ -171,8 +203,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         super.onResume();
-        // Show the snackbar is necessary.
-
+        // Show snackbar if necessary.
     }
 
     @Override
@@ -275,51 +306,57 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     /**
-     * Check permissions.
+     * Show dialog explaining why we need permission.
+     * @param token Token to continue request. If this is nonnull, then we know we're showing this dialog because the
+     *              permission was already permanently denied, not simply to provide rationale before requesting it.
      */
-    private void checkPerms() {
-        // Create permission listeners.
-        PermissionListener storagePL = new EmptyPermissionListener() {
-            @Override
-            public void onPermissionDenied(PermissionDeniedResponse response) {
-                super.onPermissionDenied(response);
-                showPermsSnackbar();
-            }
+    private void showRationaleDialog(PermissionToken token) {
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(MainActivity.this);
 
-            @Override
-            public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
-                super.onPermissionRationaleShouldBeShown(permission, token);
-                showRationaleDialog(token);
-            }
-        };
+        // Add common parts.
+        builder.title(R.string.storage_permission);
 
-        // Make sure we're careful here.
-        Dexter.continuePendingRequestIfPossible(storagePL);
+        // Add dependant parts.
+        if (token != null) {
+            // This dialog is simply to provide rationale prior to showing the system's permission request dialog.
+            builder.content(R.string.storage_permission_rationale)
+                   .positiveText(R.string.ok)
+                   .dismissListener(dialog -> token.continuePermissionRequest());
+        } else {
+            // This dialog needs to provide a way to open the app info screen, because the permission was already
+            // permanently denied.
+            builder.content(R.string.storage_permission_rationale_long)
+                   .positiveText(R.string.app_info)
+                   .negativeText(R.string.cancel)
+                   .onPositive((dialog, which) -> Util.openAppInfo(MainActivity.this))
+                   .onNegative((dialog, which) -> dialog.cancel())
+                   .cancelListener(dialog -> showPermNagSnackbar());
+        }
 
-        // Check for permissions.
-        if (!Dexter.isRequestOngoing()) Dexter.checkPermission(storagePL, Manifest.permission.READ_EXTERNAL_STORAGE);
+        builder.show();
     }
 
     /**
-     * Show dialog explaining why we need permission.
+     * Show a snackbar to nag user to grant permission.
      */
-    private void showRationaleDialog(PermissionToken token) {
-        new MaterialDialog.Builder(MainActivity.this)
-                .title(R.string.read_ext_storage_reason_title)
-                .content(R.string.read_ext_storage_reason)
-                .positiveText(R.string.ok)
-//                .neutralText(R.string.open_app_settings)
-                .onPositive((dialog, which) -> token.continuePermissionRequest())
-//                .onNeutral((dialog1, which1) -> {
-//                    Util.openSystemAppSettings(MainActivity.this);
-//
-//                })
+    private void showPermNagSnackbar() {
+        // This snackbar with make Dexter try to get the permission again.
+        Snackbar.make(fragCont, R.string.storage_permission_needed, Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.retry, v -> Dexter.checkPermission(storagePL,
+                        Manifest.permission.READ_EXTERNAL_STORAGE))
                 .show();
-    }
 
-    private void showPermsSnackbar() {
-        Snackbar.make(fragCont, R.string.open_app_settings, Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.settings, v -> Util.openSystemAppSettings(MainActivity.this))
-                .show();
+        /*if (isPermanentlyDenied) {
+            // This snackbar will open the app info screen.
+            Snackbar.make(fragCont, R.string.storage_permission_perm_denied, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.app_info, v -> Util.openAppInfo(MainActivity.this))
+                    .show();
+        } else {
+            // This snackbar with make Dexter try to get the permission again.
+            Snackbar.make(fragCont, R.string.storage_permission_retry, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.retry, v ->
+                            Dexter.checkPermission(storagePL, Manifest.permission.READ_EXTERNAL_STORAGE))
+                    .show();
+        }*/
     }
 }
