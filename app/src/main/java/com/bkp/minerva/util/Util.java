@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.ColorRes;
 import android.support.annotation.IdRes;
 import android.support.v4.content.ContextCompat;
@@ -60,5 +62,17 @@ public class Util {
             default:
                 return -1;
         }
+    }
+
+    /**
+     * Opens the system app settings activity. Usually used so that the user can grant permissions.
+     * @param context The context to use to build the intent.
+     */
+    public static void openSystemAppSettings(Context context) {
+        Intent myAppSettings = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.parse("package:" + context.getPackageName()));
+        myAppSettings.addCategory(Intent.CATEGORY_DEFAULT);
+        myAppSettings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(myAppSettings);
     }
 }

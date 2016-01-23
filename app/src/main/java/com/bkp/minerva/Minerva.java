@@ -2,7 +2,6 @@ package com.bkp.minerva;
 
 import android.app.Application;
 import android.content.Context;
-import com.karumi.dexter.Dexter;
 
 /**
  * Custom Application class.
@@ -18,8 +17,6 @@ public class Minerva extends Application {
         super.onCreate();
         // Stash application context.
         instance = this;
-        // Init Dexter.
-        Dexter.initialize(this);
     }
 
     /**
