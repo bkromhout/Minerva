@@ -311,10 +311,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      *              permission was already permanently denied, not simply to provide rationale before requesting it.
      */
     private void showRationaleDialog(PermissionToken token) {
-        MaterialDialog.Builder builder = new MaterialDialog.Builder(MainActivity.this);
-
-        // Add common parts.
-        builder.title(R.string.storage_permission);
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(MainActivity.this)
+                .title(R.string.storage_permission);
 
         // Add dependant parts.
         if (token != null) {
@@ -345,18 +343,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .setAction(R.string.retry, v -> Dexter.checkPermission(storagePL,
                         Manifest.permission.READ_EXTERNAL_STORAGE))
                 .show();
-
-        /*if (isPermanentlyDenied) {
-            // This snackbar will open the app info screen.
-            Snackbar.make(fragCont, R.string.storage_permission_perm_denied, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.app_info, v -> Util.openAppInfo(MainActivity.this))
-                    .show();
-        } else {
-            // This snackbar with make Dexter try to get the permission again.
-            Snackbar.make(fragCont, R.string.storage_permission_retry, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.retry, v ->
-                            Dexter.checkPermission(storagePL, Manifest.permission.READ_EXTERNAL_STORAGE))
-                    .show();
-        }*/
     }
 }
