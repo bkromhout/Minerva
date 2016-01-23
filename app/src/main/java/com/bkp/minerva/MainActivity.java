@@ -5,9 +5,9 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -31,10 +31,14 @@ import com.bkp.minerva.fragments.PowerSearchFragment;
 import com.bkp.minerva.fragments.RecentFragment;
 import com.bkp.minerva.prefs.DefaultPrefs;
 import com.bkp.minerva.util.Util;
-import com.greysonparrelli.permiso.Permiso;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.EmptyPermissionListener;
+import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 /**
  * Main activity.
@@ -68,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Permiso.getInstance().setActivity(this);
 
         // Get prefs.
         defaultPrefs = DefaultPrefs.get();
@@ -85,6 +88,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Set up the nav drawer and its toggle.
         initDrawer();
+
+        // Check permissions now.
+        checkPerms();
 
         // Ensure that the same fragment is selected as was last time.
         if (savedInstanceState == null) {
@@ -165,9 +171,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         super.onResume();
-        Permiso.getInstance().setActivity(this);
-        // Check permissions now.
-        checkPerms();
+        // Show the snackbar is necessary.
+
     }
 
     @Override
@@ -233,13 +238,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Permiso.getInstance().onRequestPermissionResult(requestCode, permissions, grantResults);
-    }
-
     /**
      * Switch fragments based on the id of the item that was clicked in the nav drawer.
      * @param frag Which fragment to switch to.
@@ -278,42 +276,50 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     /**
      * Check permissions.
-     * TODO test!!
      */
     private void checkPerms() {
-        // Request permissions.
-        Permiso.getInstance().requestPermissions(new Permiso.IOnPermissionResult() {
+        // Create permission listeners.
+        PermissionListener storagePL = new EmptyPermissionListener() {
             @Override
-            public void onPermissionResult(Permiso.ResultSet resultSet) {
-                // Show dialog if we were denied the READ_EXTERNAL_STORAGE permission.
-                if (!resultSet.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) showDialog(null);
+            public void onPermissionDenied(PermissionDeniedResponse response) {
+                super.onPermissionDenied(response);
+                showPermsSnackbar();
             }
 
             @Override
-            public void onRationaleRequested(Permiso.IOnRationaleProvided callback, String... permissions) {
-                if (Arrays.asList(permissions).contains(Manifest.permission.READ_EXTERNAL_STORAGE))
-                    showDialog(callback);
+            public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+                super.onPermissionRationaleShouldBeShown(permission, token);
+                showRationaleDialog(token);
             }
+        };
 
-            /**
-             * Show dialog explaining why we need permission.
-             * @param callback Permiso callback, if we had one when we called this method.
-             */
-            private void showDialog(Permiso.IOnRationaleProvided callback) {
-                new MaterialDialog.Builder(MainActivity.this)
-                        .title(R.string.read_ext_storage_reason_title)
-                        .content(R.string.read_ext_storage_reason)
-                        .neutralText(R.string.ok)
-                        .positiveText(R.string.open_app_settings)
-                        .onNeutral((dialog, which) -> {
-                            if (callback != null) callback.onRationaleProvided();
-                        })
-                        .onPositive((dialog1, which1) -> {
-                            Util.openSystemAppSettings(MainActivity.this);
-                            if (callback != null) callback.onRationaleProvided();
-                        })
-                        .show();
-            }
-        }, Manifest.permission.READ_EXTERNAL_STORAGE);
+        // Make sure we're careful here.
+        Dexter.continuePendingRequestIfPossible(storagePL);
+
+        // Check for permissions.
+        if (!Dexter.isRequestOngoing()) Dexter.checkPermission(storagePL, Manifest.permission.READ_EXTERNAL_STORAGE);
+    }
+
+    /**
+     * Show dialog explaining why we need permission.
+     */
+    private void showRationaleDialog(PermissionToken token) {
+        new MaterialDialog.Builder(MainActivity.this)
+                .title(R.string.read_ext_storage_reason_title)
+                .content(R.string.read_ext_storage_reason)
+                .positiveText(R.string.ok)
+//                .neutralText(R.string.open_app_settings)
+                .onPositive((dialog, which) -> token.continuePermissionRequest())
+//                .onNeutral((dialog1, which1) -> {
+//                    Util.openSystemAppSettings(MainActivity.this);
+//
+//                })
+                .show();
+    }
+
+    private void showPermsSnackbar() {
+        Snackbar.make(fragCont, R.string.open_app_settings, Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.settings, v -> Util.openSystemAppSettings(MainActivity.this))
+                .show();
     }
 }
