@@ -25,6 +25,7 @@ import android.widget.FrameLayout;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bkp.minerva.events.MissingPermEvent;
 import com.bkp.minerva.fragments.AllListsFragment;
 import com.bkp.minerva.fragments.LibraryFragment;
 import com.bkp.minerva.fragments.PowerSearchFragment;
@@ -37,6 +38,8 @@ import com.karumi.dexter.listener.PermissionDeniedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.EmptyPermissionListener;
 import com.karumi.dexter.listener.single.PermissionListener;
+import de.greenrobot.event.EventBus;
+import de.greenrobot.event.Subscribe;
 
 import java.lang.reflect.Method;
 
@@ -72,6 +75,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Permission listener for the Read External Storage permission.
      */
     PermissionListener storagePL;
+    /**
+     * Whether or not the permissions nag snackbar is currently showing.
+     */
+    private boolean isPermSnackbarShown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -186,8 +193,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
-        // Register for events.
-        //EventBus.getDefault().register(this); // TODO turn on once we have event handlers in here.
+        EventBus.getDefault().register(this); // TODO turn on once we have event handlers in here.
 
         // Check for permissions if not already doing so.
         if (!Dexter.isRequestOngoing()) Dexter.checkPermission(storagePL, Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -221,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onStop() {
-        //EventBus.getDefault().unregister(this);  // TODO turn on once we have event handlers in here.
+        EventBus.getDefault().unregister(this);  // TODO turn on once we have event handlers in here.
         super.onStop();
     }
 
@@ -306,6 +312,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     /**
+     * Called when one of the fragments has indicated that we are missing a permission that we need.
+     * @param event {@link MissingPermEvent}.
+     */
+    @Subscribe
+    public void onMissingPermEvent(MissingPermEvent event) {
+        // Currently we only have one permission we'd need to check for, read external storage, so we don't bother
+        // checking the permission string in the event.
+        showPermNagSnackbar();
+    }
+
+    /**
      * Show dialog explaining why we need permission.
      * @param token Token to continue request. If this is nonnull, then we know we're showing this dialog because the
      *              permission was already permanently denied, not simply to provide rationale before requesting it.
@@ -338,10 +355,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Show a snackbar to nag user to grant permission.
      */
     private void showPermNagSnackbar() {
+        // Don't queue a second snackbar.
+        if (isPermSnackbarShown) return;
+
         // This snackbar with make Dexter try to get the permission again.
         Snackbar.make(fragCont, R.string.storage_permission_needed, Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.retry, v -> Dexter.checkPermission(storagePL,
                         Manifest.permission.READ_EXTERNAL_STORAGE))
+                .setCallback(new Snackbar.Callback() {
+                    @Override
+                    public void onDismissed(Snackbar snackbar, int event) {
+                        super.onDismissed(snackbar, event);
+                        isPermSnackbarShown = false;
+                    }
+
+                    @Override
+                    public void onShown(Snackbar snackbar) {
+                        super.onShown(snackbar);
+                        isPermSnackbarShown = true;
+                    }
+                })
                 .show();
     }
 }

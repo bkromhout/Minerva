@@ -3,6 +3,7 @@ package com.bkp.minerva.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -12,7 +13,13 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.IdRes;
 import android.support.v4.content.ContextCompat;
 import com.bkp.minerva.MainActivity;
+import com.bkp.minerva.Minerva;
 import com.bkp.minerva.R;
+import com.bkp.minerva.prefs.DefaultPrefs;
+import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.epub.EpubReader;
+
+import java.io.*;
 
 /**
  * Utility functions class.
@@ -64,7 +71,14 @@ public class Util {
         }
     }
 
-
+    /**
+     * Checks to see if we currently hold the given {@code permission}.
+     * @param permission The permission to check.
+     * @return True if we currently have been granted the permission, otherwise false.
+     */
+    public static boolean hasPerm(String permission) {
+        return ContextCompat.checkSelfPermission(Minerva.getAppCtx(), permission) == PackageManager.PERMISSION_GRANTED;
+    }
 
     /**
      * Opens the system app settings activity. Usually used so that the user can grant permissions.
@@ -77,4 +91,49 @@ public class Util {
         myAppSettings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(myAppSettings);
     }
+
+    /**
+     * Checks whether there is a present, valid library directory set.
+     * @return True if there is a path set and the path points to a valid folder that is readable.
+     */
+    public static boolean hasValidLibDir() {
+        // Get the path and do some initial checks.
+        String libPath = DefaultPrefs.get().getLibDir(null);
+        if (libPath == null || libPath.isEmpty()) return false;
+
+        // Check that the directory exists and that we can read it.
+        File libDir = new File(libPath);
+        return libDir.exists() && libDir.isDirectory() && libDir.canRead();
+    }
+
+    /**
+     * Get an ePub Book object from a file object.
+     * @param file The file to try and read as an ePub
+     * @return Book object, or null if there were issues.
+     */
+    public static Book readEpubFile(File file) {
+        if (file == null || !file.exists() || !file.isFile()) return null;
+
+        try (InputStream in = new BufferedInputStream(new FileInputStream(file))) {
+            return new EpubReader().readEpub(in);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // File names of ePub file assets.
+//    private static final String TEST_EPUB_1 = "Alice in Wonderland.epub";
+//    private static final String TEST_EPUB_2 = "IN THE YEAR 2889.epub";
+//    private static final String TEST_EPUB_3 = "The Man Who Would Be King.epub";
+//
+//    public static Book getTestBook1() {
+//        AssetManager assetManager = Minerva.getAppCtx().getAssets();
+//        try (InputStream in = assetManager.open(TEST_EPUB_1)) {
+//            return readEpubFile(in);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
 }

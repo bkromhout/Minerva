@@ -3,6 +3,7 @@ package com.bkp.minerva.fragments;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -62,6 +63,12 @@ public class LibraryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         // We have menu items we'd like to add.
         setHasOptionsMenu(true);
+
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         // Read prefs to fill in vars.
         libraryPrefs = LibraryPrefs.get();
         readPrefs();
@@ -172,7 +179,10 @@ public class LibraryFragment extends Fragment {
      * Called when the Import menu item is clicked.
      */
     private void onImportClick() {
-        // Check to see if library folder has been chosen and is valid
+        // Ensure we have the READ_EXTERNAL_STORAGE permission granted. If not, stop now and nag the user. TODO
+
+
+        // Check to see if library folder has been chosen and is valid TODO
 
 
     }
