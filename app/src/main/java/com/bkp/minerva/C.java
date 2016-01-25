@@ -1,5 +1,9 @@
 package com.bkp.minerva;
 
+import com.google.common.collect.ImmutableList;
+
+import java.util.List;
+
 /**
  * Constants.
  */
@@ -18,4 +22,8 @@ public final class C {
     public static final String CARD_NORMAL = "CARD_NORMAL";
     public static final String CARD_NO_COVER = "CARD_NO_COVER";
     public static final String CARD_COMPACT = "CARD_COMPACT";
+
+    // Valid file extensions.
+    public static final List<String> VALID_EXTS = ImmutableList.of("epub");
+
 }

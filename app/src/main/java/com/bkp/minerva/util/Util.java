@@ -122,6 +122,16 @@ public class Util {
         }
     }
 
+    /**
+     * Returns the extension from a file name in lowercase.
+     * @param fileName File name.
+     * @return Extension (in lowercase), or null.
+     */
+    public static String getExtFromFName(String fileName) {
+        if (fileName == null || fileName.lastIndexOf('.') == -1) return null;
+        return fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+    }
+
     // File names of ePub file assets.
 //    private static final String TEST_EPUB_1 = "Alice in Wonderland.epub";
 //    private static final String TEST_EPUB_2 = "IN THE YEAR 2889.epub";

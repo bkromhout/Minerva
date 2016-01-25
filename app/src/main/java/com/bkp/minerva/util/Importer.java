@@ -1,8 +1,14 @@
 package com.bkp.minerva.util;
 
+import com.bkp.minerva.C;
 import com.bkp.minerva.prefs.DefaultPrefs;
+import com.bkp.minerva.rx.RxFileWalker;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Handles importing files.
@@ -67,8 +73,15 @@ public class Importer {
             return;
         }
 
-        // Get a list of files in the directory which conform to the file TODO
+        // Get a list of files in the directory (and its subdirectories) which have certain extensions.
+        List<File> files = Observable.create(new RxFileWalker(currDir, C.VALID_EXTS))
+                                     .toList()
+                                     .subscribeOn(Schedulers.io())
+                                     .observeOn(AndroidSchedulers.mainThread())
+                                     .toBlocking()
+                                     .single();
 
+        // TODO something with the list of files!
     }
 
     /**
@@ -87,7 +100,9 @@ public class Importer {
      * <p>
      * If the importer isn't running, this does nothing.
      */
-    public void cancelCurrentFullImport() {
+    public void cancelFullImport() {
+        if (currState == State.READY || currState == State.CANCELLING) return;
+
         // TODO!!
     }
 
@@ -97,6 +112,7 @@ public class Importer {
      * BE CAREFUL!
      */
     private void resetState() {
+        currState = State.CANCELLING;
         this.currDir = null;
         this.numDone = -1;
         this.numTotal = -1;
