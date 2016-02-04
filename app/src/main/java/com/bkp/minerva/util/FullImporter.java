@@ -2,11 +2,12 @@ package com.bkp.minerva.util;
 
 import android.util.Log;
 import com.bkp.minerva.C;
+import com.bkp.minerva.Minerva;
 import com.bkp.minerva.prefs.DefaultPrefs;
 import com.bkp.minerva.realm.RBook;
-import com.bkp.minerva.rx.RxBookFromFile;
 import com.bkp.minerva.rx.RxFileWalker;
-import nl.siegmann.epublib.domain.Book;
+import com.bkp.minerva.rx.RxSuperBookFromFile;
+import io.realm.Realm;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -15,11 +16,12 @@ import rx.schedulers.Schedulers;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /**
- * Handles importing files.
+ * Handles full library imports.
  */
-public class Importer {
+public class FullImporter {
     /**
      * Various state the importer can be in.
      * <p>
@@ -30,9 +32,9 @@ public class Importer {
     }
 
     /**
-     * Instance of Importer.
+     * Instance of FullImporter.
      */
-    private static Importer INSTANCE;
+    private static FullImporter INSTANCE;
 
     /**
      * The current state of the importer.
@@ -62,19 +64,23 @@ public class Importer {
     /**
      * List of {@link RBook}s that have been created from book files.
      */
-    private LinkedList<RBook> currBooks;
+    private Queue<RBook> bookQueue;
+    /**
+     * Realm for accessing... Be sure to close when finished!!
+     */
+    private Realm realm;
 
     /**
-     * Get an instance of {@link Importer}.
+     * Get an instance of {@link FullImporter}.
      * @return Instance.
      */
-    public static Importer get() {
-        if (INSTANCE == null) INSTANCE = new Importer();
+    public static FullImporter get() {
+        if (INSTANCE == null) INSTANCE = new FullImporter();
         return INSTANCE;
     }
 
-    // Empty constructor, static init only.
-    private Importer() {
+    // Empty constructor, this class gets static init only.
+    private FullImporter() {
         resetState();
     }
 
@@ -124,7 +130,6 @@ public class Importer {
 
         // Get a list of files in the directory (and its subdirectories) which have certain extensions.
         // This will call through to onGotFileList() once it has the results.
-        //List<File> files = Observable.create(new RxFileWalker(currDir, C.VALID_EXTS)) TODO remove?
         fileWalkerSubscription = Observable
                 .create(new RxFileWalker(currDir, C.VALID_EXTS))
                 .toList()
@@ -150,7 +155,6 @@ public class Importer {
             resetState();
             return;
         }
-
         // Remove reference to subscription.
         fileWalkerSubscription.unsubscribe();
 
@@ -183,31 +187,20 @@ public class Importer {
             resetState();
             return;
         }
-
         // Change state to running.
         currState = State.IMPORTING;
 
         // Do importer flow.
         fileImporterSubscription = Observable
                 .from(files)
-                .compose(new RxBookFromFile())
+                .compose(new RxSuperBookFromFile(currDir.getAbsolutePath())) // Create a SuperBook from the file.
                 .subscribeOn(Schedulers.io()) // Everything above runs on the io thread pool.
-                .map(this::createRBook)
+                .map(RBook::new) // Create an RBook from the SuperBook.
                 .subscribeOn(Schedulers.computation()) // Everything above runs on the computation thread pool.
                 .observeOn(AndroidSchedulers.mainThread()) // Switch to the main thread now!
                 .unsubscribeOn(AndroidSchedulers.mainThread())
                 .doOnUnsubscribe(() -> fileImporterSubscription = null)
                 .subscribe(this::onImportedBookFile, this::onFileImporterError, this::onAllFilesImported);
-    }
-
-    /**
-     * Create an {@link RBook} from a {@link Book}. Does NOT add the {@link RBook} to Realm.
-     * @param book The {@link Book} to use.
-     * @return The newly created {@link RBook}.
-     */
-    private RBook createRBook(Book book) {
-        // TODO
-        return null;
     }
 
     /**
@@ -222,8 +215,11 @@ public class Importer {
             resetState();
             return;
         }
-        // Add RBook to list.
-        currBooks.add(rBook);
+
+        // Add RBook to queue.
+        bookQueue.add(rBook);
+
+        // TODO emit title/filename
     }
 
     /**
@@ -231,7 +227,7 @@ public class Importer {
      * @param t Throwable.
      */
     private void onFileImporterError(Throwable t) {
-        Log.e("Importer", "Error while importing and converting files.", t);
+        Log.e("FullImporter", "Error while importing and converting files.", t);
         cancelFullImport();
     }
 
@@ -245,11 +241,33 @@ public class Importer {
             return;
         }
 
-        // We've finished importing all books.
         // TODO make sure that the cancel dialog on the dialog goes away at this point!
-        currState = State.SAVING;
 
-        // TODO persist the data into realm.
+        // We've finished importing all books, now we'll persist them to Realm.
+        currState = State.SAVING;
+        Realm realm = Realm.getInstance(Minerva.getAppCtx());
+        realm.executeTransaction(bgRealm -> bgRealm.copyToRealmOrUpdate(bookQueue),
+                new Realm.Transaction.Callback() {
+                    @Override
+                    public void onSuccess() {
+                        super.onSuccess();
+                        fullImportFinished();
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        super.onError(e);
+                        Log.e("FullImporter", "Realm Error", e);
+                        resetState();
+                    }
+                });
+    }
+
+    /**
+     * Called when the full import has finished naturally.
+     */
+    private void fullImportFinished() {
+        resetState();
     }
 
     /**
@@ -262,7 +280,7 @@ public class Importer {
         if (isIdleOrTryingToBe() || currState == State.SAVING) return;
         resetState();
 
-        // TODO dismiss dialog?? Wait... no?
+        // TODO dismiss dialog?? Or no??
     }
 
     /**
@@ -284,7 +302,11 @@ public class Importer {
         this.currDir = null;
         this.numDone = -1;
         this.numTotal = -1;
-        this.currBooks = new LinkedList<>();
+        this.bookQueue = new LinkedList<>();
+
+        // Close Realm.
+        if (realm != null) realm.close();
+        realm = null;
 
         this.currState = State.READY;
     }
