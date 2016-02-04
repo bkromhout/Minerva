@@ -3,7 +3,8 @@ package com.bkp.minerva.util;
 import android.util.Log;
 import com.bkp.minerva.C;
 import com.bkp.minerva.prefs.DefaultPrefs;
-import com.bkp.minerva.rx.RxBookTransformer;
+import com.bkp.minerva.realm.RBook;
+import com.bkp.minerva.rx.RxBookFromFile;
 import com.bkp.minerva.rx.RxFileWalker;
 import nl.siegmann.epublib.domain.Book;
 import rx.Observable;
@@ -12,6 +13,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -24,7 +26,7 @@ public class Importer {
      * Ready, Preparing, Running, Cancelling, Finishing.
      */
     private enum State {
-        READY, PREP, RUNNING, CANCELLING, FINISHING
+        READY, PREP, IMPORTING, SAVING, CANCELLING, FINISHING
     }
 
     /**
@@ -57,6 +59,10 @@ public class Importer {
      * Subscription to an Rx flow which uses
      */
     private Subscription fileImporterSubscription;
+    /**
+     * List of {@link RBook}s that have been created from book files.
+     */
+    private LinkedList<RBook> currBooks;
 
     /**
      * Get an instance of {@link Importer}.
@@ -83,6 +89,17 @@ public class Importer {
 
         // Kick off preparations; flow will continue from there.
         doFullImportPrep();
+    }
+
+    /**
+     * Try to resolve the given path to a File object representing a valid, readable director.
+     * @param libDirPath The path to the directory.
+     * @return The File object for the directory, or null if we had issues.
+     */
+    private File tryResolveLibDir(String libDirPath) {
+        if (libDirPath == null || libDirPath.isEmpty()) return null;
+        File dir = new File(libDirPath);
+        return (dir.exists() && dir.isDirectory() && dir.canRead()) ? dir : null;
     }
 
     /**
@@ -113,30 +130,11 @@ public class Importer {
                 .toList()
                 .single()
                 // TODO Not sure about the order of these 3 calls here...
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io()) // Everything above runs on the io thread pool.
                 .observeOn(AndroidSchedulers.mainThread())
                 .unsubscribeOn(AndroidSchedulers.mainThread())
-                .doOnUnsubscribe(this::onFileWalkerUnsubscribe)
+                .doOnUnsubscribe(() -> fileWalkerSubscription = null)
                 .subscribe(this::onGotFileList);
-    }
-
-    /**
-     * Try to resolve the given path to a File object representing a valid, readable director.
-     * @param libDirPath The path to the directory.
-     * @return The File object for the directory, or null if we had issues.
-     */
-    private File tryResolveLibDir(String libDirPath) {
-        if (libDirPath == null || libDirPath.isEmpty()) return null;
-        File dir = new File(libDirPath);
-        return (dir.exists() && dir.isDirectory() && dir.canRead()) ? dir : null;
-    }
-
-    /**
-     * What to do when we unsubscribe from {@link #fileWalkerSubscription}.
-     */
-    private void onFileWalkerUnsubscribe() {
-        // Just null the reference to it. TODO is this enough??
-        fileWalkerSubscription = null;
     }
 
     /**
@@ -147,6 +145,12 @@ public class Importer {
      *              try to import.
      */
     private void onGotFileList(List<File> files) {
+        // Check if we should stop.
+        if (isIdleOrTryingToBe()) {
+            resetState();
+            return;
+        }
+
         // Remove reference to subscription.
         fileWalkerSubscription.unsubscribe();
 
@@ -174,37 +178,52 @@ public class Importer {
      * @param files List of files to import.
      */
     private void doImportFiles(List<File> files) {
+        // Check if we should stop.
+        if (isIdleOrTryingToBe()) {
+            resetState();
+            return;
+        }
+
         // Change state to running.
-        currState = State.RUNNING;
+        currState = State.IMPORTING;
 
         // Do importer flow.
         fileImporterSubscription = Observable
                 .from(files)
-                .compose(new RxBookTransformer())
+                .compose(new RxBookFromFile())
                 .subscribeOn(Schedulers.io()) // Everything above runs on the io thread pool.
+                .map(this::createRBook)
+                .subscribeOn(Schedulers.computation()) // Everything above runs on the computation thread pool.
                 .observeOn(AndroidSchedulers.mainThread()) // Switch to the main thread now!
                 .unsubscribeOn(AndroidSchedulers.mainThread())
-                .doOnNext(this::onGotBookFromFile) // TODO might want to make this better for Realm somehow.
-                .doOnUnsubscribe(this::onFileImporterUnsubscribe)
+                .doOnUnsubscribe(() -> fileImporterSubscription = null)
                 .subscribe(this::onImportedBookFile, this::onFileImporterError, this::onAllFilesImported);
     }
 
     /**
-     * What to do with a Book object we just got from a File.
-     * @param book Newly-obtained Book object.
+     * Create an {@link RBook} from a {@link Book}. Does NOT add the {@link RBook} to Realm.
+     * @param book The {@link Book} to use.
+     * @return The newly created {@link RBook}.
      */
-    private void onGotBookFromFile(Book book) {
-        // TODO!!
+    private RBook createRBook(Book book) {
+        // TODO
+        return null;
     }
 
     /**
      * What to do when we've finished importing and processing a book file.
      * <p>
      * This is called at the end of the import flow, it should be lightweight!!
-     * @param book The Book we created from the file.
+     * @param rBook The {@link RBook} we created using info from the file.
      */
-    private void onImportedBookFile(Book book) {
-        // TODO!!
+    private void onImportedBookFile(RBook rBook) {
+        // Check if we should stop.
+        if (isIdleOrTryingToBe()) {
+            resetState();
+            return;
+        }
+        // Add RBook to list.
+        currBooks.add(rBook);
     }
 
     /**
@@ -220,34 +239,30 @@ public class Importer {
      * What to do after we've finished importing all books.
      */
     private void onAllFilesImported() {
-        // We've finished importing all books.
-        // TODO
-    }
+        // Check if we should stop.
+        if (isIdleOrTryingToBe()) {
+            resetState();
+            return;
+        }
 
-    /**
-     * What to do when we unsubscribe from {@link #fileImporterSubscription}.
-     */
-    private void onFileImporterUnsubscribe() {
-        // Just null the reference to it. TODO is this enough??
-        fileImporterSubscription = null;
+        // We've finished importing all books.
+        // TODO make sure that the cancel dialog on the dialog goes away at this point!
+        currState = State.SAVING;
+
+        // TODO persist the data into realm.
     }
 
     /**
      * Cancels the currently running full import.
      * <p>
-     * Note that, at this time, calling this method will not roll back any changes which have already been made to the
-     * database.
-     * <p>
-     * If the importer isn't preparing or running, this does nothing.
+     * Note that if the importer has already entered the saving state, or if the importer isn't preparing or running,
+     * this does nothing.
      */
     public void cancelFullImport() {
-        if (currState == State.READY || currState == State.CANCELLING || currState == State.FINISHING) return;
-
+        if (isIdleOrTryingToBe() || currState == State.SAVING) return;
         resetState();
 
-        // TODO!!
-
-        // TODO make sure already applied changes are rolled back somehow??
+        // TODO dismiss dialog?? Wait... no?
     }
 
     /**
@@ -256,27 +271,39 @@ public class Importer {
      * BE CAREFUL!
      */
     private void resetState() {
-        currState = State.FINISHING;
+        // Start resetting, unless we already are resetting.
+        if (currState != State.FINISHING && currState != State.READY) currState = State.FINISHING;
+        else return;
 
         // Unsubscribe from the file walker subscription.
         if (fileWalkerSubscription != null) fileWalkerSubscription.unsubscribe();
-        // Unsubscribe from the file walker subscription.
+        // Unsubscribe from the file importer subscription.
         if (fileImporterSubscription != null) fileImporterSubscription.unsubscribe();
 
+        // Reset vars.
         this.currDir = null;
         this.numDone = -1;
         this.numTotal = -1;
+        this.currBooks = new LinkedList<>();
 
         this.currState = State.READY;
     }
 
     /**
-     * Check whether the importer is currently importing from some folder.
-     * @return True if the importer is currently not in the ready state, false otherwise.
+     * Checks the state to determine if the importer is currently idle or is trying to get to an idle state.
+     * @return True if state is ready, cancelling, or finishing; otherwise false.
+     */
+    private boolean isIdleOrTryingToBe() {
+        return currState == State.READY || currState == State.CANCELLING || currState == State.FINISHING;
+    }
+
+    /**
+     * Check whether the importer is currently in the ready state (doing absolutely nothing).
+     * @return True if the importer is currently in the ready state, false otherwise.
      * @see State
      */
-    public boolean isRunning() {
-        return currState != State.READY;
+    public boolean isReady() {
+        return currState == State.READY;
     }
 
     /**

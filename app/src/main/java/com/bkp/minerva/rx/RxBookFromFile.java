@@ -9,7 +9,7 @@ import java.io.File;
 /**
  * Transforms Files into Books using epublib calls.
  */
-public class RxBookTransformer implements Observable.Transformer<File, Book> {
+public class RxBookFromFile implements Observable.Transformer<File, Book> {
 
     @Override
     public Observable<Book> call(Observable<File> fileObservable) {
