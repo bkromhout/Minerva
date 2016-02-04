@@ -18,7 +18,7 @@
             android:padding="8dp">
 
         <TextView
-                android:id="@+id/list_title"
+                android:id="@+id/list_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toStartOf="@+id/btn_actions"
@@ -27,7 +27,7 @@
                 android:ellipsize="end"
                 android:textStyle="bold"
                 style="@style/TextAppearance.AppCompat.Medium"
-                android:text="@string/dummy_list_title"/>
+                android:text="@string/dummy_list_name"/>
 
         <ImageButton
                 android:id="@id/btn_actions"

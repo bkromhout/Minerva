@@ -18,7 +18,7 @@ import java.lang.reflect.Method;
 /**
  * TODO
  */
-public class ListActivity extends AppCompatActivity {
+public class BookListActivity extends AppCompatActivity {
     // Key strings for the bundle passed when this activity is started.
     public static final String LIST_SEL_STR = "LIST_SEL_STR";
 
@@ -38,7 +38,7 @@ public class ListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // Create and bind views.
-        setContentView(R.layout.activity_list);
+        setContentView(R.layout.activity_book_list);
         ButterKnife.bind(this);
 
         // Set up toolbar.
@@ -101,7 +101,7 @@ public class ListActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.list, menu);
+        getMenuInflater().inflate(R.menu.book_list, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

@@ -60,10 +60,10 @@
 
     <!-- All Lists Fragment -->
     <string name="action_new_list">New list</string>
-    <string name="dummy_list_title">The Title of a List</string>
+    <string name="dummy_list_name">The name of a list</string>
 
     <!-- List Activity -->
-    <string name="title_activity_list">Book List</string>
+    <string name="title_activity_book_list">Book List</string>
 
     <!-- Power Search Fragment -->
 

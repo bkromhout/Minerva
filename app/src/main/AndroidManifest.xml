@@ -29,8 +29,8 @@
                     android:value="MainActivity"/>
         </activity>
         <activity
-                android:name=".ListActivity"
-                android:label="@string/title_activity_list"
+                android:name=".BookListActivity"
+                android:label="@string/title_activity_book_list"
                 android:parentActivityName=".MainActivity"
                 android:theme="@style/AppTheme">
             <meta-data
