@@ -1,6 +1,6 @@
 package com.bkp.minerva.rx;
 
-import com.bkp.minerva.internal.SuperBook;
+import com.bkp.minerva.util.SuperBook;
 import com.bkp.minerva.util.Util;
 import rx.Observable;
 

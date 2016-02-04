@@ -1,6 +1,6 @@
 package com.bkp.minerva.realm;
 
-import com.bkp.minerva.internal.SuperBook;
+import com.bkp.minerva.util.SuperBook;
 import com.bkp.minerva.util.BookUtils;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
