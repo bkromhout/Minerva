@@ -10,55 +10,91 @@
             layout="@layout/toolbar"
             android:id="@+id/toolbarView"/>
 
-    <TextView
-            android:id="@+id/lib_import_view_title"
+    <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp"
+            android:layout_height="match_parent"
             android:layout_below="@id/toolbarView"
-            android:gravity="center_horizontal"
-            android:textStyle="bold"
-            style="?android:attr/textAppearanceLarge"
-            android:text="@string/full_import_view_title"/>
-
-    <ProgressBar
-            android:id="@+id/import_progress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_below="@id/lib_import_view_title"
+            android:paddingTop="@dimen/activity_vertical_margin"
             android:paddingStart="@dimen/activity_horizontal_margin"
             android:paddingEnd="@dimen/activity_horizontal_margin"
-            style="?android:attr/progressBarStyleHorizontal"/>
+            android:paddingBottom="@dimen/activity_vertical_margin">
 
-    <TextView
-            android:id="@+id/import_status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/import_progress"
-            android:layout_above="@+id/import_no_cancel"
-            android:paddingStart="@dimen/activity_horizontal_margin"
-            android:paddingEnd="@dimen/activity_horizontal_margin"
-            android:text="@string/dummy_full_import_status"/>
+        <TextView
+                android:id="@+id/header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:gravity="center_horizontal"
+                android:textStyle="bold"
+                style="?android:attr/textAppearanceLarge"
+                android:text="@string/import_header_ready"/>
 
-    <TextView
-            android:id="@id/import_no_cancel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/import_cancel"
-            android:paddingStart="@dimen/activity_horizontal_margin"
-            android:paddingEnd="@dimen/activity_horizontal_margin"
-            android:textColor="@color/colorAccent"
-            android:gravity="center_horizontal"
-            android:text="@string/full_import_no_cancel"
-            android:visibility="gone"
-            tools:visibility="visible"/>
+        <TextView
+                android:id="@+id/lbl_import_folder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/header"
+                android:textStyle="bold"
+                android:text="@string/lbl_folder"/>
 
-    <Button
-            android:id="@id/import_cancel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:text="@string/cancel"/>
+        <TextView
+                android:id="@+id/import_folder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:layout_below="@id/lbl_import_folder"
+                android:maxLines="1"
+                android:ellipsize="start"
+                tools:text="very/very/very/long/path/to/some/folder/somewhere"/>
+
+        <TextView
+                android:id="@+id/lbl_last_import_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/import_folder"
+                android:textStyle="bold"
+                android:text="@string/lbl_last_full_import_time"/>
+
+        <TextView
+                android:id="@+id/last_import_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_below="@id/lbl_last_import_time"
+                android:text="@string/def_last_full_import_time"/>
+
+        <ProgressBar
+                android:id="@+id/import_progress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_below="@id/last_import_time"
+                style="?android:attr/progressBarStyleHorizontal"/>
+
+        <TextView
+                android:id="@+id/import_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/import_progress"
+                android:layout_above="@+id/import_no_cancel"
+                tools:text="Current Full Importer Status"/>
+
+        <TextView
+                android:id="@id/import_no_cancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/import_button"
+                android:textColor="@color/colorAccent"
+                android:gravity="center_horizontal"
+                android:text="@string/full_import_no_cancel"
+                android:visibility="gone"
+                tools:visibility="visible"/>
+
+        <Button
+                android:id="@id/import_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:text="@string/start_full_import"/>
+    </RelativeLayout>
 </RelativeLayout>

@@ -12,18 +12,21 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class FullImportActivity extends AppCompatActivity {
-
     // Views
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+    @Bind(R.id.import_folder)
+    TextView tvFolder;
+    @Bind(R.id.last_import_time)
+    TextView tvLastImportTime;
     @Bind(R.id.import_progress)
     ProgressBar progressBar;
     @Bind(R.id.import_status)
     TextView tvImportStatus;
     @Bind(R.id.import_no_cancel)
     TextView tvNoCancel;
-    @Bind(R.id.import_cancel)
-    Button btnStop;
+    @Bind(R.id.import_button)
+    Button button;
 
     /**
      * TODO!!!! Maybe just need a pref that tells us when the last full import was done instead??? Yes.
