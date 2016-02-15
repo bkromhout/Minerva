@@ -51,6 +51,15 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.bkp.minerva.MainActivity"/>
         </activity>
+        <activity
+                android:name=".FullImportActivity"
+                android:label="@string/title_activity_full_import"
+                android:parentActivityName=".MainActivity"
+                android:theme="@style/AppTheme">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="com.bkp.minerva.MainActivity"/>
+        </activity>
     </application>
 
 </manifest>

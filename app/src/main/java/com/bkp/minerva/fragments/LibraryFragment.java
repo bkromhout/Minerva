@@ -63,7 +63,6 @@ public class LibraryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         // We have menu items we'd like to add.
         setHasOptionsMenu(true);
-
     }
 
     @Override
@@ -179,12 +178,13 @@ public class LibraryFragment extends Fragment {
      * Called when the Import menu item is clicked.
      */
     private void onImportClick() {
-        // Ensure we have the READ_EXTERNAL_STORAGE permission granted. If not, stop now and nag the user. TODO
+        // TODO Ensure we have the READ_EXTERNAL_STORAGE permission granted. If not, stop now and nag the user.
 
 
-        // Check to see if library folder has been chosen and is valid TODO
+        // TODO Check to see if library folder has been chosen and is valid.
 
 
+        // TODO Open FullImportActivity.
     }
 
     /**

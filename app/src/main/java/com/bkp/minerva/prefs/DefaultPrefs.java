@@ -15,6 +15,7 @@ public class DefaultPrefs {
 
     public final static String LIB_DIR = Minerva.getAppCtx().getString(R.string.key_lib_dir);
     private final static String LIB_AUTO_IMPORT = Minerva.getAppCtx().getString(R.string.key_auto_import);
+    private final static String LAST_FULL_IMPORT_TIME = "LAST_FULL_IMPORT_TIME";
 
     /**
      * Static instance.
@@ -106,5 +107,22 @@ public class DefaultPrefs {
      */
     public void putLibAutoImport(boolean libAutoImport) {
         mPrefs.edit().putBoolean(LIB_AUTO_IMPORT, libAutoImport).apply();
+    }
+
+    /**
+     * Get the last time a full import completed successfully.
+     * @param defValue The default value to return if nothing is set.
+     * @return Last full import time.
+     */
+    public long getLastFullImportTime(long defValue) {
+        return mPrefs.getLong(LAST_FULL_IMPORT_TIME, defValue);
+    }
+
+    /**
+     * Set the last time a full import completed successfully.
+     * @param lastFullImportTime Last full import time.
+     */
+    public void putLastFullImportTime(long lastFullImportTime) {
+        mPrefs.edit().putLong(LAST_FULL_IMPORT_TIME, lastFullImportTime).apply();
     }
 }

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.bkp.minerva.FullImportActivity">
+
+    <include
+            layout="@layout/toolbar"
+            android:id="@+id/toolbarView"/>
+
+    <TextView
+            android:id="@+id/lib_import_view_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:layout_below="@id/toolbarView"
+            android:gravity="center_horizontal"
+            android:textStyle="bold"
+            style="?android:attr/textAppearanceLarge"
+            android:text="@string/full_import_view_title"/>
+
+    <ProgressBar
+            android:id="@+id/import_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_below="@id/lib_import_view_title"
+            android:paddingStart="@dimen/activity_horizontal_margin"
+            android:paddingEnd="@dimen/activity_horizontal_margin"
+            style="?android:attr/progressBarStyleHorizontal"/>
+
+    <TextView
+            android:id="@+id/import_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/import_progress"
+            android:layout_above="@+id/import_no_cancel"
+            android:paddingStart="@dimen/activity_horizontal_margin"
+            android:paddingEnd="@dimen/activity_horizontal_margin"
+            android:text="@string/dummy_full_import_status"/>
+
+    <TextView
+            android:id="@id/import_no_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/import_cancel"
+            android:paddingStart="@dimen/activity_horizontal_margin"
+            android:paddingEnd="@dimen/activity_horizontal_margin"
+            android:textColor="@color/colorAccent"
+            android:gravity="center_horizontal"
+            android:text="@string/full_import_no_cancel"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+    <Button
+            android:id="@id/import_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="@string/cancel"/>
+</RelativeLayout>

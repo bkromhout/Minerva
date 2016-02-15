@@ -7,6 +7,7 @@
     <string name="settings">Settings</string>
     <string name="retry">Retry</string>
     <string name="app_info">App Info</string>
+    <string name="redo_import">Redo Import</string>
 
     <!-- Common action Strings (may be used in multiple places) -->
     <string name="action_delete">Delete</string>
@@ -57,6 +58,12 @@
     <string name="card_compact">Compact</string>
 
     <string name="lbl_folder">Folder:</string>
+
+    <!-- Full Import Activity -->
+    <string name="title_activity_full_import">Library Import</string>
+    <string name="full_import_view_title">Importing…</string>
+    <string name="full_import_no_cancel">Books are now being saved to the database, cancelling is not allowed.</string>
+    <string name="dummy_full_import_status">Current Full Importer Status</string>
 
     <!-- All Lists Fragment -->
     <string name="action_new_list">New list</string>

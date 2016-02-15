@@ -27,6 +27,8 @@ public class RxSuperBookFromFile implements Observable.Transformer<File, SuperBo
 
     @Override
     public Observable<SuperBook> call(Observable<File> fileObservable) {
+        // TODO split this out further so that we take one step to get the epublib Book and another to convert it to a
+        // TODO superbook, because then we can use flatmap to concurrently create superbooks??
         return fileObservable.map((file) -> {
             String relPath = file.getAbsolutePath().replace(libPath, "");
             return new SuperBook(Util.readEpubFile(file), relPath);

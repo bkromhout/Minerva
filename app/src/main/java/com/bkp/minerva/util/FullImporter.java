@@ -12,8 +12,13 @@ import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subjects.BehaviorSubject;
+import rx.subjects.ReplaySubject;
+import rx.subjects.SerializedSubject;
+import rx.subjects.Subject;
 
 import java.io.File;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -47,11 +52,19 @@ public class FullImporter {
     /**
      * How many files in the current run have been processed.
      */
-    private long numDone;
+    private int numDone;
     /**
      * Total number of files in the current run.
      */
-    private long numTotal;
+    private int numTotal;
+    /**
+     * ReplaySubject which holds log lines.
+     */
+    private Subject<String, String> logSubject;
+    /**
+     * BehaviorSubject which holds the latest progress.
+     */
+    private Subject<Integer, Integer> progressSubject;
     /**
      * Subscription to an Rx flow which uses {@link RxFileWalker} to recursively walk down from a start directory in
      * order to find files with specific extensions.
@@ -69,6 +82,20 @@ public class FullImporter {
      * Realm for accessing... Be sure to close when finished!!
      */
     private Realm realm;
+
+    // Variables below concern the listener.
+    /**
+     * Who is listening to our progress?
+     */
+    private IFullImportListener listener;
+    /**
+     * Listener's subscription to the log stream.
+     */
+    private Subscription listenerLogSub;
+    /**
+     * Listener's subscription to the progress stream.
+     */
+    private Subscription listenerProgressSub;
 
     /**
      * Get an instance of {@link FullImporter}.
@@ -98,17 +125,6 @@ public class FullImporter {
     }
 
     /**
-     * Try to resolve the given path to a File object representing a valid, readable director.
-     * @param libDirPath The path to the directory.
-     * @return The File object for the directory, or null if we had issues.
-     */
-    private File tryResolveLibDir(String libDirPath) {
-        if (libDirPath == null || libDirPath.isEmpty()) return null;
-        File dir = new File(libDirPath);
-        return (dir.exists() && dir.isDirectory() && dir.canRead()) ? dir : null;
-    }
-
-    /**
      * Prepare for a full import.
      * <p>
      * Validate the current library directory, then try to recursively get all files with specific extensions within
@@ -132,14 +148,24 @@ public class FullImporter {
         // This will call through to onGotFileList() once it has the results.
         fileWalkerSubscription = Observable
                 .create(new RxFileWalker(currDir, C.VALID_EXTS))
-                .toList()
-                .single()
-                // TODO Not sure about the order of these 3 calls here...
                 .subscribeOn(Schedulers.io()) // Everything above runs on the io thread pool.
-                .observeOn(AndroidSchedulers.mainThread())
                 .unsubscribeOn(AndroidSchedulers.mainThread())
                 .doOnUnsubscribe(() -> fileWalkerSubscription = null)
+                .toList()
+                .single()
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onGotFileList);
+    }
+
+    /**
+     * Try to resolve the given path to a File object representing a valid, readable director.
+     * @param libDirPath The path to the directory.
+     * @return The File object for the directory, or null if we had issues.
+     */
+    private File tryResolveLibDir(String libDirPath) {
+        if (libDirPath == null || libDirPath.isEmpty()) return null;
+        File dir = new File(libDirPath);
+        return (dir.exists() && dir.isDirectory() && dir.canRead()) ? dir : null;
     }
 
     /**
@@ -193,13 +219,13 @@ public class FullImporter {
         // Do importer flow.
         fileImporterSubscription = Observable
                 .from(files)
-                .compose(new RxSuperBookFromFile(currDir.getAbsolutePath())) // Create a SuperBook from the file.
-                .subscribeOn(Schedulers.io()) // Everything above runs on the io thread pool.
-                .map(RBook::new) // Create an RBook from the SuperBook.
-                .subscribeOn(Schedulers.computation()) // Everything above runs on the computation thread pool.
-                .observeOn(AndroidSchedulers.mainThread()) // Switch to the main thread now!
+                .subscribeOn(Schedulers.io())
                 .unsubscribeOn(AndroidSchedulers.mainThread())
                 .doOnUnsubscribe(() -> fileImporterSubscription = null)
+                .compose(new RxSuperBookFromFile(currDir.getAbsolutePath())) // Create a SuperBook from the file.
+                //.observeOn(Schedulers.computation()) //TODO test to see if this matters
+                .map(RBook::new) // Create an RBook from the SuperBook.
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onImportedBookFile, this::onFileImporterError, this::onAllFilesImported);
     }
 
@@ -241,10 +267,11 @@ public class FullImporter {
             return;
         }
 
-        // TODO make sure that the cancel dialog on the dialog goes away at this point!
+        // Cancelling isn't allowed from this point until we're done persisting data to Realm.
+        currState = State.SAVING;
+        if (listener != null) listener.setNoCancel();
 
         // We've finished importing all books, now we'll persist them to Realm.
-        currState = State.SAVING;
         Realm realm = Realm.getInstance(Minerva.getAppCtx());
         realm.executeTransaction(bgRealm -> bgRealm.copyToRealmOrUpdate(bookQueue),
                 new Realm.Transaction.Callback() {
@@ -267,6 +294,9 @@ public class FullImporter {
      * Called when the full import has finished naturally.
      */
     private void fullImportFinished() {
+        // Save current time to prefs to indicate a full import completed, then tell listener we finished.
+        DefaultPrefs.get().putLastFullImportTime(Calendar.getInstance().getTimeInMillis());
+        if (listener != null) listener.setDone();
         resetState();
     }
 
@@ -278,9 +308,9 @@ public class FullImporter {
      */
     public void cancelFullImport() {
         if (isIdleOrTryingToBe() || currState == State.SAVING) return;
+        if (listener != null) listener.setCancelling();
         resetState();
-
-        // TODO dismiss dialog?? Or no??
+        if (listener != null) listener.setCancelled();
     }
 
     /**
@@ -308,6 +338,14 @@ public class FullImporter {
         if (realm != null) realm.close();
         realm = null;
 
+        // Reset subjects after ensuring that the listeners aren't subscribed to them.
+        if (listenerLogSub != null) listenerLogSub.unsubscribe();
+        if (listenerProgressSub != null) listenerProgressSub.unsubscribe();
+        if (logSubject != null) logSubject.onCompleted();
+        if (progressSubject != null) progressSubject.onCompleted();
+        logSubject = new SerializedSubject<>(ReplaySubject.create());
+        progressSubject = new SerializedSubject<>(BehaviorSubject.create());
+
         this.currState = State.READY;
     }
 
@@ -327,30 +365,120 @@ public class FullImporter {
     public boolean isReady() {
         return currState == State.READY;
     }
+//
+//        /**
+//         * The path to the directory that the importer is currently importing from.
+//         * @return Current import path, or null if the importer either isn't currently running, or is still preparing.
+//         */
+//        public String getCurrDirPath() {
+//            return currDir == null ? null : currDir.getAbsolutePath();
+//        }
+//
+//        /**
+//         * The number of files processed so far in the current import run.
+//         * @return Number of files processed, or -1 if the importer either isn't currently running, or is still
+//         * preparing.
+//         */
+//        public long getNumDone() {
+//            return numDone;
+//        }
+//
+//        /**
+//         * The total number of files in the current import run.
+//         * @return Total number of files, or -1 if the importer either isn't currently running, or is still preparing.
+//         */
+//        public long getNumTotal() {
+//            return numTotal;
+//        }
 
     /**
-     * The path to the directory that the importer is currently importing from.
-     * @return Current import path, or null if the importer either isn't currently running, or is still preparing.
+     * Set the listener. (The listener will be caught up if need be)
+     * <p>
+     * If there is already a listener registered, this will do nothing.
+     * @param listener Listener.
      */
-    public String getCurrDirPath() {
-        return currDir == null ? null : currDir.getAbsolutePath();
+    public void registerListener(IFullImportListener listener) {
+        if (listener == null || this.listener != null) return;
+
+        this.listener = listener;
+        if (currState == State.SAVING) listener.setNoCancel();
+        listener.setCurrImportDir(currDir == null ? null : currDir.getAbsolutePath());
+        listener.setMaxProgress(numTotal);
+        listenerProgressSub = listener.subscribeToProgressStream(progressSubject);
+        listenerLogSub = listener.subscribeToLogStream(logSubject);
     }
 
-    // TODO add some sort of observable which caches and emits the file names as they are processed.
-
     /**
-     * The number of files processed so far in the current import run.
-     * @return Number of files processed, or -1 if the importer either isn't currently running, or is still preparing.
+     * Unregister the listener.
      */
-    public long getNumDone() {
-        return numDone;
+    public void unregisterListener() {
+        if (listenerLogSub != null) listenerLogSub.unsubscribe();
+        if (listenerProgressSub != null) listenerProgressSub.unsubscribe();
+        listener = null;
     }
 
     /**
-     * The total number of files in the current import run.
-     * @return Total number of files, or -1 if the importer either isn't currently running, or is still preparing.
+     * Implemented by classes which wish to listen to events from the full importer.
      */
-    public long getNumTotal() {
-        return numTotal;
+    public interface IFullImportListener {
+        /**
+         * Set the max progress state.
+         * @param maxProgress Max progress.
+         */
+        void setMaxProgress(int maxProgress);
+
+        /**
+         * Set the directory we're currently importing from.
+         * @param importDir Import directory.
+         */
+        void setCurrImportDir(String importDir);
+
+        /**
+         * Have the listener subscribe to the log stream and return their subscription.
+         * <p>
+         * The log stream will emit all past and future log strings when subscribed to. A null emitted indicates that
+         * the log stream has been reset.
+         * <p>
+         * Note: If the implementer subscribes but doesn't return the subscription, memory leaks will very likely
+         * occur.
+         * @param logSubject The log stream.
+         * @return Listener's subscription to the log stream, or null if the listener didn't subscribe.
+         */
+        Subscription subscribeToLogStream(final Subject<String, String> logSubject);
+
+        /**
+         * Have the listener subscribe to the progress stream and return their subscription.
+         * <p>
+         * The progress stream will return the last and future values when subscribed to. Any value emitted which is
+         * negative should be interpreted as indeterminate, and any values greater than the max should be interpreted as
+         * the max.
+         * <p>
+         * Note: If the implementer subscribes but doesn't return the subscription, memory leaks will very likely
+         * occur.
+         * @param progressSubject The progress stream.
+         * @return Listener's subscription to the progress stream, or null if the listener didn't subscribe.
+         */
+        Subscription subscribeToProgressStream(final Subject<Integer, Integer> progressSubject);
+
+        /**
+         * Set that we are in a state where cancelling isn't allowed. This is only called in the final part of the
+         * process, when we are saving the imported data.
+         */
+        void setNoCancel();
+
+        /**
+         * Set that we are in the process of cancelling.
+         */
+        void setCancelling();
+
+        /**
+         * Set that we are idle and have cancelled.
+         */
+        void setCancelled();
+
+        /**
+         * Set that we are done/idle.
+         */
+        void setDone();
     }
 }
