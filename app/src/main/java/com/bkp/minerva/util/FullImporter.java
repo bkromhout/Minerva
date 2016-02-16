@@ -112,6 +112,9 @@ public class FullImporter {
     // Empty constructor, this class gets static init only.
     private FullImporter() {
         resetState();
+        // Create subjects here, they should always exist.
+        logSubject = new SerializedSubject<>(ReplaySubject.create());
+        progressSubject = new SerializedSubject<>(BehaviorSubject.create());
     }
 
     /**
@@ -125,7 +128,10 @@ public class FullImporter {
         // Don't do anything if we aren't in a ready state.
         if (currState != State.READY) return;
 
+        // Reset subjects and possible register a listener.
+        resetSubjects();
         if (listener != null) registerListener(listener);
+
         // Kick off preparations; flow will continue from there.
         doFullImportPrep();
     }
@@ -369,14 +375,37 @@ public class FullImporter {
         realm = null;
 
         // Reset subjects after ensuring that the listeners aren't subscribed to them.
+//        if (listenerLogSub != null) listenerLogSub.unsubscribe();
+//        if (listenerProgressSub != null) listenerProgressSub.unsubscribe();
+//        if (logSubject != null) logSubject.onCompleted();
+//        if (progressSubject != null) progressSubject.onCompleted();
+//        logSubject = new SerializedSubject<>(ReplaySubject.create());
+//        progressSubject = new SerializedSubject<>(BehaviorSubject.create());
+
+        this.currState = State.READY;
+    }
+
+    /**
+     * Recreate subjects and subscribe the listener to the new ones.
+     */
+    private void resetSubjects() {
+        // Unsubscribe listener from old subjects.
         if (listenerLogSub != null) listenerLogSub.unsubscribe();
         if (listenerProgressSub != null) listenerProgressSub.unsubscribe();
+
+        // Complete subjects, if they exist.
         if (logSubject != null) logSubject.onCompleted();
         if (progressSubject != null) progressSubject.onCompleted();
+
+        // Create new subjects.
         logSubject = new SerializedSubject<>(ReplaySubject.create());
         progressSubject = new SerializedSubject<>(BehaviorSubject.create());
 
-        this.currState = State.READY;
+        // Subscribe listener to the new subjects.
+        if (listener != null) {
+            listenerLogSub = listener.subscribeToLogStream(logSubject);
+            listenerProgressSub = listener.subscribeToProgressStream(progressSubject);
+        }
     }
 
     /**
