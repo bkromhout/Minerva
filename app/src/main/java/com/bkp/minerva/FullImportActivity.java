@@ -305,7 +305,8 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
     public void setReady() {
         // Don't switch do any of this if the user needs to choose a library directory.
         if (needsToChooseDir) return;
-
+        progressBar.setIndeterminate(false);
+        progressBar.setProgress(0);
         setHeaderState(HeaderState.READY);
         setButtonState(ButtonState.START_IMPORT, true);
         setRedTextState(RedTextState.NONE);
@@ -336,7 +337,6 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
     @Override
     public void setCancelled() {
         // Does the same thing for now.
-        tvImportLog.append(C.getStr(R.string.fil_done)); // We aren't subscribed anymore, so we append this here.
         setReady();
     }
 }

@@ -7,7 +7,6 @@ import com.bkp.minerva.R;
 import com.bkp.minerva.prefs.DefaultPrefs;
 import com.bkp.minerva.realm.RBook;
 import com.bkp.minerva.rx.RxFileWalker;
-import com.bkp.minerva.rx.RxSuperBookFromFile;
 import io.realm.Realm;
 import rx.Observable;
 import rx.Subscription;
@@ -240,11 +239,27 @@ public class FullImporter {
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(AndroidSchedulers.mainThread())
                 .doOnUnsubscribe(() -> fileImporterSubscription = null)
-                .compose(new RxSuperBookFromFile(currDir.getAbsolutePath())) // Create a SuperBook from the file.
+                .map(this::convertFileToSuperBook) // Create a SuperBook from the file.
+                .filter(sb -> sb != null)
                 //.observeOn(Schedulers.computation()) //TODO test to see if this matters
                 .map(RBook::new) // Create an RBook from the SuperBook.
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onImportedBookFile, this::onFileImporterError, this::onAllFilesImported);
+    }
+
+    /**
+     * Convert the given file to a {@link SuperBook}.
+     * @param file File.
+     * @return New SuperBook, or null if there were issues.
+     */
+    private SuperBook convertFileToSuperBook(File file) {
+        String relPath = file.getAbsolutePath().replace(currDir.getAbsolutePath(), "");
+        try {
+            return new SuperBook(Util.readEpubFile(file), relPath);
+        } catch (IllegalArgumentException e) {
+            logSubject.onNext(C.getStr(R.string.fil_err_processing_file, e.getMessage()));
+            return null;
+        }
     }
 
     /**
@@ -263,6 +278,7 @@ public class FullImporter {
         // Add RBook to queue and emit file path.
         bookQueue.add(rBook);
         logSubject.onNext(C.getStr(R.string.fil_read_file, rBook.getRelPath()));
+        progressSubject.onNext(numDone++);
     }
 
     /**
@@ -272,7 +288,7 @@ public class FullImporter {
     private void onFileImporterError(Throwable t) {
         String s = C.getStr(R.string.fil_err_generic);
         Log.e("FullImporter", s, t);
-        logSubject.onNext(s + "\n");
+        logSubject.onNext("\n" + s + ":\n\"" + t.getMessage() + "\"\n");
         cancelFullImport();
     }
 
@@ -291,6 +307,7 @@ public class FullImporter {
         currState = State.SAVING;
         if (listener != null) listener.setSaving();
         logSubject.onNext(C.getStr(R.string.fil_saving_files));
+        progressSubject.onNext(-1);
 
         // We've finished importing all books, now we'll persist them to Realm.
         Realm realm = Realm.getInstance(Minerva.getAppCtx());
@@ -308,7 +325,7 @@ public class FullImporter {
                         super.onError(e);
                         String s = C.getStr(R.string.fil_err_realm);
                         Log.e("FullImporter", s, e);
-                        logSubject.onNext(s + "\n");
+                        logSubject.onNext("\n" + s + "\n");
                         unsafeCancelFullImport();
                     }
                 });
@@ -346,6 +363,7 @@ public class FullImporter {
         if (listener != null) listener.setCancelling();
         logSubject.onNext(C.getStr(R.string.fil_cancelling));
         resetState();
+        logSubject.onNext(C.getStr(R.string.fil_done));
         if (listener != null) listener.setCancelled();
     }
 
