@@ -11,10 +11,21 @@ import java.util.List;
 public final class C {
     /**
      * Get a string resource using the application context.
-     * @param resId String resource Id
+     * @param resId String resource ID.
+     * @return String.
      */
     public static String getStr(@StringRes int resId) {
         return Minerva.getAppCtx().getString(resId);
+    }
+
+    /**
+     * Get a formatted string resource using the application context.
+     * @param resId      String resource ID.
+     * @param formatArgs Format arguments.
+     * @return Formatted string.
+     */
+    public static String getStr(@StringRes int resId, Object... formatArgs) {
+        return Minerva.getAppCtx().getString(resId, formatArgs);
     }
 
     // Sort types.

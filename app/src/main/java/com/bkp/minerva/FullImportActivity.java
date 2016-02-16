@@ -322,6 +322,7 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
     @Override
     public void setCancelled() {
         // Does the same thing for now.
+        tvImportStatus.append(C.getStr(R.string.fil_done)); // We aren't subscribed anymore, so we append this here.
         setReady();
     }
 }

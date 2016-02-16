@@ -76,12 +76,20 @@
     <string name="choose_library_dir">Choose Library Folder</string>
 
     <!-- Full Importer Log Strings -->
+    <string name="fil_done">Done\n</string>
     <string name="fil_starting">Starting full import\n\n</string>
-    <string name="fil_finding_files">Finding files…\n</string>
+    <string name="fil_finding_files">Finding files…</string>
+    <string name="fil_found_files">Found %1$d file(s)\n\n</string>
+    <string name="fil_reading_files">Reading files:\n</string>
+    <string name="fil_read_file">Read \"%1$s\"\n</string>
+    <string name="fil_all_files_read">\nAll files read\n\n</string>
+    <string name="fil_saving_files">Saving file data…</string>
+    <string name="fil_finished">\nFinished with full import!</string>
+    <string name="fil_cancelling">\nCancelling…</string>
 
-
+    <string name="fil_err_generic">Error while importing and converting files.</string>
     <string name="fil_err_invalid_lib_dir">Invalid library folder, cancelling import.</string>
-
+    <string name="fil_err_realm">Realm error.</string>
 
     <!-- All Lists Fragment -->
     <string name="action_new_list">New list</string>

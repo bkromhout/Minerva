@@ -26,6 +26,8 @@ import java.util.Queue;
 
 /**
  * Handles full library imports.
+ * <p>
+ * TODO investigate whether loading strings into memory is faster than getting them from resources every time.
  */
 public class FullImporter {
     /**
@@ -178,6 +180,7 @@ public class FullImporter {
      *              try to import.
      */
     private void onGotFileList(List<File> files) {
+        logSubject.onNext(C.getStr(R.string.fil_done));
         // Check if we should stop.
         if (isIdleOrTryingToBe()) {
             resetState();
@@ -197,6 +200,11 @@ public class FullImporter {
         numDone = 0;
         numTotal = files.size();
 
+        // Update listener.
+        logSubject.onNext(C.getStr(R.string.fil_found_files, numTotal));
+        if (listener != null) listener.setMaxProgress(numTotal);
+        progressSubject.onNext(numDone);
+
         // Start actual importing.
         doImportFiles(files);
     }
@@ -215,8 +223,10 @@ public class FullImporter {
             resetState();
             return;
         }
+
         // Change state to running.
         currState = State.IMPORTING;
+        logSubject.onNext(C.getStr(R.string.fil_reading_files));
 
         // Do importer flow.
         fileImporterSubscription = Observable
@@ -244,10 +254,9 @@ public class FullImporter {
             return;
         }
 
-        // Add RBook to queue.
+        // Add RBook to queue and emit file path.
         bookQueue.add(rBook);
-
-        // TODO emit title/filename
+        logSubject.onNext(C.getStr(R.string.fil_read_file, rBook.getRelPath()));
     }
 
     /**
@@ -255,7 +264,9 @@ public class FullImporter {
      * @param t Throwable.
      */
     private void onFileImporterError(Throwable t) {
-        Log.e("FullImporter", "Error while importing and converting files.", t);
+        String s = C.getStr(R.string.fil_err_generic);
+        Log.e("FullImporter", s, t);
+        logSubject.onNext(s + "\n");
         cancelFullImport();
     }
 
@@ -263,6 +274,7 @@ public class FullImporter {
      * What to do after we've finished importing all books.
      */
     private void onAllFilesImported() {
+        logSubject.onNext(C.getStr(R.string.fil_all_files_read));
         // Check if we should stop.
         if (isIdleOrTryingToBe()) {
             resetState();
@@ -272,6 +284,7 @@ public class FullImporter {
         // Cancelling isn't allowed from this point until we're done persisting data to Realm.
         currState = State.SAVING;
         if (listener != null) listener.setSaving();
+        logSubject.onNext(C.getStr(R.string.fil_saving_files));
 
         // We've finished importing all books, now we'll persist them to Realm.
         Realm realm = Realm.getInstance(Minerva.getAppCtx());
@@ -280,26 +293,30 @@ public class FullImporter {
                     @Override
                     public void onSuccess() {
                         super.onSuccess();
+                        logSubject.onNext(C.getStr(R.string.fil_done));
                         fullImportFinished();
                     }
 
                     @Override
                     public void onError(Exception e) {
                         super.onError(e);
-                        Log.e("FullImporter", "Realm Error", e);
-                        resetState();
+                        String s = C.getStr(R.string.fil_err_realm);
+                        Log.e("FullImporter", s, e);
+                        logSubject.onNext(s + "\n");
+                        unsafeCancelFullImport();
                     }
                 });
     }
 
     /**
-     * Called when the full import has finished naturally.
+     * Called when the full import has finished successfully.
      */
     private void fullImportFinished() {
         // Save current time to prefs to indicate a full import completed, then tell listener we finished.
         DefaultPrefs.get().putLastFullImportTime(Calendar.getInstance().getTimeInMillis());
-        if (listener != null) listener.setReady();
+        logSubject.onNext(C.getStr(R.string.fil_finished));
         resetState();
+        if (listener != null) listener.setReady();
     }
 
     /**
@@ -310,7 +327,18 @@ public class FullImporter {
      */
     public void cancelFullImport() {
         if (isIdleOrTryingToBe() || currState == State.SAVING) return;
+        unsafeCancelFullImport();
+    }
+
+    /**
+     * Cancels the full import, unconditionally.
+     * <p>
+     * Internal methods should still prefer calling {@link #cancelFullImport()} to this method, unless the checks on
+     * that method prohibit a cancel where it is required.
+     */
+    private void unsafeCancelFullImport() {
         if (listener != null) listener.setCancelling();
+        logSubject.onNext(C.getStr(R.string.fil_cancelling));
         resetState();
         if (listener != null) listener.setCancelled();
     }
