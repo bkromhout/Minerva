@@ -71,13 +71,20 @@
                 android:layout_below="@id/last_import_time"
                 style="?android:attr/progressBarStyleHorizontal"/>
 
-        <TextView
-                android:id="@+id/import_log"
+        <ScrollView
+                android:id="@+id/import_log_cont"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/import_progress"
                 android:layout_above="@+id/import_red_text"
-                tools:text="Current Full Importer Status"/>
+                android:scrollbars="vertical">
+
+            <TextView
+                    android:id="@+id/import_log"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="Current Full Importer Status"/>
+        </ScrollView>
 
         <TextView
                 android:id="@id/import_red_text"

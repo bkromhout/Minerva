@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -58,6 +59,8 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
     TextView tvLastImportTime;
     @Bind(R.id.import_progress)
     ProgressBar progressBar;
+    @Bind(R.id.import_log_cont)
+    ScrollView svLogCont;
     @Bind(R.id.import_log)
     TextView tvImportLog;
     @Bind(R.id.import_red_text)
@@ -279,7 +282,11 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
     public Subscription subscribeToLogStream(Subject<String, String> logSubject) {
         return logSubject.observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
             if (s == null) tvImportLog.setText("");
-            else tvImportLog.append(s);
+            else {
+                tvImportLog.append(s);
+                // Scroll log down as we append lines. TODO only scroll if we're close to the bottom now?
+                svLogCont.post(() -> svLogCont.fullScroll(View.FOCUS_DOWN));
+            }
         });
     }
 
