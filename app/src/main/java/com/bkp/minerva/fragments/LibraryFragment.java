@@ -17,8 +17,10 @@ import butterknife.OnClick;
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkp.minerva.C;
+import com.bkp.minerva.FullImportActivity;
 import com.bkp.minerva.R;
 import com.bkp.minerva.prefs.LibraryPrefs;
+import com.bkp.minerva.util.Util;
 
 import java.lang.reflect.Method;
 
@@ -130,7 +132,8 @@ public class LibraryFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_import:
-                onImportClick();
+                // Open the full import activity.
+                Util.startAct(getActivity(), FullImportActivity.class, null);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -172,19 +175,6 @@ public class LibraryFragment extends Fragment {
                     // TODO refresh recycler view
                 })
                 .show();
-    }
-
-    /**
-     * Called when the Import menu item is clicked.
-     */
-    private void onImportClick() {
-        // TODO Ensure we have the READ_EXTERNAL_STORAGE permission granted. If not, stop now and nag the user.
-
-
-        // TODO Check to see if library folder has been chosen and is valid.
-
-
-        // TODO Open FullImportActivity.
     }
 
     /**

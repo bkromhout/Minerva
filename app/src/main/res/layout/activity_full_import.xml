@@ -27,7 +27,7 @@
                 android:gravity="center_horizontal"
                 android:textStyle="bold"
                 style="?android:attr/textAppearanceLarge"
-                android:text="@string/import_header_ready"/>
+                android:text="@string/import_header_initializing"/>
 
         <TextView
                 android:id="@+id/lbl_import_folder"
@@ -45,7 +45,7 @@
                 android:layout_below="@id/lbl_import_folder"
                 android:maxLines="1"
                 android:ellipsize="start"
-                tools:text="very/very/very/long/path/to/some/folder/somewhere"/>
+                android:text="@string/lib_dir_def"/>
 
         <TextView
                 android:id="@+id/lbl_last_import_time"
@@ -76,17 +76,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/import_progress"
-                android:layout_above="@+id/import_no_cancel"
+                android:layout_above="@+id/import_red_text"
                 tools:text="Current Full Importer Status"/>
 
         <TextView
-                android:id="@id/import_no_cancel"
+                android:id="@id/import_red_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/import_button"
                 android:textColor="@color/colorAccent"
                 android:gravity="center_horizontal"
-                android:text="@string/full_import_no_cancel"
+                android:text="@string/import_red_no_cancel"
                 android:visibility="gone"
                 tools:visibility="visible"/>
 
@@ -95,6 +95,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:text="@string/start_full_import"/>
+                android:text="@string/start_full_import"
+                android:enabled="false"/>
     </RelativeLayout>
 </RelativeLayout>

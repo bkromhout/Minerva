@@ -1,5 +1,6 @@
 package com.bkp.minerva;
 
+import android.support.annotation.StringRes;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
@@ -8,6 +9,14 @@ import java.util.List;
  * Constants.
  */
 public final class C {
+    /**
+     * Get a string resource using the application context.
+     * @param resId String resource Id
+     */
+    public static String getStr(@StringRes int resId) {
+        return Minerva.getAppCtx().getString(resId);
+    }
+
     // Sort types.
     public static final String SORT_TITLE = "SORT_TITLE";
     public static final String SORT_AUTHOR = "SORT_AUTHOR";

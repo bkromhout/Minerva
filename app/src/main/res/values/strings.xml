@@ -58,14 +58,30 @@
 
     <!-- Full Import Activity -->
     <string name="title_activity_full_import">Library Import</string>
+
+    <string name="import_header_initializing">Initializing…</string>
     <string name="import_header_ready">Ready</string>
     <string name="import_header_importing">Importing…</string>
+    <string name="import_header_saving">Saving…</string>
     <string name="import_header_cancelling">Cancelling…</string>
+
     <string name="lbl_folder">Folder:</string>
     <string name="lbl_last_full_import_time">Last Successful Full Import:</string>
     <string name="def_last_full_import_time">Never</string>
-    <string name="full_import_no_cancel">Books are now being saved to the database, cancelling is not allowed.</string>
+
+    <string name="import_red_no_cancel">Books are now being saved to the database, cancelling is not allowed.</string>
+    <string name="import_red_choose_dir">You must choose a library folder before you can do a full import.</string>
+
     <string name="start_full_import">Start Full Import</string>
+    <string name="choose_library_dir">Choose Library Folder</string>
+
+    <!-- Full Importer Log Strings -->
+    <string name="fil_starting">Starting full import\n\n</string>
+    <string name="fil_finding_files">Finding files…\n</string>
+
+
+    <string name="fil_err_invalid_lib_dir">Invalid library folder, cancelling import.</string>
+
 
     <!-- All Lists Fragment -->
     <string name="action_new_list">New list</string>

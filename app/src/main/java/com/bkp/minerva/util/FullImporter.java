@@ -3,6 +3,7 @@ package com.bkp.minerva.util;
 import android.util.Log;
 import com.bkp.minerva.C;
 import com.bkp.minerva.Minerva;
+import com.bkp.minerva.R;
 import com.bkp.minerva.prefs.DefaultPrefs;
 import com.bkp.minerva.realm.RBook;
 import com.bkp.minerva.rx.RxFileWalker;
@@ -115,11 +116,14 @@ public class FullImporter {
      * Starts a full import run. The importer will import files from the configured library directory.
      * <p>
      * Calling this when the importer isn't in a ready state will do nothing.
+     * @param listener The {@link IFullImportListener} to register for this run, or null if no listener should be
+     *                 registered. Note that if there is already a listener registered, this will be ignored.
      */
-    public void doFullImport() {
+    public void doFullImport(IFullImportListener listener) {
         // Don't do anything if we aren't in a ready state.
         if (currState != State.READY) return;
 
+        if (listener != null) registerListener(listener);
         // Kick off preparations; flow will continue from there.
         doFullImportPrep();
     }
@@ -136,14 +140,22 @@ public class FullImporter {
     private void doFullImportPrep() {
         currState = State.PREP;
 
+        // Listener updates.
+        logSubject.onNext(null);
+        if (listener != null) listener.setRunning();
+        logSubject.onNext(C.getStr(R.string.fil_starting));
+        progressSubject.onNext(-1);
+
         // Get and check currently configured library directory.
         String libDirPath = DefaultPrefs.get().getLibDir(null);
-        if ((currDir = tryResolveLibDir(libDirPath)) == null) {
+        if ((currDir = Util.tryResolveDir(libDirPath)) == null) {
             // We don't have a valid library directory.
+            logSubject.onNext(C.getStr(R.string.fil_err_invalid_lib_dir));
             resetState();
             return;
         }
 
+        logSubject.onNext(C.getStr(R.string.fil_finding_files));
         // Get a list of files in the directory (and its subdirectories) which have certain extensions.
         // This will call through to onGotFileList() once it has the results.
         fileWalkerSubscription = Observable
@@ -157,16 +169,6 @@ public class FullImporter {
                 .subscribe(this::onGotFileList);
     }
 
-    /**
-     * Try to resolve the given path to a File object representing a valid, readable director.
-     * @param libDirPath The path to the directory.
-     * @return The File object for the directory, or null if we had issues.
-     */
-    private File tryResolveLibDir(String libDirPath) {
-        if (libDirPath == null || libDirPath.isEmpty()) return null;
-        File dir = new File(libDirPath);
-        return (dir.exists() && dir.isDirectory() && dir.canRead()) ? dir : null;
-    }
 
     /**
      * Called by {@link #fileWalkerSubscription} when it calls {@code onNext()}.
@@ -269,7 +271,7 @@ public class FullImporter {
 
         // Cancelling isn't allowed from this point until we're done persisting data to Realm.
         currState = State.SAVING;
-        if (listener != null) listener.setNoCancel();
+        if (listener != null) listener.setSaving();
 
         // We've finished importing all books, now we'll persist them to Realm.
         Realm realm = Realm.getInstance(Minerva.getAppCtx());
@@ -296,7 +298,7 @@ public class FullImporter {
     private void fullImportFinished() {
         // Save current time to prefs to indicate a full import completed, then tell listener we finished.
         DefaultPrefs.get().putLastFullImportTime(Calendar.getInstance().getTimeInMillis());
-        if (listener != null) listener.setDone();
+        if (listener != null) listener.setReady();
         resetState();
     }
 
@@ -330,8 +332,8 @@ public class FullImporter {
 
         // Reset vars.
         this.currDir = null;
-        this.numDone = -1;
-        this.numTotal = -1;
+        this.numDone = 0;
+        this.numTotal = 0;
         this.bookQueue = new LinkedList<>();
 
         // Close Realm.
@@ -365,31 +367,6 @@ public class FullImporter {
     public boolean isReady() {
         return currState == State.READY;
     }
-//
-//        /**
-//         * The path to the directory that the importer is currently importing from.
-//         * @return Current import path, or null if the importer either isn't currently running, or is still preparing.
-//         */
-//        public String getCurrDirPath() {
-//            return currDir == null ? null : currDir.getAbsolutePath();
-//        }
-//
-//        /**
-//         * The number of files processed so far in the current import run.
-//         * @return Number of files processed, or -1 if the importer either isn't currently running, or is still
-//         * preparing.
-//         */
-//        public long getNumDone() {
-//            return numDone;
-//        }
-//
-//        /**
-//         * The total number of files in the current import run.
-//         * @return Total number of files, or -1 if the importer either isn't currently running, or is still preparing.
-//         */
-//        public long getNumTotal() {
-//            return numTotal;
-//        }
 
     /**
      * Set the listener. (The listener will be caught up if need be)
@@ -399,9 +376,25 @@ public class FullImporter {
      */
     public void registerListener(IFullImportListener listener) {
         if (listener == null || this.listener != null) return;
-
         this.listener = listener;
-        if (currState == State.SAVING) listener.setNoCancel();
+
+        // Catch the listener up to our current state.
+        switch (currState) {
+            case READY:
+                listener.setReady();
+                break;
+            case PREP:
+            case IMPORTING:
+                listener.setRunning();
+                break;
+            case SAVING:
+                listener.setSaving();
+                break;
+            case CANCELLING:
+            case FINISHING:
+                listener.setCancelling();
+                break;
+        }
         listener.setCurrImportDir(currDir == null ? null : currDir.getAbsolutePath());
         listener.setMaxProgress(numTotal);
         listenerProgressSub = listener.subscribeToProgressStream(progressSubject);
@@ -461,24 +454,29 @@ public class FullImporter {
         Subscription subscribeToProgressStream(final Subject<Integer, Integer> progressSubject);
 
         /**
-         * Set that we are in a state where cancelling isn't allowed. This is only called in the final part of the
-         * process, when we are saving the imported data.
+         * Called when the importer has finished and is in the ready state.
          */
-        void setNoCancel();
+        void setReady();
 
         /**
-         * Set that we are in the process of cancelling.
+         * Called when the importer starts running.
+         */
+        void setRunning();
+
+        /**
+         * Called when the importer transitions from the running to saving state. Implementers should note that trying
+         * to cancel in the saving state is not allowed, nothing will happen.
+         */
+        void setSaving();
+
+        /**
+         * Called when the importer starts trying to cancel.
          */
         void setCancelling();
 
         /**
-         * Set that we are idle and have cancelled.
+         * Called when the importer has finished cancelling.
          */
         void setCancelled();
-
-        /**
-         * Set that we are done/idle.
-         */
-        void setDone();
     }
 }

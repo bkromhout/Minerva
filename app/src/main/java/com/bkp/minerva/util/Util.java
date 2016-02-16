@@ -41,11 +41,11 @@ public class Util {
      * Start the given activity from the given context, passing the given bundle of extras to it.
      * @param ctx      The context to start the activity from.
      * @param actClass The class of the activity to start.
-     * @param params   The bundle of extras to pass to the activity.
+     * @param params   The bundle of extras to pass to the activity. Can be null.
      */
-    public static void startActWithBundle(Context ctx, Class<? super Activity> actClass, Bundle params) {
+    public static void startAct(Context ctx, Class<? extends Activity> actClass, Bundle params) {
         Intent intent = new Intent(ctx, actClass);
-        intent.putExtras(params);
+        if (params != null) intent.putExtras(params);
         ctx.startActivity(intent);
     }
 
@@ -97,13 +97,19 @@ public class Util {
      * @return True if there is a path set and the path points to a valid folder that is readable.
      */
     public static boolean hasValidLibDir() {
-        // Get the path and do some initial checks.
-        String libPath = DefaultPrefs.get().getLibDir(null);
-        if (libPath == null || libPath.isEmpty()) return false;
+        return tryResolveDir(DefaultPrefs.get().getLibDir(null)) != null;
+    }
 
+    /**
+     * Try to resolve the given path to a File object representing a valid, readable directory.
+     * @param dirPath The path to the directory.
+     * @return The File object for the directory, or null if we had issues.
+     */
+    public static File tryResolveDir(String dirPath) {
+        if (dirPath == null || dirPath.isEmpty()) return null;
         // Check that the directory exists and that we can read it.
-        File libDir = new File(libPath);
-        return libDir.exists() && libDir.isDirectory() && libDir.canRead();
+        File dir = new File(dirPath);
+        return (dir.exists() && dir.isDirectory() && dir.canRead()) ? dir : null;
     }
 
     /**
@@ -131,19 +137,4 @@ public class Util {
         if (fileName == null || fileName.lastIndexOf('.') == -1) return null;
         return fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
     }
-
-    // File names of ePub file assets.
-//    private static final String TEST_EPUB_1 = "Alice in Wonderland.epub";
-//    private static final String TEST_EPUB_2 = "IN THE YEAR 2889.epub";
-//    private static final String TEST_EPUB_3 = "The Man Who Would Be King.epub";
-//
-//    public static Book getTestBook1() {
-//        AssetManager assetManager = Minerva.getAppCtx().getAssets();
-//        try (InputStream in = assetManager.open(TEST_EPUB_1)) {
-//            return readEpubFile(in);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
 }
