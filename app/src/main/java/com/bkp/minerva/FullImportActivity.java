@@ -69,6 +69,10 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
      * What state the button is in currently.
      */
     private ButtonState currBtnState;
+    /**
+     * Whether or not a library dir needs to be chosen.
+     */
+    private boolean needsToChooseDir = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +110,7 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
             // We don't have a library directory set, so we'll change the UI to have the user choose one.
             setButtonState(ButtonState.CHOOSE_DIR, true);
             setRedTextState(RedTextState.MUST_CHOOSE_FOLDER);
+            needsToChooseDir = true;
         } else {
             // We have a valid library directory.
             tvFolder.setText(libDir.getAbsolutePath());
@@ -255,6 +260,7 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
         String path = folder.getAbsolutePath();
         DefaultPrefs.get().putLibDir(path);
         tvFolder.setText(path);
+        needsToChooseDir = false;
         setReady();
     }
 
@@ -291,7 +297,7 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
     @Override
     public void setReady() {
         // Don't switch do any of this if the user needs to choose a library directory.
-        if (currBtnState == ButtonState.CHOOSE_DIR) return;
+        if (needsToChooseDir) return;
 
         setHeaderState(HeaderState.READY);
         setButtonState(ButtonState.START_IMPORT, true);
