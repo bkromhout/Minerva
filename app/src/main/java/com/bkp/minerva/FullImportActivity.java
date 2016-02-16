@@ -106,14 +106,12 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
             // We don't have a library directory set, so we'll change the UI to have the user choose one.
             setButtonState(ButtonState.CHOOSE_DIR, true);
             setRedTextState(RedTextState.MUST_CHOOSE_FOLDER);
-            return;
         } else {
             // We have a valid library directory.
             tvFolder.setText(libDir.getAbsolutePath());
+            // We're good!
+            setReady();
         }
-
-        // We're good!
-        setReady();
     }
 
     @Override
@@ -292,6 +290,9 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
 
     @Override
     public void setReady() {
+        // Don't switch do any of this if the user needs to choose a library directory.
+        if (currBtnState == ButtonState.CHOOSE_DIR) return;
+
         setHeaderState(HeaderState.READY);
         setButtonState(ButtonState.START_IMPORT, true);
         setRedTextState(RedTextState.NONE);

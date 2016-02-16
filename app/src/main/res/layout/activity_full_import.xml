@@ -8,12 +8,12 @@
 
     <include
             layout="@layout/toolbar"
-            android:id="@+id/toolbarView"/>
+            android:id="@+id/toolbar"/>
 
     <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/toolbarView"
+            android:layout_below="@id/toolbar"
             android:paddingTop="@dimen/activity_vertical_margin"
             android:paddingStart="@dimen/activity_horizontal_margin"
             android:paddingEnd="@dimen/activity_horizontal_margin"
