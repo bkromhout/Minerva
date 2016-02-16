@@ -280,7 +280,7 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
 
     @Override
     public Subscription subscribeToLogStream(Subject<String, String> logSubject) {
-        return logSubject.observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
+        return logSubject.onBackpressureBuffer().observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
             if (s == null) tvImportLog.setText("");
             else {
                 tvImportLog.append(s);

@@ -483,6 +483,8 @@ public class FullImporter {
         if (listenerLogSub != null) listenerLogSub.unsubscribe();
         if (listenerProgressSub != null) listenerProgressSub.unsubscribe();
         listener = null;
+        // If the importer is in a ready state, we should go ahead and reset the subjects too.
+        if (isReady()) resetSubjects();
     }
 
     /**
