@@ -72,7 +72,7 @@
                 style="?android:attr/progressBarStyleHorizontal"/>
 
         <TextView
-                android:id="@+id/import_status"
+                android:id="@+id/import_log"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/import_progress"

@@ -58,8 +58,8 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
     TextView tvLastImportTime;
     @Bind(R.id.import_progress)
     ProgressBar progressBar;
-    @Bind(R.id.import_status)
-    TextView tvImportStatus;
+    @Bind(R.id.import_log)
+    TextView tvImportLog;
     @Bind(R.id.import_red_text)
     TextView tvRedText;
     @Bind(R.id.import_button)
@@ -274,8 +274,8 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
     @Override
     public Subscription subscribeToLogStream(Subject<String, String> logSubject) {
         return logSubject.observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
-            if (s == null) tvImportStatus.setText("");
-            else tvImportStatus.append(s);
+            if (s == null) tvImportLog.setText("");
+            else tvImportLog.append(s);
         });
     }
 
@@ -322,7 +322,7 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
     @Override
     public void setCancelled() {
         // Does the same thing for now.
-        tvImportStatus.append(C.getStr(R.string.fil_done)); // We aren't subscribed anymore, so we append this here.
+        tvImportLog.append(C.getStr(R.string.fil_done)); // We aren't subscribed anymore, so we append this here.
         setReady();
     }
 }
