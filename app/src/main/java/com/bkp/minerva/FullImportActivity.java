@@ -8,10 +8,7 @@ import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.ScrollView;
-import android.widget.TextView;
+import android.widget.*;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -32,6 +29,13 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
      */
     private enum HeaderState {
         INIT, READY, IMPORTING, SAVING, CANCELLING
+    }
+
+    /**
+     * States that the log view can be in.
+     */
+    private enum LogState {
+        FULL, ERRORS
     }
 
     /**
@@ -62,7 +66,13 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
     @Bind(R.id.import_log_cont)
     ScrollView svLogCont;
     @Bind(R.id.import_log)
-    TextView tvImportLog;
+    TextView tvLog;
+    @Bind(R.id.import_elog_cont)
+    ScrollView svELogCont;
+    @Bind(R.id.import_elog)
+    TextView tvELog;
+    @Bind(R.id.import_log_type)
+    RadioGroup rgLogType;
     @Bind(R.id.import_red_text)
     TextView tvRedText;
     @Bind(R.id.import_button)
@@ -100,6 +110,10 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
      */
     private void initUi() {
         setHeaderState(HeaderState.INIT);
+
+        // Set up the log type radio group.
+        rgLogType.setOnCheckedChangeListener(
+                (group, checkedId) -> setLogState(checkedId == R.id.rad_log_full ? LogState.FULL : LogState.ERRORS));
 
         // Check if the importer is already running; if it is then all we need to do is register as the listener,
         // because the fact that it's running allows us to make certain assumptions.
@@ -182,6 +196,23 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
                 break;
             case CANCELLING:
                 tvHeader.setText(R.string.import_header_cancelling);
+                break;
+        }
+    }
+
+    /**
+     * Change the state of the log.
+     * @param newState New log state.
+     */
+    private void setLogState(LogState newState) {
+        switch (newState) {
+            case FULL:
+                svELogCont.setVisibility(View.GONE);
+                svLogCont.setVisibility(View.VISIBLE);
+                break;
+            case ERRORS:
+                svLogCont.setVisibility(View.GONE);
+                svELogCont.setVisibility(View.VISIBLE);
                 break;
         }
     }
@@ -281,11 +312,23 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
     @Override
     public Subscription subscribeToLogStream(Subject<String, String> logSubject) {
         return logSubject.onBackpressureBuffer().observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
-            if (s == null) tvImportLog.setText("");
+            if (s == null) tvLog.setText("");
             else {
-                tvImportLog.append(s);
+                tvLog.append(s);
                 // Scroll log down as we append lines. TODO only scroll if we're close to the bottom now?
                 svLogCont.post(() -> svLogCont.fullScroll(View.FOCUS_DOWN));
+            }
+        });
+    }
+
+    @Override
+    public Subscription subscribeToErrorStream(Subject<String, String> errorSubject) {
+        return errorSubject.onBackpressureBuffer().observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
+            if (s == null) tvELog.setText("");
+            else {
+                tvELog.append(s);
+                // Scroll log down as we append lines. TODO only scroll if we're close to the bottom now?
+                svELogCont.post(() -> svELogCont.fullScroll(View.FOCUS_DOWN));
             }
         });
     }

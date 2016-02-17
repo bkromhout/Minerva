@@ -74,6 +74,9 @@
 
     <string name="start_full_import">Start Full Import</string>
     <string name="choose_library_dir">Choose Library Folder</string>
+    
+    <string name="lbl_rad_log_full">Full Log</string>
+    <string name="lbl_rad_log_errors_only">Errors Only</string>
 
     <!-- Full Importer Log Strings -->
     <string name="fil_done">Done\n</string>

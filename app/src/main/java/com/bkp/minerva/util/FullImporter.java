@@ -60,11 +60,16 @@ public class FullImporter {
      */
     private int numTotal;
     /**
-     * ReplaySubject which holds log lines.
+     * ReplaySubject wrapped in a SerializedSubject which holds log lines.
      */
     private Subject<String, String> logSubject;
     /**
-     * BehaviorSubject which holds the latest progress.
+     * ReplaySubject wrapped in a SerializedSubject which holds log lines which describe errors (these lines are also
+     * printed to the regular log stream)
+     */
+    private Subject<String, String> errorSubject;
+    /**
+     * BehaviorSubject wrapped in a SerializedSubject which holds the latest progress.
      */
     private Subject<Integer, Integer> progressSubject;
     /**
@@ -95,6 +100,10 @@ public class FullImporter {
      */
     private Subscription listenerLogSub;
     /**
+     * Listener's subscription to the error stream.
+     */
+    private Subscription listenerErrorSub;
+    /**
      * Listener's subscription to the progress stream.
      */
     private Subscription listenerProgressSub;
@@ -113,6 +122,7 @@ public class FullImporter {
         resetState();
         // Create subjects here, they should always exist.
         logSubject = new SerializedSubject<>(ReplaySubject.create());
+        errorSubject = new SerializedSubject<>(ReplaySubject.create());
         progressSubject = new SerializedSubject<>(BehaviorSubject.create());
     }
 
@@ -149,6 +159,7 @@ public class FullImporter {
 
         // Listener updates.
         logSubject.onNext(null);
+        errorSubject.onNext(null);
         if (listener != null) listener.setRunning();
         logSubject.onNext(C.getStr(R.string.fil_starting));
         progressSubject.onNext(-1);
@@ -158,6 +169,7 @@ public class FullImporter {
         if ((currDir = Util.tryResolveDir(libDirPath)) == null) {
             // We don't have a valid library directory.
             logSubject.onNext(C.getStr(R.string.fil_err_invalid_lib_dir));
+            errorSubject.onNext(C.getStr(R.string.fil_err_invalid_lib_dir));
             resetState();
             return;
         }
@@ -197,6 +209,7 @@ public class FullImporter {
         // Check file list.
         if (files.isEmpty()) {
             // We don't have any files.
+            // TODO add log here
             resetState();
             return;
         }
@@ -258,6 +271,7 @@ public class FullImporter {
             return new SuperBook(Util.readEpubFile(file), relPath);
         } catch (IllegalArgumentException e) {
             logSubject.onNext(C.getStr(R.string.fil_err_processing_file, e.getMessage()));
+            errorSubject.onNext(C.getStr(R.string.fil_err_processing_file, e.getMessage()));
             return null;
         }
     }
@@ -289,6 +303,7 @@ public class FullImporter {
         String s = C.getStr(R.string.fil_err_generic);
         Log.e("FullImporter", s, t);
         logSubject.onNext("\n" + s + ":\n\"" + t.getMessage() + "\"\n");
+        errorSubject.onNext("\n" + s + ":\n\"" + t.getMessage() + "\"\n");
         cancelFullImport();
     }
 
@@ -326,6 +341,7 @@ public class FullImporter {
                         String s = C.getStr(R.string.fil_err_realm);
                         Log.e("FullImporter", s, e);
                         logSubject.onNext("\n" + s + "\n");
+                        errorSubject.onNext("\n" + s + "\n");
                         unsafeCancelFullImport();
                     }
                 });
@@ -392,14 +408,6 @@ public class FullImporter {
         if (realm != null) realm.close();
         realm = null;
 
-        // Reset subjects after ensuring that the listeners aren't subscribed to them.
-//        if (listenerLogSub != null) listenerLogSub.unsubscribe();
-//        if (listenerProgressSub != null) listenerProgressSub.unsubscribe();
-//        if (logSubject != null) logSubject.onCompleted();
-//        if (progressSubject != null) progressSubject.onCompleted();
-//        logSubject = new SerializedSubject<>(ReplaySubject.create());
-//        progressSubject = new SerializedSubject<>(BehaviorSubject.create());
-
         this.currState = State.READY;
     }
 
@@ -409,19 +417,23 @@ public class FullImporter {
     private void resetSubjects() {
         // Unsubscribe listener from old subjects.
         if (listenerLogSub != null) listenerLogSub.unsubscribe();
+        if (listenerErrorSub != null) listenerErrorSub.unsubscribe();
         if (listenerProgressSub != null) listenerProgressSub.unsubscribe();
 
         // Complete subjects, if they exist.
         if (logSubject != null) logSubject.onCompleted();
+        if (errorSubject != null) errorSubject.onCompleted();
         if (progressSubject != null) progressSubject.onCompleted();
 
         // Create new subjects.
         logSubject = new SerializedSubject<>(ReplaySubject.create());
+        errorSubject = new SerializedSubject<>(ReplaySubject.create());
         progressSubject = new SerializedSubject<>(BehaviorSubject.create());
 
         // Subscribe listener to the new subjects.
         if (listener != null) {
             listenerLogSub = listener.subscribeToLogStream(logSubject);
+            listenerErrorSub = listener.subscribeToErrorStream(errorSubject);
             listenerProgressSub = listener.subscribeToProgressStream(progressSubject);
         }
     }
@@ -474,6 +486,7 @@ public class FullImporter {
         listener.setMaxProgress(numTotal);
         listenerProgressSub = listener.subscribeToProgressStream(progressSubject);
         listenerLogSub = listener.subscribeToLogStream(logSubject);
+        listenerErrorSub = listener.subscribeToErrorStream(errorSubject);
     }
 
     /**
@@ -481,6 +494,7 @@ public class FullImporter {
      */
     public void unregisterListener() {
         if (listenerLogSub != null) listenerLogSub.unsubscribe();
+        if (listenerErrorSub != null) listenerErrorSub.unsubscribe();
         if (listenerProgressSub != null) listenerProgressSub.unsubscribe();
         listener = null;
         // If the importer is in a ready state, we should go ahead and reset the subjects too.
@@ -507,7 +521,7 @@ public class FullImporter {
          * Have the listener subscribe to the log stream and return their subscription.
          * <p>
          * The log stream will emit all past and future log strings when subscribed to. A null emitted indicates that
-         * the log stream has been reset.
+         * the stream has been reset.
          * <p>
          * Note: If the implementer subscribes but doesn't return the subscription, memory leaks will very likely
          * occur.
@@ -515,6 +529,20 @@ public class FullImporter {
          * @return Listener's subscription to the log stream, or null if the listener didn't subscribe.
          */
         Subscription subscribeToLogStream(final Subject<String, String> logSubject);
+
+        /**
+         * Have the listener subscribe to the error stream and return their subscription. The error stream is a subset
+         * of the log stream, it only emits log strings which describe errors.
+         * <p>
+         * The error stream will emit all past and future error log strings when subscribed to. A null emitted indicates
+         * that the stream has been reset.
+         * <p>
+         * Note: If the implementer subscribes but doesn't return the subscription, memory leaks will very likely
+         * occur.
+         * @param errorSubject The error stream.
+         * @return Listener's subscription to the error stream, or null if the listener didn't subscribe.
+         */
+        Subscription subscribeToErrorStream(final Subject<String, String> errorSubject);
 
         /**
          * Have the listener subscribe to the progress stream and return their subscription.

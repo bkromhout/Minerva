@@ -76,7 +76,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/import_progress"
-                android:layout_above="@+id/import_red_text"
+                android:layout_above="@+id/import_log_type"
                 android:scrollbars="vertical">
 
             <TextView
@@ -85,6 +85,45 @@
                     android:layout_height="wrap_content"
                     tools:text="Current Full Importer Status"/>
         </ScrollView>
+
+        <ScrollView
+                android:id="@+id/import_elog_cont"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/import_progress"
+                android:layout_above="@id/import_log_type"
+                android:scrollbars="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+            <TextView
+                    android:id="@+id/import_elog"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="Current Full Importer Error Log"/>
+        </ScrollView>
+
+        <RadioGroup
+                android:id="@id/import_log_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/import_red_text"
+                android:orientation="horizontal"
+                android:gravity="center_horizontal"
+                android:checkedButton="@id/rad_log_full">
+
+            <RadioButton
+                    android:id="@+id/rad_log_full"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lbl_rad_log_full"/>
+
+            <RadioButton
+                    android:id="@+id/rad_log_errors_only"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lbl_rad_log_errors_only"/>
+        </RadioGroup>
 
         <TextView
                 android:id="@id/import_red_text"
