@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.0.0-beta4'
+        classpath 'com.android.tools.build:gradle:2.0.0-beta5'
         classpath 'me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'me.tatarka:gradle-retrolambda:3.3.0-beta4'
@@ -18,8 +18,9 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
-        maven { url "https://jitpack.io" }
+        maven {url "https://jitpack.io"}
         maven {url 'https://github.com/psiegman/mvn-repo/raw/master/releases'}
+        maven {url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo'}
     }
 }
 
