@@ -21,7 +21,9 @@ public class MinervaDebug extends Minerva {
     private void initStetho() {
         Stetho.initialize(Stetho.newInitializerBuilder(this)
                                 .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-                                .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
+                                .enableWebKitInspector(RealmInspectorModulesProvider.builder(this)
+                                                                                    .withMetaTables()
+                                                                                    .build())
                                 .build());
     }
 }
