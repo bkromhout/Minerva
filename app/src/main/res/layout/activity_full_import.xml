@@ -110,10 +110,10 @@
                 android:layout_above="@+id/import_red_text"
                 android:orientation="horizontal"
                 android:gravity="center_horizontal"
-                android:checkedButton="@id/rad_log_full">
+                android:checkedButton="@+id/rad_log_full">
 
             <RadioButton
-                    android:id="@+id/rad_log_full"
+                    android:id="@id/rad_log_full"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/lbl_rad_log_full"/>
