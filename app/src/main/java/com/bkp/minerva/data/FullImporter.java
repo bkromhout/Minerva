@@ -2,7 +2,6 @@ package com.bkp.minerva.data;
 
 import android.util.Log;
 import com.bkp.minerva.C;
-import com.bkp.minerva.Minerva;
 import com.bkp.minerva.R;
 import com.bkp.minerva.prefs.DefaultPrefs;
 import com.bkp.minerva.realm.RBook;
@@ -26,8 +25,6 @@ import java.util.Queue;
 
 /**
  * Handles full library imports.
- * <p>
- * TODO investigate whether loading strings into memory is faster than getting them from resources every time.
  */
 public class FullImporter {
     /**
@@ -326,7 +323,7 @@ public class FullImporter {
         progressSubject.onNext(-1);
 
         // We've finished importing all books, now we'll persist them to Realm.
-        Realm realm = Realm.getInstance(Minerva.getAppCtx());
+        Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(bgRealm -> bgRealm.copyToRealmOrUpdate(bookQueue),
                 new Realm.Transaction.Callback() {
                     @Override
