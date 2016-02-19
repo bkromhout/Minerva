@@ -240,6 +240,8 @@ public class LibraryFragment extends Fragment {
         // Scroll back to the same position.
         // TODO this probably won't show the expected item it both the card and sort type/dir are changed, because while
         // TODO the position will be correct, the item at that position will be different... we'll figure it out.
+
+        // TODO the smooth scroll can take a while... I'd much rather it was instant.
         if (currFirstVisPos != RecyclerView.NO_POSITION) recyclerView.smoothScrollToPosition(currFirstVisPos);
     }
 
@@ -289,7 +291,7 @@ public class LibraryFragment extends Fragment {
                     // We only need to explicitly tell the recycler view to redraw its items if we changed our sort
                     // options and didn't change our card type (swapping adapters to change card types would force a
                     // redraw anyway).
-                    if ((sortTypeChanged || sortDirChanged) && !cardTypeChanged) ; // TODO force rv redraw.
+                    if ((sortTypeChanged || sortDirChanged) && !cardTypeChanged) adapter.notifyDataSetChanged();
                 })
                 .show();
     }
