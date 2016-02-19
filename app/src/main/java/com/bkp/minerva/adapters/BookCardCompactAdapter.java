@@ -46,7 +46,7 @@ public class BookCardCompactAdapter extends RealmBasedRecyclerViewAdapter<RBook,
         // Fill in data.
         viewHolder.tvTitle.setText(rBook.getTitle());
         viewHolder.tvAuthor.setText(rBook.getAuthor());
-        viewHolder.tvRating.setText(rBook.getRating());
+        viewHolder.tvRating.setText(String.valueOf(rBook.getRating()));
     }
 
     /**
