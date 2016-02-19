@@ -4,14 +4,17 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.bkp.minerva.R;
+import com.bkp.minerva.events.BookCardClickEvent;
 import com.bkp.minerva.realm.RBook;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 import io.realm.RealmViewHolder;
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * Realm RecyclerView Adapter for compact book cards.
@@ -38,10 +41,19 @@ public class BookCardCompactAdapter extends RealmBasedRecyclerViewAdapter<RBook,
     public void onBindRealmViewHolder(ViewHolder viewHolder, int position) {
         final RBook rBook = realmResults.get(position);
 
-        // Set info button handler.
-        viewHolder.btnInfo.setOnClickListener(view -> {
-            // TODO!
+        // Set card click handler.
+        viewHolder.content.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
+                BookCardClickEvent.Type.NORMAL, rBook.getRelPath())));
+
+        // Set card long click handler.
+        viewHolder.content.setOnLongClickListener(v -> {
+            EventBus.getDefault().post(new BookCardClickEvent(BookCardClickEvent.Type.LONG, rBook.getRelPath()));
+            return true;
         });
+
+        // Set info button handler.
+        viewHolder.btnInfo.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
+                BookCardClickEvent.Type.INFO, rBook.getRelPath())));
 
         // Fill in data.
         viewHolder.tvTitle.setText(rBook.getTitle());
@@ -53,6 +65,8 @@ public class BookCardCompactAdapter extends RealmBasedRecyclerViewAdapter<RBook,
      * ViewHolder class.
      */
     public class ViewHolder extends RealmViewHolder {
+        @Bind(R.id.content)
+        public RelativeLayout content;
         @Bind(R.id.btn_info)
         public ImageButton btnInfo;
         @Bind(R.id.title)

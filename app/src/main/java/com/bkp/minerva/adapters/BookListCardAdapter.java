@@ -4,14 +4,17 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.bkp.minerva.R;
+import com.bkp.minerva.events.BookListCardClickEvent;
 import com.bkp.minerva.realm.RBookList;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 import io.realm.RealmViewHolder;
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * Realm RecyclerView Adapter for book list cards.
@@ -38,10 +41,22 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
     public void onBindRealmViewHolder(ViewHolder viewHolder, int position) {
         final RBookList rBookList = realmResults.get(position);
 
-        // Set actions button handler.
-        viewHolder.btnActions.setOnClickListener(v -> {
-            // TODO.
+        // Set card click handler.
+        viewHolder.content.setOnClickListener(view ->
+                EventBus.getDefault().post(new BookListCardClickEvent(BookListCardClickEvent.Type.NORMAL,
+                        rBookList.getName())));
+
+        // Set card long click handler.
+        viewHolder.content.setOnLongClickListener(view -> {
+            EventBus.getDefault().post(
+                    new BookListCardClickEvent(BookListCardClickEvent.Type.LONG, rBookList.getName()));
+            return true;
         });
+
+        // Set actions button handler.
+        viewHolder.btnActions.setOnClickListener(v ->
+                EventBus.getDefault().post(new BookListCardClickEvent(BookListCardClickEvent.Type.ACTIONS,
+                        rBookList.getName())));
 
         // Set list name.
         viewHolder.tvListName.setText(rBookList.getName());
@@ -51,6 +66,8 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
      * ViewHolder class.
      */
     public class ViewHolder extends RealmViewHolder {
+        @Bind(R.id.content)
+        public RelativeLayout content;
         @Bind(R.id.list_name)
         public TextView tvListName;
         @Bind(R.id.btn_actions)

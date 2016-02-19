@@ -26,12 +26,15 @@ import com.bkp.minerva.R;
 import com.bkp.minerva.adapters.BookCardAdapter;
 import com.bkp.minerva.adapters.BookCardCompactAdapter;
 import com.bkp.minerva.adapters.BookCardNoCoverAdapter;
+import com.bkp.minerva.events.BookCardClickEvent;
 import com.bkp.minerva.prefs.LibraryPrefs;
 import com.bkp.minerva.realm.RBook;
 import com.bkp.minerva.util.Util;
 import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.lang.reflect.Method;
 
@@ -169,6 +172,18 @@ public class LibraryFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         // Close Realm.
@@ -243,6 +258,32 @@ public class LibraryFragment extends Fragment {
 
         // TODO the smooth scroll can take a while... I'd much rather it was instant.
         if (currFirstVisPos != RecyclerView.NO_POSITION) recyclerView.smoothScrollToPosition(currFirstVisPos);
+    }
+
+    /**
+     * Called when one of the cards is clicked.
+     * @param event {@link BookCardClickEvent}.
+     */
+    @Subscribe
+    public void onCardClicked(BookCardClickEvent event) {
+        // Get the associated RBook.
+        RBook rBook = realm.where(RBook.class).equalTo("relPath", event.getRelPath()).findFirst();
+
+        // TODO Do something based on the click type.
+        switch (event.getType()) {
+            case NORMAL:
+
+                break;
+            case LONG:
+
+                break;
+            case INFO:
+
+                break;
+            case QUICK_TAG:
+
+                break;
+        }
     }
 
     /**

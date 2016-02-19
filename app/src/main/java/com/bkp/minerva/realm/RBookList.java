@@ -2,17 +2,16 @@ package com.bkp.minerva.realm;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
-import io.realm.annotations.Index;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Represents a book list in Realm.
  */
 public class RBookList extends RealmObject {
-
     /**
-     * Book list name.
+     * Book list name. This must be unique!
      */
-    @Index
+    @PrimaryKey
     private String name;
     /**
      * Position number for the next item to be added to this list.
@@ -39,7 +38,7 @@ public class RBookList extends RealmObject {
 
     /**
      * Create a new {@link RBookList} with the given {@code name}.
-     * @param name Name of the book list.
+     * @param name Name of the book list. This MUST be unique!
      */
     public RBookList(String name) {
         this.name = name;

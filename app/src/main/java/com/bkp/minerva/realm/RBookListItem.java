@@ -5,6 +5,9 @@ import io.realm.annotations.Index;
 
 /**
  * Represents an item in a book list in Realm.
+ *
+ * TODO add some sort of primary key to this!
+ * TODO add a reference to the list for this!
  */
 public class RBookListItem extends RealmObject {
 

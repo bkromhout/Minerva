@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this); // TODO turn on once we have event handlers in here.
+        EventBus.getDefault().register(this);
 
         // Check for permissions if not already doing so.
         if (!Dexter.isRequestOngoing()) Dexter.checkPermission(storagePL, Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onStop() {
-        EventBus.getDefault().unregister(this);  // TODO turn on once we have event handlers in here.
+        EventBus.getDefault().unregister(this);
         super.onStop();
     }
 
