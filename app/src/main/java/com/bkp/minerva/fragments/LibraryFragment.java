@@ -251,6 +251,7 @@ public class LibraryFragment extends Fragment {
     @OnClick(R.id.fab)
     void onFabClick() {
         // Inflate dialog view and get views.
+        @SuppressLint("InflateParams")
         View view = LayoutInflater.from(getContext()).inflate(R.layout.library_view_opts, null);
         final RadioGroup rgSortType = ButterKnife.findById(view, R.id.rg_sort_type);
         final RadioGroup rgSortDir = ButterKnife.findById(view, R.id.rg_sort_dir);
