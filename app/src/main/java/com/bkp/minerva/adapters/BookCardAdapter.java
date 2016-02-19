@@ -3,17 +3,19 @@ package com.bkp.minerva.adapters;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RatingBar;
+import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.bkp.minerva.R;
 import com.bkp.minerva.realm.RBook;
+import com.bkp.minerva.util.Util;
 import com.greenfrvr.hashtagview.HashtagView;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 import io.realm.RealmViewHolder;
-
-import java.util.Arrays;
 
 /**
  * Realm RecyclerView Adapter for normal book cards.
@@ -60,7 +62,7 @@ public class BookCardAdapter extends RealmBasedRecyclerViewAdapter<RBook, BookCa
         viewHolder.tvAuthor.setText(rBook.getAuthor());
         viewHolder.tvDesc.setText(rBook.getDesc());
         viewHolder.rbRating.setRating(rBook.getRating());
-        viewHolder.htvTags.setData(Arrays.asList(rBook.getTags().split(";;")));
+        viewHolder.htvTags.setData(Util.stringToList(rBook.getTags(), ";;"));
     }
 
     /**

@@ -2,6 +2,7 @@ package com.bkp.minerva.realm;
 
 import com.bkp.minerva.data.SuperBook;
 import com.bkp.minerva.util.BookUtils;
+import com.bkp.minerva.util.Util;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
@@ -142,8 +143,8 @@ public class RBook extends RealmObject {
         this.title = book.getTitle();
         this.author = BookUtils.getFirstAuthor(book);
         this.desc = BookUtils.getFirstDesc(book);
-        this.subjects = BookUtils.listToString(book.getMetadata().getSubjects());
-        this.types = BookUtils.listToString(book.getMetadata().getTypes());
+        this.subjects = Util.listToString(book.getMetadata().getSubjects(), ";;");
+        this.types = Util.listToString(book.getMetadata().getTypes(), ";;");
         this.format = book.getMetadata().getFormat();
         this.language = book.getMetadata().getLanguage();
         this.publisher = BookUtils.getFirstPublisher(book);

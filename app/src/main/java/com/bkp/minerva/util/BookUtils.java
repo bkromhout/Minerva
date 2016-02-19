@@ -4,9 +4,6 @@ import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Date;
 
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * Utility methods for working with {@link nl.siegmann.epublib.domain.Book} objects.
  * @see Book
@@ -75,21 +72,5 @@ public class BookUtils {
             return bookDate.getValue();
         }
         return null;
-    }
-
-    /**
-     * Take a list of strings and concatenate them, separated by commas.
-     * @param list List of strings.
-     * @return Concatenated string, or null if the list is null or empty.
-     */
-    public static String listToString(List<String> list) {
-        if (list == null || list.isEmpty()) return null;
-        StringBuilder builder = new StringBuilder();
-        Iterator<String> iterator = list.iterator();
-        while (iterator.hasNext()) {
-            builder.append(iterator.next());
-            if (iterator.hasNext()) builder.append(",");
-        }
-        return builder.toString();
     }
 }

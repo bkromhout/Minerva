@@ -20,6 +20,10 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.epub.EpubReader;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Utility functions class.
@@ -136,5 +140,34 @@ public class Util {
     public static String getExtFromFName(String fileName) {
         if (fileName == null || fileName.lastIndexOf('.') == -1) return null;
         return fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+    }
+
+    /**
+     * Take a list of strings and concatenate them, separated by {@code separator}.
+     * @param list      List of strings.
+     * @param separator What string to use as separators in the output string.
+     * @return Concatenated string, or null if the list is null or empty.
+     */
+    public static String listToString(List<String> list, String separator) {
+        if (list == null || list.isEmpty()) return null;
+        StringBuilder builder = new StringBuilder();
+        Iterator<String> iterator = list.iterator();
+        while (iterator.hasNext()) {
+            builder.append(iterator.next());
+            if (iterator.hasNext()) builder.append(separator);
+        }
+        return builder.toString();
+    }
+
+    /**
+     * Take a string and split it into a list of strings, splitting after each {@code separator}.
+     * @param string    String to split.
+     * @param separator Separator to split on.
+     * @return List of strings, might be empty.
+     */
+    public static List<String> stringToList(String string, String separator) {
+        List<String> strings = Arrays.asList(string.split("\\Q" + separator + "\\E"));
+        if (strings.size() == 1 && strings.get(0).trim().equals("")) return new ArrayList<>();
+        return strings;
     }
 }
