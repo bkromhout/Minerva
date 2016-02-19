@@ -14,7 +14,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
 import com.bkp.minerva.prefs.DefaultPrefs;
-import com.bkp.minerva.util.FullImporter;
+import com.bkp.minerva.data.FullImporter;
 import com.bkp.minerva.util.Util;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;

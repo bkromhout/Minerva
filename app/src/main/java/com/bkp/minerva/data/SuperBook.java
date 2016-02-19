@@ -1,5 +1,6 @@
-package com.bkp.minerva.util;
+package com.bkp.minerva.data;
 
+import com.bkp.minerva.util.BookUtils;
 import nl.siegmann.epublib.domain.Book;
 
 /**

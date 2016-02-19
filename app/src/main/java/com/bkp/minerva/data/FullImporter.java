@@ -1,4 +1,4 @@
-package com.bkp.minerva.util;
+package com.bkp.minerva.data;
 
 import android.util.Log;
 import com.bkp.minerva.C;
@@ -7,6 +7,7 @@ import com.bkp.minerva.R;
 import com.bkp.minerva.prefs.DefaultPrefs;
 import com.bkp.minerva.realm.RBook;
 import com.bkp.minerva.rx.RxFileWalker;
+import com.bkp.minerva.util.Util;
 import io.realm.Realm;
 import rx.Observable;
 import rx.Subscription;
