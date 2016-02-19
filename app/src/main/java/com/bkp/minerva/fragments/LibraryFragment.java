@@ -1,5 +1,7 @@
 package com.bkp.minerva.fragments;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
@@ -8,6 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.view.menu.MenuBuilder;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.*;
 import android.widget.RadioGroup;
@@ -21,21 +24,22 @@ import com.bkp.minerva.C;
 import com.bkp.minerva.FullImportActivity;
 import com.bkp.minerva.R;
 import com.bkp.minerva.adapters.BookCardAdapter;
+import com.bkp.minerva.adapters.BookCardCompactAdapter;
+import com.bkp.minerva.adapters.BookCardNoCoverAdapter;
 import com.bkp.minerva.prefs.LibraryPrefs;
 import com.bkp.minerva.realm.RBook;
 import com.bkp.minerva.util.Util;
 import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
-import io.realm.Sort;
 
 import java.lang.reflect.Method;
 
 /**
- *
+ * Fragment in charge of showing the user's whole library.
  */
 public class LibraryFragment extends Fragment {
-    // Views
+    // Views.
     @Bind(R.id.fab)
     FloatingActionButton fabViewOpts;
     @Bind(R.id.recycler)
@@ -99,6 +103,7 @@ public class LibraryFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         // Read prefs to fill in vars.
         libraryPrefs = LibraryPrefs.get();
         readPrefs();
@@ -115,24 +120,23 @@ public class LibraryFragment extends Fragment {
     private void readPrefs() {
         sortType = libraryPrefs.getSortType(C.SORT_TITLE);
         sortDir = libraryPrefs.getSortDir(C.SORT_ASC);
-        cardType = libraryPrefs.getCardType(C.CARD_NORMAL);
+        cardType = libraryPrefs.getCardType(C.BOOK_CARD_NORMAL);
     }
 
     /**
      * Initialize the UI.
      */
     private void initUi() {
-        // TODO flesh this out in some other method or something, this is just a quick and dirty test.
-
         // Get results.
         books = realm
                 .where(RBook.class)
-                .findAllSorted("title", Sort.ASCENDING);
+                .findAll();
 
-        // Create adapter.
-        adapter = new BookCardAdapter(getActivity(), books, true, true);
+        // Sort results.
+        sortRealmResults();
 
-        // Bind adapter.
+        // Create and bind adapter.
+        adapter = makeAdapter();
         recyclerView.setAdapter(adapter);
     }
 
@@ -187,6 +191,59 @@ public class LibraryFragment extends Fragment {
     }
 
     /**
+     * Uses the current view options to resort the current {@link RealmResults} in {@link #books}. This method makes no
+     * attempts to force a redraw on the actual recycler view.
+     * <p>
+     * If {@link #realm} or {@link #books} are {@code null}, or otherwise not available/ready, this method does
+     * nothing.
+     */
+    private void sortRealmResults() {
+        if (realm == null || realm.isClosed() || books == null || !books.isValid()) return;
+        books.sort(C.getRealmSortField(sortType), C.getRealmSortDir(sortDir));
+    }
+
+    /**
+     * Create a {@link RealmBasedRecyclerViewAdapter} based on the current view options and return it.
+     * @return New {@link RealmBasedRecyclerViewAdapter}. Will return null if we cannot get the activity context, if
+     * {@link #books} is null or invalid, or if the current value of {@link #cardType} is not valid.
+     */
+    private RealmBasedRecyclerViewAdapter makeAdapter() {
+        Context ctx = getActivity();
+        if (ctx == null || books == null || !books.isValid()) return null;
+
+        // Create a new adapter based on the card type.
+        switch (cardType) {
+            case C.BOOK_CARD_NORMAL:
+                return new BookCardAdapter(ctx, books, true, true);
+            case C.BOOK_CARD_NO_COVER:
+                return new BookCardNoCoverAdapter(ctx, books, true, true);
+            case C.BOOK_CARD_COMPACT:
+                return new BookCardCompactAdapter(ctx, books, true, true);
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Uses the current view options to change the card layout currently in use. Preserves the position currently
+     * scrolled to in the list before switching adapters.
+     */
+    private void changeCardType() {
+        // Store the current first visible item position so that we can scroll back to it after switching adapters.
+        int currFirstVisPos = recyclerView.findFirstVisibleItemPosition();
+
+        // Swap the adapter
+        if (adapter != null) adapter.close();
+        adapter = makeAdapter();
+        recyclerView.setAdapter(adapter);
+
+        // Scroll back to the same position.
+        // TODO this probably won't show the expected item it both the card and sort type/dir are changed, because while
+        // TODO the position will be correct, the item at that position will be different... we'll figure it out.
+        if (currFirstVisPos != RecyclerView.NO_POSITION) recyclerView.smoothScrollToPosition(currFirstVisPos);
+    }
+
+    /**
      * Show the view options dialog when the FAB is clicked.
      */
     @OnClick(R.id.fab)
@@ -198,9 +255,9 @@ public class LibraryFragment extends Fragment {
         final RadioGroup rgCardType = ButterKnife.findById(view, R.id.rg_card_type);
 
         // Set up views.
-        rgSortType.check(idFromStr(sortType));
-        rgSortDir.check(idFromStr(sortDir));
-        rgCardType.check(idFromStr(cardType));
+        rgSortType.check(idFromStrConst(sortType));
+        rgSortDir.check(idFromStrConst(sortDir));
+        rgCardType.check(idFromStrConst(cardType));
 
         // Construct material dialog.
         new MaterialDialog.Builder(getContext())
@@ -211,14 +268,28 @@ public class LibraryFragment extends Fragment {
                 .positiveText(R.string.ok)
                 .negativeText(R.string.cancel)
                 .onPositive((dialog, which) -> {
-                    // Figure out choices.
-                    sortType = strFromId(rgSortType.getCheckedRadioButtonId());
-                    sortDir = strFromId(rgSortDir.getCheckedRadioButtonId());
-                    cardType = strFromId(rgCardType.getCheckedRadioButtonId());
-                    // Persist them.
+                    // Figure out which options are different.
+                    boolean sortTypeChanged = !strConstFromId(rgSortType.getCheckedRadioButtonId()).equals(sortType);
+                    boolean sortDirChanged = !strConstFromId(rgSortDir.getCheckedRadioButtonId()).equals(sortDir);
+                    boolean cardTypeChanged = !strConstFromId(rgCardType.getCheckedRadioButtonId()).equals(cardType);
+
+                    // Save new options locally if different, then persist them all to preferences.
+                    if (sortTypeChanged) sortType = strConstFromId(rgSortType.getCheckedRadioButtonId());
+                    if (sortDirChanged) sortDir = strConstFromId(rgSortDir.getCheckedRadioButtonId());
+                    if (cardTypeChanged) cardType = strConstFromId(rgCardType.getCheckedRadioButtonId());
                     libraryPrefs.putLibraryViewOpts(sortType, sortDir, cardType);
 
-                    // TODO refresh recycler view
+                    // Re-sort data if necessary.
+                    if (sortTypeChanged || sortDirChanged) sortRealmResults();
+
+                    // Switching the card type means switching the recycler view adapter, we certainly don't want to
+                    // do that if we haven't changed it.
+                    if (cardTypeChanged) changeCardType();
+
+                    // We only need to explicitly tell the recycler view to redraw its items if we changed our sort
+                    // options and didn't change our card type (swapping adapters to change card types would force a
+                    // redraw anyway).
+                    if ((sortTypeChanged || sortDirChanged) && !cardTypeChanged) ; // TODO force rv redraw.
                 })
                 .show();
     }
@@ -228,7 +299,8 @@ public class LibraryFragment extends Fragment {
      * @param id A view ID.
      * @return A string constant.
      */
-    private String strFromId(@IdRes int id) {
+    @SuppressLint("DefaultLocale")
+    private static String strConstFromId(@IdRes int id) {
         switch (id) {
             // Sort types.
             case R.id.sort_title:
@@ -246,13 +318,13 @@ public class LibraryFragment extends Fragment {
                 return C.SORT_DESC;
             // Card types.
             case R.id.card_normal:
-                return C.CARD_NORMAL;
+                return C.BOOK_CARD_NORMAL;
             case R.id.card_no_cover:
-                return C.CARD_NO_COVER;
+                return C.BOOK_CARD_NO_COVER;
             case R.id.card_compact:
-                return C.CARD_COMPACT;
+                return C.BOOK_CARD_COMPACT;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(String.format("Invalid resource ID: %d", id));
         }
     }
 
@@ -261,7 +333,7 @@ public class LibraryFragment extends Fragment {
      * @param str String constant.
      * @return A view ID.
      */
-    private Integer idFromStr(String str) {
+    private static Integer idFromStrConst(String str) {
         switch (str) {
             // Sort types.
             case C.SORT_TITLE:
@@ -278,14 +350,14 @@ public class LibraryFragment extends Fragment {
             case C.SORT_DESC:
                 return R.id.sort_desc;
             // Card types.
-            case C.CARD_NORMAL:
+            case C.BOOK_CARD_NORMAL:
                 return R.id.card_normal;
-            case C.CARD_NO_COVER:
+            case C.BOOK_CARD_NO_COVER:
                 return R.id.card_no_cover;
-            case C.CARD_COMPACT:
+            case C.BOOK_CARD_COMPACT:
                 return R.id.card_compact;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(String.format("Invalid string constant: %s", str));
         }
     }
 }
