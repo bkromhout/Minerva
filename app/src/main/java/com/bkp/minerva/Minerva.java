@@ -3,6 +3,8 @@ package com.bkp.minerva;
 import android.app.Application;
 import android.content.Context;
 import com.karumi.dexter.Dexter;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 /**
  * Custom Application class.
@@ -20,6 +22,19 @@ public class Minerva extends Application {
         instance = this;
         // Init Dexter.
         Dexter.initialize(this);
+        // Set up Realm.
+        setupRealm();
+    }
+
+    /**
+     * Set up Realm's default configuration.
+     */
+    private void setupRealm() {
+        RealmConfiguration config = new RealmConfiguration.Builder(this)
+                .name("minerva.realm")
+                .schemaVersion(0)
+                .build();
+        Realm.setDefaultConfiguration(config);
     }
 
     /**
@@ -30,5 +45,4 @@ public class Minerva extends Application {
     public static Context getAppCtx() {
         return instance.getApplicationContext();
     }
-
 }
