@@ -14,13 +14,21 @@ import android.widget.RadioGroup;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkp.minerva.C;
 import com.bkp.minerva.FullImportActivity;
+import com.bkp.minerva.Minerva;
 import com.bkp.minerva.R;
+import com.bkp.minerva.adapters.BookCardAdapter;
 import com.bkp.minerva.prefs.LibraryPrefs;
+import com.bkp.minerva.realm.RBook;
 import com.bkp.minerva.util.Util;
+import io.realm.Realm;
+import io.realm.RealmBasedRecyclerViewAdapter;
+import io.realm.RealmResults;
+import io.realm.Sort;
 
 import java.lang.reflect.Method;
 
@@ -31,6 +39,8 @@ public class LibraryFragment extends Fragment {
     // Views
     @Bind(R.id.fab)
     FloatingActionButton fabViewOpts;
+    @Bind(R.id.recycler)
+    RealmRecyclerView recyclerView;
 
     /**
      * Preferences.
@@ -48,6 +58,18 @@ public class LibraryFragment extends Fragment {
      * The current card type.
      */
     private String cardType;
+    /**
+     * Instance of Realm.
+     */
+    private Realm realm;
+    /**
+     * {@link RBook}s currently shown in the recycler view.
+     */
+    private RealmResults<RBook> books;
+    /**
+     * Adapter currently being used by the recycler view.
+     */
+    private RealmBasedRecyclerViewAdapter adapter;
 
     public LibraryFragment() {
         // Required empty public constructor
@@ -68,11 +90,24 @@ public class LibraryFragment extends Fragment {
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment, then bind and set up views.
+        View root = inflater.inflate(R.layout.fragment_library, container, false);
+        ButterKnife.bind(this, root);
+        return root;
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // Read prefs to fill in vars.
         libraryPrefs = LibraryPrefs.get();
         readPrefs();
+
+        // Get Realm.
+        realm = Realm.getInstance(Minerva.getAppCtx());
+
+        initUi();
     }
 
     /**
@@ -84,20 +119,22 @@ public class LibraryFragment extends Fragment {
         cardType = libraryPrefs.getCardType(C.CARD_NORMAL);
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment, then bind and set up views.
-        View root = inflater.inflate(R.layout.fragment_library, container, false);
-        ButterKnife.bind(this, root);
-        initUi();
-        return root;
-    }
-
     /**
      * Initialize the UI.
      */
     private void initUi() {
-        // TODO Set up recyclerview
+        // TODO flesh this out in some other method or something, this is just a quick and dirty test.
+
+        // Get results.
+        books = realm
+                .where(RBook.class)
+                .findAllSorted("title", Sort.ASCENDING);
+
+        // Create adapter.
+        adapter = new BookCardAdapter(getActivity(), books, true, true);
+
+        // Bind adapter.
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -126,6 +163,16 @@ public class LibraryFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.library, menu);
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Close Realm.
+        if (realm != null) {
+            realm.close();
+            realm = null;
+        }
     }
 
     @Override

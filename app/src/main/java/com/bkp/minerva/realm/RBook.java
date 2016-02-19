@@ -100,7 +100,7 @@ public class RBook extends RealmObject {
      */
     private Date lastImportDate;
     /**
-     * Tags for book. Comma separated like so: {@code "tag1,tag2,tag3,tag4"}.
+     * Tags for book. Separated with two semi-colons, like so: {@code "tag1;;tag2;;tag3;;tag4"}.
      */
     @Index
     private String tags;
