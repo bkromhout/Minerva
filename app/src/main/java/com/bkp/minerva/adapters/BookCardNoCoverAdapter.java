@@ -3,7 +3,9 @@ package com.bkp.minerva.adapters;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.ImageButton;
+import android.widget.RatingBar;
+import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.bkp.minerva.R;
@@ -16,34 +18,29 @@ import io.realm.RealmViewHolder;
 import java.util.Arrays;
 
 /**
- * Realm RecyclerView Adapter for normal book cards.
+ * Realm RecyclerView Adapter for book cards with no covers.
  */
-public class BookCardAdapter extends RealmBasedRecyclerViewAdapter<RBook, BookCardAdapter.ViewHolder> {
+public class BookCardNoCoverAdapter extends RealmBasedRecyclerViewAdapter<RBook, BookCardNoCoverAdapter.ViewHolder> {
     /**
-     * Create a new {@link BookCardAdapter}.
+     * Create a new {@link BookCardNoCoverAdapter}.
      * @param context         Context.
      * @param realmResults    Results of a Realm query to display.
      * @param automaticUpdate If true, the list will update automatically.
      * @param animateResults  If true, updates will be animated.
      */
-    public BookCardAdapter(Context context, RealmResults<RBook> realmResults, boolean automaticUpdate,
-                           boolean animateResults) {
+    public BookCardNoCoverAdapter(Context context, RealmResults<RBook> realmResults, boolean automaticUpdate,
+                                  boolean animateResults) {
         super(context, realmResults, automaticUpdate, animateResults);
     }
 
     @Override
     public ViewHolder onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
-        return new ViewHolder(inflater.inflate(R.layout.book_card, viewGroup, false));
+        return new ViewHolder(inflater.inflate(R.layout.book_card_no_cover, viewGroup, false));
     }
 
     @Override
     public void onBindRealmViewHolder(ViewHolder viewHolder, int position) {
         final RBook rBook = realmResults.get(position);
-
-        // Set cover image.
-        if (rBook.isHasCoverImage()) {
-            // TODO something here
-        }
 
         // Set info button handler.
         viewHolder.btnInfo.setOnClickListener(view -> {
@@ -67,8 +64,6 @@ public class BookCardAdapter extends RealmBasedRecyclerViewAdapter<RBook, BookCa
      * ViewHolder class.
      */
     public class ViewHolder extends RealmViewHolder {
-        @Bind(R.id.cover_image)
-        public ImageView coverImage;
         @Bind(R.id.btn_info)
         public ImageButton btnInfo;
         @Bind(R.id.btn_quick_tag)

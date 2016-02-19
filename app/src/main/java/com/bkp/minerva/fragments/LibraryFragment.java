@@ -19,7 +19,6 @@ import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkp.minerva.C;
 import com.bkp.minerva.FullImportActivity;
-import com.bkp.minerva.Minerva;
 import com.bkp.minerva.R;
 import com.bkp.minerva.adapters.BookCardAdapter;
 import com.bkp.minerva.prefs.LibraryPrefs;
@@ -105,7 +104,7 @@ public class LibraryFragment extends Fragment {
         readPrefs();
 
         // Get Realm.
-        realm = Realm.getInstance(Minerva.getAppCtx());
+        realm = Realm.getDefaultInstance();
 
         initUi();
     }
