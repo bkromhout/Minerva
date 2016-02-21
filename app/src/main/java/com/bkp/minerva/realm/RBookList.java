@@ -6,6 +6,7 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
+import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -17,6 +18,12 @@ public class RBookList extends RealmObject {
      */
     @PrimaryKey
     private String name;
+    /**
+     * TODO This is a work-around until Realm can do case-insensitive sorting.
+     * Same as {@link #name}, but in lower-case.
+     */
+    @Index
+    private String sortName;
     /**
      * Position number for the next item to be added to this list.
      */
@@ -34,6 +41,7 @@ public class RBookList extends RealmObject {
      */
     public RBookList() {
         this.name = null;
+        this.sortName = null;
         this.nextPos = 0L;
         this.listItems = null;
     }
@@ -44,6 +52,7 @@ public class RBookList extends RealmObject {
      */
     public RBookList(String name) {
         this.name = name;
+        this.sortName = name.toLowerCase();
         this.nextPos = 0L;
         this.listItems = null;
     }
@@ -179,6 +188,14 @@ public class RBookList extends RealmObject {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getSortName() {
+        return sortName;
+    }
+
+    public void setSortName(String sortName) {
+        this.sortName = sortName;
     }
 
     public Long getNextPos() {
