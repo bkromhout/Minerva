@@ -22,12 +22,12 @@ public class LibraryPrefs {
     /**
      * Shared Preferences.
      */
-    private SharedPreferences mPrefs;
+    private SharedPreferences prefs;
 
     // No public construction allowed.
     private LibraryPrefs() {
         // Get shared preferences.
-        this.mPrefs = Minerva.getAppCtx().getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
+        this.prefs = Minerva.getAppCtx().getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
     }
 
     /**
@@ -45,7 +45,7 @@ public class LibraryPrefs {
      * @return Sort type string.
      */
     public String getSortType(String defValue) {
-        return mPrefs.getString(SORT_TYPE, defValue);
+        return prefs.getString(SORT_TYPE, defValue);
     }
 
     /**
@@ -53,7 +53,7 @@ public class LibraryPrefs {
      * @param sortType Sort type string.
      */
     public void putSortType(String sortType) {
-        mPrefs.edit().putString(SORT_TYPE, sortType).apply();
+        prefs.edit().putString(SORT_TYPE, sortType).apply();
     }
 
     /**
@@ -62,7 +62,7 @@ public class LibraryPrefs {
      * @return Sort direction string.
      */
     public String getSortDir(String defValue) {
-        return mPrefs.getString(SORT_DIR, defValue);
+        return prefs.getString(SORT_DIR, defValue);
     }
 
     /**
@@ -70,7 +70,7 @@ public class LibraryPrefs {
      * @param sortDir Sort direction string.
      */
     public void putSortDir(String sortDir) {
-        mPrefs.edit().putString(SORT_DIR, sortDir).apply();
+        prefs.edit().putString(SORT_DIR, sortDir).apply();
     }
 
     /**
@@ -79,7 +79,7 @@ public class LibraryPrefs {
      * @return Card type string.
      */
     public String getCardType(String defValue) {
-        return mPrefs.getString(CARD_TYPE, defValue);
+        return prefs.getString(CARD_TYPE, defValue);
     }
 
     /**
@@ -87,7 +87,7 @@ public class LibraryPrefs {
      * @param cardType Card type string.
      */
     public void putCardType(String cardType) {
-        mPrefs.edit().putString(CARD_TYPE, cardType).apply();
+        prefs.edit().putString(CARD_TYPE, cardType).apply();
     }
 
     /**
@@ -97,10 +97,10 @@ public class LibraryPrefs {
      * @param cardType Card type string.
      */
     public void putLibraryViewOpts(String sortType, String sortDir, String cardType) {
-        mPrefs.edit()
-              .putString(SORT_TYPE, sortType)
-              .putString(SORT_DIR, sortDir)
-              .putString(CARD_TYPE, cardType)
-              .apply();
+        prefs.edit()
+             .putString(SORT_TYPE, sortType)
+             .putString(SORT_DIR, sortDir)
+             .putString(CARD_TYPE, cardType)
+             .apply();
     }
 }
