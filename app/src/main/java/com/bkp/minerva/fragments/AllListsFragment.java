@@ -200,6 +200,9 @@ public class AllListsFragment extends Fragment {
                 new MaterialDialog.Builder(getActivity())
                         .title(R.string.title_rename_list)
                         .content(R.string.rename_list_prompt)
+                        .autoDismiss(false)
+                        .negativeText(R.string.cancel)
+                        .onNegative((dialog, which) -> dialog.dismiss())
                         .input(C.getStr(R.string.list_name_hint), listName, false, ((dialog, input) -> {
                             // Get Realm instance, then check to see if the entered name has already been taken.
                             Realm innerRealm = Realm.getDefaultInstance();
@@ -210,21 +213,26 @@ public class AllListsFragment extends Fragment {
 
                             // If the name exists (other than the list's current name), set the error text on the
                             // edit text. If it doesn't, rename the RBookList.
-                            if (nameExists && !listName.equals(newName)) {
+                            if (listName.equals(newName)) {
+                                // If it's the same name, just close Realm and dismiss the dialog.
+                                innerRealm.close();
+                                dialog.dismiss();
+                            } else if (nameExists) {
                                 //noinspection ConstantConditions
                                 dialog.getInputEditText().setError(C.getStr(R.string.list_name_exists));
                                 innerRealm.close();
                             } else {
-                                innerRealm.executeTransaction(tRealm -> tRealm
-                                        .where(RBookList.class)
-                                        .equalTo("name", listName)
-                                        .findFirst()
-                                        .setName(newName));
+                                innerRealm.executeTransaction(tRealm -> {
+                                    RBookList list = tRealm.where(RBookList.class)
+                                                           .equalTo("name", listName)
+                                                           .findFirst();
+                                    list.setName(newName);
+                                    list.setSortName(newName.toLowerCase()); // TODO Work-around
+                                });
                                 innerRealm.close();
                                 dialog.dismiss();
                             }
                         }))
-                        .autoDismiss(false)
                         .show();
                 break;
             }
@@ -234,9 +242,9 @@ public class AllListsFragment extends Fragment {
                 // TODO maybe a boolean on the model called "isDeleting", and have the query not include those?
                 new MaterialDialog.Builder(getActivity())
                         .title(R.string.title_delete_list)
-                        .content(R.string.delete_list_prompt)
-                        .positiveText(android.R.string.yes)
-                        .negativeText(android.R.string.no)
+                        .content(C.getStr(R.string.delete_list_prompt, listName))
+                        .positiveText(R.string.yes)
+                        .negativeText(R.string.no)
                         .onPositive((dialog, which) -> {
                             // Get Realm instance, then delete the list.
                             Realm.getDefaultInstance()
@@ -260,6 +268,9 @@ public class AllListsFragment extends Fragment {
         new MaterialDialog.Builder(getActivity())
                 .title(R.string.action_new_list)
                 .content(R.string.new_list_prompt)
+                .autoDismiss(false)
+                .negativeText(R.string.cancel)
+                .onNegative((dialog, which) -> dialog.dismiss())
                 .input(R.string.list_name_hint, 0, false, (dialog, input) -> {
                     // Get Realm instance, then check to see if the entered name has already been taken.
                     Realm innerRealm = Realm.getDefaultInstance();
@@ -279,7 +290,6 @@ public class AllListsFragment extends Fragment {
                         dialog.dismiss();
                     }
                 })
-                .autoDismiss(false)
                 .show();
     }
 }
