@@ -101,6 +101,14 @@ public class RBook extends RealmObject {
      */
     private Date lastImportDate;
     /**
+     * Date that the book was last opened to read.
+     */
+    private Date lastReadDate;
+    /**
+     * Whether or not the book should be shown in the {@link com.bkp.minerva.fragments.RecentFragment}.
+     */
+    private boolean isInRecents;
+    /**
      * Tags for book. Separated with two semi-colons, like so: {@code "tag1;;tag2;;tag3;;tag4"}.
      */
     @Index
@@ -158,6 +166,8 @@ public class RBook extends RealmObject {
         // Fill in other data.
         this.lastImportDate = Calendar.getInstance().getTime();
         this.lastModifiedDate = lastImportDate;
+        this.lastReadDate = null;
+        this.isInRecents = false;
         this.tags = "";
         this.rating = 0;
     }
@@ -304,6 +314,22 @@ public class RBook extends RealmObject {
 
     public void setLastImportDate(Date lastImportDate) {
         this.lastImportDate = lastImportDate;
+    }
+
+    public Date getLastReadDate() {
+        return lastReadDate;
+    }
+
+    public void setLastReadDate(Date lastReadDate) {
+        this.lastReadDate = lastReadDate;
+    }
+
+    public boolean isInRecents() {
+        return isInRecents;
+    }
+
+    public void setInRecents(boolean inRecents) {
+        isInRecents = inRecents;
     }
 
     public String getTags() {
