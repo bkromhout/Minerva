@@ -6,7 +6,7 @@ import com.bkp.minerva.Minerva;
 import com.bkp.minerva.R;
 
 /**
- * Preferences class for {@link com.bkp.minerva.MainActivity}.
+ * Preferences class for general/miscellaneous preferences.
  */
 public class DefaultPrefs {
     // Key strings.
@@ -24,12 +24,12 @@ public class DefaultPrefs {
     /**
      * Shared Preferences.
      */
-    private SharedPreferences mPrefs;
+    private SharedPreferences prefs;
 
     // No public construction allowed.
     private DefaultPrefs() {
         // Get shared preferences.
-        this.mPrefs = PreferenceManager.getDefaultSharedPreferences(Minerva.getAppCtx());
+        this.prefs = PreferenceManager.getDefaultSharedPreferences(Minerva.getAppCtx());
     }
 
     /**
@@ -47,7 +47,7 @@ public class DefaultPrefs {
      * @return Frag int.
      */
     public int getCurrFrag(int defValue) {
-        return mPrefs.getInt(CURR_FRAG, defValue);
+        return prefs.getInt(CURR_FRAG, defValue);
     }
 
     /**
@@ -55,7 +55,7 @@ public class DefaultPrefs {
      * @param currFrag Frag int.
      */
     public void putCurrFrag(int currFrag) {
-        mPrefs.edit().putInt(CURR_FRAG, currFrag).apply();
+        prefs.edit().putInt(CURR_FRAG, currFrag).apply();
     }
 
     /**
@@ -64,7 +64,7 @@ public class DefaultPrefs {
      * @return The list selector string.
      */
     public String getCurrListSel(String defValue) {
-        return mPrefs.getString(CURR_LIST_SEL, defValue);
+        return prefs.getString(CURR_LIST_SEL, defValue);
     }
 
     /**
@@ -72,7 +72,7 @@ public class DefaultPrefs {
      * @param currListSel Unique list selector string.
      */
     public void putCurrListSel(String currListSel) {
-        mPrefs.edit().putString(CURR_LIST_SEL, currListSel).apply();
+        prefs.edit().putString(CURR_LIST_SEL, currListSel).apply();
     }
 
     /**
@@ -81,7 +81,7 @@ public class DefaultPrefs {
      * @return Library directory path.
      */
     public String getLibDir(String defValue) {
-        return mPrefs.getString(LIB_DIR, defValue);
+        return prefs.getString(LIB_DIR, defValue);
     }
 
     /**
@@ -89,7 +89,7 @@ public class DefaultPrefs {
      * @param libDir Library directory path.
      */
     public void putLibDir(String libDir) {
-        mPrefs.edit().putString(LIB_DIR, libDir).apply();
+        prefs.edit().putString(LIB_DIR, libDir).apply();
     }
 
     /**
@@ -98,7 +98,7 @@ public class DefaultPrefs {
      * @return Auto-import boolean.
      */
     public boolean getLibAutoImport(boolean defValue) {
-        return mPrefs.getBoolean(LIB_AUTO_IMPORT, defValue);
+        return prefs.getBoolean(LIB_AUTO_IMPORT, defValue);
     }
 
     /**
@@ -106,7 +106,7 @@ public class DefaultPrefs {
      * @param libAutoImport Auto-import boolean.
      */
     public void putLibAutoImport(boolean libAutoImport) {
-        mPrefs.edit().putBoolean(LIB_AUTO_IMPORT, libAutoImport).apply();
+        prefs.edit().putBoolean(LIB_AUTO_IMPORT, libAutoImport).apply();
     }
 
     /**
@@ -115,7 +115,7 @@ public class DefaultPrefs {
      * @return Last full import time.
      */
     public long getLastFullImportTime(long defValue) {
-        return mPrefs.getLong(LAST_FULL_IMPORT_TIME, defValue);
+        return prefs.getLong(LAST_FULL_IMPORT_TIME, defValue);
     }
 
     /**
@@ -123,6 +123,6 @@ public class DefaultPrefs {
      * @param lastFullImportTime Last full import time.
      */
     public void putLastFullImportTime(long lastFullImportTime) {
-        mPrefs.edit().putLong(LAST_FULL_IMPORT_TIME, lastFullImportTime).apply();
+        prefs.edit().putLong(LAST_FULL_IMPORT_TIME, lastFullImportTime).apply();
     }
 }
