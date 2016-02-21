@@ -13,12 +13,14 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.bkp.minerva.C;
 import com.bkp.minerva.R;
+import com.bkp.minerva.adapters.BookListCardAdapter;
 import com.bkp.minerva.events.BookListCardClickEvent;
 import com.bkp.minerva.prefs.AllListsPrefs;
 import com.bkp.minerva.realm.RBookList;
 import io.realm.Realm;
-import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -47,10 +49,6 @@ public class AllListsFragment extends Fragment {
      * {@link RBookList}s currently shown in the recycler view.
      */
     private RealmResults<RBookList> lists;
-    /**
-     * Adapter currently being used by the recycler view.
-     */
-    private RealmBasedRecyclerViewAdapter adapter;
 
     public AllListsFragment() {
         // Required empty public constructor
@@ -103,7 +101,10 @@ public class AllListsFragment extends Fragment {
      * Initialize the UI.
      */
     private void initUi() {
+        // Get lists, then create and bind the adapter.
         lists = realm.where(RBookList.class)
+                     .findAllSorted("sortName");
+        recyclerView.setAdapter(new BookListCardAdapter(getActivity(), lists, true, true));
     }
 
     @Override
@@ -182,7 +183,7 @@ public class AllListsFragment extends Fragment {
                 // TODO Start multi-select.
                 break;
             case ACTIONS:
-                // TODO Pop open actions menu.
+
                 break;
         }
     }
@@ -192,6 +193,31 @@ public class AllListsFragment extends Fragment {
      */
     @OnClick(R.id.fab)
     void onFabClick() {
+        new MaterialDialog.Builder(getActivity())
+                .title(R.string.action_new_list)
+                .content(R.string.new_list_prompt)
+                .input(R.string.list_name_hint, 0, false, (dialog, input) -> {
+                    // Get Realm instance, then check to see if the entered name has already been taken.
+                    Realm innerRealm = Realm.getDefaultInstance();
+                    boolean nameExists = innerRealm.where(RBookList.class)
+                                                   .equalTo("name", input.toString())
+                                                   .findFirst() != null;
 
+                    // If the name exists, set the error text on the edit text. If it doesn't, create the new RBookList.
+                    if (nameExists) {
+                        //noinspection ConstantConditions
+                        dialog.getInputEditText().setError(C.getStr(R.string.list_name_exists));
+                    } else {
+                        innerRealm.beginTransaction();
+                        innerRealm.copyToRealm(new RBookList(input.toString()));
+                        innerRealm.commitTransaction();
+                    }
+
+                    // Close our instance of Realm, then dismiss the dialog if we created a list.
+                    innerRealm.close();
+                    if (!nameExists) dialog.dismiss();
+                })
+                .autoDismiss(false)
+                .show();
     }
 }

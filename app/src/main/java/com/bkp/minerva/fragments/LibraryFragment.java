@@ -130,14 +130,10 @@ public class LibraryFragment extends Fragment {
      * Initialize the UI.
      */
     private void initUi() {
-        // Get results.
+        // Get results, sort them, then create and bind the adapter.
         books = realm.where(RBook.class)
                      .findAll();
-
-        // Sort results.
         sortRealmResults();
-
-        // Create and bind adapter.
         adapter = makeAdapter();
         recyclerView.setAdapter(adapter);
     }

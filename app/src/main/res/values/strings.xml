@@ -96,8 +96,10 @@
     <string name="fil_err_realm">Realm error</string>
 
     <!-- All Lists Fragment -->
-    <string name="action_new_list">New list</string>
-    <string name="dummy_list_name">The name of a list</string>
+    <string name="action_new_list">New List</string>
+    <string name="new_list_prompt">Enter a name for the new list</string>
+    <string name="list_name_hint">Name</string>
+    <string name="list_name_exists">Name is already taken.</string>
 
     <!-- List Activity -->
     <string name="title_activity_book_list">Book List</string>
