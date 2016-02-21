@@ -131,9 +131,8 @@ public class LibraryFragment extends Fragment {
      */
     private void initUi() {
         // Get results.
-        books = realm
-                .where(RBook.class)
-                .findAll();
+        books = realm.where(RBook.class)
+                     .findAll();
 
         // Sort results.
         sortRealmResults();
@@ -267,21 +266,21 @@ public class LibraryFragment extends Fragment {
     @Subscribe
     public void onCardClicked(BookCardClickEvent event) {
         // Get the associated RBook.
-        RBook rBook = realm.where(RBook.class).equalTo("relPath", event.getRelPath()).findFirst();
+        RBook book = books.where().equalTo("relPath", event.getRelPath()).findFirst();
 
-        // TODO Do something based on the click type.
+        // Do something based on the click type.
         switch (event.getType()) {
             case NORMAL:
-
+                // TODO Open the book file.
                 break;
             case LONG:
-
+                // TODO Start multi-select.
                 break;
             case INFO:
-
+                // TODO Open BookInfoActivity.
                 break;
             case QUICK_TAG:
-
+                // TODO Open quick-tag dialog??
                 break;
         }
     }

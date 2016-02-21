@@ -2,30 +2,51 @@ package com.bkp.minerva.fragments;
 
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.view.menu.MenuBuilder;
 import android.util.Log;
 import android.view.*;
+import butterknife.Bind;
 import butterknife.ButterKnife;
+import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
 import com.bkp.minerva.R;
+import com.bkp.minerva.realm.RBook;
+import io.realm.Realm;
+import io.realm.RealmBasedRecyclerViewAdapter;
+import io.realm.RealmResults;
 
 import java.lang.reflect.Method;
 
 /**
- * TODO
+ * Fragment in charge of showing recently opened books.
  */
 public class RecentFragment extends Fragment {
+    // Views.
+    @Bind(R.id.fab)
+    FloatingActionButton fabViewOpts;
+    @Bind(R.id.recycler)
+    RealmRecyclerView recyclerView;
+
+    /**
+     * Instance of Realm.
+     */
+    private Realm realm;
+    /**
+     * {@link RBook}s currently shown in the recycler view.
+     */
+    private RealmResults<RBook> books;
+    /**
+     * Adapter currently being used by the recycler view.
+     */
+    private RealmBasedRecyclerViewAdapter adapter;
 
     public RecentFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of this fragment using the provided parameters.
-     * @return A new instance of {@link RecentFragment}.
-     */
-    // TODO: Rename and change types and number of parameters
     public static RecentFragment newInstance() {
         RecentFragment fragment = new RecentFragment();
         Bundle args = new Bundle();
@@ -46,6 +67,23 @@ public class RecentFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_recent, container, false);
         ButterKnife.bind(this, root);
         return root;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        // Get Realm.
+        realm = Realm.getDefaultInstance();
+
+        initUi();
+    }
+
+    /**
+     * Initialize the UI.
+     */
+    private void initUi() {
+
     }
 
     @Override
@@ -77,7 +115,20 @@ public class RecentFragment extends Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Close Realm.
+        if (realm != null) {
+            realm.close();
+            realm = null;
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
