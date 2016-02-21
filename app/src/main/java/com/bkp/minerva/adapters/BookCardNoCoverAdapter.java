@@ -12,6 +12,7 @@ import butterknife.ButterKnife;
 import com.bkp.minerva.R;
 import com.bkp.minerva.events.BookCardClickEvent;
 import com.bkp.minerva.realm.RBook;
+import com.bkp.minerva.util.RippleForegroundListener;
 import com.bkp.minerva.util.Util;
 import com.greenfrvr.hashtagview.HashtagView;
 import io.realm.RealmBasedRecyclerViewAdapter;
@@ -23,6 +24,11 @@ import org.greenrobot.eventbus.EventBus;
  * Realm RecyclerView Adapter for book cards with no covers.
  */
 public class BookCardNoCoverAdapter extends RealmBasedRecyclerViewAdapter<RBook, BookCardNoCoverAdapter.ViewHolder> {
+    /**
+     * Help our cards ripple.
+     */
+    private RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.ripple_foreground_view);
+
     /**
      * Create a new {@link BookCardNoCoverAdapter}.
      * @param context         Context.
@@ -43,6 +49,9 @@ public class BookCardNoCoverAdapter extends RealmBasedRecyclerViewAdapter<RBook,
     @Override
     public void onBindRealmViewHolder(ViewHolder viewHolder, int position) {
         final RBook rBook = realmResults.get(position);
+
+        // Make the card ripple when touched.
+        viewHolder.content.setOnTouchListener(rippleFgListener);
 
         // Set card click handler.
         viewHolder.content.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(

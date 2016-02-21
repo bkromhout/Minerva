@@ -13,6 +13,7 @@ import butterknife.ButterKnife;
 import com.bkp.minerva.R;
 import com.bkp.minerva.events.BookListCardClickEvent;
 import com.bkp.minerva.realm.RBookList;
+import com.bkp.minerva.util.RippleForegroundListener;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 import io.realm.RealmViewHolder;
@@ -22,6 +23,11 @@ import org.greenrobot.eventbus.EventBus;
  * Realm RecyclerView Adapter for book list cards.
  */
 public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList, BookListCardAdapter.ViewHolder> {
+    /**
+     * Help our cards ripple.
+     */
+    private RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.ripple_foreground_view);
+
     /**
      * Create a new {@link BookListCardAdapter}.
      * @param context         Context.
@@ -43,6 +49,9 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
     public void onBindRealmViewHolder(ViewHolder viewHolder, int position) {
         final RBookList rBookList = realmResults.get(position);
 
+        // Make the card ripple when touched.
+        viewHolder.content.setOnTouchListener(rippleFgListener);
+
         // Set card click handler.
         viewHolder.content.setOnClickListener(view ->
                 EventBus.getDefault().post(new BookListCardClickEvent(BookListCardClickEvent.Type.NORMAL,
@@ -54,11 +63,6 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
                     new BookListCardClickEvent(BookListCardClickEvent.Type.LONG, rBookList.getName()));
             return true;
         });
-
-        // Set actions button handler.
-//        viewHolder.btnActions.setOnClickListener(v ->
-//                EventBus.getDefault().post(new BookListCardClickEvent(BookListCardClickEvent.Type.ACTIONS,
-//                        rBookList.getName())));
 
         // Set list name.
         viewHolder.tvListName.setText(rBookList.getName());

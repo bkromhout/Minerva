@@ -9,6 +9,7 @@ import butterknife.ButterKnife;
 import com.bkp.minerva.R;
 import com.bkp.minerva.events.BookCardClickEvent;
 import com.bkp.minerva.realm.RBook;
+import com.bkp.minerva.util.RippleForegroundListener;
 import com.bkp.minerva.util.Util;
 import com.greenfrvr.hashtagview.HashtagView;
 import io.realm.RealmBasedRecyclerViewAdapter;
@@ -20,6 +21,11 @@ import org.greenrobot.eventbus.EventBus;
  * Realm RecyclerView Adapter for normal book cards.
  */
 public class BookCardAdapter extends RealmBasedRecyclerViewAdapter<RBook, BookCardAdapter.ViewHolder> {
+    /**
+     * Help our cards ripple.
+     */
+    private RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.ripple_foreground_view);
+
     /**
      * Create a new {@link BookCardAdapter}.
      * @param context         Context.
@@ -41,10 +47,8 @@ public class BookCardAdapter extends RealmBasedRecyclerViewAdapter<RBook, BookCa
     public void onBindRealmViewHolder(ViewHolder viewHolder, int position) {
         final RBook rBook = realmResults.get(position);
 
-        // Set cover image.
-        if (rBook.isHasCoverImage()) {
-            // TODO something here
-        }
+        // Make the card ripple when touched.
+        viewHolder.content.setOnTouchListener(rippleFgListener);
 
         // Set card click handler.
         viewHolder.content.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
@@ -63,6 +67,11 @@ public class BookCardAdapter extends RealmBasedRecyclerViewAdapter<RBook, BookCa
         // Set quick tag button handler.
         viewHolder.btnQuickTag.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
                 BookCardClickEvent.Type.QUICK_TAG, rBook.getRelPath())));
+
+        // Set cover image.
+        if (rBook.isHasCoverImage()) {
+            // TODO something here
+        }
 
         // Fill in data.
         viewHolder.tvTitle.setText(rBook.getTitle());
