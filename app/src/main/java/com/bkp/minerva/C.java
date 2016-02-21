@@ -12,6 +12,30 @@ import java.util.List;
  */
 public final class C {
     /**
+     * The initial number of position numbers between each item in a book list.
+     */
+    public static final long LIST_ITEM_GAP = 100L;
+    /**
+     * Valid file extensions.
+     */
+    public static final List<String> VALID_EXTS = ImmutableList.of("epub");
+
+    /* Sort types. */
+    public static final String SORT_TITLE = "SORT_TITLE";
+    public static final String SORT_AUTHOR = "SORT_AUTHOR";
+    public static final String SORT_TIME_ADDED = "SORT_TIME_ADDED";
+    public static final String SORT_RATING = "SORT_RATING";
+
+    /* Sort directions. */
+    public static final String SORT_ASC = "ASC";
+    public static final String SORT_DESC = "DESC";
+
+    /* Book card types. */
+    public static final String BOOK_CARD_NORMAL = "BOOK_CARD_NORMAL";
+    public static final String BOOK_CARD_NO_COVER = "BOOK_CARD_NO_COVER";
+    public static final String BOOK_CARD_COMPACT = "BOOK_CARD_COMPACT";
+
+    /**
      * Get a string resource using the application context.
      * @param resId String resource ID.
      * @return String.
@@ -29,12 +53,6 @@ public final class C {
     public static String getStr(@StringRes int resId, Object... formatArgs) {
         return Minerva.getAppCtx().getString(resId, formatArgs);
     }
-
-    // Sort types.
-    public static final String SORT_TITLE = "SORT_TITLE";
-    public static final String SORT_AUTHOR = "SORT_AUTHOR";
-    public static final String SORT_TIME_ADDED = "SORT_TIME_ADDED";
-    public static final String SORT_RATING = "SORT_RATING";
 
     /**
      * Get the name of the {@link RBook} field to use to sort the data based on the given string constant.
@@ -56,10 +74,6 @@ public final class C {
         }
     }
 
-    // Sort directions.
-    public static final String SORT_ASC = "ASC";
-    public static final String SORT_DESC = "DESC";
-
     /**
      * Get the Realm {@link Sort} enum value based on the given sort direction string constant.
      * @param sortDir Sort direction string constant.
@@ -70,13 +84,4 @@ public final class C {
         else if (SORT_DESC.equals(sortDir)) return Sort.DESCENDING;
         else throw new IllegalArgumentException(String.format("Invalid sort direction: %s", sortDir));
     }
-
-    // Book card types.
-    public static final String BOOK_CARD_NORMAL = "BOOK_CARD_NORMAL";
-    public static final String BOOK_CARD_NO_COVER = "BOOK_CARD_NO_COVER";
-    public static final String BOOK_CARD_COMPACT = "BOOK_CARD_COMPACT";
-
-    // Valid file extensions.
-    public static final List<String> VALID_EXTS = ImmutableList.of("epub");
-
 }
