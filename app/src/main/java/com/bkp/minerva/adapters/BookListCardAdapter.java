@@ -1,9 +1,11 @@
 package com.bkp.minerva.adapters;
 
 import android.content.Context;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import butterknife.Bind;
@@ -54,9 +56,9 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
         });
 
         // Set actions button handler.
-        viewHolder.btnActions.setOnClickListener(v ->
-                EventBus.getDefault().post(new BookListCardClickEvent(BookListCardClickEvent.Type.ACTIONS,
-                        rBookList.getName())));
+//        viewHolder.btnActions.setOnClickListener(v ->
+//                EventBus.getDefault().post(new BookListCardClickEvent(BookListCardClickEvent.Type.ACTIONS,
+//                        rBookList.getName())));
 
         // Set list name.
         viewHolder.tvListName.setText(rBookList.getName());
@@ -65,7 +67,7 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
     /**
      * ViewHolder class.
      */
-    public class ViewHolder extends RealmViewHolder {
+    public class ViewHolder extends RealmViewHolder implements PopupMenu.OnMenuItemClickListener {
         @Bind(R.id.content)
         public RelativeLayout content;
         @Bind(R.id.list_name)
@@ -76,6 +78,21 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            // Set up btnActions so that it displays a popup menu.
+            btnActions.setOnClickListener(view -> {
+                PopupMenu menu = new PopupMenu(view.getContext(), view);
+                menu.getMenuInflater().inflate(R.menu.book_list_card_actions, menu.getMenu());
+                menu.setOnMenuItemClickListener(ViewHolder.this);
+                menu.show();
+            });
+        }
+
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            EventBus.getDefault().post(new BookListCardClickEvent(BookListCardClickEvent.Type.ACTIONS,
+                    tvListName.getText().toString(), item.getItemId()));
+            return true;
         }
     }
 }

@@ -6,9 +6,11 @@
     <string name="cancel">Cancel</string>
     <string name="settings">Settings</string>
     <string name="retry">Retry</string>
+    <string name="undo">Undo</string>
     <string name="app_info">App Info</string>
 
     <!-- Common action Strings (may be used in multiple places) -->
+    <string name="action_rename">Rename</string>
     <string name="action_delete">Delete</string>
     <string name="action_sort">Sort</string>
     <string name="action_search">Search</string>
@@ -74,7 +76,7 @@
 
     <string name="start_full_import">Start Full Import</string>
     <string name="choose_library_dir">Choose Library Folder</string>
-    
+
     <string name="lbl_rad_log_full">Full Log</string>
     <string name="lbl_rad_log_errors_only">Errors Only</string>
 
@@ -97,7 +99,11 @@
 
     <!-- All Lists Fragment -->
     <string name="action_new_list">New List</string>
+    <string name="title_rename_list">Rename List</string>
+    <string name="title_delete_list">Delete List</string>
     <string name="new_list_prompt">Enter a name for the new list</string>
+    <string name="rename_list_prompt">Enter a new name for the list</string>
+    <string name="delete_list_prompt">Are you sure you want to delete \"%1$s\"?</string>
     <string name="list_name_hint">Name</string>
     <string name="list_name_exists">Name is already taken.</string>
 

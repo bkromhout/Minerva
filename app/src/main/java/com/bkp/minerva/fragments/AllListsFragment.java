@@ -171,9 +171,6 @@ public class AllListsFragment extends Fragment {
      */
     @Subscribe
     public void onCardClicked(BookListCardClickEvent event) {
-        // Get the associated RBookList.
-        RBookList bookList = lists.where().equalTo("name", event.getName()).findFirst();
-
         // Do something based on the click type.
         switch (event.getType()) {
             case NORMAL:
@@ -183,8 +180,75 @@ public class AllListsFragment extends Fragment {
                 // TODO Start multi-select.
                 break;
             case ACTIONS:
-
+                // Handle action.
+                onCardMenuActionClicked(event.getActionId(), event.getName());
                 break;
+        }
+    }
+
+    /**
+     * Called when one of the actions in a card's popup menu is clicked.
+     * @param actionId The ID of the popup menu item.
+     */
+    private void onCardMenuActionClicked(int actionId, String listName) {
+        if (actionId < 0 || listName == null) throw new IllegalArgumentException();
+
+        // Do something based on the menu item ID.
+        switch (actionId) {
+            case R.id.action_rename_list: {
+                // Show a dialog to rename the list.
+                new MaterialDialog.Builder(getActivity())
+                        .title(R.string.title_rename_list)
+                        .content(R.string.rename_list_prompt)
+                        .input(C.getStr(R.string.list_name_hint), listName, false, ((dialog, input) -> {
+                            // Get Realm instance, then check to see if the entered name has already been taken.
+                            Realm innerRealm = Realm.getDefaultInstance();
+                            String newName = input.toString().trim();
+                            boolean nameExists = innerRealm.where(RBookList.class)
+                                                           .equalTo("name", newName)
+                                                           .findFirst() != null;
+
+                            // If the name exists (other than the list's current name), set the error text on the
+                            // edit text. If it doesn't, rename the RBookList.
+                            if (nameExists && !listName.equals(newName)) {
+                                //noinspection ConstantConditions
+                                dialog.getInputEditText().setError(C.getStr(R.string.list_name_exists));
+                                innerRealm.close();
+                            } else {
+                                innerRealm.executeTransaction(tRealm -> tRealm
+                                        .where(RBookList.class)
+                                        .equalTo("name", listName)
+                                        .findFirst()
+                                        .setName(newName));
+                                innerRealm.close();
+                                dialog.dismiss();
+                            }
+                        }))
+                        .autoDismiss(false)
+                        .show();
+                break;
+            }
+            case R.id.action_delete_list: {
+                // Show a confirmation dialog for deleting the list.
+                // TODO have this work with an undo snackbar...needs to be more complex that simply waiting??
+                // TODO maybe a boolean on the model called "isDeleting", and have the query not include those?
+                new MaterialDialog.Builder(getActivity())
+                        .title(R.string.title_delete_list)
+                        .content(R.string.delete_list_prompt)
+                        .positiveText(android.R.string.yes)
+                        .negativeText(android.R.string.no)
+                        .onPositive((dialog, which) -> {
+                            // Get Realm instance, then delete the list.
+                            Realm.getDefaultInstance()
+                                 .executeTransaction(tRealm -> tRealm
+                                         .where(RBookList.class)
+                                         .equalTo("name", listName)
+                                         .findFirst()
+                                         .removeFromRealm());
+                        })
+                        .show();
+                break;
+            }
         }
     }
 
@@ -199,23 +263,21 @@ public class AllListsFragment extends Fragment {
                 .input(R.string.list_name_hint, 0, false, (dialog, input) -> {
                     // Get Realm instance, then check to see if the entered name has already been taken.
                     Realm innerRealm = Realm.getDefaultInstance();
+                    String newName = input.toString().trim();
                     boolean nameExists = innerRealm.where(RBookList.class)
-                                                   .equalTo("name", input.toString())
+                                                   .equalTo("name", newName)
                                                    .findFirst() != null;
 
                     // If the name exists, set the error text on the edit text. If it doesn't, create the new RBookList.
                     if (nameExists) {
                         //noinspection ConstantConditions
                         dialog.getInputEditText().setError(C.getStr(R.string.list_name_exists));
+                        innerRealm.close();
                     } else {
-                        innerRealm.beginTransaction();
-                        innerRealm.copyToRealm(new RBookList(input.toString()));
-                        innerRealm.commitTransaction();
+                        innerRealm.executeTransaction(tRealm -> tRealm.copyToRealm(new RBookList(newName)));
+                        innerRealm.close();
+                        dialog.dismiss();
                     }
-
-                    // Close our instance of Realm, then dismiss the dialog if we created a list.
-                    innerRealm.close();
-                    if (!nameExists) dialog.dismiss();
                 })
                 .autoDismiss(false)
                 .show();

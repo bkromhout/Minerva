@@ -1,7 +1,5 @@
 package com.bkp.minerva.events;
 
-import android.view.View;
-
 /**
  * Fired when some sort of click event happens for a book list card.
  */
@@ -22,20 +20,20 @@ public class BookListCardClickEvent {
      */
     private final String name;
     /**
-     * If the type is {@link Type#ACTIONS}, this is the view to attach the menu to.
+     * If the type is {@link Type#ACTIONS}, this is ID of the menu item that was clicked.
      */
-    private final View view;
+    private final int actionId;
 
     /**
      * Create a new {@link BookListCardClickEvent}
-     * @param type Type of click.
-     * @param name Name of the list.
-     * @param view View to attach a popup menu to.
+     * @param type     Type of click.
+     * @param name     Name of the list.
+     * @param actionId ID of the clicked menu item (if applicable).
      */
-    public BookListCardClickEvent(Type type, String name, View view) {
+    public BookListCardClickEvent(Type type, String name, int actionId) {
         this.type = type;
         this.name = name;
-        this.view = view;
+        this.actionId = actionId;
     }
 
     /**
@@ -44,7 +42,7 @@ public class BookListCardClickEvent {
      * @param name Name of the list.
      */
     public BookListCardClickEvent(Type type, String name) {
-        this(type, name, null);
+        this(type, name, -1);
     }
 
     /**
@@ -64,11 +62,10 @@ public class BookListCardClickEvent {
     }
 
     /**
-     * Get the view which would be appropriate to attach a popup menu to. Will be {@code null} if the event type isn't
-     * {@link Type#ACTIONS}.
-     * @return View to attach a popup menu to.
+     * If {@code type} is {@link Type#ACTIONS}, gets the ID of the clicked menu item. {@link Type#ACTIONS}.
+     * @return Menu item ID, or -1.
      */
-    public View getView() {
-        return view;
+    public int getActionId() {
+        return actionId;
     }
 }
