@@ -117,6 +117,8 @@ public class PowerSearchFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        // Close adapter.
+        if (adapter != null) adapter.close();
         // Close Realm.
         if (realm != null) {
             realm.close();

@@ -24,6 +24,7 @@ import com.bkp.minerva.prefs.AllListsPrefs;
 import com.bkp.minerva.realm.RBookList;
 import com.bkp.minerva.util.Util;
 import io.realm.Realm;
+import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -52,6 +53,10 @@ public class AllListsFragment extends Fragment {
      * {@link RBookList}s currently shown in the recycler view.
      */
     private RealmResults<RBookList> lists;
+    /**
+     * Adapter for the recycler view.
+     */
+    private RealmBasedRecyclerViewAdapter adapter;
 
     public AllListsFragment() {
         // Required empty public constructor
@@ -107,7 +112,8 @@ public class AllListsFragment extends Fragment {
         // Get lists, then create and bind the adapter.
         lists = realm.where(RBookList.class)
                      .findAllSorted("sortName");
-        recyclerView.setAdapter(new BookListCardAdapter(getActivity(), lists, true, true));
+        adapter = new BookListCardAdapter(getActivity(), lists, true, true);
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -153,6 +159,8 @@ public class AllListsFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        // Close adapter.
+        if (adapter != null) adapter.close();
         // Close Realm.
         if (realm != null) {
             realm.close();

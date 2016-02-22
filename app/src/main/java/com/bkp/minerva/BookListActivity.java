@@ -175,6 +175,8 @@ public class BookListActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        // Close adapter.
+        if (adapter != null) adapter.close();
         // Close Realm.
         if (realm != null) {
             realm.close();
@@ -223,7 +225,7 @@ public class BookListActivity extends AppCompatActivity {
     private void addDragDrop() {
         ItemTouchHelper touchHelper = new ItemTouchHelper(new DraggableItemTouchHelperCallback(
                 (DraggableItemTouchHelperCallback.Adapter) adapter));
-        touchHelper.attachToRecyclerView(recyclerView);
+        //touchHelper.attachToRecyclerView(recyclerView);
         // TODO sadly this will be impossible if we don't create our own version of the library :(
     }
 
