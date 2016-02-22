@@ -14,7 +14,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.bkp.minerva.BookInfoActivity;
 import com.bkp.minerva.BookListActivity;
 import com.bkp.minerva.C;
 import com.bkp.minerva.R;
@@ -187,7 +186,7 @@ public class AllListsFragment extends Fragment {
             case NORMAL:
                 Bundle b = new Bundle();
                 b.putString(BookListActivity.LIST_SEL_STR, event.getName());
-                Util.startAct(getActivity(), BookInfoActivity.class, b);
+                Util.startAct(getActivity(), BookListActivity.class, b);
                 break;
             case LONG:
                 // TODO Start multi-select.
