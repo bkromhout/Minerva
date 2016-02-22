@@ -11,7 +11,7 @@ import io.realm.RealmResults;
 /**
  * Realm RecyclerView Adapter for book cards with no covers.
  */
-public class BookCardNoCoverAdapter extends RealmBasedRecyclerViewAdapter<RBook, BookCardVHUtil.NoCoverCardVH> {
+public class BookCardNoCoverAdapter extends RealmBasedRecyclerViewAdapter<RBook, BookCardUtil.NoCoverCardVH> {
     /**
      * Help our cards ripple.
      */
@@ -30,12 +30,12 @@ public class BookCardNoCoverAdapter extends RealmBasedRecyclerViewAdapter<RBook,
     }
 
     @Override
-    public BookCardVHUtil.NoCoverCardVH onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
-        return new BookCardVHUtil.NoCoverCardVH(inflater.inflate(R.layout.book_card_no_cover, viewGroup, false));
+    public BookCardUtil.NoCoverCardVH onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
+        return new BookCardUtil.NoCoverCardVH(inflater.inflate(R.layout.book_card_no_cover, viewGroup, false));
     }
 
     @Override
-    public void onBindRealmViewHolder(BookCardVHUtil.NoCoverCardVH viewHolder, int position) {
-        BookCardVHUtil.doBindViewHolder(viewHolder, position, realmResults.get(position), rippleFgListener);
+    public void onBindRealmViewHolder(BookCardUtil.NoCoverCardVH viewHolder, int position) {
+        BookCardUtil.doBindViewHolder(viewHolder, position, realmResults.get(position), rippleFgListener);
     }
 }

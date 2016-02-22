@@ -11,7 +11,7 @@ import io.realm.RealmResults;
 /**
  * Realm RecyclerView Adapter for compact book cards.
  */
-public class BookCardCompactAdapter extends RealmBasedRecyclerViewAdapter<RBook, BookCardVHUtil.CompactCardVH> {
+public class BookCardCompactAdapter extends RealmBasedRecyclerViewAdapter<RBook, BookCardUtil.CompactCardVH> {
     /**
      * Help our cards ripple.
      */
@@ -30,12 +30,12 @@ public class BookCardCompactAdapter extends RealmBasedRecyclerViewAdapter<RBook,
     }
 
     @Override
-    public BookCardVHUtil.CompactCardVH onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
-        return new BookCardVHUtil.CompactCardVH(inflater.inflate(R.layout.book_card_compact, viewGroup, false));
+    public BookCardUtil.CompactCardVH onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
+        return new BookCardUtil.CompactCardVH(inflater.inflate(R.layout.book_card_compact, viewGroup, false));
     }
 
     @Override
-    public void onBindRealmViewHolder(BookCardVHUtil.CompactCardVH viewHolder, int position) {
-        BookCardVHUtil.doBindViewHolder(viewHolder, position, realmResults.get(position), rippleFgListener);
+    public void onBindRealmViewHolder(BookCardUtil.CompactCardVH viewHolder, int position) {
+        BookCardUtil.doBindViewHolder(viewHolder, position, realmResults.get(position), rippleFgListener);
     }
 }

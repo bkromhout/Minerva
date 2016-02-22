@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 import com.bkp.minerva.R;
 import com.bkp.minerva.realm.RBook;
 import com.bkp.minerva.realm.RBookListItem;
+import com.bkp.minerva.util.DraggableItemTouchHelperCallback;
 import com.bkp.minerva.util.RippleForegroundListener;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
@@ -13,7 +14,8 @@ import io.realm.RealmResults;
  * Essentially {@link BookCardCompactAdapter}, but has to unwrap {@link RBook}s from {@link RBookListItem}s.
  */
 public class BookItemCardCompactAdapter extends
-        RealmBasedRecyclerViewAdapter<RBookListItem, BookCardVHUtil.CompactCardVH> {
+        RealmBasedRecyclerViewAdapter<RBookListItem, BookCardUtil.CompactCardVH>
+        implements DraggableItemTouchHelperCallback.Adapter {
     /**
      * Help our cards ripple.
      */
@@ -32,12 +34,18 @@ public class BookItemCardCompactAdapter extends
     }
 
     @Override
-    public BookCardVHUtil.CompactCardVH onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
-        return new BookCardVHUtil.CompactCardVH(inflater.inflate(R.layout.book_card_compact, viewGroup, false));
+    public BookCardUtil.CompactCardVH onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
+        return new BookCardUtil.CompactCardVH(inflater.inflate(R.layout.book_card_compact, viewGroup, false));
     }
 
     @Override
-    public void onBindRealmViewHolder(BookCardVHUtil.CompactCardVH viewHolder, int position) {
-        BookCardVHUtil.doBindViewHolder(viewHolder, position, realmResults.get(position).getBook(), rippleFgListener);
+    public void onBindRealmViewHolder(BookCardUtil.CompactCardVH viewHolder, int position) {
+        BookCardUtil.doBindViewHolder(viewHolder, position, realmResults.get(position).getBook(), rippleFgListener);
+    }
+
+    @Override
+    public void onItemMove(int sourcePos, int targetPos) {
+        BookCardUtil.swapItemsAtPositions(realmResults, sourcePos, targetPos);
+        // TODO Call notifyMoved?? Not sure if necessary since we auto-update, but we'll see.
     }
 }

@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 import com.bkp.minerva.R;
 import com.bkp.minerva.realm.RBook;
 import com.bkp.minerva.realm.RBookListItem;
+import com.bkp.minerva.util.DraggableItemTouchHelperCallback;
 import com.bkp.minerva.util.RippleForegroundListener;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
@@ -12,7 +13,8 @@ import io.realm.RealmResults;
 /**
  * Essentially {@link BookCardAdapter}, but has to unwrap {@link RBook}s from {@link RBookListItem}s.
  */
-public class BookItemCardAdapter extends RealmBasedRecyclerViewAdapter<RBookListItem, BookCardVHUtil.NormalCardVH> {
+public class BookItemCardAdapter extends RealmBasedRecyclerViewAdapter<RBookListItem, BookCardUtil.NormalCardVH>
+        implements DraggableItemTouchHelperCallback.Adapter {
     /**
      * Help our cards ripple.
      */
@@ -31,13 +33,19 @@ public class BookItemCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
     }
 
     @Override
-    public BookCardVHUtil.NormalCardVH onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
-        return new BookCardVHUtil.NormalCardVH(inflater.inflate(R.layout.book_card, viewGroup, false));
+    public BookCardUtil.NormalCardVH onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
+        return new BookCardUtil.NormalCardVH(inflater.inflate(R.layout.book_card, viewGroup, false));
     }
 
     @Override
-    public void onBindRealmViewHolder(BookCardVHUtil.NormalCardVH viewHolder, int position) {
-        BookCardVHUtil.doBindViewHolder(viewHolder, position, realmResults.get(position).getBook(), rippleFgListener);
+    public void onBindRealmViewHolder(BookCardUtil.NormalCardVH viewHolder, int position) {
+        BookCardUtil.doBindViewHolder(viewHolder, position, realmResults.get(position).getBook(), rippleFgListener);
+    }
+
+    @Override
+    public void onItemMove(int sourcePos, int targetPos) {
+        BookCardUtil.swapItemsAtPositions(realmResults, sourcePos, targetPos);
+        // TODO Call notifyMoved?? Not sure if necessary since we auto-update, but we'll see.
     }
 }
 

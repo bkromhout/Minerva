@@ -19,8 +19,8 @@ public class RBookList extends RealmObject {
     @PrimaryKey
     private String name;
     /**
-     * TODO This is a work-around until Realm can do case-insensitive sorting.
-     * Same as {@link #name}, but in lower-case.
+     * TODO This is a work-around until Realm can do case-insensitive sorting. Same as {@link #name}, but in
+     * lower-case.
      */
     @Index
     private String sortName;
@@ -92,6 +92,29 @@ public class RBookList extends RealmObject {
         realm.commitTransaction();
 
         // Close Realm instance.
+        realm.close();
+    }
+
+    /**
+     * Swaps the positions of {@code item1} and {@code item2}. Will do nothing if the items are the same.
+     * @param item1 An item.
+     * @param item2 Another item.
+     * @throws IllegalArgumentException if either item is null or if the items aren't part of the same list.
+     */
+    public static void swapItemPositions(RBookListItem item1, RBookListItem item2) {
+        if (item1 == null || item2 == null) throw new IllegalArgumentException("No nulls allowed.");
+        if (!item1.getOwningList().getName().equals(item2.getOwningList().getName()))
+            throw new IllegalArgumentException("Items must be part of the same list.");
+
+        Long temp = item1.getPos();
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+
+        // Swap the positions.
+        item1.setPos(item2.getPos());
+        item2.setPos(temp);
+
+        realm.commitTransaction();
         realm.close();
     }
 

@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +24,7 @@ import com.bkp.minerva.prefs.AllListsPrefs;
 import com.bkp.minerva.realm.RBook;
 import com.bkp.minerva.realm.RBookList;
 import com.bkp.minerva.realm.RBookListItem;
+import com.bkp.minerva.util.DraggableItemTouchHelperCallback;
 import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
@@ -127,6 +129,7 @@ public class BookListActivity extends AppCompatActivity {
         items = srcList.getListItems().where().findAllSorted("pos");
         adapter = makeAdapter();
         recyclerView.setAdapter(adapter);
+
     }
 
     @Override
@@ -212,6 +215,16 @@ public class BookListActivity extends AppCompatActivity {
             default:
                 return null;
         }
+    }
+
+    /**
+     * Adds drag and drop functionality to the recyclerview.
+     */
+    private void addDragDrop() {
+        ItemTouchHelper touchHelper = new ItemTouchHelper(new DraggableItemTouchHelperCallback(
+                (DraggableItemTouchHelperCallback.Adapter) adapter));
+        touchHelper.attachToRecyclerView(recyclerView);
+        // TODO sadly this will be impossible if we don't create our own version of the library :(
     }
 
     /**

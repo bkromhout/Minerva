@@ -7,22 +7,41 @@ import butterknife.ButterKnife;
 import com.bkp.minerva.R;
 import com.bkp.minerva.events.BookCardClickEvent;
 import com.bkp.minerva.realm.RBook;
+import com.bkp.minerva.realm.RBookList;
+import com.bkp.minerva.realm.RBookListItem;
 import com.bkp.minerva.util.RippleForegroundListener;
 import com.bkp.minerva.util.Util;
 import com.greenfrvr.hashtagview.HashtagView;
+import io.realm.RealmResults;
 import io.realm.RealmViewHolder;
 import org.greenrobot.eventbus.EventBus;
 
 /**
  * Utility class to help reduce duplicate code in the adapters for this package.
  */
-public class BookCardVHUtil {
+public class BookCardUtil {
+
+    /**
+     * Swaps the items at the given positions. (Note that the positions are the positions of the items in the {@code
+     * items} list, not the pos fields of the {@link RBookListItem}s.)
+     * @param items List of {@link RBookListItem}s which both items belong to.
+     * @param p1    Position in {@code items} of an item.
+     * @param p2    Position in {@code items} of another item.
+     */
+    static void swapItemsAtPositions(RealmResults<RBookListItem> items, int p1, int p2) {
+        // Get items.
+        RBookListItem item1 = items.get(p1);
+        RBookListItem item2 = items.get(p2);
+        // Swap items' positions.
+        RBookList.swapItemPositions(item1, item2);
+    }
+
     /**
      * Do all of the main logic for binding the view holders for the various book card adapters here so as to prevent
      * bugs by reducing duplicated code.
      * @param viewHolder       The view holder to fill in.
      * @param position         The position of the item.
-     * @param book            The book to use to populate views.
+     * @param book             The book to use to populate views.
      * @param rippleFgListener The listener to use to help cards ripple when clicked.
      */
     static void doBindViewHolder(RealmViewHolder viewHolder, int position, RBook book,
