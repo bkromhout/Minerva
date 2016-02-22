@@ -10,6 +10,8 @@ import com.bkp.minerva.Minerva;
 public class AllListsPrefs {
     // File name.
     private static final String FILE_NAME = "all_lists";
+    // Key Strings.
+    private static final String CARD_TYPE = "CARD_TYPE";
 
     /**
      * Static instance.
@@ -33,5 +35,22 @@ public class AllListsPrefs {
     public static AllListsPrefs get() {
         if (INSTANCE == null) INSTANCE = new AllListsPrefs();
         return INSTANCE;
+    }
+
+    /**
+     * Get card type string.
+     * @param defValue The default value to return if nothing is set.
+     * @return Card type string.
+     */
+    public String getCardType(String defValue) {
+        return prefs.getString(CARD_TYPE, defValue);
+    }
+
+    /**
+     * Put card type string.
+     * @param cardType Card type string.
+     */
+    public void putCardType(String cardType) {
+        prefs.edit().putString(CARD_TYPE, cardType).apply();
     }
 }

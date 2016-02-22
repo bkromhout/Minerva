@@ -1,10 +1,12 @@
 package com.bkp.minerva;
 
+import android.annotation.SuppressLint;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.menu.MenuBuilder;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -12,7 +14,12 @@ import android.view.MenuItem;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.bkp.minerva.adapters.BookItemCardAdapter;
+import com.bkp.minerva.adapters.BookItemCardCompactAdapter;
+import com.bkp.minerva.adapters.BookItemCardNoCoverAdapter;
 import com.bkp.minerva.events.BookCardClickEvent;
+import com.bkp.minerva.prefs.AllListsPrefs;
 import com.bkp.minerva.realm.RBook;
 import com.bkp.minerva.realm.RBookList;
 import com.bkp.minerva.realm.RBookListItem;
@@ -35,12 +42,20 @@ public class BookListActivity extends AppCompatActivity {
     @Bind(R.id.toolbar)
     Toolbar toolbar;
     @Bind(R.id.recycler)
-    RealmRecyclerView recycler;
+    RealmRecyclerView recyclerView;
 
+    /**
+     * Preferences.
+     */
+    private AllListsPrefs listsPrefs;
     /**
      * Unique string to help find the correct list to display from the DB.
      */
     private String selStr;
+    /**
+     * Which type of card to use.
+     */
+    private String cardType;
     /**
      * Instance of Realm.
      */
@@ -76,6 +91,10 @@ public class BookListActivity extends AppCompatActivity {
         readExtras(getIntent().getExtras());
         if (selStr == null) throw new IllegalArgumentException("Cannot start this activity without a selector string.");
 
+        // Get and read preferences.
+        listsPrefs = AllListsPrefs.get();
+        readPrefs();
+
         // Get Realm, then get the RBookList which we will get items from.
         realm = Realm.getDefaultInstance();
         srcList = realm.where(RBookList.class).equalTo("name", selStr).findFirst();
@@ -95,12 +114,19 @@ public class BookListActivity extends AppCompatActivity {
     }
 
     /**
+     * Read preferences into variables.
+     */
+    private void readPrefs() {
+        cardType = listsPrefs.getCardType(C.BOOK_CARD_NORMAL);
+    }
+
+    /**
      * Init the UI.
      */
     private void initUi() {
         items = srcList.getListItems().where().findAllSorted("pos");
-
-        // TODO Init RV.
+        adapter = makeAdapter();
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -159,9 +185,51 @@ public class BookListActivity extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
+            case R.id.action_card_type:
+                showCardStyleDialog();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
+    }
 
-        return super.onOptionsItemSelected(item);
+    /**
+     * Create a {@link RealmBasedRecyclerViewAdapter} based on the current view options and return it.
+     * @return New {@link RealmBasedRecyclerViewAdapter}. Will return null if we cannot get the activity context, if
+     * {@link #items} is null or invalid, or if the current value of {@link #cardType} is not valid.
+     */
+    private RealmBasedRecyclerViewAdapter makeAdapter() {
+        if (items == null || !items.isValid()) return null;
+
+        // Create a new adapter based on the card type.
+        switch (cardType) {
+            case C.BOOK_CARD_NORMAL:
+                return new BookItemCardAdapter(this, items, true, true);
+            case C.BOOK_CARD_NO_COVER:
+                return new BookItemCardNoCoverAdapter(this, items, true, true);
+            case C.BOOK_CARD_COMPACT:
+                return new BookItemCardCompactAdapter(this, items, true, true);
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Uses the current view options to change the card layout currently in use. Preserves the position currently
+     * scrolled to in the list before switching adapters.
+     */
+    private void changeCardType() {
+        // Store the current first visible item position so that we can scroll back to it after switching adapters.
+        int currFirstVisPos = recyclerView.findFirstVisibleItemPosition();
+
+        // Swap the adapter
+        if (adapter != null) adapter.close();
+        adapter = makeAdapter();
+        recyclerView.setAdapter(adapter);
+
+        // Scroll back to the same position.
+        // TODO the smooth scroll can take a while... I'd much rather it was instant.
+        if (currFirstVisPos != RecyclerView.NO_POSITION) recyclerView.smoothScrollToPosition(currFirstVisPos);
     }
 
     /**
@@ -187,6 +255,69 @@ public class BookListActivity extends AppCompatActivity {
             case QUICK_TAG:
                 // TODO Open quick-tag dialog??
                 break;
+        }
+    }
+
+    /**
+     * Shows a dialog which allows the user to pick the card style.
+     */
+    private void showCardStyleDialog() {
+        new MaterialDialog.Builder(this)
+                .title(R.string.action_card_type)
+                .items(C.getStr(R.string.card_normal),
+                        C.getStr(R.string.card_no_cover),
+                        C.getStr(R.string.card_compact))
+                .itemsCallbackSingleChoice(idxFromStrConst(cardType), (dialog, itemView, which, text) -> {
+                    // Do nothing if it's the same.
+                    if (idxFromStrConst(cardType) == which) return true;
+
+                    // Persist the new card style.
+                    cardType = strConstFromIdx(which);
+                    listsPrefs.putCardType(cardType);
+
+                    // Change the adapter.
+                    changeCardType();
+                    return true;
+                })
+                .show();
+    }
+
+    /**
+     * Convert an index to the string constant that that index represents.
+     * @param idx An index.
+     * @return A string constant.
+     */
+    @SuppressLint("DefaultLocale")
+    private static String strConstFromIdx(int idx) {
+        switch (idx) {
+            // Card types.
+            case 0:
+                return C.BOOK_CARD_NORMAL;
+            case 1:
+                return C.BOOK_CARD_NO_COVER;
+            case 2:
+                return C.BOOK_CARD_COMPACT;
+            default:
+                throw new IllegalArgumentException(String.format("Invalid resource ID: %d", idx));
+        }
+    }
+
+    /**
+     * Convert a string constant to the index that represents it.
+     * @param str String constant.
+     * @return An index.
+     */
+    private static Integer idxFromStrConst(String str) {
+        switch (str) {
+            // Card types.
+            case C.BOOK_CARD_NORMAL:
+                return 0;
+            case C.BOOK_CARD_NO_COVER:
+                return 1;
+            case C.BOOK_CARD_COMPACT:
+                return 2;
+            default:
+                throw new IllegalArgumentException(String.format("Invalid string constant: %s", str));
         }
     }
 }
