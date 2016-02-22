@@ -191,6 +191,7 @@ public class AllListsFragment extends Fragment {
                 break;
             case LONG:
                 // TODO Start multi-select.
+
                 break;
             case ACTIONS:
                 // Handle action.

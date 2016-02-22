@@ -220,7 +220,7 @@ public class BookListActivity extends AppCompatActivity {
     }
 
     /**
-     * Adds drag and drop functionality to the recyclerview.
+     * Adds drag and drop functionality to the recycler view.
      */
     private void addDragDrop() {
         ItemTouchHelper touchHelper = new ItemTouchHelper(new DraggableItemTouchHelperCallback(
