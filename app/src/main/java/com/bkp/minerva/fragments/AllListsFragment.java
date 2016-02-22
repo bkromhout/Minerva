@@ -14,12 +14,15 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bkp.minerva.BookInfoActivity;
+import com.bkp.minerva.BookListActivity;
 import com.bkp.minerva.C;
 import com.bkp.minerva.R;
 import com.bkp.minerva.adapters.BookListCardAdapter;
 import com.bkp.minerva.events.BookListCardClickEvent;
 import com.bkp.minerva.prefs.AllListsPrefs;
 import com.bkp.minerva.realm.RBookList;
+import com.bkp.minerva.util.Util;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
@@ -174,7 +177,9 @@ public class AllListsFragment extends Fragment {
         // Do something based on the click type.
         switch (event.getType()) {
             case NORMAL:
-                // TODO Open BookListActivity.
+                Bundle b = new Bundle();
+                b.putString(BookListActivity.LIST_SEL_STR, event.getName());
+                Util.startAct(getActivity(), BookInfoActivity.class, b);
                 break;
             case LONG:
                 // TODO Start multi-select.

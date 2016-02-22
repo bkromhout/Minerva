@@ -44,7 +44,10 @@ import org.greenrobot.eventbus.Subscribe;
 import java.lang.reflect.Method;
 
 /**
- * Main activity.
+ * Main activity, responsible for hosting fragments.
+ * <p>
+ * TODO have this host an instance of Realm, then have the child fragments call to its instance rather than getting
+ * TODO their own. This will hopefully prevent lag when switching fragments.
  */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     // Represents the various fragments that this activity can show.

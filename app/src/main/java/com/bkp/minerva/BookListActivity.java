@@ -5,13 +5,22 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.menu.MenuBuilder;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
+import com.bkp.minerva.events.BookCardClickEvent;
+import com.bkp.minerva.realm.RBook;
+import com.bkp.minerva.realm.RBookList;
+import com.bkp.minerva.realm.RBookListItem;
+import io.realm.Realm;
+import io.realm.RealmBasedRecyclerViewAdapter;
+import io.realm.RealmResults;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.lang.reflect.Method;
 
@@ -26,12 +35,28 @@ public class BookListActivity extends AppCompatActivity {
     @Bind(R.id.toolbar)
     Toolbar toolbar;
     @Bind(R.id.recycler)
-    RecyclerView recycler;
+    RealmRecyclerView recycler;
 
     /**
      * Unique string to help find the correct list to display from the DB.
      */
     private String selStr;
+    /**
+     * Instance of Realm.
+     */
+    private Realm realm;
+    /**
+     * The {@link RBookList} whose items are being shown.
+     */
+    private RBookList srcList;
+    /**
+     * The list of {@link RBookListItem}s being shown.
+     */
+    private RealmResults<RBookListItem> items;
+    /**
+     * Recycler view adapter.
+     */
+    private RealmBasedRecyclerViewAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,11 +74,15 @@ public class BookListActivity extends AppCompatActivity {
 
         // Read extras bundle.
         readExtras(getIntent().getExtras());
+        if (selStr == null) throw new IllegalArgumentException("Cannot start this activity without a selector string.");
 
-        // Set up the rest of the UI.
+        // Get Realm, then get the RBookList which we will get items from.
+        realm = Realm.getDefaultInstance();
+        srcList = realm.where(RBookList.class).equalTo("name", selStr).findFirst();
+
+        // Set title, then set up the rest of UI.
+        setTitle(srcList.getName());
         initUi();
-
-        // TODO set the title in here somewhere.
     }
 
     /**
@@ -69,12 +98,9 @@ public class BookListActivity extends AppCompatActivity {
      * Init the UI.
      */
     private void initUi() {
-        if (selStr == null) {
-            // TODO something here.
-            return;
-        }
+        items = srcList.getListItems().where().findAllSorted("pos");
 
-        // TODO use sel string to somehow get the list from the database.
+        // TODO Init RV.
     }
 
     @Override
@@ -106,6 +132,28 @@ public class BookListActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Close Realm.
+        if (realm != null) {
+            realm.close();
+            realm = null;
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -114,5 +162,31 @@ public class BookListActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Called when one of the cards is clicked.
+     * @param event {@link BookCardClickEvent}.
+     */
+    @Subscribe
+    public void onCardClicked(BookCardClickEvent event) {
+        // Get the associated RBook.
+        RBook book = items.where().equalTo("book.relPath", event.getRelPath()).findFirst().getBook();
+
+        // Do something based on the click type.
+        switch (event.getType()) {
+            case NORMAL:
+                // TODO Open the book file.
+                break;
+            case LONG:
+                // TODO Start multi-select.
+                break;
+            case INFO:
+                // TODO Open BookInfoActivity.
+                break;
+            case QUICK_TAG:
+                // TODO Open quick-tag dialog??
+                break;
+        }
     }
 }
