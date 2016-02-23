@@ -28,7 +28,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 /**
- * TODO
+ * Activity which displays a list of books based on an {@link RBookList}.
  */
 public class BookListActivity extends AppCompatActivity {
     // Key strings for the bundle passed when this activity is started.
@@ -170,6 +170,7 @@ public class BookListActivity extends AppCompatActivity {
                 onBackPressed();
                 return true;
             case R.id.action_reorder:
+                // TODO remove this toggle method, keep track of this ourselves so that we can change the UI.
                 adapter.toggleDragging();
                 return true;
             case R.id.action_card_type:
