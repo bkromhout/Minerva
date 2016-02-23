@@ -24,5 +24,5 @@
             android:id="@+id/action_delete_list"
             app:showAsAction="never"
             android:icon="@drawable/ic_delete"
-            android:title="@string/action_delete"/>
+            android:title="@string/title_delete_list"/>
 </menu>
