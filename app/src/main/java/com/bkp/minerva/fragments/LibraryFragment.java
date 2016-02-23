@@ -295,6 +295,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
                 break;
             }
         }
+        if (actionMode != null) actionMode.finish();
     }
 
     /**

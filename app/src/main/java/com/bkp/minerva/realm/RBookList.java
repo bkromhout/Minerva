@@ -100,7 +100,7 @@ public class RBookList extends RealmObject {
     public static void addBooks(RBookList list, Iterable<RBook> books) {
         // Create a list of RBookListItems from books, ignoring any RBooks which are already in the given list.
         List<RBookListItem> newItems = Observable.from(books)
-                                                 .filter(book -> isBookInList(list, book))
+                                                 .filter(book -> !isBookInList(list, book))
                                                  .map(book -> new RBookListItem(list, book))
                                                  .toList()
                                                  .toBlocking()
