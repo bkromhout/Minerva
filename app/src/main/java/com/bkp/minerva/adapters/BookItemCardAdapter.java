@@ -4,22 +4,14 @@ import android.content.Context;
 import android.view.ViewGroup;
 import com.bkp.minerva.R;
 import com.bkp.minerva.realm.RBook;
+import com.bkp.minerva.realm.RBookList;
 import com.bkp.minerva.realm.RBookListItem;
-import com.bkp.minerva.util.DraggableItemTouchHelperCallback;
-import com.bkp.minerva.util.RippleForegroundListener;
-import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 
 /**
  * Essentially {@link BookCardAdapter}, but has to unwrap {@link RBook}s from {@link RBookListItem}s.
  */
-public class BookItemCardAdapter extends RealmBasedRecyclerViewAdapter<RBookListItem, BookCardUtil.NormalCardVH>
-        implements DraggableItemTouchHelperCallback.Adapter {
-    /**
-     * Help our cards ripple.
-     */
-    private RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.ripple_foreground_view);
-
+public class BookItemCardAdapter extends BaseBookCardAdapter<RBookListItem, BaseBookCardAdapter.NormalCardVH> {
     /**
      * Create a new {@link BookItemCardAdapter}.
      * @param context         Context.
@@ -33,19 +25,13 @@ public class BookItemCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
     }
 
     @Override
-    public BookCardUtil.NormalCardVH onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
-        return new BookCardUtil.NormalCardVH(inflater.inflate(R.layout.book_card, viewGroup, false));
+    public NormalCardVH onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
+        return new NormalCardVH(inflater.inflate(R.layout.book_card, viewGroup, false));
     }
 
     @Override
-    public void onBindRealmViewHolder(BookCardUtil.NormalCardVH viewHolder, int position) {
-        BookCardUtil.doBindViewHolder(viewHolder, position, realmResults.get(position).getBook(), rippleFgListener,
-                selectedPositions.contains(position));
-    }
-
-    @Override
-    public void onItemMove(int sourcePos, int targetPos) {
-        BookCardUtil.swapItemsAtPositions(realmResults, sourcePos, targetPos);
+    public void onMoveDo(RBookListItem draggingObj, RBookListItem targetObj) {
+        RBookList.swapItemPositions(draggingObj, targetObj);
         // TODO Call notifyMoved?? Not sure if necessary since we auto-update, but we'll see.
     }
 }

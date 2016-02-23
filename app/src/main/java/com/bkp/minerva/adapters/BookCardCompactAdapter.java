@@ -4,19 +4,12 @@ import android.content.Context;
 import android.view.ViewGroup;
 import com.bkp.minerva.R;
 import com.bkp.minerva.realm.RBook;
-import com.bkp.minerva.util.RippleForegroundListener;
-import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 
 /**
  * Realm RecyclerView Adapter for compact book cards.
  */
-public class BookCardCompactAdapter extends RealmBasedRecyclerViewAdapter<RBook, BookCardUtil.CompactCardVH> {
-    /**
-     * Help our cards ripple.
-     */
-    private RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.ripple_foreground_view);
-
+public class BookCardCompactAdapter extends BaseBookCardAdapter<RBook, BaseBookCardAdapter.CompactCardVH> {
     /**
      * Create a new {@link BookCardCompactAdapter}.
      * @param context         Context.
@@ -30,13 +23,7 @@ public class BookCardCompactAdapter extends RealmBasedRecyclerViewAdapter<RBook,
     }
 
     @Override
-    public BookCardUtil.CompactCardVH onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
-        return new BookCardUtil.CompactCardVH(inflater.inflate(R.layout.book_card_compact, viewGroup, false));
-    }
-
-    @Override
-    public void onBindRealmViewHolder(BookCardUtil.CompactCardVH viewHolder, int position) {
-        BookCardUtil.doBindViewHolder(viewHolder, position, realmResults.get(position), rippleFgListener,
-                selectedPositions.contains(position));
+    public BaseBookCardAdapter.CompactCardVH onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
+        return new BaseBookCardAdapter.CompactCardVH(inflater.inflate(R.layout.book_card_compact, viewGroup, false));
     }
 }

@@ -4,19 +4,12 @@ import android.content.Context;
 import android.view.ViewGroup;
 import com.bkp.minerva.R;
 import com.bkp.minerva.realm.RBook;
-import com.bkp.minerva.util.RippleForegroundListener;
-import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 
 /**
  * Realm RecyclerView Adapter for book cards with no covers.
  */
-public class BookCardNoCoverAdapter extends RealmBasedRecyclerViewAdapter<RBook, BookCardUtil.NoCoverCardVH> {
-    /**
-     * Help our cards ripple.
-     */
-    private RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.ripple_foreground_view);
-
+public class BookCardNoCoverAdapter extends BaseBookCardAdapter<RBook, BaseBookCardAdapter.NoCoverCardVH> {
     /**
      * Create a new {@link BookCardNoCoverAdapter}.
      * @param context         Context.
@@ -30,13 +23,7 @@ public class BookCardNoCoverAdapter extends RealmBasedRecyclerViewAdapter<RBook,
     }
 
     @Override
-    public BookCardUtil.NoCoverCardVH onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
-        return new BookCardUtil.NoCoverCardVH(inflater.inflate(R.layout.book_card_no_cover, viewGroup, false));
-    }
-
-    @Override
-    public void onBindRealmViewHolder(BookCardUtil.NoCoverCardVH viewHolder, int position) {
-        BookCardUtil.doBindViewHolder(viewHolder, position, realmResults.get(position), rippleFgListener,
-                selectedPositions.contains(position));
+    public BaseBookCardAdapter.NoCoverCardVH onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
+        return new BaseBookCardAdapter.NoCoverCardVH(inflater.inflate(R.layout.book_card_no_cover, viewGroup, false));
     }
 }

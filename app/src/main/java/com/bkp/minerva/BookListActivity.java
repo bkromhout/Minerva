@@ -5,13 +5,13 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bkp.minerva.adapters.BaseBookCardAdapter;
 import com.bkp.minerva.adapters.BookItemCardAdapter;
 import com.bkp.minerva.adapters.BookItemCardCompactAdapter;
 import com.bkp.minerva.adapters.BookItemCardNoCoverAdapter;
@@ -20,7 +20,6 @@ import com.bkp.minerva.prefs.AllListsPrefs;
 import com.bkp.minerva.realm.RBook;
 import com.bkp.minerva.realm.RBookList;
 import com.bkp.minerva.realm.RBookListItem;
-import com.bkp.minerva.util.DraggableItemTouchHelperCallback;
 import com.bkp.minerva.util.Util;
 import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
@@ -68,7 +67,7 @@ public class BookListActivity extends AppCompatActivity {
     /**
      * Recycler view adapter.
      */
-    private RealmBasedRecyclerViewAdapter adapter;
+    private BaseBookCardAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,8 +169,17 @@ public class BookListActivity extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
+            case R.id.action_reorder:
+                adapter.toggleDragging();
+                return true;
             case R.id.action_card_type:
                 showCardStyleDialog();
+                return true;
+            case R.id.action_clear:
+                // TODO
+                return true;
+            case R.id.action_delete_list:
+                // TODO
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -183,7 +191,7 @@ public class BookListActivity extends AppCompatActivity {
      * @return New {@link RealmBasedRecyclerViewAdapter}. Will return null if we cannot get the activity context, if
      * {@link #items} is null or invalid, or if the current value of {@link #cardType} is not valid.
      */
-    private RealmBasedRecyclerViewAdapter makeAdapter() {
+    private BaseBookCardAdapter makeAdapter() {
         if (items == null || !items.isValid()) return null;
 
         // Create a new adapter based on the card type.
@@ -197,16 +205,6 @@ public class BookListActivity extends AppCompatActivity {
             default:
                 return null;
         }
-    }
-
-    /**
-     * Adds drag and drop functionality to the recycler view.
-     */
-    private void addDragDrop() {
-        ItemTouchHelper touchHelper = new ItemTouchHelper(new DraggableItemTouchHelperCallback(
-                (DraggableItemTouchHelperCallback.Adapter) adapter));
-        //touchHelper.attachToRecyclerView(recyclerView);
-        // TODO sadly this will be impossible if we don't create our own version of the library :(
     }
 
     /**
@@ -228,8 +226,6 @@ public class BookListActivity extends AppCompatActivity {
     }
 
     /**
-     * TODO have drag and drop be done with two finger drag!!
-     *
      * Called when one of the cards is clicked.
      * @param event {@link BookCardClickEvent}.
      */
