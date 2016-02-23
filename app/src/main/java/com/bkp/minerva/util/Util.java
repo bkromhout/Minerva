@@ -12,6 +12,9 @@ import android.provider.Settings;
 import android.support.annotation.ColorRes;
 import android.support.annotation.IdRes;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.view.menu.MenuBuilder;
+import android.util.Log;
+import android.view.Menu;
 import com.bkp.minerva.MainActivity;
 import com.bkp.minerva.Minerva;
 import com.bkp.minerva.R;
@@ -20,6 +23,7 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.epub.EpubReader;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -29,6 +33,30 @@ import java.util.List;
  * Utility functions class.
  */
 public class Util {
+    /**
+     * Uses some clever trickery to make it so that menu items in the popup menu still show their icons. (Very hacky)
+     * @param menu            Menu to force icons for.
+     * @param context         Context to use.
+     * @param classSimpleName Class name, used for potential logging.
+     */
+    public static void forceMenuIcons(Menu menu, Context context, String classSimpleName) {
+        if (menu != null) {
+            // Make sure all icons are tinted the correct color, including those in the overflow menu.
+            for (int i = 0; i < menu.size(); i++)
+                menu.getItem(i).getIcon()
+                    .setColorFilter(ContextCompat.getColor(context, R.color.textColorPrimary), PorterDuff.Mode.SRC_IN);
+            // And use a bit of reflection to ensure we show icons even in the overflow menu.
+            if (menu.getClass().equals(MenuBuilder.class)) {
+                try {
+                    Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
+                    m.setAccessible(true);
+                    m.invoke(menu, true);
+                } catch (Exception e) {
+                    Log.e(classSimpleName, "onMenuOpened...unable to set icons for overflow menu", e);
+                }
+            }
+        }
+    }
 
     /**
      * Mutates the given {@code drawable}, then tints it using {@link android.graphics.PorterDuff.Mode#SRC_IN} to the

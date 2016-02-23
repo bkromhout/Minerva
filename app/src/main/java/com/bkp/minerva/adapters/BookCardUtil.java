@@ -1,5 +1,6 @@
 package com.bkp.minerva.adapters;
 
+import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.*;
 import butterknife.Bind;
@@ -43,9 +44,10 @@ public class BookCardUtil {
      * @param position         The position of the item.
      * @param book             The book to use to populate views.
      * @param rippleFgListener The listener to use to help cards ripple when clicked.
+     * @param isSelected       Whether or not this item is in a selected state.
      */
     static void doBindViewHolder(RealmViewHolder viewHolder, int position, RBook book,
-                                 RippleForegroundListener rippleFgListener) {
+                                 RippleForegroundListener rippleFgListener, boolean isSelected) {
         if (book == null || rippleFgListener == null) throw new IllegalArgumentException();
 
         // Fill in view holder based on its real type.
@@ -53,26 +55,30 @@ public class BookCardUtil {
             // Normal cards.
             NormalCardVH resolvedVH = (NormalCardVH) viewHolder;
 
+            ((CardView) resolvedVH.content.getParent()).setCardBackgroundColor(
+                    isSelected ? R.color.selectedCard : R.color.cardview_dark_background);
+
             // Make the card ripple when touched.
             resolvedVH.content.setOnTouchListener(rippleFgListener);
 
             // Set card click handler.
             resolvedVH.content.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
-                    BookCardClickEvent.Type.NORMAL, book.getRelPath())));
+                    BookCardClickEvent.Type.NORMAL, book.getRelPath(), position)));
 
             // Set card long click handler.
             resolvedVH.content.setOnLongClickListener(v -> {
-                EventBus.getDefault().post(new BookCardClickEvent(BookCardClickEvent.Type.LONG, book.getRelPath()));
+                EventBus.getDefault().post(new BookCardClickEvent(BookCardClickEvent.Type.LONG, book.getRelPath(),
+                        position));
                 return true;
             });
 
             // Set info button handler.
             resolvedVH.btnInfo.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
-                    BookCardClickEvent.Type.INFO, book.getRelPath())));
+                    BookCardClickEvent.Type.INFO, book.getRelPath(), position)));
 
             // Set quick tag button handler.
             resolvedVH.btnQuickTag.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
-                    BookCardClickEvent.Type.QUICK_TAG, book.getRelPath())));
+                    BookCardClickEvent.Type.QUICK_TAG, book.getRelPath(), position)));
 
             // Set cover image.
             if (book.isHasCoverImage()) {
@@ -89,22 +95,26 @@ public class BookCardUtil {
             // Compact cards.
             CompactCardVH resolvedVH = (CompactCardVH) viewHolder;
 
+            ((CardView) resolvedVH.content.getParent()).setCardBackgroundColor(
+                    isSelected ? R.color.selectedCard : R.color.cardview_dark_background);
+
             // Make the card ripple when touched.
             resolvedVH.content.setOnTouchListener(rippleFgListener);
 
             // Set card click handler.
             resolvedVH.content.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
-                    BookCardClickEvent.Type.NORMAL, book.getRelPath())));
+                    BookCardClickEvent.Type.NORMAL, book.getRelPath(), position)));
 
             // Set card long click handler.
             resolvedVH.content.setOnLongClickListener(v -> {
-                EventBus.getDefault().post(new BookCardClickEvent(BookCardClickEvent.Type.LONG, book.getRelPath()));
+                EventBus.getDefault().post(new BookCardClickEvent(BookCardClickEvent.Type.LONG, book.getRelPath(),
+                        position));
                 return true;
             });
 
             // Set info button handler.
             resolvedVH.btnInfo.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
-                    BookCardClickEvent.Type.INFO, book.getRelPath())));
+                    BookCardClickEvent.Type.INFO, book.getRelPath(), position)));
 
             // Fill in data.
             resolvedVH.tvTitle.setText(book.getTitle());
@@ -114,26 +124,30 @@ public class BookCardUtil {
             // No-cover cards.
             NoCoverCardVH resolvedVH = (NoCoverCardVH) viewHolder;
 
+            ((CardView) resolvedVH.content.getParent()).setCardBackgroundColor(
+                    isSelected ? R.color.selectedCard : R.color.cardview_dark_background);
+
             // Make the card ripple when touched.
             resolvedVH.content.setOnTouchListener(rippleFgListener);
 
             // Set card click handler.
             resolvedVH.content.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
-                    BookCardClickEvent.Type.NORMAL, book.getRelPath())));
+                    BookCardClickEvent.Type.NORMAL, book.getRelPath(), position)));
 
             // Set card long click handler.
             resolvedVH.content.setOnLongClickListener(v -> {
-                EventBus.getDefault().post(new BookCardClickEvent(BookCardClickEvent.Type.LONG, book.getRelPath()));
+                EventBus.getDefault().post(new BookCardClickEvent(BookCardClickEvent.Type.LONG, book.getRelPath(),
+                        position));
                 return true;
             });
 
             // Set info button handler.
             resolvedVH.btnInfo.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
-                    BookCardClickEvent.Type.INFO, book.getRelPath())));
+                    BookCardClickEvent.Type.INFO, book.getRelPath(), position)));
 
             // Set quick tag button handler.
             resolvedVH.btnQuickTag.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
-                    BookCardClickEvent.Type.QUICK_TAG, book.getRelPath())));
+                    BookCardClickEvent.Type.QUICK_TAG, book.getRelPath(), position)));
 
             // Fill in data.
             resolvedVH.tvTitle.setText(book.getTitle());

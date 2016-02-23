@@ -1,13 +1,9 @@
 package com.bkp.minerva.fragments;
 
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.view.menu.MenuBuilder;
-import android.util.Log;
 import android.view.*;
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -27,8 +23,6 @@ import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-
-import java.lang.reflect.Method;
 
 /**
  * Fragment in charge of showing all of the book lists.
@@ -117,23 +111,7 @@ public class AllListsFragment extends Fragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        if (menu != null) {
-            // Make sure all icons are tinted the correct color, including those in the overflow menu.
-            for (int i = 0; i < menu.size(); i++)
-                menu.getItem(i).getIcon()
-                    .setColorFilter(ContextCompat.getColor(getContext(), R.color.textColorPrimary),
-                            PorterDuff.Mode.SRC_IN);
-            // And use a bit of reflection to ensure we show icons even in the overflow menu.
-            if (menu.getClass().equals(MenuBuilder.class)) {
-                try {
-                    Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
-                    m.setAccessible(true);
-                    m.invoke(menu, true);
-                } catch (Exception e) {
-                    Log.e(getClass().getSimpleName(), "onMenuOpened...unable to set icons for overflow menu", e);
-                }
-            }
-        }
+        Util.forceMenuIcons(menu, getContext(), getClass().getSimpleName());
         super.onPrepareOptionsMenu(menu);
     }
 

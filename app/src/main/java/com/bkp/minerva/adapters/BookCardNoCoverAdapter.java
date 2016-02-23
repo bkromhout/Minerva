@@ -36,6 +36,7 @@ public class BookCardNoCoverAdapter extends RealmBasedRecyclerViewAdapter<RBook,
 
     @Override
     public void onBindRealmViewHolder(BookCardUtil.NoCoverCardVH viewHolder, int position) {
-        BookCardUtil.doBindViewHolder(viewHolder, position, realmResults.get(position), rippleFgListener);
+        BookCardUtil.doBindViewHolder(viewHolder, position, realmResults.get(position), rippleFgListener,
+                selectedPositions.contains(position));
     }
 }

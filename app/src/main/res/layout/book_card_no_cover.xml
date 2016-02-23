@@ -3,6 +3,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/ripple_foreground_view"
         android:layout_width="match_parent"
         android:layout_height="@dimen/book_card_no_cover_height"
         android:layout_marginTop="@dimen/card_margin_top"
@@ -91,7 +92,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:tint="@color/textColorSecondary"
-                    android:backgroundTint="@color/cardview_dark_background"
+                    android:backgroundTint="@android:color/transparent"
                     android:src="@drawable/ic_info_unfilled"
                     android:contentDescription="@string/acc_book_info"/>
 
@@ -100,7 +101,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:tint="@color/textColorSecondary"
-                    android:backgroundTint="@color/cardview_dark_background"
+                    android:backgroundTint="@android:color/transparent"
                     android:src="@drawable/ic_tags"
                     android:contentDescription="@string/acc_quick_tag"/>
         </android.support.v7.widget.ButtonBarLayout>

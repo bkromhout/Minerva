@@ -1,15 +1,11 @@
 package com.bkp.minerva;
 
 import android.annotation.SuppressLint;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import butterknife.Bind;
@@ -25,13 +21,12 @@ import com.bkp.minerva.realm.RBook;
 import com.bkp.minerva.realm.RBookList;
 import com.bkp.minerva.realm.RBookListItem;
 import com.bkp.minerva.util.DraggableItemTouchHelperCallback;
+import com.bkp.minerva.util.Util;
 import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-
-import java.lang.reflect.Method;
 
 /**
  * TODO
@@ -134,22 +129,7 @@ public class BookListActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (menu != null) {
-            // Make sure all icons are tinted the correct color, including those in the overflow menu.
-            for (int i = 0; i < menu.size(); i++)
-                menu.getItem(i).getIcon()
-                    .setColorFilter(ContextCompat.getColor(this, R.color.textColorPrimary), PorterDuff.Mode.SRC_IN);
-            // And use a bit of reflection to ensure we show icons even in the overflow menu.
-            if (menu.getClass().equals(MenuBuilder.class)) {
-                try {
-                    Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
-                    m.setAccessible(true);
-                    m.invoke(menu, true);
-                } catch (Exception e) {
-                    Log.e(getClass().getSimpleName(), "onMenuOpened...unable to set icons for overflow menu", e);
-                }
-            }
-        }
+        Util.forceMenuIcons(menu, this, getClass().getSimpleName());
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -248,6 +228,8 @@ public class BookListActivity extends AppCompatActivity {
     }
 
     /**
+     * TODO have drag and drop be done with two finger drag!!
+     *
      * Called when one of the cards is clicked.
      * @param event {@link BookCardClickEvent}.
      */

@@ -2,16 +2,12 @@ package com.bkp.minerva.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.*;
 import android.widget.RadioGroup;
 import butterknife.Bind;
@@ -20,6 +16,7 @@ import butterknife.OnClick;
 import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bkp.minerva.BookInfoActivity;
 import com.bkp.minerva.C;
 import com.bkp.minerva.FullImportActivity;
 import com.bkp.minerva.R;
@@ -36,12 +33,10 @@ import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.lang.reflect.Method;
-
 /**
  * Fragment in charge of showing the user's whole library.
  */
-public class LibraryFragment extends Fragment {
+public class LibraryFragment extends Fragment implements ActionMode.Callback {
     // Views.
     @Bind(R.id.fab)
     FloatingActionButton fabViewOpts;
@@ -76,6 +71,10 @@ public class LibraryFragment extends Fragment {
      * Adapter currently being used by the recycler view.
      */
     private RealmBasedRecyclerViewAdapter adapter;
+    /**
+     * Whether or not we're currently in action mode.
+     */
+    private boolean isInActionMode = false;
 
     public LibraryFragment() {
         // Required empty public constructor
@@ -140,23 +139,7 @@ public class LibraryFragment extends Fragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        if (menu != null) {
-            // Make sure all icons are tinted the correct color, including those in the overflow menu.
-            for (int i = 0; i < menu.size(); i++)
-                menu.getItem(i).getIcon()
-                    .setColorFilter(ContextCompat.getColor(getContext(), R.color.textColorPrimary),
-                            PorterDuff.Mode.SRC_IN);
-            // And use a bit of reflection to ensure we show icons even in the overflow menu.
-            if (menu.getClass().equals(MenuBuilder.class)) {
-                try {
-                    Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
-                    m.setAccessible(true);
-                    m.invoke(menu, true);
-                } catch (Exception e) {
-                    Log.e(getClass().getSimpleName(), "onMenuOpened...unable to set icons for overflow menu", e);
-                }
-            }
-        }
+        Util.forceMenuIcons(menu, getContext(), getClass().getSimpleName());
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -191,6 +174,25 @@ public class LibraryFragment extends Fragment {
     }
 
     @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        mode.getMenuInflater().inflate(R.menu.library_action_mode, menu);
+        isInActionMode = true;
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        Util.forceMenuIcons(menu, getContext(), getClass().getSimpleName());
+        return true;
+    }
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+        adapter.clearSelections();
+        isInActionMode = false;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_import:
@@ -200,6 +202,39 @@ public class LibraryFragment extends Fragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add_to_list:
+                // TODO If there are no lists, show a toast that says that.
+
+                // TODO Open a dialog to select a list, then add the selected items to it.
+                break;
+            case R.id.action_tag:
+                // TODO
+                // Open the tagging dialog to tag the selected items. Any tags which all items share will be pre-filled.
+                break;
+            case R.id.action_rate:
+                // TODO Open the rating dialog to rate the selected items.
+                break;
+            case R.id.action_select_all:
+                // Select all the items.
+                adapter.selectAll();
+                break;
+            case R.id.action_select_none:
+                // Select none of the items.
+                adapter.clearSelections();
+                break;
+            case R.id.action_re_import:
+                // TODO Re-import the selected items.
+                break;
+            case R.id.action_delete:
+                // TODO Delete the selected items from our DB (and optionally the device).
+                break;
+        }
+        return false;
     }
 
     /**
@@ -266,19 +301,32 @@ public class LibraryFragment extends Fragment {
         // Get the associated RBook.
         RBook book = books.where().equalTo("relPath", event.getRelPath()).findFirst();
 
+        // TODO do something to make sure this doesn't interfere with drag and drop.
+        if (isInActionMode) {
+            // We're in multi select mode; just toggle the selection for this item and update the choice mode.
+            adapter.toggleSelected(event.getPosition());
+            return;
+        }
         // Do something based on the click type.
         switch (event.getType()) {
             case NORMAL:
                 // TODO Open the book file.
+
                 break;
             case LONG:
-                // TODO Start multi-select.
+                // Start multi-select.
+                adapter.toggleSelected(event.getPosition());
+                if (!isInActionMode) getActivity().startActionMode(this);
                 break;
             case INFO:
-                // TODO Open BookInfoActivity.
+                // Open BookInfoActivity.
+                Bundle b = new Bundle();
+                b.putString(BookInfoActivity.BOOK_SEL_STR, event.getRelPath());
+                Util.startAct(getActivity(), BookInfoActivity.class, b);
                 break;
             case QUICK_TAG:
                 // TODO Open quick-tag dialog??
+
                 break;
         }
     }

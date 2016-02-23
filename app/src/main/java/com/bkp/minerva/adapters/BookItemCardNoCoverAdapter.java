@@ -40,7 +40,8 @@ public class BookItemCardNoCoverAdapter extends
 
     @Override
     public void onBindRealmViewHolder(BookCardUtil.NoCoverCardVH viewHolder, int position) {
-        BookCardUtil.doBindViewHolder(viewHolder, position, realmResults.get(position).getBook(), rippleFgListener);
+        BookCardUtil.doBindViewHolder(viewHolder, position, realmResults.get(position).getBook(), rippleFgListener,
+                selectedPositions.contains(position));
     }
 
     @Override

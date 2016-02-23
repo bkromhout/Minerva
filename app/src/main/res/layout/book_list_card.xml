@@ -41,7 +41,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:tint="@color/textColorSecondary"
-                android:backgroundTint="@color/cardview_dark_background"
+                android:backgroundTint="@android:color/transparent"
                 android:src="@drawable/ic_more_vert"
                 android:contentDescription="@string/acc_actions"/>
     </RelativeLayout>

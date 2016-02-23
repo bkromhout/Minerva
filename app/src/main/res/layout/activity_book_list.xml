@@ -22,5 +22,6 @@
             android:layout_height="match_parent"
             android:padding="@dimen/recycler_view_padding"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:rrvLayoutType="LinearLayout"/>
+            app:rrvLayoutType="LinearLayout"
+            app:rrvDragAndDrop="true"/>
 </android.support.design.widget.CoordinatorLayout>

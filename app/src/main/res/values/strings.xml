@@ -14,8 +14,12 @@
     <!-- Common action Strings (may be used in multiple places) -->
     <string name="action_rename">Rename</string>
     <string name="action_delete">Delete</string>
+    <string name="action_remove">Remove</string>
+    <string name="action_clear">Clear</string>
     <string name="action_sort">Sort</string>
     <string name="action_search">Search</string>
+    <string name="action_select_all">Select All</string>
+    <string name="action_select_none">Select None</string>
 
     <!-- Permissions -->
     <string name="storage_permission">Storage Permission</string>
@@ -48,6 +52,11 @@
     <string name="action_import">Import</string>
     <string name="action_filter">Filter</string>
     <string name="action_view_opts">View Options</string>
+
+    <string name="action_add_to_list">Add To List</string>
+    <string name="action_tag">Tag</string>
+    <string name="action_rate">Rate</string>
+    <string name="action_re_import">Re-Import</string>
 
     <string name="lbl_sort_opts">Sort By</string>
     <string name="sort_title">Title</string>
@@ -112,6 +121,9 @@
     <!-- List Activity -->
     <string name="title_activity_book_list">Book List</string>
     <string name="action_card_type">Card Style</string>
+    <string name="action_reorder">Reorder</string>
+    <string name="action_move_to_top">Move To Top</string>
+    <string name="action_move_to_bottom">Move To Bottom</string>
 
     <!-- Power Search Fragment -->
 

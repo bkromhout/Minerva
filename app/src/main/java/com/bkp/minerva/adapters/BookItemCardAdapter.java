@@ -39,7 +39,8 @@ public class BookItemCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
 
     @Override
     public void onBindRealmViewHolder(BookCardUtil.NormalCardVH viewHolder, int position) {
-        BookCardUtil.doBindViewHolder(viewHolder, position, realmResults.get(position).getBook(), rippleFgListener);
+        BookCardUtil.doBindViewHolder(viewHolder, position, realmResults.get(position).getBook(), rippleFgListener,
+                selectedPositions.contains(position));
     }
 
     @Override

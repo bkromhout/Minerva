@@ -3,8 +3,26 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+            android:id="@+id/action_reorder"
+            app:showAsAction="ifRoom"
+            android:icon="@drawable/ic_reorder"
+            android:title="@string/action_reorder"/>
+
+    <item
             android:id="@+id/action_card_type"
             app:showAsAction="never"
             android:icon="@drawable/ic_eye"
             android:title="@string/action_card_type"/>
+
+    <item
+            android:id="@+id/action_clear"
+            app:showAsAction="never"
+            android:icon="@drawable/ic_clear_all"
+            android:title=""/>
+
+    <item
+            android:id="@+id/action_delete_list"
+            app:showAsAction="never"
+            android:icon="@drawable/ic_delete"
+            android:title="@string/action_delete"/>
 </menu>

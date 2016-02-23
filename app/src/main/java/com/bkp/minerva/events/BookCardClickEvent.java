@@ -20,16 +20,22 @@ public class BookCardClickEvent {
      * clicked card is showing data for.
      */
     private final String relPath;
+    /**
+     * The position of the clicked view.
+     */
+    private final int position;
 
     /**
      * Create a new {@link BookCardClickEvent}.
-     * @param type    Type of click.
-     * @param relPath The value of {@link com.bkp.minerva.realm.RBook#relPath relPath} for the view's corresponding
-     *                {@link com.bkp.minerva.realm.RBook}
+     * @param type     Type of click.
+     * @param relPath  The value of {@link com.bkp.minerva.realm.RBook#relPath relPath} for the view's corresponding
+     *                 {@link com.bkp.minerva.realm.RBook}
+     * @param position The position of the clicked view in the adapter.
      */
-    public BookCardClickEvent(Type type, String relPath) {
+    public BookCardClickEvent(Type type, String relPath, int position) {
         this.type = type;
         this.relPath = relPath;
+        this.position = position;
     }
 
     /**
@@ -46,5 +52,13 @@ public class BookCardClickEvent {
      */
     public String getRelPath() {
         return relPath;
+    }
+
+    /**
+     * Get the position of the clicked item in the adapter.
+     * @return Clicked item position.
+     */
+    public int getPosition() {
+        return position;
     }
 }
