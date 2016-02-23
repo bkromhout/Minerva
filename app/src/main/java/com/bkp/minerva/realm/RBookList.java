@@ -8,6 +8,9 @@ import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
+import rx.Observable;
+
+import java.util.List;
 
 /**
  * Represents a book list in Realm.
@@ -58,6 +61,57 @@ public class RBookList extends RealmObject {
     }
 
     /**
+     * Checks to see if {@code book} is already in {@code list}.
+     * @param list List to check.
+     * @param book Book to check for.
+     * @return True if {@code book} is in {@code list}, otherwise false.
+     */
+    public static boolean isBookInList(RBookList list, RBook book) {
+        return list.getListItems()
+                   .where()
+                   .equalTo("key", RBookListItem.makeBookListItemKey(list.getName(), book.getRelPath()))
+                   .findFirst() != null;
+    }
+
+    /**
+     * Add a single {@link RBook} to an {@link RBookList}.
+     * <p>
+     * Won't add {@code book} again if it's already in {@code list}.
+     * @param list List to add {@code book} to.
+     * @param book Book to add to {@code list}.
+     */
+    public static void addBook(RBookList list, RBook book) {
+        // Don't re-add the book if it's already in the list.
+        if (isBookInList(list, book)) return;
+
+        RBookListItem newItem = new RBookListItem(list, book);
+        try (Realm realm = Realm.getDefaultInstance()) {
+            realm.executeTransaction(tRealm -> list.getListItems().add(newItem));
+        }
+    }
+
+    /**
+     * Adds multiple {@link RBook}s to an {@link RBookList}.
+     * <p>
+     * If any of the books are already in {@code list}, they won't be added again.
+     * @param list  List to add {@code books} to.
+     * @param books Books to add to {@code list}.
+     */
+    public static void addBooks(RBookList list, Iterable<RBook> books) {
+        // Create a list of RBookListItems from books, ignoring any RBooks which are already in the given list.
+        List<RBookListItem> newItems = Observable.from(books)
+                                                 .filter(book -> isBookInList(list, book))
+                                                 .map(book -> new RBookListItem(list, book))
+                                                 .toList()
+                                                 .toBlocking()
+                                                 .single();
+
+        try (Realm realm = Realm.getDefaultInstance()) {
+            realm.executeTransaction(tRealm -> list.getListItems().addAll(newItems));
+        }
+    }
+
+    /**
      * Reset the positions of the given list's items so that they are spaced evenly using the standard position gap
      * (which can be found at {@link com.bkp.minerva.C#LIST_ITEM_GAP}).
      * <p>
@@ -67,32 +121,31 @@ public class RBookList extends RealmObject {
     public static void resetPositions(RBookList bookList) {
         if (bookList == null) throw new IllegalArgumentException("bookList is null.");
 
-        // Get Realm and the list's items.
-        Realm realm = Realm.getDefaultInstance();
+        // Get the list's items.
         RealmResults<RBookListItem> items = bookList.getListItems().where().findAllSorted("pos");
 
-        // Since the list will be rearranging itself on the fly, we must iterate it backwards. This also means we need
-        // to know in advance what our largest position number will be. Since the first item is 0, the last item will be
-        // numItems * gap - gap. The value we store in the list for the nextPos field is numItems * gap.
-        Long nextPos = LongMath.checkedMultiply(items.size(), C.LIST_ITEM_GAP);
+        try (Realm realm = Realm.getDefaultInstance()) {
+            realm.executeTransaction(tRealm -> {
+                // Since the list will be rearranging itself on the fly, we must iterate it backwards. This also
+                // means we need to know in advance what our largest position number will be. Since the first item is
+                // 0, the last item will be numItems * gap - gap. The value we store in the list for the nextPos
+                // field is numItems * gap.
+                Long nextPos = LongMath.checkedMultiply(items.size(), C.LIST_ITEM_GAP);
 
-        realm.beginTransaction();
-        // Change list's nextPos.
-        bookList.setNextPos(nextPos);
+                // Change list's nextPos.
+                bookList.setNextPos(nextPos);
 
-        // Loop through items backwards and set their positions.
-        // TODO I can easily see this breaking because it makes the assumption that all of the current positions are
-        // TODO less than or equal to numItems * gap - gap. If we had even two items greater than that, and the items
-        // TODO get rearranged as we set the positions, we'll end up setting something twice and breaking the
-        // TODO order... need to unit test this!
-        for (int i = items.size() - 1; i >= 0; i--) {
-            nextPos -= C.LIST_ITEM_GAP;
-            items.get(i).setPos(nextPos);
+                // Loop through items backwards and set their positions.
+                // TODO I can easily see this breaking because it makes the assumption that all of the current
+                // TODO positions are less than or equal to numItems * gap - gap. If we had even two items greater than
+                // TODO that, and the items get rearranged as we set the positions, we'll end up setting something
+                // TODO twice and breaking the order... need to unit test this!
+                for (int i = items.size() - 1; i >= 0; i--) {
+                    nextPos -= C.LIST_ITEM_GAP;
+                    items.get(i).setPos(nextPos);
+                }
+            });
         }
-        realm.commitTransaction();
-
-        // Close Realm instance.
-        realm.close();
     }
 
     /**
@@ -107,15 +160,13 @@ public class RBookList extends RealmObject {
             throw new IllegalArgumentException("Items must be part of the same list.");
 
         Long temp = item1.getPos();
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-
-        // Swap the positions.
-        item1.setPos(item2.getPos());
-        item2.setPos(temp);
-
-        realm.commitTransaction();
-        realm.close();
+        try (Realm realm = Realm.getDefaultInstance()) {
+            realm.executeTransaction(tRealm -> {
+                // Swap the positions.
+                item1.setPos(item2.getPos());
+                item2.setPos(temp);
+            });
+        }
     }
 
     /**
@@ -161,11 +212,10 @@ public class RBookList extends RealmObject {
         }
 
         // Get Realm, update itemToMove, then close Realm.
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        itemToMove.setPos(newPos);
-        realm.commitTransaction();
-        realm.close();
+        try (Realm realm = Realm.getDefaultInstance()) {
+            final Long finalNewPos = newPos;
+            realm.executeTransaction(tRealm -> itemToMove.setPos(finalNewPos));
+        }
     }
 
     /**

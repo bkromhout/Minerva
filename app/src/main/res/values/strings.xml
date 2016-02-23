@@ -69,6 +69,8 @@
     <string name="card_no_cover">No Cover</string>
     <string name="card_compact">Compact</string>
 
+    <string name="toast_no_lists">There are no lists</string>
+
     <!-- Full Import Activity -->
     <string name="title_activity_full_import">Library Import</string>
 

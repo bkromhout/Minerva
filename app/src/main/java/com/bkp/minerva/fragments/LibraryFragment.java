@@ -7,9 +7,12 @@ import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.view.*;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -24,14 +27,19 @@ import com.bkp.minerva.adapters.BookCardAdapter;
 import com.bkp.minerva.adapters.BookCardCompactAdapter;
 import com.bkp.minerva.adapters.BookCardNoCoverAdapter;
 import com.bkp.minerva.events.BookCardClickEvent;
+import com.bkp.minerva.events.LibraryActionEvent;
 import com.bkp.minerva.prefs.LibraryPrefs;
 import com.bkp.minerva.realm.RBook;
+import com.bkp.minerva.realm.RBookList;
 import com.bkp.minerva.util.Util;
 import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import rx.Observable;
+
+import java.util.List;
 
 /**
  * Fragment in charge of showing the user's whole library.
@@ -72,9 +80,9 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
      */
     private RealmBasedRecyclerViewAdapter adapter;
     /**
-     * Whether or not we're currently in action mode.
+     * Action mode.
      */
-    private boolean isInActionMode = false;
+    private ActionMode actionMode;
 
     public LibraryFragment() {
         // Required empty public constructor
@@ -158,6 +166,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
     @Override
     public void onStop() {
         super.onStop();
+//        actionMode.finish(); // TODO Not sure if needed/correct place?
         EventBus.getDefault().unregister(this);
     }
 
@@ -176,7 +185,6 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
         mode.getMenuInflater().inflate(R.menu.library_action_mode, menu);
-        isInActionMode = true;
         return true;
     }
 
@@ -189,7 +197,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
     @Override
     public void onDestroyActionMode(ActionMode mode) {
         adapter.clearSelections();
-        isInActionMode = false;
+        actionMode = null;
     }
 
     @Override
@@ -208,33 +216,85 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_to_list:
-                // TODO If there are no lists, show a toast that says that.
-
-                // TODO Open a dialog to select a list, then add the selected items to it.
-                break;
+                showAddToListDialogOrToast();
+                return true;
             case R.id.action_tag:
                 // TODO
                 // Open the tagging dialog to tag the selected items. Any tags which all items share will be pre-filled.
-                break;
+                return true;
             case R.id.action_rate:
                 // TODO Open the rating dialog to rate the selected items.
-                break;
+                return true;
             case R.id.action_select_all:
-                // Select all the items.
                 adapter.selectAll();
-                break;
+                return true;
             case R.id.action_select_none:
-                // Select none of the items.
                 adapter.clearSelections();
-                break;
+                return true;
             case R.id.action_re_import:
                 // TODO Re-import the selected items.
-                break;
+                return true;
             case R.id.action_delete:
                 // TODO Delete the selected items from our DB (and optionally the device).
-                break;
+                return true;
+            default:
+                return false;
         }
-        return false;
+    }
+
+    /**
+     * Called when the user wishes to add some items to a list.
+     */
+    private void showAddToListDialogOrToast() {
+        // Get list of lists (list-ception?)
+        RealmResults<RBookList> lists = realm.where(RBookList.class).findAllSorted("sortName");
+
+        if (lists.size() == 0) {
+            // If we don't have any lists, just show a toast.
+            Toast.makeText(getActivity(), R.string.toast_no_lists, Toast.LENGTH_SHORT).show();
+        } else {
+            // Create a material dialog.
+            new MaterialDialog.Builder(getActivity())
+                    .title(R.string.action_add_to_list)
+                    .items(Observable.from(lists)
+                                     .map(RBookList::getName)
+                                     .toList()
+                                     .toBlocking()
+                                     .single())
+                    .itemsCallback((dialog, itemView, which, text) ->
+                            EventBus.getDefault().post(new LibraryActionEvent(R.id.action_add_to_list, text)))
+                    .show();
+        }
+    }
+
+    /**
+     * Called when we wish to take some action.
+     * @param event {@link LibraryActionEvent}.
+     */
+    @Subscribe
+    public void onLibraryActionEvent(LibraryActionEvent event) {
+        //noinspection unchecked
+        List<RBook> selectedItems = adapter.getSelectedRealmObjects();
+
+        switch (event.getActionId()) {
+            case R.id.action_add_to_list: {
+                RBookList list = realm.where(RBookList.class).equalTo("name", (String) event.getData()).findFirst();
+                RBookList.addBooks(list, selectedItems);
+                break;
+            }
+            case R.id.action_tag: {
+                // TODO
+                break;
+            }
+            case R.id.action_rate: {
+                // TODO
+                break;
+            }
+            case R.id.action_delete: {
+                // TODO
+                break;
+            }
+        }
     }
 
     /**
@@ -302,7 +362,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
         RBook book = books.where().equalTo("relPath", event.getRelPath()).findFirst();
 
         // TODO do something to make sure this doesn't interfere with drag and drop.
-        if (isInActionMode) {
+        if (actionMode != null) {
             // We're in multi select mode; just toggle the selection for this item and update the choice mode.
             adapter.toggleSelected(event.getPosition());
             return;
@@ -316,7 +376,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
             case LONG:
                 // Start multi-select.
                 adapter.toggleSelected(event.getPosition());
-                if (!isInActionMode) getActivity().startActionMode(this);
+                if (actionMode == null) actionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(this);
                 break;
             case INFO:
                 // Open BookInfoActivity.

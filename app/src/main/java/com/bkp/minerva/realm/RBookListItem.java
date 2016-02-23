@@ -58,11 +58,21 @@ public class RBookListItem extends RealmObject {
         this.book = book;
 
         // Key = "[owningList's name]$$[book's rel path]".
-        this.key = String.format("%s$$%s", owningList.getName(), book.getRelPath());
+        this.key = makeBookListItemKey(owningList.getName(), book.getRelPath());
 
         // Position is the next position number from owningList. Then we update the next position number.
         this.pos = owningList.getNextPos();
         owningList.setNextPos(this.pos + C.LIST_ITEM_GAP);
+    }
+
+    /**
+     * Create a key for the given list name and relative book path.
+     * @param listName    List name.
+     * @param bookRelPath Relative book path.
+     * @return The resultant key.
+     */
+    static String makeBookListItemKey(String listName, String bookRelPath) {
+        return String.format("%s$$%s", listName, bookRelPath);
     }
 
     public String getKey() {

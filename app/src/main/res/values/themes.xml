@@ -11,6 +11,7 @@
         <item name="android:textColorPrimaryInverse">@color/textColorPrimaryInverse</item>
         <item name="android:textColorSecondaryInverse">@color/textColorPrimaryInverse</item>
 
+        <item name="windowActionModeOverlay">true</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
     </style>
 </resources>
