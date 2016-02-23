@@ -208,12 +208,8 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Real
      * drags on long click, this will be ignored.
      * @param mayStartDrags If true, the adapter can start item drags.
      */
-    public void setMayStartDrags(boolean mayStartDrags) {
+    public void setDragMode(boolean mayStartDrags) {
         this.mayStartDrags = mayStartDrags;
-    }
-
-    public void toggleDragging() {
-        mayStartDrags = !mayStartDrags;
     }
 
     /**

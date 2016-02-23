@@ -127,6 +127,8 @@
     <string name="action_move_to_top">Move To Top</string>
     <string name="action_move_to_bottom">Move To Bottom</string>
 
+    <string name="title_reorder_mode">Reorder Mode</string>
+
     <!-- Power Search Fragment -->
 
     <!-- Book Card/Book Info Activity -->

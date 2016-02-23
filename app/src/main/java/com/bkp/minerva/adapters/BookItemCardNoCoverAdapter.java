@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.ViewGroup;
 import com.bkp.minerva.R;
 import com.bkp.minerva.realm.RBook;
-import com.bkp.minerva.realm.RBookList;
 import com.bkp.minerva.realm.RBookListItem;
 import io.realm.RealmResults;
 
@@ -30,8 +29,14 @@ public class BookItemCardNoCoverAdapter extends BaseBookCardAdapter<RBookListIte
     }
 
     @Override
+    public void onMove(int draggingPos, int targetPos) {
+        super.onMove(draggingPos, targetPos);
+        notifyItemMoved(draggingPos, targetPos);
+    }
+
+    @Override
     public void onMoveDo(RBookListItem draggingObj, RBookListItem targetObj) {
-        RBookList.swapItemPositions(draggingObj, targetObj);
+        //RBookList.swapItemPositions(draggingObj, targetObj);
         // TODO Call notifyMoved?? Not sure if necessary since we auto-update, but we'll see.
     }
 }

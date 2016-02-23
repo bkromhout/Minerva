@@ -3,6 +3,7 @@ package com.bkp.minerva;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -30,7 +31,7 @@ import org.greenrobot.eventbus.Subscribe;
 /**
  * Activity which displays a list of books based on an {@link RBookList}.
  */
-public class BookListActivity extends AppCompatActivity {
+public class BookListActivity extends AppCompatActivity implements ActionMode.Callback {
     // Key strings for the bundle passed when this activity is started.
     public static final String LIST_SEL_STR = "LIST_SEL_STR";
 
@@ -68,6 +69,14 @@ public class BookListActivity extends AppCompatActivity {
      * Recycler view adapter.
      */
     private BaseBookCardAdapter adapter;
+    /**
+     * Action mode.
+     */
+    private ActionMode actionMode;
+    /**
+     * Whether or not the current action mode is the normal or reorder mode.
+     */
+    private boolean isReorderMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,14 +173,43 @@ public class BookListActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        if (!isReorderMode) {
+            mode.getMenuInflater().inflate(R.menu.book_list_action_mode, menu);
+        } else {
+            mode.setTitle(R.string.title_reorder_mode);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        Util.forceMenuIcons(menu, this, getClass().getSimpleName());
+        return true;
+    }
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+        if (!isReorderMode) {
+            adapter.clearSelections();
+        } else {
+            adapter.setDragMode(false);
+            isReorderMode = false;
+            // TODO??
+        }
+        actionMode = null;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 return true;
             case R.id.action_reorder:
-                // TODO remove this toggle method, keep track of this ourselves so that we can change the UI.
-                adapter.toggleDragging();
+                isReorderMode = true;
+                adapter.setDragMode(true);
+                startSupportActionMode(this);
                 return true;
             case R.id.action_card_type:
                 showCardStyleDialog();
@@ -184,6 +222,39 @@ public class BookListActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_tag:
+                // TODO
+                // Open the tagging dialog to tag the selected items. Any tags which all items share will be pre-filled.
+                return true;
+            case R.id.action_rate:
+                // TODO Open the rating dialog to rate the selected items.
+                return true;
+            case R.id.action_select_all:
+                adapter.selectAll();
+                return true;
+            case R.id.action_select_none:
+                adapter.clearSelections();
+                return true;
+            case R.id.action_move_to_top:
+                // TODO Move selected items to top of list.
+                return true;
+            case R.id.action_move_to_bottom:
+                // TODO Move selected items to bottom of list.
+                return true;
+            case R.id.action_re_import:
+                // TODO Re-import the selected items.
+                return true;
+            case R.id.action_remove:
+                // TODO Remove the selected items from the list.
+                return true;
+            default:
+                return false;
         }
     }
 
