@@ -27,16 +27,4 @@ public class BookItemCardNoCoverAdapter extends BaseBookCardAdapter<RBookListIte
     public BaseBookCardAdapter.NoCoverCardVH onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
         return new BaseBookCardAdapter.NoCoverCardVH(inflater.inflate(R.layout.book_card_no_cover, viewGroup, false));
     }
-
-    @Override
-    public void onMove(int draggingPos, int targetPos) {
-        super.onMove(draggingPos, targetPos);
-        notifyItemMoved(draggingPos, targetPos);
-    }
-
-    @Override
-    public void onMoveDo(RBookListItem draggingObj, RBookListItem targetObj) {
-        //RBookList.swapItemPositions(draggingObj, targetObj);
-        // TODO Call notifyMoved?? Not sure if necessary since we auto-update, but we'll see.
-    }
 }

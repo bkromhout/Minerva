@@ -27,17 +27,4 @@ public class BookItemCardCompactAdapter extends BaseBookCardAdapter<RBookListIte
     public BaseBookCardAdapter.CompactCardVH onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
         return new BaseBookCardAdapter.CompactCardVH(inflater.inflate(R.layout.book_card_compact, viewGroup, false));
     }
-
-    @Override
-    public void onMove(int draggingPos, int targetPos) {
-        super.onMove(draggingPos, targetPos);
-        notifyItemMoved(draggingPos, targetPos);
-    }
-
-    @Override
-    public void onMoveDo(RBookListItem draggingObj, RBookListItem targetObj) {
-        //RBookList.swapItemPositions(draggingObj, targetObj);
-
-        // TODO Call notifyMoved?? Not sure if necessary since we auto-update, but we'll see.
-    }
 }

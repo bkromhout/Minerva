@@ -27,17 +27,5 @@ public class BookItemCardAdapter extends BaseBookCardAdapter<RBookListItem, Base
     public NormalCardVH onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
         return new NormalCardVH(inflater.inflate(R.layout.book_card, viewGroup, false));
     }
-
-    @Override
-    public void onMove(int draggingPos, int targetPos) {
-        super.onMove(draggingPos, targetPos);
-        notifyItemMoved(draggingPos, targetPos);
-    }
-
-    @Override
-    public void onMoveDo(RBookListItem draggingObj, RBookListItem targetObj) {
-        //RBookList.swapItemPositions(draggingObj, targetObj);
-        // TODO Call notifyMoved?? Not sure if necessary since we auto-update, but we'll see.
-    }
 }
 

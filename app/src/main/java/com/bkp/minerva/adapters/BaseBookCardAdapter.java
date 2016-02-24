@@ -9,6 +9,7 @@ import butterknife.ButterKnife;
 import com.bkp.minerva.R;
 import com.bkp.minerva.events.BookCardClickEvent;
 import com.bkp.minerva.realm.RBook;
+import com.bkp.minerva.realm.RBookList;
 import com.bkp.minerva.realm.RBookListItem;
 import com.bkp.minerva.util.RippleForegroundListener;
 import com.bkp.minerva.util.Util;
@@ -203,6 +204,16 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Real
     }
 
     /**
+     * If {@code item} of generic type T is an {@link RBookListItem}, return it as such, otherwise return null.
+     * @param item Generic item.
+     * @return {@code item} as {@link RBookListItem}, or null if it isn't.
+     */
+    private RBookListItem getBookListItemFromT(T item) {
+        if (item instanceof RBookListItem) return (RBookListItem) item;
+        else return null;
+    }
+
+    /**
      * Set whether or not the adapter may start view drags currently. Note that if the {@link
      * co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView} this adapter is bound to is set to automatically begin
      * drags on long click, this will be ignored.
@@ -210,6 +221,15 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Real
      */
     public void setDragMode(boolean mayStartDrags) {
         this.mayStartDrags = mayStartDrags;
+    }
+
+    @Override
+    public void onMove(int draggingPos, int targetPos) {
+        RBookListItem item1 = getBookListItemFromT(realmResults.get(draggingPos));
+        RBookListItem item2 = getBookListItemFromT(realmResults.get(targetPos));
+        if (item1 == null || item2 == null) return;
+
+        RBookList.swapItemPositions(item1, item2);
     }
 
     /**
