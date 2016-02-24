@@ -16,7 +16,6 @@ import android.widget.Toast;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkromhout.minerva.BookInfoActivity;
@@ -32,6 +31,7 @@ import com.bkromhout.minerva.prefs.LibraryPrefs;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.util.Util;
+import com.bkromhout.realmrecyclerview.RealmRecyclerView;
 import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
@@ -337,8 +337,8 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
      * scrolled to in the list before switching adapters.
      */
     private void changeCardType() {
-        // Store the current first visible item position so that we can scroll back to it after switching adapters.
-        int currFirstVisPos = recyclerView.findFirstVisibleItemPosition();
+        // Store the current last visible item position so that we can scroll back to it after switching adapters.
+        int currLastVisPos = recyclerView.getLayoutManger().findLastCompletelyVisibleItemPosition();
 
         // Swap the adapter
         if (adapter != null) adapter.close();
@@ -348,9 +348,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
         // Scroll back to the same position.
         // TODO this probably won't show the expected item it both the card and sort type/dir are changed, because while
         // TODO the position will be correct, the item at that position will be different... we'll figure it out.
-
-        // TODO the smooth scroll can take a while... I'd much rather it was instant.
-        if (currFirstVisPos != RecyclerView.NO_POSITION) recyclerView.smoothScrollToPosition(currFirstVisPos);
+        if (currLastVisPos != RecyclerView.NO_POSITION) recyclerView.scrollToPosition(currLastVisPos);
     }
 
     /**

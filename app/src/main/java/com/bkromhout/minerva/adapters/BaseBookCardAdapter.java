@@ -2,6 +2,7 @@ package com.bkromhout.minerva.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.*;
 import butterknife.Bind;
@@ -17,14 +18,13 @@ import com.greenfrvr.hashtagview.HashtagView;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
-import io.realm.RealmViewHolder;
 import org.greenrobot.eventbus.EventBus;
 
 /**
  * Base adapter for book card adapters to extend.
  */
-public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends RealmViewHolder>
-        extends RealmBasedRecyclerViewAdapter<T, VH> {
+public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends RecyclerView.ViewHolder> extends
+        RealmBasedRecyclerViewAdapter<T, VH> {
     /**
      * Help our cards ripple.
      */
@@ -36,11 +36,11 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Real
 
     public BaseBookCardAdapter(Context context, RealmResults<T> realmResults, boolean automaticUpdate,
                                boolean animateResults) {
-        super(context, realmResults, automaticUpdate, animateResults);
+        super(context, realmResults, automaticUpdate, animateResults, null);
     }
 
     @Override
-    public void onBindRealmViewHolder(VH viewHolder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         // Get/check variables needed to help bind.
         RBook book = getBookFromT(realmResults.get(position));
         if (book == null || rippleFgListener == null) throw new IllegalArgumentException();
@@ -79,7 +79,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Real
         // Set card long click handler.
         resolvedVH.content.setOnLongClickListener(v -> {
             if (mayStartDrags) {
-                startDragListener.onStartDrag(resolvedVH);
+                startDragListener.startDragging(resolvedVH);
             } else {
                 EventBus.getDefault().post(new BookCardClickEvent(BookCardClickEvent.Type.LONG, book.getRelPath(),
                         position));
@@ -129,7 +129,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Real
         // Set card long click handler.
         resolvedVH.content.setOnLongClickListener(v -> {
             if (mayStartDrags) {
-                startDragListener.onStartDrag(resolvedVH);
+                startDragListener.startDragging(resolvedVH);
             } else {
                 EventBus.getDefault().post(new BookCardClickEvent(BookCardClickEvent.Type.LONG, book.getRelPath(),
                         position));
@@ -168,7 +168,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Real
         // Set card long click handler.
         resolvedVH.content.setOnLongClickListener(v -> {
             if (mayStartDrags) {
-                startDragListener.onStartDrag(resolvedVH);
+                startDragListener.startDragging(resolvedVH);
             } else {
                 EventBus.getDefault().post(new BookCardClickEvent(BookCardClickEvent.Type.LONG, book.getRelPath(),
                         position));
@@ -215,8 +215,8 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Real
 
     /**
      * Set whether or not the adapter may start view drags currently. Note that if the {@link
-     * co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView} this adapter is bound to is set to automatically begin
-     * drags on long click, this will be ignored.
+     * com.bkromhout.realmrecyclerview.RealmRecyclerView} this adapter is bound to is set to automatically begin drags
+     * on long click, this will be ignored.
      * @param mayStartDrags If true, the adapter can start item drags.
      */
     public void setDragMode(boolean mayStartDrags) {
@@ -235,7 +235,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Real
     /**
      * ViewHolder class for normal book cards.
      */
-    static class NormalCardVH extends RealmViewHolder {
+    static class NormalCardVH extends RecyclerView.ViewHolder {
         @Bind(R.id.content)
         public RelativeLayout content;
         @Bind(R.id.cover_image)
@@ -264,7 +264,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Real
     /**
      * ViewHolder class for compact book cards.
      */
-    static class CompactCardVH extends RealmViewHolder {
+    static class CompactCardVH extends RecyclerView.ViewHolder {
         @Bind(R.id.content)
         public RelativeLayout content;
         @Bind(R.id.btn_info)
@@ -285,7 +285,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Real
     /**
      * ViewHolder class for book cards without covers.
      */
-    static class NoCoverCardVH extends RealmViewHolder {
+    static class NoCoverCardVH extends RecyclerView.ViewHolder {
         @Bind(R.id.content)
         public RelativeLayout content;
         @Bind(R.id.btn_info)

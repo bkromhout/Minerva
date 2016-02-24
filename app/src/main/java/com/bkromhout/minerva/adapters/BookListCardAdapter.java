@@ -1,6 +1,7 @@
 package com.bkromhout.minerva.adapters;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +17,12 @@ import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.util.RippleForegroundListener;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
-import io.realm.RealmViewHolder;
 import org.greenrobot.eventbus.EventBus;
 
 /**
  * Realm RecyclerView Adapter for book list cards.
  */
-public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList, BookListCardAdapter.ViewHolder> {
+public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList, BookListCardAdapter.BookListCardVH> {
     /**
      * Help our cards ripple.
      */
@@ -37,16 +37,16 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
      */
     public BookListCardAdapter(Context context, RealmResults<RBookList> realmResults, boolean automaticUpdate,
                                boolean animateResults) {
-        super(context, realmResults, automaticUpdate, animateResults);
+        super(context, realmResults, automaticUpdate, animateResults, null);
     }
 
     @Override
-    public ViewHolder onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
-        return new ViewHolder(inflater.inflate(R.layout.book_list_card, viewGroup, false));
+    public BookListCardVH onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        return new BookListCardVH(inflater.inflate(R.layout.book_list_card, viewGroup, false));
     }
 
     @Override
-    public void onBindRealmViewHolder(ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(BookListCardVH viewHolder, int position) {
         final RBookList rBookList = realmResults.get(position);
 
         // Make the card ripple when touched.
@@ -69,9 +69,9 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
     }
 
     /**
-     * ViewHolder class.
+     * BookListCardVH class.
      */
-    public class ViewHolder extends RealmViewHolder implements PopupMenu.OnMenuItemClickListener {
+    public class BookListCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenuItemClickListener {
         @Bind(R.id.content)
         public RelativeLayout content;
         @Bind(R.id.list_name)
@@ -79,7 +79,7 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
         @Bind(R.id.btn_actions)
         public ImageButton btnActions;
 
-        public ViewHolder(View itemView) {
+        public BookListCardVH(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
 
@@ -87,7 +87,7 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
             btnActions.setOnClickListener(view -> {
                 PopupMenu menu = new PopupMenu(view.getContext(), view);
                 menu.getMenuInflater().inflate(R.menu.book_list_card_actions, menu.getMenu());
-                menu.setOnMenuItemClickListener(ViewHolder.this);
+                menu.setOnMenuItemClickListener(BookListCardVH.this);
                 menu.show();
             });
         }

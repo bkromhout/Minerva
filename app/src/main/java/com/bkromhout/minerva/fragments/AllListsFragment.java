@@ -8,7 +8,7 @@ import android.view.*;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
+import com.bkromhout.realmrecyclerview.RealmRecyclerView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkromhout.minerva.BookListActivity;
 import com.bkromhout.minerva.C;

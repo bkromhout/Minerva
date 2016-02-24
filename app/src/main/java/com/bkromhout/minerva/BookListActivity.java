@@ -10,7 +10,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkromhout.minerva.adapters.BaseBookCardAdapter;
 import com.bkromhout.minerva.adapters.BookItemCardAdapter;
@@ -22,6 +21,7 @@ import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
 import com.bkromhout.minerva.util.Util;
+import com.bkromhout.realmrecyclerview.RealmRecyclerView;
 import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
@@ -284,8 +284,8 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
      * scrolled to in the list before switching adapters.
      */
     private void changeCardType() {
-        // Store the current first visible item position so that we can scroll back to it after switching adapters.
-        int currFirstVisPos = recyclerView.findFirstVisibleItemPosition();
+        // Store the current last visible item position so that we can scroll back to it after switching adapters.
+        int currLastVisPos = recyclerView.getLayoutManger().findLastCompletelyVisibleItemPosition();
 
         // Swap the adapter
         if (adapter != null) adapter.close();
@@ -293,8 +293,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         recyclerView.setAdapter(adapter);
 
         // Scroll back to the same position.
-        // TODO the smooth scroll can take a while... I'd much rather it was instant.
-        if (currFirstVisPos != RecyclerView.NO_POSITION) recyclerView.smoothScrollToPosition(currFirstVisPos);
+        if (currLastVisPos != RecyclerView.NO_POSITION) recyclerView.scrollToPosition(currLastVisPos);
     }
 
     /**

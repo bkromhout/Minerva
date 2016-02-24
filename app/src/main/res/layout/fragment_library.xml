@@ -6,12 +6,11 @@
         android:layout_height="match_parent"
         tools:context=".fragments.LibraryFragment">
 
-    <co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView
+    <com.bkromhout.realmrecyclerview.RealmRecyclerView
             android:id="@+id/recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:rrvLayoutType="LinearLayout"/>
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"

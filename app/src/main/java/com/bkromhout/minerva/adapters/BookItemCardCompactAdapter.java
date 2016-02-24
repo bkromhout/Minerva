@@ -24,7 +24,7 @@ public class BookItemCardCompactAdapter extends BaseBookCardAdapter<RBookListIte
     }
 
     @Override
-    public BaseBookCardAdapter.CompactCardVH onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
+    public CompactCardVH onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         return new BaseBookCardAdapter.CompactCardVH(inflater.inflate(R.layout.book_card_compact, viewGroup, false));
     }
 }

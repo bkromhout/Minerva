@@ -24,7 +24,7 @@ public class BookItemCardNoCoverAdapter extends BaseBookCardAdapter<RBookListIte
     }
 
     @Override
-    public BaseBookCardAdapter.NoCoverCardVH onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
+    public NoCoverCardVH onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         return new BaseBookCardAdapter.NoCoverCardVH(inflater.inflate(R.layout.book_card_no_cover, viewGroup, false));
     }
 }

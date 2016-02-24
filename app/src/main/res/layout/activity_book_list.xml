@@ -16,12 +16,11 @@
         <include layout="@layout/toolbar"/>
     </android.support.design.widget.AppBarLayout>
 
-    <co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView
+    <com.bkromhout.realmrecyclerview.RealmRecyclerView
             android:id="@+id/recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="@dimen/recycler_view_padding"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:rrvLayoutType="LinearLayout"
             app:rrvDragAndDrop="true"/>
 </android.support.design.widget.CoordinatorLayout>

@@ -24,7 +24,7 @@ public class BookItemCardAdapter extends BaseBookCardAdapter<RBookListItem, Base
     }
 
     @Override
-    public NormalCardVH onCreateRealmViewHolder(ViewGroup viewGroup, int viewType) {
+    public NormalCardVH onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         return new NormalCardVH(inflater.inflate(R.layout.book_card, viewGroup, false));
     }
 }

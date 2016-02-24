@@ -7,7 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.*;
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
+import com.bkromhout.realmrecyclerview.RealmRecyclerView;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.util.Util;
