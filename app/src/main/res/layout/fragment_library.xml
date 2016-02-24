@@ -24,5 +24,5 @@
             android:contentDescription="@string/action_view_opts"
             app:layout_anchor="@id/recycler"
             app:layout_anchorGravity="bottom|right|end"
-            app:layout_behavior="com.bkp.minerva.util.ScrollAwareFABBehavior"/>
+            app:layout_behavior="com.bkromhout.minerva.util.ScrollAwareFABBehavior"/>
 </android.support.design.widget.CoordinatorLayout>
