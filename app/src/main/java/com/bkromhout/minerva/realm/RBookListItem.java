@@ -10,6 +10,7 @@ import io.realm.annotations.PrimaryKey;
  * Represents an item in a book list in Realm.
  */
 public class RBookListItem extends RealmObject {
+    private static final String KEY_SEP = "##BLI_KEY##";
     /**
      * Primary key, created by taking the name of the owning list and the relative path of the book file (both of which
      * are themselves primary keys) and combining them like so: "[owning list's name]$$[book's relative path]".
@@ -75,7 +76,22 @@ public class RBookListItem extends RealmObject {
      * @return The resultant key.
      */
     static String makeBookListItemKey(String listName, String bookRelPath) {
-        return String.format("%s$$%s", listName, bookRelPath);
+        return String.format("%s" + KEY_SEP + "%s", listName, bookRelPath);
+    }
+
+    /**
+     * Checks whether two key strings are for items in the same {@link RBookList}.
+     * @param item1Key An item's key string.
+     * @param item2Key Another item's key string.
+     * @return True if keys are for items from the same list, otherwise false.
+     */
+    static boolean areFromSameList(String item1Key, String item2Key) {
+        // Check for nulls.
+        if (item1Key == null || item1Key.isEmpty() || item2Key == null || item2Key.isEmpty()) return false;
+        // Check that these are keys.
+        if (!item1Key.contains(KEY_SEP) || !item2Key.contains(KEY_SEP)) return false;
+        // Check keys.
+        return item1Key.split("\\Q" + KEY_SEP + "\\E")[0].equals(item2Key.split("\\Q" + KEY_SEP + "\\E")[0]);
     }
 
     public String getKey() {

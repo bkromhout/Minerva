@@ -360,10 +360,9 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
         // Get the associated RBook.
         RBook book = books.where().equalTo("relPath", event.getRelPath()).findFirst();
 
-        // TODO do something to make sure this doesn't interfere with drag and drop.
         if (actionMode != null) {
-            // We're in multi select mode; just toggle the selection for this item and update the choice mode.
-            adapter.toggleSelected(event.getPosition());
+            if (event.getType() == BookCardClickEvent.Type.LONG) adapter.extendSelectionTo(event.getPosition());
+            else adapter.toggleSelected(event.getPosition());
             return;
         }
         // Do something based on the click type.

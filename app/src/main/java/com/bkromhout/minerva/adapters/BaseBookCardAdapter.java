@@ -23,12 +23,12 @@ import org.greenrobot.eventbus.EventBus;
 /**
  * Base adapter for book card adapters to extend.
  */
-public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends RecyclerView.ViewHolder> extends
+public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends BaseBookCardAdapter.BaseCardVH> extends
         RealmBasedRecyclerViewAdapter<T, VH> {
     /**
      * Help our cards ripple.
      */
-    RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.ripple_foreground_view);
+    RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.card);
     /**
      * Whether or not this adapter may allow item drags to start.
      */
@@ -40,156 +40,85 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(BaseCardVH viewHolder, int position) {
         // Get/check variables needed to help bind.
-        RBook book = getBookFromT(realmResults.get(position));
+        RBookListItem bookListItem = getBookListItemFromT(realmResults.get(position));
+        RBook book = bookListItem != null ? bookListItem.getBook() : getBookFromT(realmResults.get(position));
         if (book == null || rippleFgListener == null) throw new IllegalArgumentException();
-        boolean isSelected = selectedPositions.contains(position);
+        boolean selected = selectedPositions.contains(position);
 
-        // Fill in view holder based on its real type.
-        if (viewHolder instanceof NormalCardVH) {
-            bindNormalBookCard((NormalCardVH) viewHolder, position, book, isSelected);
-        } else if (viewHolder instanceof CompactCardVH) {
-            bindCompactBookCard((CompactCardVH) viewHolder, position, book, isSelected);
-        } else if (viewHolder instanceof NoCoverCardVH) {
-            bindNoCoverBookCard((NoCoverCardVH) viewHolder, position, book, isSelected);
-        } else {
-            throw new IllegalArgumentException("Invalid viewHolder");
-        }
-    }
-
-    /**
-     * Bind a {@link NormalCardVH}.
-     * @param resolvedVH Normal book card view holder.
-     * @param position   Item position.
-     * @param book       Book to populate item with.
-     * @param isSelected Whether or not the item is selected.
-     */
-    private void bindNormalBookCard(NormalCardVH resolvedVH, int position, RBook book, boolean isSelected) {
-        ((CardView) resolvedVH.content.getParent()).setCardBackgroundColor(
-                isSelected ? R.color.selectedCard : R.color.cardview_dark_background);
+        // Do common bindings. First, change the card's background color based on whether or not the item is selected.
+        viewHolder.cardView.setCardBackgroundColor(selected ? R.color.selectedCard : R.color.cardview_dark_background);
 
         // Make the card ripple when touched.
-        resolvedVH.content.setOnTouchListener(rippleFgListener);
+        viewHolder.content.setOnTouchListener(rippleFgListener);
 
         // Set card click handler.
-        resolvedVH.content.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
+        viewHolder.content.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
                 BookCardClickEvent.Type.NORMAL, book.getRelPath(), position)));
 
         // Set card long click handler.
-        resolvedVH.content.setOnLongClickListener(v -> {
-            if (mayStartDrags) {
-                startDragListener.startDragging(resolvedVH);
-            } else {
-                EventBus.getDefault().post(new BookCardClickEvent(BookCardClickEvent.Type.LONG, book.getRelPath(),
-                        position));
-            }
+        viewHolder.content.setOnLongClickListener(v -> {
+            if (mayStartDrags) startDragListener.startDragging(viewHolder);
+            else EventBus.getDefault().post(new BookCardClickEvent(BookCardClickEvent.Type.LONG, book.getRelPath(),
+                    position));
             return true;
         });
 
         // Set info button handler.
-        resolvedVH.btnInfo.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
+        viewHolder.btnInfo.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
                 BookCardClickEvent.Type.INFO, book.getRelPath(), position)));
 
-        // Set quick tag button handler.
-        resolvedVH.btnQuickTag.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
-                BookCardClickEvent.Type.QUICK_TAG, book.getRelPath(), position)));
-
-        // Set cover image.
-        if (book.isHasCoverImage()) {
-            // TODO something here
-        }
-
         // Fill in data.
-        resolvedVH.tvTitle.setText(book.getTitle());
-        resolvedVH.tvAuthor.setText(book.getAuthor());
-        resolvedVH.tvDesc.setText(book.getDesc());
-        resolvedVH.rbRating.setRating(book.getRating());
-        resolvedVH.htvTags.setData(Util.stringToList(book.getTags(), ";;"));
+        viewHolder.tvTitle.setText(book.getTitle());
+        viewHolder.tvAuthor.setText(book.getAuthor());
+
+        // Do bindings for the rest of the view holder based on its real type.
+        if (viewHolder instanceof CompactCardVH) bindCompactBookCard((CompactCardVH) viewHolder, book);
+        if (viewHolder instanceof NoCoverCardVH) bindNoCoverBookCard((NoCoverCardVH) viewHolder, position, book);
+        if (viewHolder instanceof NormalCardVH) bindNormalBookCard((NormalCardVH) viewHolder, book);
+
+        // If we have an RBookListItem, store its key on the CardView.
+        if (bookListItem != null) viewHolder.cardView.setTag(bookListItem.getKey());
     }
 
     /**
      * Bind a {@link CompactCardVH}.
      * @param resolvedVH Compact book card view holder.
-     * @param position   Item position.
      * @param book       Book to populate item with.
-     * @param isSelected Whether or not the item is selected.
      */
-    private void bindCompactBookCard(CompactCardVH resolvedVH, int position, RBook book, boolean isSelected) {
-        ((CardView) resolvedVH.content.getParent()).setCardBackgroundColor(
-                isSelected ? R.color.selectedCard : R.color.cardview_dark_background);
-
-        // Make the card ripple when touched.
-        resolvedVH.content.setOnTouchListener(rippleFgListener);
-
-        // Set card click handler.
-        resolvedVH.content.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
-                BookCardClickEvent.Type.NORMAL, book.getRelPath(), position)));
-
-        // Set card long click handler.
-        resolvedVH.content.setOnLongClickListener(v -> {
-            if (mayStartDrags) {
-                startDragListener.startDragging(resolvedVH);
-            } else {
-                EventBus.getDefault().post(new BookCardClickEvent(BookCardClickEvent.Type.LONG, book.getRelPath(),
-                        position));
-            }
-            return true;
-        });
-
-        // Set info button handler.
-        resolvedVH.btnInfo.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
-                BookCardClickEvent.Type.INFO, book.getRelPath(), position)));
-
+    private void bindCompactBookCard(CompactCardVH resolvedVH, RBook book) {
         // Fill in data.
-        resolvedVH.tvTitle.setText(book.getTitle());
-        resolvedVH.tvAuthor.setText(book.getAuthor());
         resolvedVH.tvRating.setText(String.valueOf(book.getRating()));
     }
 
     /**
-     * Bind a {@link NoCoverCardVH}.
+     * Bind a {@link NoCoverCardVH}. (This would be called for normal book cards as well.)
      * @param resolvedVH No-cover book card view holder.
      * @param position   Item position.
      * @param book       Book to populate item with.
-     * @param isSelected Whether or not the item is selected.
      */
-    private void bindNoCoverBookCard(NoCoverCardVH resolvedVH, int position, RBook book, boolean isSelected) {
-        ((CardView) resolvedVH.content.getParent()).setCardBackgroundColor(
-                isSelected ? R.color.selectedCard : R.color.cardview_dark_background);
-
-        // Make the card ripple when touched.
-        resolvedVH.content.setOnTouchListener(rippleFgListener);
-
-        // Set card click handler.
-        resolvedVH.content.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
-                BookCardClickEvent.Type.NORMAL, book.getRelPath(), position)));
-
-        // Set card long click handler.
-        resolvedVH.content.setOnLongClickListener(v -> {
-            if (mayStartDrags) {
-                startDragListener.startDragging(resolvedVH);
-            } else {
-                EventBus.getDefault().post(new BookCardClickEvent(BookCardClickEvent.Type.LONG, book.getRelPath(),
-                        position));
-            }
-            return true;
-        });
-
-        // Set info button handler.
-        resolvedVH.btnInfo.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
-                BookCardClickEvent.Type.INFO, book.getRelPath(), position)));
-
+    private void bindNoCoverBookCard(NoCoverCardVH resolvedVH, int position, RBook book) {
         // Set quick tag button handler.
         resolvedVH.btnQuickTag.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
                 BookCardClickEvent.Type.QUICK_TAG, book.getRelPath(), position)));
 
         // Fill in data.
-        resolvedVH.tvTitle.setText(book.getTitle());
-        resolvedVH.tvAuthor.setText(book.getAuthor());
         resolvedVH.tvDesc.setText(book.getDesc());
         resolvedVH.rbRating.setRating(book.getRating());
         resolvedVH.htvTags.setData(Util.stringToList(book.getTags(), ";;"));
+    }
+
+    /**
+     * Bind a {@link NormalCardVH}.
+     * @param resolvedVH Normal book card view holder.
+     * @param book       Book to populate item with.
+     */
+    private void bindNormalBookCard(NormalCardVH resolvedVH, RBook book) {
+        // Set cover image.
+        if (book.isHasCoverImage()) {
+            // TODO something here
+        }
     }
 
     /**
@@ -224,78 +153,62 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
     }
 
     @Override
-    public void onMove(int draggingPos, int targetPos) {
-        RBookListItem item1 = getBookListItemFromT(realmResults.get(draggingPos));
-        RBookListItem item2 = getBookListItemFromT(realmResults.get(targetPos));
-        if (item1 == null || item2 == null) return;
+    public boolean onMove(RecyclerView.ViewHolder dragging, RecyclerView.ViewHolder target) {
+        int draggingPos = dragging.getAdapterPosition(), targetPos = target.getAdapterPosition();
+        String draggingKey = (String) ((BaseCardVH) dragging).cardView.getTag();
+        String targetKey = (String) ((BaseCardVH) target).cardView.getTag();
+        if (draggingKey == null || targetKey == null) return false;
 
-        RBookList.swapItemPositions(item1, item2);
+        //RBookListItem item1 = getBookListItemFromT(realmResults.get(draggingPos));
+        //RBookListItem item2 = getBookListItemFromT(realmResults.get(targetPos));
+        //if (item1 == null || item2 == null) return false;
+
+        //RBookList.swapItemPositions(item1.getKey(), item2.getKey());
+        RBookList.swapItemPositions(draggingKey, targetKey);
+        notifyItemMoved(draggingPos, targetPos);
+        return true;
     }
 
     /**
-     * ViewHolder class for normal book cards.
+     * A base ViewHolder class for all book cards.
      */
-    static class NormalCardVH extends RecyclerView.ViewHolder {
+    static class BaseCardVH extends RecyclerView.ViewHolder {
+        @Bind(R.id.card)
+        public CardView cardView;
         @Bind(R.id.content)
         public RelativeLayout content;
-        @Bind(R.id.cover_image)
-        public ImageView ivCoverImage;
         @Bind(R.id.btn_info)
         public ImageButton btnInfo;
-        @Bind(R.id.btn_quick_tag)
-        public ImageButton btnQuickTag;
         @Bind(R.id.title)
         public TextView tvTitle;
         @Bind(R.id.author)
         public TextView tvAuthor;
-        @Bind(R.id.description)
-        public TextView tvDesc;
-        @Bind(R.id.rating)
-        public RatingBar rbRating;
-        @Bind(R.id.tags)
-        public HashtagView htvTags;
 
-        public NormalCardVH(View itemView) {
+        public BaseCardVH(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
     }
 
     /**
-     * ViewHolder class for compact book cards.
+     * ViewHolder class for compact book cards. Adds a rating text view on top of {@link BaseCardVH}.
      */
-    static class CompactCardVH extends RecyclerView.ViewHolder {
-        @Bind(R.id.content)
-        public RelativeLayout content;
-        @Bind(R.id.btn_info)
-        public ImageButton btnInfo;
-        @Bind(R.id.title)
-        public TextView tvTitle;
-        @Bind(R.id.author)
-        public TextView tvAuthor;
+    static class CompactCardVH extends BaseCardVH {
         @Bind(R.id.rating_txt)
         public TextView tvRating;
 
         public CompactCardVH(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
         }
     }
 
     /**
-     * ViewHolder class for book cards without covers.
+     * ViewHolder class for book cards without covers. Adds a quick-tag button, a description text view, a rating bar,
+     * and a custom view for tags on top of {@link BaseCardVH}.
      */
-    static class NoCoverCardVH extends RecyclerView.ViewHolder {
-        @Bind(R.id.content)
-        public RelativeLayout content;
-        @Bind(R.id.btn_info)
-        public ImageButton btnInfo;
+    static class NoCoverCardVH extends BaseCardVH {
         @Bind(R.id.btn_quick_tag)
         public ImageButton btnQuickTag;
-        @Bind(R.id.title)
-        public TextView tvTitle;
-        @Bind(R.id.author)
-        public TextView tvAuthor;
         @Bind(R.id.description)
         public TextView tvDesc;
         @Bind(R.id.rating)
@@ -305,7 +218,18 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
 
         public NoCoverCardVH(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+        }
+    }
+
+    /**
+     * ViewHolder class for normal book cards. Adds an ImageView for the cover on top of {@link NoCoverCardVH}
+     */
+    static class NormalCardVH extends NoCoverCardVH {
+        @Bind(R.id.cover_image)
+        public ImageView ivCoverImage;
+
+        public NormalCardVH(View itemView) {
+            super(itemView);
         }
     }
 }

@@ -13,8 +13,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
-import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.data.FullImporter;
+import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.util.Util;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -290,7 +290,7 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
     }
 
     @Override
-    public void onFolderSelection(@NonNull File folder) {
+    public void onFolderSelection(@NonNull FolderChooserDialog dialog, @NonNull File folder) {
         String path = folder.getAbsolutePath();
         DefaultPrefs.get().putLibDir(path);
         tvFolder.setText(path);

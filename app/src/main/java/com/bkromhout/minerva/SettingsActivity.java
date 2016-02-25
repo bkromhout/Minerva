@@ -51,7 +51,7 @@ public class SettingsActivity extends AppCompatActivity implements FolderChooser
      * @param folder Chosen folder.
      */
     @Override
-    public void onFolderSelection(@NonNull File folder) {
+    public void onFolderSelection(@NonNull FolderChooserDialog dialog, @NonNull File folder) {
         // Updating this preference cause the fragment to notice and update the summary for the library directory
         // preference, since the fragment implements OnSharedPreferenceChangeListener.
         DefaultPrefs.get().putLibDir(folder.getAbsolutePath());

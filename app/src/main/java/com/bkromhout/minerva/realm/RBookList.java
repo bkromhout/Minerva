@@ -150,21 +150,28 @@ public class RBookList extends RealmObject {
 
     /**
      * Swaps the positions of {@code item1} and {@code item2}. Will do nothing if the items are the same.
-     * @param item1 An item.
-     * @param item2 Another item.
-     * @throws IllegalArgumentException if either item is null or if the items aren't part of the same list.
+     * @param item1Key An item's key.
+     * @param item2Key Another item's key.
+     * @throws IllegalArgumentException if either item is null or items aren't from the same list.
      */
-    public static void swapItemPositions(RBookListItem item1, RBookListItem item2) {
-        if (item1 == null || item2 == null) throw new IllegalArgumentException("No nulls allowed.");
-        if (!item1.getOwningList().getName().equals(item2.getOwningList().getName()))
-            throw new IllegalArgumentException("Items must be part of the same list.");
+    public static void swapItemPositions(String item1Key, String item2Key) {
+        if (item1Key == null || item2Key == null) throw new IllegalArgumentException("No nulls allowed.");
 
-        Long temp = item1.getPos();
+        if (!RBookListItem.areFromSameList(item1Key, item2Key)) throw new IllegalArgumentException(
+                "Items must be part of the same list.");
+
+        // TODO try this with a normal begin/commit flow
+        // TODO try this as async with null callback (make sure to get item keys before and only touch stuff within
+        // the transaction.
+
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.executeTransaction(tRealm -> {
+                RBookListItem innerItem1 = tRealm.where(RBookListItem.class).equalTo("key", item1Key).findFirst();
+                RBookListItem innerItem2 = tRealm.where(RBookListItem.class).equalTo("key", item2Key).findFirst();
                 // Swap the positions.
-                item1.setPos(item2.getPos());
-                item2.setPos(temp);
+                Long temp = innerItem1.getPos();
+                innerItem1.setPos(innerItem2.getPos());
+                innerItem2.setPos(temp);
             });
         }
     }
@@ -225,7 +232,8 @@ public class RBookList extends RealmObject {
      * <p>
      * {@code null} can be passed for ONE of {@code item1} or {@code item2}:<br/>If {@code item1} is null, the number
      * returned will be {@code item1.getPos() + gap}<br/>If {@code item2} is null, the number returned will be {@code
-     * item2.getPos() - gap}.<br/>(The current spacing gap can be found at {@link com.bkromhout.minerva.C#LIST_ITEM_GAP}.)
+     * item2.getPos() - gap}.<br/>(The current spacing gap can be found at
+     * {@link com.bkromhout.minerva.C#LIST_ITEM_GAP}.)
      * <p>
      * Please note that passing {@code null} for one of the items assumes that the non-null item is either the first (if
      * it's {@code item2}), or the last (if it's {@code item1}) item in the list. If this isn't the case, the returned

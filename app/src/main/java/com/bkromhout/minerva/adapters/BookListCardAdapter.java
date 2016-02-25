@@ -26,7 +26,7 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
     /**
      * Help our cards ripple.
      */
-    private RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.ripple_foreground_view);
+    private RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.card);
 
     /**
      * Create a new {@link BookListCardAdapter}.
