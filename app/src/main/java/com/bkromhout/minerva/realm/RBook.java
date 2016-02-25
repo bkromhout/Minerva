@@ -1,6 +1,7 @@
 package com.bkromhout.minerva.realm;
 
 import com.bkromhout.minerva.data.SuperBook;
+import com.bkromhout.minerva.prefs.DBPrefs;
 import com.bkromhout.minerva.util.BookUtils;
 import com.bkromhout.minerva.util.Util;
 import io.realm.RealmObject;
@@ -118,6 +119,11 @@ public class RBook extends RealmObject {
      */
     @Index
     private int rating;
+    /**
+     * A unique long value.
+     */
+    @Index
+    private long uniqueId;
 
     /**
      * Create a default {@link RBook}.
@@ -133,6 +139,7 @@ public class RBook extends RealmObject {
         this.tags = "";
         this.rating = 0;
         this.lastModifiedDate = Calendar.getInstance().getTime();
+        this.uniqueId = DBPrefs.get().getNextRBookUid();
     }
 
     /**
@@ -170,6 +177,7 @@ public class RBook extends RealmObject {
         this.isInRecents = false;
         this.tags = "";
         this.rating = 0;
+        this.uniqueId = DBPrefs.get().getNextRBookUid();
     }
 
     public String getRelPath() {
@@ -346,5 +354,13 @@ public class RBook extends RealmObject {
 
     public void setRating(int rating) {
         this.rating = rating;
+    }
+
+    public long getUniqueId() {
+        return uniqueId;
+    }
+
+    public void setUniqueId(long uniqueId) {
+        this.uniqueId = uniqueId;
     }
 }

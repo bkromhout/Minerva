@@ -34,9 +34,17 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Base
      */
     boolean mayStartDrags = false;
 
-    public BaseBookCardAdapter(Context context, RealmResults<T> realmResults, boolean automaticUpdate,
-                               boolean animateResults) {
-        super(context, realmResults, automaticUpdate, animateResults, null);
+    public BaseBookCardAdapter(Context context, RealmResults<T> realmResults) {
+        super(context, realmResults, true, true, null);
+        setHasStableIds(true);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        T item = realmResults.get(position);
+        if (item instanceof RBook) return ((RBook) item).getUniqueId();
+        else if (item instanceof RBookListItem) return ((RBookListItem) item).getUniqueId();
+        else throw new IllegalArgumentException("Unexpected item type: " + item.getClass().getName());
     }
 
     @Override

@@ -322,11 +322,11 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
         // Create a new adapter based on the card type.
         switch (cardType) {
             case C.BOOK_CARD_NORMAL:
-                return new BookCardAdapter(ctx, books, true, true);
+                return new BookCardAdapter(ctx, books);
             case C.BOOK_CARD_NO_COVER:
-                return new BookCardNoCoverAdapter(ctx, books, true, true);
+                return new BookCardNoCoverAdapter(ctx, books);
             case C.BOOK_CARD_COMPACT:
-                return new BookCardCompactAdapter(ctx, books, true, true);
+                return new BookCardCompactAdapter(ctx, books);
             default:
                 return null;
         }

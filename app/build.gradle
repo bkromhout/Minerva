@@ -59,7 +59,7 @@ dependencies {
     compile 'io.reactivex:rxandroid:1.1.0'
     compile 'io.reactivex:rxjava:1.1.1'
     compile ('com.github.greenfrvr:hashtag-view:1.2.1@aar') // Note that we must include Guava ourselves for this.
-    compile ('com.github.bkromhout:realm-recyclerview-lite:3e36832f') {
+    compile ('com.github.bkromhout:realm-recyclerview-lite:16d9f6b') {
         exclude module: 'realm-android'
         exclude group: 'com.android.support'
     }

@@ -13,14 +13,11 @@ import io.realm.RealmResults;
 public class BookItemCardAdapter extends BaseBookCardAdapter<RBookListItem, BaseBookCardAdapter.NormalCardVH> {
     /**
      * Create a new {@link BookItemCardAdapter}.
-     * @param context         Context.
-     * @param realmResults    Results of a Realm query to display.
-     * @param automaticUpdate If true, the list will update automatically.
-     * @param animateResults  If true, updates will be animated.
+     * @param context      Context.
+     * @param realmResults Results of a Realm query to display.
      */
-    public BookItemCardAdapter(Context context, RealmResults<RBookListItem> realmResults, boolean automaticUpdate,
-                               boolean animateResults) {
-        super(context, realmResults, automaticUpdate, animateResults);
+    public BookItemCardAdapter(Context context, RealmResults<RBookListItem> realmResults) {
+        super(context, realmResults);
     }
 
     @Override

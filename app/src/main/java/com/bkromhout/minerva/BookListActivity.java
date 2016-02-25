@@ -269,11 +269,11 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         // Create a new adapter based on the card type.
         switch (cardType) {
             case C.BOOK_CARD_NORMAL:
-                return new BookItemCardAdapter(this, items, true, true);
+                return new BookItemCardAdapter(this, items);
             case C.BOOK_CARD_NO_COVER:
-                return new BookItemCardNoCoverAdapter(this, items, true, true);
+                return new BookItemCardNoCoverAdapter(this, items);
             case C.BOOK_CARD_COMPACT:
-                return new BookItemCardCompactAdapter(this, items, true, true);
+                return new BookItemCardCompactAdapter(this, items);
             default:
                 return null;
         }

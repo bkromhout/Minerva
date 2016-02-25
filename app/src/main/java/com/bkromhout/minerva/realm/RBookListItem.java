@@ -1,6 +1,7 @@
 package com.bkromhout.minerva.realm;
 
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.prefs.DBPrefs;
 import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
@@ -36,6 +37,11 @@ public class RBookListItem extends RealmObject {
      */
     @Index
     private Long pos;
+    /**
+     * A unique long value.
+     */
+    @Index
+    private long uniqueId;
 
     /**
      * Create a default {@link RBookListItem}.
@@ -48,6 +54,7 @@ public class RBookListItem extends RealmObject {
         this.owningList = null;
         this.book = null;
         this.pos = Long.MIN_VALUE;
+        this.uniqueId = DBPrefs.get().getNextRBookListItemUid();
     }
 
     /**
@@ -67,6 +74,8 @@ public class RBookListItem extends RealmObject {
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.executeTransaction(tRealm -> owningList.setNextPos(this.pos + C.LIST_ITEM_GAP));
         }
+
+        this.uniqueId = DBPrefs.get().getNextRBookListItemUid();
     }
 
     /**
@@ -124,5 +133,13 @@ public class RBookListItem extends RealmObject {
 
     public void setPos(Long pos) {
         this.pos = pos;
+    }
+
+    public long getUniqueId() {
+        return uniqueId;
+    }
+
+    public void setUniqueId(long uniqueId) {
+        this.uniqueId = uniqueId;
     }
 }

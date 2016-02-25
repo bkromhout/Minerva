@@ -12,18 +12,15 @@ import io.realm.RealmResults;
 public class BookCardAdapter extends BaseBookCardAdapter<RBook, BaseBookCardAdapter.NormalCardVH> {
     /**
      * Create a new {@link BookCardAdapter}.
-     * @param context         Context.
-     * @param realmResults    Results of a Realm query to display.
-     * @param automaticUpdate If true, the list will update automatically.
-     * @param animateResults  If true, updates will be animated.
+     * @param context      Context.
+     * @param realmResults Results of a Realm query to display.
      */
-    public BookCardAdapter(Context context, RealmResults<RBook> realmResults, boolean automaticUpdate,
-                           boolean animateResults) {
-        super(context, realmResults, automaticUpdate, animateResults);
+    public BookCardAdapter(Context context, RealmResults<RBook> realmResults) {
+        super(context, realmResults);
     }
 
     @Override
     public NormalCardVH onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        return new BaseBookCardAdapter.NormalCardVH(inflater.inflate(R.layout.book_card, viewGroup, false));
+        return new NormalCardVH(inflater.inflate(R.layout.book_card, viewGroup, false));
     }
 }
