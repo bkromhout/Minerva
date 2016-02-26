@@ -4,6 +4,7 @@ import com.bkromhout.minerva.data.SuperBook;
 import com.bkromhout.minerva.prefs.DBPrefs;
 import com.bkromhout.minerva.util.BookUtils;
 import com.bkromhout.minerva.util.Util;
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
@@ -110,10 +111,9 @@ public class RBook extends RealmObject {
      */
     private boolean isInRecents;
     /**
-     * Tags for book. Separated with two semi-colons, like so: {@code "tag1;;tag2;;tag3;;tag4"}.
+     * List of {@link RTag}s attached to this book.
      */
-    @Index
-    private String tags;
+    private RealmList<RTag> tags;
     /**
      * Assigned rating.
      */
@@ -136,7 +136,6 @@ public class RBook extends RealmObject {
         this.relPath = "DEF_REL_PATH";
         this.title = "DEF_TITLE";
         this.author = "DEF_AUTHOR";
-        this.tags = "";
         this.rating = 0;
         this.lastModifiedDate = Calendar.getInstance().getTime();
         this.uniqueId = DBPrefs.get().getNextRBookUid();
@@ -158,8 +157,8 @@ public class RBook extends RealmObject {
         this.title = book.getTitle();
         this.author = BookUtils.getFirstAuthor(book);
         this.desc = BookUtils.getFirstDesc(book);
-        this.subjects = Util.listToString(book.getMetadata().getSubjects(), ";;");
-        this.types = Util.listToString(book.getMetadata().getTypes(), ";;");
+        this.subjects = Util.listToString(book.getMetadata().getSubjects(), RTag.TAG_STR_SEP);
+        this.types = Util.listToString(book.getMetadata().getTypes(), RTag.TAG_STR_SEP);
         this.format = book.getMetadata().getFormat();
         this.language = book.getMetadata().getLanguage();
         this.publisher = BookUtils.getFirstPublisher(book);
@@ -175,7 +174,6 @@ public class RBook extends RealmObject {
         this.lastModifiedDate = lastImportDate;
         this.lastReadDate = null;
         this.isInRecents = false;
-        this.tags = "";
         this.rating = 0;
         this.uniqueId = DBPrefs.get().getNextRBookUid();
     }
@@ -340,11 +338,11 @@ public class RBook extends RealmObject {
         isInRecents = inRecents;
     }
 
-    public String getTags() {
+    public RealmList<RTag> getTags() {
         return tags;
     }
 
-    public void setTags(String tags) {
+    public void setTags(RealmList<RTag> tags) {
         this.tags = tags;
     }
 

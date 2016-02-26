@@ -2,6 +2,8 @@ package com.bkromhout.minerva.events;
 
 /**
  * Fired from various places to make {@link com.bkromhout.minerva.fragments.LibraryFragment} execute some action.
+ * <p>
+ * TODO delete
  */
 public class LibraryActionEvent {
     /**

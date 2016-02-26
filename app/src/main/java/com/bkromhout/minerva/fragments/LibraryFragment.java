@@ -28,6 +28,7 @@ import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
 import com.bkromhout.minerva.events.BookCardClickEvent;
 import com.bkromhout.minerva.events.LibraryActionEvent;
 import com.bkromhout.minerva.events.RatedEvent;
+import com.bkromhout.minerva.events.TaggedEvent;
 import com.bkromhout.minerva.prefs.LibraryPrefs;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
@@ -281,16 +282,13 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
 
         switch (event.getActionId()) {
             case R.id.action_add_to_list: {
+                // TODO make into a common dialog and event.
                 RBookList list = realm.where(RBookList.class).equalTo("name", (String) event.getData()).findFirst();
                 RBookList.addBooks(list, selectedItems);
                 break;
             }
-            case R.id.action_tag: {
-                // TODO
-                break;
-            }
             case R.id.action_delete: {
-                // TODO
+                // TODO make into a common dialog and event.
                 break;
             }
         }
@@ -309,6 +307,14 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
             for (RBook item : selectedItems) item.setRating(event.getRating());
         });
         if (actionMode != null) actionMode.finish();
+    }
+
+    /**
+     * Called when saved a list of tags from the tagging dialog. Updates the tag list of the selected items.
+     * @param event {@link TaggedEvent}.
+     */
+    public void onTaggedEvent(TaggedEvent event) {
+        // TODO
     }
 
     /**

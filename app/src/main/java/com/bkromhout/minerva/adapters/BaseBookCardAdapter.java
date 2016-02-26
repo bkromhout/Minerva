@@ -12,8 +12,8 @@ import com.bkromhout.minerva.events.BookCardClickEvent;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
+import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.util.RippleForegroundListener;
-import com.bkromhout.minerva.util.Util;
 import com.greenfrvr.hashtagview.HashtagView;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmObject;
@@ -114,7 +114,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Base
         // Fill in data.
         resolvedVH.tvDesc.setText(book.getDesc());
         resolvedVH.rbRating.setRating(book.getRating());
-        resolvedVH.htvTags.setData(Util.stringToList(book.getTags(), ";;"));
+        resolvedVH.htvTags.setData(RTag.tagListToStringList(book.getTags()));
     }
 
     /**
