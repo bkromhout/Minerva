@@ -27,9 +27,11 @@ import com.bkromhout.minerva.adapters.BookCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
 import com.bkromhout.minerva.events.BookCardClickEvent;
 import com.bkromhout.minerva.events.LibraryActionEvent;
+import com.bkromhout.minerva.events.RatedEvent;
 import com.bkromhout.minerva.prefs.LibraryPrefs;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
+import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.realmrecyclerview.RealmRecyclerView;
 import io.realm.Realm;
@@ -222,7 +224,9 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
                 // Open the tagging dialog to tag the selected items. Any tags which all items share will be pre-filled.
                 return true;
             case R.id.action_rate:
-                // TODO Open the rating dialog to rate the selected items.
+                int initialRating = adapter.getItemCount() == 1
+                        ? ((RBook) adapter.getSelectedRealmObjects().get(0)).getRating() : 0;
+                Dialogs.showRatingDialog(getContext(), initialRating);
                 return true;
             case R.id.action_select_all:
                 adapter.selectAll();
@@ -285,15 +289,25 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
                 // TODO
                 break;
             }
-            case R.id.action_rate: {
-                // TODO
-                break;
-            }
             case R.id.action_delete: {
                 // TODO
                 break;
             }
         }
+        if (actionMode != null) actionMode.finish();
+    }
+
+    /**
+     * Called when we saved a rating from the rating dialog. Updates the ratings of the selected items.
+     * @param event {@link RatedEvent}.
+     */
+    @Subscribe
+    public void onRatedEvent(RatedEvent event) {
+        //noinspection unchecked
+        List<RBook> selectedItems = adapter.getSelectedRealmObjects();
+        realm.executeTransaction(tRealm -> {
+            for (RBook item : selectedItems) item.setRating(event.getRating());
+        });
         if (actionMode != null) actionMode.finish();
     }
 
