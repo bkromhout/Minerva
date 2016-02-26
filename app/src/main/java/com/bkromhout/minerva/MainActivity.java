@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         };
         drawerToggle.setDrawerIndicatorEnabled(true);
-        drawer.setDrawerListener(drawerToggle);
+        drawer.addDrawerListener(drawerToggle);
         navigationView.setNavigationItemSelectedListener(this);
         // Make sure that if we deactivate the toggle we still have a handler for the up button.
         drawerToggle.setToolbarNavigationClickListener(v -> onBackPressed());
