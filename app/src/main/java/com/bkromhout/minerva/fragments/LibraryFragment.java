@@ -166,7 +166,6 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
     @Override
     public void onStop() {
         super.onStop();
-//        actionMode.finish(); // TODO Not sure if needed/correct place?
         EventBus.getDefault().unregister(this);
     }
 
