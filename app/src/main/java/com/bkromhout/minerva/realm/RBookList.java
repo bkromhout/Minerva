@@ -2,10 +2,7 @@ package com.bkromhout.minerva.realm;
 
 import com.bkromhout.minerva.C;
 import com.google.common.math.LongMath;
-import io.realm.Realm;
-import io.realm.RealmList;
-import io.realm.RealmObject;
-import io.realm.RealmResults;
+import io.realm.*;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 import rx.Observable;
@@ -156,24 +153,101 @@ public class RBookList extends RealmObject {
      */
     public static void swapItemPositions(String item1Key, String item2Key) {
         if (item1Key == null || item2Key == null) throw new IllegalArgumentException("No nulls allowed.");
-
         if (!RBookListItem.areFromSameList(item1Key, item2Key)) throw new IllegalArgumentException(
                 "Items must be part of the same list.");
 
-        // TODO try this with a normal begin/commit flow
-        // TODO try this as async with null callback (make sure to get item keys before and only touch stuff within
-        // the transaction.
+        try (Realm realm = Realm.getDefaultInstance()) {
+            RBookListItem innerItem1 = realm.where(RBookListItem.class).equalTo("key", item1Key).findFirst();
+            RBookListItem innerItem2 = realm.where(RBookListItem.class).equalTo("key", item2Key).findFirst();
+
+            realm.beginTransaction();
+            // Swap the positions.
+            Long temp = innerItem1.getPos();
+            innerItem1.setPos(innerItem2.getPos());
+            innerItem2.setPos(temp);
+            realm.commitTransaction();
+        }
+    }
+
+    public static void swapItemPositions(RBookListItem item1, RBookListItem item2) {
+        if (item1 == null || item2 == null) throw new IllegalArgumentException("No nulls allowed.");
+        if (!RBookListItem.areFromSameList(item1.getKey(), item2.getKey())) throw new IllegalArgumentException(
+                "Items must be part of the same list.");
 
         try (Realm realm = Realm.getDefaultInstance()) {
-            realm.executeTransaction(tRealm -> {
-                RBookListItem innerItem1 = tRealm.where(RBookListItem.class).equalTo("key", item1Key).findFirst();
-                RBookListItem innerItem2 = tRealm.where(RBookListItem.class).equalTo("key", item2Key).findFirst();
-                // Swap the positions.
-                Long temp = innerItem1.getPos();
-                innerItem1.setPos(innerItem2.getPos());
-                innerItem2.setPos(temp);
-            });
+            realm.beginTransaction();
+            // Swap the positions.
+            Long temp = item1.getPos();
+            item1.setPos(item2.getPos());
+            item2.setPos(temp);
+            realm.commitTransaction();
         }
+    }
+
+    /**
+     * Moves the {@link RBookListItem} whose key is {@code itemToMoveKey} to somewhere before the {@link RBookListItem}
+     * whose key is {@code targetItemKey}.
+     * @param itemToMoveKey Key of item to move.
+     * @param targetItemKey Key of item which item whose key is {@code itemToMove} will be moved before.
+     */
+    public static void moveItemToBefore(String itemToMoveKey, String targetItemKey) {
+        try (Realm realm = Realm.getDefaultInstance()) {
+            moveItemToBefore(realm.where(RBookListItem.class).equalTo("key", itemToMoveKey).findFirst(),
+                    realm.where(RBookListItem.class).equalTo("key", targetItemKey).findFirst());
+        }
+    }
+
+    /**
+     * Moves {@code itemToMove} to somewhere before {@code targetItem}.
+     * @param itemToMove Item to move.
+     * @param targetItem Item which {@code itemToMove} will be moved before.
+     */
+    public static void moveItemToBefore(RBookListItem itemToMove, RBookListItem targetItem) {
+        if (itemToMove == null || targetItem == null) throw new IllegalArgumentException("Neither item may be null.");
+        if (itemToMove.getUniqueId() == targetItem.getUniqueId()) return;
+
+        RBookList bookList = targetItem.getOwningList();
+        // Get the items which come before targetItem.
+        RealmResults<RBookListItem> beforeTarget = bookList.getListItems()
+                                                           .where()
+                                                           .lessThan("pos", targetItem.getPos())
+                                                           .findAllSorted("pos", Sort.DESCENDING);
+
+        // Move itemToMove to between beforeTarget.first()/null and targetItem.
+        moveItemToBetween(bookList, itemToMove, beforeTarget.isEmpty() ? null : beforeTarget.first(), targetItem);
+    }
+
+    /**
+     * Moves the {@link RBookListItem} whose key is {@code itemToMoveKey} to somewhere after the {@link RBookListItem}
+     * whose key is {@code targetItemKey}.
+     * @param itemToMoveKey Key of item to move.
+     * @param targetItemKey Key of item which item whose key is {@code itemToMove} will be moved after.
+     */
+    public static void moveItemToAfter(String itemToMoveKey, String targetItemKey) {
+        try (Realm realm = Realm.getDefaultInstance()) {
+            moveItemToAfter(realm.where(RBookListItem.class).equalTo("key", itemToMoveKey).findFirst(),
+                    realm.where(RBookListItem.class).equalTo("key", targetItemKey).findFirst());
+        }
+    }
+
+    /**
+     * Moves {@code itemToMove} to somewhere after {@code targetItem}.
+     * @param itemToMove Item to move.
+     * @param targetItem Item which {@code itemToMove} will be moved after.
+     */
+    public static void moveItemToAfter(RBookListItem itemToMove, RBookListItem targetItem) {
+        if (itemToMove == null || targetItem == null) throw new IllegalArgumentException("Neither item may be null.");
+        if (itemToMove.getUniqueId() == targetItem.getUniqueId()) return;
+
+        RBookList bookList = targetItem.getOwningList();
+        // Get the items which come after targetItem.
+        RealmResults<RBookListItem> afterTarget = bookList.getListItems()
+                                                          .where()
+                                                          .greaterThan("pos", targetItem.getPos())
+                                                          .findAllSorted("pos");
+
+        // Move itemToMove to between targetItem and afterTarget.first()/null.
+        moveItemToBetween(bookList, itemToMove, targetItem, afterTarget.isEmpty() ? null : afterTarget.first());
     }
 
     /**
@@ -200,13 +274,12 @@ public class RBookList extends RealmObject {
      */
     public static void moveItemToBetween(RBookList list, RBookListItem itemToMove, RBookListItem item1,
                                          RBookListItem item2) {
-        // Check nulls.
         if (list == null || itemToMove == null || (item1 == null && item2 == null))
             throw new IllegalArgumentException("list, itemToMove, or both of item1 and item2 are null.");
 
         // Check if itemToMove is the same as either item1 or item2.
-        if ((item1 != null && itemToMove.getKey().equals(item1.getKey()))
-                || (item2 != null && itemToMove.getKey().equals(item2.getKey()))) return;
+        if ((item1 != null && itemToMove.getUniqueId() == item1.getUniqueId())
+                || (item2 != null && itemToMove.getUniqueId() == item2.getUniqueId())) return;
 
         // Try to find the new position for the item, and make sure we didn't get a null back.
         Long newPos = findMiddlePos(list, item1, item2);
