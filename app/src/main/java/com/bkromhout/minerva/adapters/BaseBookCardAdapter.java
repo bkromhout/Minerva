@@ -167,24 +167,12 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Base
         String targetKey = (String) ((BaseCardVH) target).cardView.getTag();
         if (draggingKey == null || targetKey == null) return false;
 
-        //RBookListItem item1 = getBookListItemFromT(realmResults.get(draggingPos));
-        //RBookListItem item2 = getBookListItemFromT(realmResults.get(targetPos));
-        //if (item1 == null || item2 == null) return false;
-        //RBookList.swapItemPositions(item1.getKey(), item2.getKey());
+        // Determine if we can swap the items or if we need to actually move the item being dragged.
+        if (Math.abs(draggingPos - targetPos) == 1) RBookList.swapItemPositions(draggingKey, targetKey); // Swapped.
+        else if (draggingPos > targetPos) RBookList.moveItemToBefore(draggingKey, targetKey); // Moved up multiple.
+        else RBookList.moveItemToAfter(draggingKey, targetKey); // Moved down multiple.
 
-        // Sometimes we skip multiple spaces, so we'll want to move the item being dragged instead of swapping.
-        if (Math.abs(draggingPos - targetPos) == 1) {
-            // Moved one space.
-            RBookList.swapItemPositions(draggingKey, targetKey);
-            notifyItemMoved(draggingPos, targetPos);
-        } else if (draggingPos > targetPos) {
-            // Moved up more than one space.
-            RBookList.moveItemToBefore(draggingKey, targetKey);
-        } else {
-            // Moved down more than one space.
-            RBookList.moveItemToAfter(draggingKey, targetKey);
-        }
-        //notifyItemMoved(draggingPos, targetPos); //TODO here?
+        notifyItemMoved(draggingPos, targetPos);
         return true;
     }
 
