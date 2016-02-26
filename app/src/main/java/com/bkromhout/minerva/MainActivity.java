@@ -34,14 +34,12 @@ import com.karumi.dexter.listener.PermissionDeniedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.EmptyPermissionListener;
 import com.karumi.dexter.listener.single.PermissionListener;
+import io.realm.Realm;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 /**
  * Main activity, responsible for hosting fragments.
- * <p>
- * TODO have this host an instance of Realm, then have the child fragments call to its instance rather than getting
- * TODO their own. This will hopefully prevent lag when switching fragments.
  */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     // Represents the various fragments that this activity can show.
@@ -65,6 +63,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private DefaultPrefs defaultPrefs;
     /**
+     * Instance of Realm.
+     */
+    private Realm realm;
+    /**
      * Nav Drawer Toggle (burger menu).
      */
     private ActionBarDrawerToggle drawerToggle;
@@ -81,8 +83,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Get prefs.
+        // Get prefs and Realm.
         defaultPrefs = DefaultPrefs.get();
+        realm = Realm.getDefaultInstance();
+
         // Set theme, create and bind views.
         setTheme(R.style.AppTheme);
         setContentView(R.layout.activity_main);
@@ -211,6 +215,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onStop() {
         EventBus.getDefault().unregister(this);
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Close Realm.
+        if (realm != null) {
+            realm.close();
+            realm = null;
+        }
     }
 
     @Override
