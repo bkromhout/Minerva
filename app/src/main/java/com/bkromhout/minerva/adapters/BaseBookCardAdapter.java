@@ -172,7 +172,6 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Base
         else if (draggingPos > targetPos) RBookList.moveItemToBefore(draggingKey, targetKey); // Moved up multiple.
         else RBookList.moveItemToAfter(draggingKey, targetKey); // Moved down multiple.
 
-        notifyItemMoved(draggingPos, targetPos);
         return true;
     }
 
