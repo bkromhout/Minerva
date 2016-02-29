@@ -19,6 +19,8 @@ import java.util.Date;
  * Represents a book in Realm.
  */
 public class RBook extends RealmObject {
+    public static final String SUBJECT_STR_SEP = ";SUBJECT_STR_SEP;";
+    public static final String TYPE_STR_SEP = ";TYPE_STR_SEP;";
     /**
      * Path to book file (relative to library directory).
      */
@@ -157,8 +159,8 @@ public class RBook extends RealmObject {
         this.title = book.getTitle();
         this.author = BookUtils.getFirstAuthor(book);
         this.desc = BookUtils.getFirstDesc(book);
-        this.subjects = Util.listToString(book.getMetadata().getSubjects(), RTag.TAG_STR_SEP);
-        this.types = Util.listToString(book.getMetadata().getTypes(), RTag.TAG_STR_SEP);
+        this.subjects = Util.listToString(book.getMetadata().getSubjects(), SUBJECT_STR_SEP);
+        this.types = Util.listToString(book.getMetadata().getTypes(), TYPE_STR_SEP);
         this.format = book.getMetadata().getFormat();
         this.language = book.getMetadata().getLanguage();
         this.publisher = BookUtils.getFirstPublisher(book);
