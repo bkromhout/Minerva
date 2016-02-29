@@ -1,7 +1,9 @@
 package com.bkromhout.minerva.realm;
 
+import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
 import java.util.ArrayList;
@@ -18,6 +20,13 @@ public class RTag extends RealmObject {
     @PrimaryKey
     private String name;
     /**
+     * TODO This is a work-around until Realm can do case-insensitive sorting.
+     * <p>
+     * Same as {@link #name}, but in lower-case.
+     */
+    @Index
+    private String sortName;
+    /**
      * {@link RBook}s which are tagged with this tag.
      */
     private RealmList<RBook> taggedBooks;
@@ -30,6 +39,7 @@ public class RTag extends RealmObject {
      */
     public RTag() {
         this.name = "DEF_TAG_NAME";
+        this.sortName = name.toLowerCase();
         this.taggedBooks = null;
     }
 
@@ -39,6 +49,7 @@ public class RTag extends RealmObject {
      */
     public RTag(String name) {
         this.name = name;
+        this.sortName = name.toLowerCase();
         this.taggedBooks = null;
     }
 
@@ -48,15 +59,40 @@ public class RTag extends RealmObject {
      * @return {@link RTag} with {@code name}.
      */
     public static RTag getOrMakeRTag(String name) {
-        // TODO
+        if (name == null || name.isEmpty()) throw new IllegalArgumentException("Name must not be null or empty.");
+        try (Realm realm = Realm.getDefaultInstance()) {
+            // Try to find existing tag with name.
+            RTag tag = realm.where(RTag.class).equalTo("name", name).findFirst();
+            if (tag != null) return tag;
+
+            // If we didn't have an existing tag, we'll need to create a new one.
+            realm.beginTransaction();
+            tag = realm.copyToRealm(new RTag(name));
+            realm.commitTransaction();
+            return tag;
+        }
+    }
+
+    /**
+     * Creates a list of {@link RTag}s from a list of strings. <i><b>Will create new {@link RTag}s for any of the {@code
+     * strings} which are not names of existing {@link RTag}s.</b></i>
+     * @param strings List of strings.
+     * @return List of {@link RTag}s, or {@code null} if {@code strings} is null.
+     */
+    public static List<RTag> stringListToTagList(List<String> strings) {
+        if (strings == null) return null;
+        ArrayList<RTag> tags = new ArrayList<>(strings.size());
+        for (String string : strings) tags.add(getOrMakeRTag(string));
+        return tags;
     }
 
     /**
      * Creates a list of tag string from a list of {@link RTag}s.
      * @param tags List of {@link RTag}s.
-     * @return List of tag strings.
+     * @return List of tag strings, or {@code null} if {@code tags} is null.
      */
     public static List<String> tagListToStringList(List<RTag> tags) {
+        if (tags == null) return null;
         ArrayList<String> strTags = new ArrayList<>(tags.size());
         for (RTag tag : tags) strTags.add(tag.getName());
         return strTags;
@@ -68,7 +104,25 @@ public class RTag extends RealmObject {
      * @param tags  List {@link RTag}s.
      */
     public static void addTagsToBooks(List<RBook> books, List<RTag> tags) {
-        // TODO
+        if (books == null || tags == null) throw new IllegalArgumentException("No nulls allowed.");
+        if (books.isEmpty() || tags.isEmpty()) return;
+
+        try (Realm realm = Realm.getDefaultInstance()) {
+            realm.beginTransaction();
+            // Loop through books and add tags to them.
+            for (RBook book : books) {
+                for (RTag tag : tags) {
+                    // If the book doesn't already have the tag,
+                    if (!book.getTags().contains(tag)) {
+                        // add the tag to the book,
+                        book.getTags().add(tag);
+                        // and add the book to the tag.
+                        tag.getTaggedBooks().add(book);
+                    }
+                }
+            }
+            realm.commitTransaction();
+        }
     }
 
     /**
@@ -77,7 +131,23 @@ public class RTag extends RealmObject {
      * @param tags  List {@link RTag}s.
      */
     public static void removeTagsFromBooks(List<RBook> books, List<RTag> tags) {
-        // TODO
+        if (books == null || tags == null) throw new IllegalArgumentException("No nulls allowed.");
+        if (books.isEmpty() || tags.isEmpty()) return;
+
+        try (Realm realm = Realm.getDefaultInstance()) {
+            realm.beginTransaction();
+            // Loop through books and remove tags from them.
+            for (RBook book : books) {
+                for (RTag tag : tags) {
+                    // If the book has the tag, remove it,
+                    if (book.getTags().remove(tag)) {
+                        // and remove the book from the tag.
+                        tag.getTaggedBooks().remove(book);
+                    }
+                }
+            }
+            realm.commitTransaction();
+        }
     }
 
     public String getName() {
@@ -86,6 +156,14 @@ public class RTag extends RealmObject {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getSortName() {
+        return sortName;
+    }
+
+    public void setSortName(String sortName) {
+        this.sortName = sortName;
     }
 
     public RealmList<RBook> getTaggedBooks() {
