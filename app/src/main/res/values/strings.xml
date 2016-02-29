@@ -153,6 +153,9 @@
     <!-- Rating Dialog -->
     <string name="title_dialog_rating">Rating</string>
 
+    <!-- Tagging Activity -->
+    <string name="title_activity_tagging">Choose Tags</string>
+
     <!-- Settings Activity -->
     <string name="title_activity_settings">@string/settings</string>
 

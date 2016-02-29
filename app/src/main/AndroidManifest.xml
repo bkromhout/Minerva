@@ -38,6 +38,11 @@
                     android:value="com.bkromhout.minerva.MainActivity"/>
         </activity>
         <activity
+                android:name=".TaggingActivity"
+                android:label="@string/title_activity_tagging"
+                android:theme="@style/AppTheme">
+        </activity>
+        <activity
                 android:name=".BookInfoActivity"
                 android:label="@string/title_activity_info"
                 android:theme="@style/AppTheme">
