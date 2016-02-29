@@ -122,14 +122,13 @@
     <string name="list_name_hint">Name</string>
     <string name="list_name_exists">Name is already taken.</string>
 
-    <!-- List Activity -->
+    <!-- Book List Activity -->
     <string name="title_activity_book_list">Book List</string>
+    <string name="title_reorder_mode">Reorder Mode</string>
     <string name="action_card_type">Card Style</string>
     <string name="action_reorder">Reorder</string>
     <string name="action_move_to_top">Move To Top</string>
     <string name="action_move_to_bottom">Move To Bottom</string>
-
-    <string name="title_reorder_mode">Reorder Mode</string>
 
     <!-- Power Search Fragment -->
 
@@ -155,6 +154,9 @@
 
     <!-- Tagging Activity -->
     <string name="title_activity_tagging">Choose Tags</string>
+    <string name="title_tag_edit_mode">Tag Edit Mode</string>
+    <string name="action_new_tag">New Tag</string>
+    <string name="action_edit_tags">Edit Tags</string>
 
     <!-- Settings Activity -->
     <string name="title_activity_settings">@string/settings</string>

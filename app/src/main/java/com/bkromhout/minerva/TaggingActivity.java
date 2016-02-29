@@ -16,6 +16,8 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
+import java.util.ArrayList;
+
 /**
  * Activity opened to apply tags to books.
  */
@@ -37,6 +39,10 @@ public class TaggingActivity extends AppCompatActivity {
      * Instance of Realm.
      */
     private Realm realm;
+    /**
+     * List of tag names which are checked.
+     */
+    private ArrayList<String> checkedItems;
     /**
      * The list of {@link RTag}s being shown.
      */

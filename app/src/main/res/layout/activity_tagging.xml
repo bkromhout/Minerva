@@ -7,25 +7,24 @@
             layout="@layout/toolbar"
             android:id="@+id/toolbar"/>
 
-    <com.bkromhout.realmrecyclerview.RealmRecyclerView
-            android:id="@+id/recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/toolbar"
-            android:layout_above="@id/tag_filter"/>
-
     <EditText
             android:id="@+id/tag_filter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@id/buttons"
-            android:layout_marginTop="4dp"
+            android:layout_below="@id/toolbar"
             android:layout_marginBottom="4dp"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:maxLines="1"
             android:hint="@string/action_filter"
             android:drawableEnd="@drawable/ic_clear"/>
+
+    <com.bkromhout.realmrecyclerview.RealmRecyclerView
+            android:id="@id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/tag_filter"
+            android:layout_above="@id/buttons"/>
 
     <android.support.v7.widget.ButtonBarLayout
             android:id="@+id/buttons"

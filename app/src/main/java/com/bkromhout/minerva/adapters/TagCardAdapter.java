@@ -15,7 +15,6 @@ import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Realm RecyclerView Adapter for tag cards.
@@ -28,7 +27,7 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
     /**
      * List of items which are checked. The strings in this list should correspond to names of {@link RTag}s.
      */
-    private List<String> checkedItems;
+    private ArrayList<String> checkedItems;
 
     /**
      * Create a new {@link TagCardAdapter}.
@@ -36,7 +35,7 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
      * @param realmResults   Results of a Realm query to display.
      * @param initialChecked List of items which are initially checked.
      */
-    public TagCardAdapter(Context context, RealmResults<RTag> realmResults, List<String> initialChecked) {
+    public TagCardAdapter(Context context, RealmResults<RTag> realmResults, ArrayList<String> initialChecked) {
         super(context, realmResults, true, true, null);
         this.checkedItems = initialChecked != null ? initialChecked : new ArrayList<>();
     }
