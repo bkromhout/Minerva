@@ -110,6 +110,24 @@ public class RBookList extends RealmObject {
     }
 
     /**
+     * Removes a single {@link RBook}s from an {@link RBookList}.
+     * @param list List to remove {@code book} from.
+     * @param book Book to remove from {@code list}.
+     */
+    public static void removeBook(RBookList list, RBook book) {
+        // TODO
+    }
+
+    /**
+     * Removes multiple {@link RBook}s from an {@link RBookList}.
+     * @param list  List to remove {@code books} from.
+     * @param books Books to remove from {@code list}.
+     */
+    public static void removeBooks(RBookList list, Iterable<RBook> books) {
+        // TODO
+    }
+
+    /**
      * Reset the positions of the given list's items so that they are spaced evenly using the standard position gap
      * (which can be found at {@link com.bkromhout.minerva.C#LIST_ITEM_GAP}).
      * <p>

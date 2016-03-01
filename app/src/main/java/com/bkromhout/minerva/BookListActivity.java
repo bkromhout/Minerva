@@ -196,7 +196,6 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         } else {
             adapter.setDragMode(false);
             isReorderMode = false;
-            // TODO??
         }
         actionMode = null;
     }
@@ -229,8 +228,8 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_tag:
-                // TODO
-                // Open the tagging dialog to tag the selected items. Any tags which all items share will be pre-filled.
+                //noinspection unchecked
+                TaggingActivity.start(this, RBookListItem.booksFromBookListItems(adapter.getSelectedRealmObjects()));
                 return true;
             case R.id.action_rate:
                 // TODO Open the rating dialog to rate the selected items.
@@ -305,19 +304,30 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         // Get the associated RBook.
         RBook book = items.where().equalTo("book.relPath", event.getRelPath()).findFirst().getBook();
 
+        if (actionMode != null) {
+            if (event.getType() == BookCardClickEvent.Type.LONG) adapter.extendSelectionTo(event.getPosition());
+            else adapter.toggleSelected(event.getPosition());
+            return;
+        }
         // Do something based on the click type.
         switch (event.getType()) {
             case NORMAL:
                 // TODO Open the book file.
                 break;
             case LONG:
-                // TODO Start multi-select.
+                // Start multi-select.
+                adapter.toggleSelected(event.getPosition());
+                if (actionMode == null) actionMode = startSupportActionMode(this);
                 break;
             case INFO:
-                // TODO Open BookInfoActivity.
+                // Open BookInfoActivity.
+                Bundle b = new Bundle();
+                b.putString(BookInfoActivity.BOOK_SEL_STR, event.getRelPath());
+                Util.startAct(this, BookInfoActivity.class, b);
                 break;
             case QUICK_TAG:
-                // TODO Open quick-tag dialog??
+                //noinspection unchecked
+                TaggingActivity.start(this, book);
                 break;
         }
     }

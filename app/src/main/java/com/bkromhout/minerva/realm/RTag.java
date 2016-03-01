@@ -105,6 +105,31 @@ public class RTag extends RealmObject {
     }
 
     /**
+     * Checks the given {@code books} and returns a list of {@link RTag}s that that have in common.
+     * @param books A list of {@link RBook}s.
+     * @return A list of {@link RTag}s the {@code books} have in common.
+     */
+    public static List<RTag> listOfCommonTags(List<RBook> books) {
+        if (books == null) throw new IllegalArgumentException("books must not be null.");
+        if (books.isEmpty()) return new ArrayList<>();
+        ArrayList<RTag> tags = null;
+
+        for (RBook book : books) {
+            if (tags != null) {
+                // Only keep tags which are also in this book's tag list.
+                tags.retainAll(book.getTags());
+            } else {
+                // If we haven't created the tag list, do that now.
+                tags = new ArrayList<>(book.getTags());
+            }
+            // These books don't all share any common tags, go ahead and return the empty list.
+            if (tags.isEmpty()) return tags;
+        }
+        // We actually have some common tags, return them.
+        return tags;
+    }
+
+    /**
      * Adds the {@code tags} to the {@code books}.
      * @param books List of {@link RBook}s to add tags to.
      * @param tags  List {@link RTag}s.

@@ -7,6 +7,9 @@ import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Represents an item in a book list in Realm.
  */
@@ -101,6 +104,20 @@ public class RBookListItem extends RealmObject {
         if (!item1Key.contains(KEY_SEP) || !item2Key.contains(KEY_SEP)) return false;
         // Check keys.
         return item1Key.split("\\Q" + KEY_SEP + "\\E")[0].equals(item2Key.split("\\Q" + KEY_SEP + "\\E")[0]);
+    }
+
+    /**
+     * Convert the given {@code listItems} to a list of {@link RBook}s.
+     * @param listItems A list of {@link RBookListItem}s.
+     * @return List of {@link RBook}s.
+     */
+    public static List<RBook> booksFromBookListItems(List<RBookListItem> listItems) {
+        if (listItems == null) throw new IllegalArgumentException("listItems may not be null.");
+        if (listItems.isEmpty()) return new ArrayList<>();
+
+        ArrayList<RBook> books = new ArrayList<>(listItems.size());
+        for (RBookListItem listItem : listItems) books.add(listItem.getBook());
+        return books;
     }
 
     public String getKey() {

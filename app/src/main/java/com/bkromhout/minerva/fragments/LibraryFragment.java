@@ -18,10 +18,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.bkromhout.minerva.BookInfoActivity;
-import com.bkromhout.minerva.C;
-import com.bkromhout.minerva.FullImportActivity;
-import com.bkromhout.minerva.R;
+import com.bkromhout.minerva.*;
 import com.bkromhout.minerva.adapters.BookCardAdapter;
 import com.bkromhout.minerva.adapters.BookCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
@@ -220,8 +217,8 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
                 showAddToListDialogOrToast();
                 return true;
             case R.id.action_tag:
-                // TODO
-                // Open the tagging dialog to tag the selected items. Any tags which all items share will be pre-filled.
+                //noinspection unchecked
+                TaggingActivity.start(getActivity(), adapter.getSelectedRealmObjects());
                 return true;
             case R.id.action_rate:
                 int initialRating = adapter.getItemCount() == 1
@@ -281,7 +278,6 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
 
         switch (event.getActionId()) {
             case R.id.action_add_to_list: {
-                // TODO make into a common dialog and event.
                 RBookList list = realm.where(RBookList.class).equalTo("name", (String) event.getData()).findFirst();
                 RBookList.addBooks(list, selectedItems);
                 break;
@@ -379,7 +375,6 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
         switch (event.getType()) {
             case NORMAL:
                 // TODO Open the book file.
-
                 break;
             case LONG:
                 // Start multi-select.
@@ -393,8 +388,8 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
                 Util.startAct(getActivity(), BookInfoActivity.class, b);
                 break;
             case QUICK_TAG:
-                // TODO Open quick-tag dialog??
-
+                //noinspection unchecked
+                TaggingActivity.start(getActivity(), book);
                 break;
         }
     }

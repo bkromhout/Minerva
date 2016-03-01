@@ -1,5 +1,6 @@
 package com.bkromhout.minerva;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
@@ -21,6 +22,7 @@ import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.realmrecyclerview.RealmRecyclerView;
+import com.google.common.collect.Lists;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.jakewharton.rxbinding.widget.TextViewTextChangeEvent;
 import difflib.Delta;
@@ -41,7 +43,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Activity opened to apply tags to books.
+ * Activity used to apply (and remove) tags to (and from) books.
  */
 public class TaggingActivity extends AppCompatActivity implements ActionMode.Callback {
     // Views.
@@ -78,6 +80,28 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
      * Filter edit text change subscription.
      */
     private Subscription filterChangeSub;
+
+    /**
+     * Convenience method to set up the {@link TaggingHelper} then start this activity.
+     * @param ctx  The context to start this activity with.
+     * @param book The selected {@link RBook}.
+     */
+    public static void start(Context ctx, RBook book) {
+        start(ctx, Lists.asList(book, new RBook[] {}));
+    }
+
+    /**
+     * Convenience method to set up the {@link TaggingHelper} then start this activity.
+     * @param ctx           The context to start this activity with.
+     * @param selectedBooks The selected {@link RBook}s.
+     */
+    public static void start(Context ctx, List<RBook> selectedBooks) {
+        // Initialize the tagging helper.
+        TaggingActivity.TaggingHelper.get().init(selectedBooks,
+                RTag.tagListToStringList(RTag.listOfCommonTags(selectedBooks)));
+        // Open the tagging activity to tag the selected items.
+        Util.startAct(ctx, TaggingActivity.class, null);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
