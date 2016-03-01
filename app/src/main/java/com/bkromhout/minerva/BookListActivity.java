@@ -178,6 +178,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
             mode.getMenuInflater().inflate(R.menu.book_list_action_mode, menu);
         } else {
             mode.setTitle(R.string.title_reorder_mode);
+            adapter.setDragMode(true);
         }
         return true;
     }
@@ -208,7 +209,6 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 return true;
             case R.id.action_reorder:
                 isReorderMode = true;
-                adapter.setDragMode(true);
                 startSupportActionMode(this);
                 return true;
             case R.id.action_card_type:

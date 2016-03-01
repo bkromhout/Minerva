@@ -7,4 +7,10 @@
             app:showAsAction="ifRoom"
             android:icon="@drawable/ic_add"
             android:title="@string/action_new_tag"/>
+
+    <item
+            android:id="@+id/action_edit_tags"
+            app:showAsAction="ifRoom"
+            android:icon="@drawable/ic_edit"
+            android:title="@string/action_edit_tags"/>
 </menu>

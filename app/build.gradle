@@ -56,8 +56,9 @@ dependencies {
     compile 'com.google.guava:guava:19.0'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.jakewharton:butterknife:7.0.1'
-    compile 'io.reactivex:rxandroid:1.1.0'
     compile 'io.reactivex:rxjava:1.1.1'
+    compile 'io.reactivex:rxandroid:1.1.0'
+    compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
     compile ('com.github.greenfrvr:hashtag-view:1.2.1@aar') // Note that we must include Guava ourselves for this.
     compile ('com.github.bkromhout:realm-recyclerview-lite:1.0') {
         exclude module: 'realm-android'

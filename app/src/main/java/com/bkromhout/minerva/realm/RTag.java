@@ -5,6 +5,7 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
+import rx.Observable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,16 +55,17 @@ public class RTag extends RealmObject {
     }
 
     /**
-     * Gets (or makes, if one doesn't exist) an {@link RTag} with the given {@code name}.
-     * @param name Tag name.
-     * @return {@link RTag} with {@code name}.
+     * Gets an {@link RTag} with the given {@code name}.
+     * @param name            Tag name.
+     * @param makeNonexistent If true, an {@link RTag} will be made if one doesn't exist with the given {@code name}.
+     * @return {@link RTag} with {@code name}, or null if there isn't one and {@code makeNonexistent} is false.
      */
-    public static RTag getOrMakeRTag(String name) {
+    public static RTag getRTag(String name, boolean makeNonexistent) {
         if (name == null || name.isEmpty()) throw new IllegalArgumentException("Name must not be null or empty.");
         try (Realm realm = Realm.getDefaultInstance()) {
             // Try to find existing tag with name.
             RTag tag = realm.where(RTag.class).equalTo("name", name).findFirst();
-            if (tag != null) return tag;
+            if (tag != null || !makeNonexistent) return tag;
 
             // If we didn't have an existing tag, we'll need to create a new one.
             realm.beginTransaction();
@@ -74,16 +76,20 @@ public class RTag extends RealmObject {
     }
 
     /**
-     * Creates a list of {@link RTag}s from a list of strings. <i><b>Will create new {@link RTag}s for any of the {@code
-     * strings} which are not names of existing {@link RTag}s.</b></i>
-     * @param strings List of strings.
+     * Creates a list of {@link RTag}s from a list of strings.
+     * @param strings         List of strings.
+     * @param makeNonexistent If true, strings which aren't the name of any existing {@link RTag}s will cause new {@link
+     *                        RTag}s to be made.
      * @return List of {@link RTag}s, or {@code null} if {@code strings} is null.
      */
-    public static List<RTag> stringListToTagList(List<String> strings) {
+    public static List<RTag> stringListToTagList(List<String> strings, boolean makeNonexistent) {
         if (strings == null) return null;
-        ArrayList<RTag> tags = new ArrayList<>(strings.size());
-        for (String string : strings) tags.add(getOrMakeRTag(string));
-        return tags;
+        return Observable.from(strings)
+                         .map(string -> getRTag(string, makeNonexistent))
+                         .filter(tag -> tag != null)
+                         .toList()
+                         .toBlocking()
+                         .single();
     }
 
     /**

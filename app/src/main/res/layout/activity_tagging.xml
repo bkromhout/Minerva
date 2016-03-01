@@ -16,18 +16,17 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:maxLines="1"
-            android:hint="@string/action_filter"
-            android:drawableEnd="@drawable/ic_clear"/>
+            android:hint="@string/action_filter"/>
 
     <com.bkromhout.realmrecyclerview.RealmRecyclerView
             android:id="@id/recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/tag_filter"
-            android:layout_above="@id/buttons"/>
+            android:layout_above="@+id/buttons"/>
 
     <android.support.v7.widget.ButtonBarLayout
-            android:id="@+id/buttons"
+            android:id="@id/buttons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"

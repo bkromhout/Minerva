@@ -8,7 +8,6 @@ import android.view.*;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.bkromhout.realmrecyclerview.RealmRecyclerView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkromhout.minerva.BookListActivity;
 import com.bkromhout.minerva.C;
@@ -18,6 +17,7 @@ import com.bkromhout.minerva.events.BookListCardClickEvent;
 import com.bkromhout.minerva.prefs.AllListsPrefs;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.util.Util;
+import com.bkromhout.realmrecyclerview.RealmRecyclerView;
 import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
@@ -195,22 +195,22 @@ public class AllListsFragment extends Fragment {
                         .negativeText(R.string.cancel)
                         .onNegative((dialog, which) -> dialog.dismiss())
                         .input(C.getStr(R.string.list_name_hint), listName, false, ((dialog, input) -> {
-                            // Get Realm instance, then check to see if the entered name has already been taken.
-                            Realm innerRealm = Realm.getDefaultInstance();
+                            // TODO put innerRealm in a try block for easier closing.
+                            // If it's the same name, do nothing.
                             String newName = input.toString().trim();
-                            boolean nameExists = innerRealm.where(RBookList.class)
-                                                           .equalTo("name", newName)
-                                                           .findFirst() != null;
+                            if (listName.equals(newName)) {
+                                dialog.dismiss();
+                                return;
+                            }
+
+                            // Get Realm to check if name exists.
+                            Realm innerRealm = Realm.getDefaultInstance();
 
                             // If the name exists (other than the list's current name), set the error text on the
                             // edit text. If it doesn't, rename the RBookList.
-                            if (listName.equals(newName)) {
-                                // If it's the same name, just close Realm and dismiss the dialog.
-                                innerRealm.close();
-                                dialog.dismiss();
-                            } else if (nameExists) {
+                            if (innerRealm.where(RBookList.class).equalTo("name", newName).findFirst() != null) {
                                 //noinspection ConstantConditions
-                                dialog.getInputEditText().setError(C.getStr(R.string.list_name_exists));
+                                dialog.getInputEditText().setError(C.getStr(R.string.err_name_taken));
                                 innerRealm.close();
                             } else {
                                 innerRealm.executeTransaction(tRealm -> {
@@ -273,7 +273,7 @@ public class AllListsFragment extends Fragment {
                     // If the name exists, set the error text on the edit text. If it doesn't, create the new RBookList.
                     if (nameExists) {
                         //noinspection ConstantConditions
-                        dialog.getInputEditText().setError(C.getStr(R.string.list_name_exists));
+                        dialog.getInputEditText().setError(C.getStr(R.string.err_name_taken));
                         innerRealm.close();
                     } else {
                         innerRealm.executeTransaction(tRealm -> tRealm.copyToRealm(new RBookList(newName)));
