@@ -1,11 +1,9 @@
 package com.bkromhout.minerva.events;
 
 /**
- * Fired from various places to make {@link com.bkromhout.minerva.fragments.LibraryFragment} execute some action.
- * <p>
- * TODO delete
+ * Fired from various places to make an activity or fragment follow-up on some intent to execute an action.
  */
-public class LibraryActionEvent {
+public class ActionEvent {
     /**
      * The action to take.
      */
@@ -16,11 +14,11 @@ public class LibraryActionEvent {
     private final Object data;
 
     /**
-     * Create a new {@link LibraryActionEvent}.
+     * Create a new {@link ActionEvent}.
      * @param actionId Action to take.
      * @param data     Extra data.
      */
-    public LibraryActionEvent(int actionId, Object data) {
+    public ActionEvent(int actionId, Object data) {
         this.actionId = actionId;
         this.data = data;
     }

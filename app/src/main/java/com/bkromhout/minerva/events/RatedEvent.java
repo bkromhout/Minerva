@@ -2,6 +2,8 @@ package com.bkromhout.minerva.events;
 
 /**
  * Fired when user saves a rating from the rating dialog.
+ * <p>
+ * TODO collapse into ActionEvent and delete this class.
  */
 public class RatedEvent {
     /**

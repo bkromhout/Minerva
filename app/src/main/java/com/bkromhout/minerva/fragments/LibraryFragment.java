@@ -12,7 +12,6 @@ import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.view.*;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -22,8 +21,8 @@ import com.bkromhout.minerva.*;
 import com.bkromhout.minerva.adapters.BookCardAdapter;
 import com.bkromhout.minerva.adapters.BookCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
+import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
-import com.bkromhout.minerva.events.LibraryActionEvent;
 import com.bkromhout.minerva.events.RatedEvent;
 import com.bkromhout.minerva.prefs.LibraryPrefs;
 import com.bkromhout.minerva.realm.RBook;
@@ -36,7 +35,6 @@ import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import rx.Observable;
 
 import java.util.List;
 
@@ -214,11 +212,12 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_to_list:
-                showAddToListDialogOrToast();
+                Dialogs.showAddToListDialogOrToast(getActivity(), realm);
                 return true;
             case R.id.action_tag:
                 //noinspection unchecked
                 TaggingActivity.start(getActivity(), adapter.getSelectedRealmObjects());
+                actionMode.finish();
                 return true;
             case R.id.action_rate:
                 int initialRating = adapter.getItemCount() == 1
@@ -232,10 +231,10 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
                 adapter.clearSelections();
                 return true;
             case R.id.action_re_import:
-                // TODO Re-import the selected items.
+                // TODO make into a common dialog and event.
                 return true;
             case R.id.action_delete:
-                // TODO Delete the selected items from our DB (and optionally the device).
+                // TODO make into a common dialog and event.
                 return true;
             default:
                 return false;
@@ -243,36 +242,11 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
     }
 
     /**
-     * Called when the user wishes to add some items to a list.
-     */
-    private void showAddToListDialogOrToast() {
-        // Get list of lists (list-ception?)
-        RealmResults<RBookList> lists = realm.where(RBookList.class).findAllSorted("sortName");
-
-        if (lists.size() == 0) {
-            // If we don't have any lists, just show a toast.
-            Toast.makeText(getActivity(), R.string.toast_no_lists, Toast.LENGTH_SHORT).show();
-        } else {
-            // Create a material dialog.
-            new MaterialDialog.Builder(getActivity())
-                    .title(R.string.action_add_to_list)
-                    .items(Observable.from(lists)
-                                     .map(RBookList::getName)
-                                     .toList()
-                                     .toBlocking()
-                                     .single())
-                    .itemsCallback((dialog, itemView, which, text) ->
-                            EventBus.getDefault().post(new LibraryActionEvent(R.id.action_add_to_list, text)))
-                    .show();
-        }
-    }
-
-    /**
      * Called when we wish to take some action.
-     * @param event {@link LibraryActionEvent}.
+     * @param event {@link ActionEvent}.
      */
     @Subscribe
-    public void onLibraryActionEvent(LibraryActionEvent event) {
+    public void onActionEvent(ActionEvent event) {
         //noinspection unchecked
         List<RBook> selectedItems = adapter.getSelectedRealmObjects();
 
@@ -282,8 +256,12 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
                 RBookList.addBooks(list, selectedItems);
                 break;
             }
+            case R.id.action_re_import: {
+                // TODO Re-import the selected items.
+                break;
+            }
             case R.id.action_delete: {
-                // TODO make into a common dialog and event.
+                // TODO Delete the selected items from our DB (and optionally the device).
                 break;
             }
         }
@@ -291,6 +269,8 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
     }
 
     /**
+     * TODO collapse RatedEvent into ActionEvent and remove this.
+     * <p>
      * Called when we saved a rating from the rating dialog. Updates the ratings of the selected items.
      * @param event {@link RatedEvent}.
      */

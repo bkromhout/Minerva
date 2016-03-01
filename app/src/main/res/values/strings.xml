@@ -127,10 +127,14 @@
     <!-- Book List Activity -->
     <string name="title_activity_book_list">Book List</string>
     <string name="title_reorder_mode">Reorder Mode</string>
+    <string name="title_remove_from_list">Remove Books</string>
+    <string name="title_clear_list">Clear List</string>
     <string name="action_card_type">Card Style</string>
     <string name="action_reorder">Reorder</string>
     <string name="action_move_to_top">Move To Top</string>
     <string name="action_move_to_bottom">Move To Bottom</string>
+    <string name="remove_from_list_prompt">Are you sure you want to remove the selected items from this list?</string>
+    <string name="clear_list_prompt">Are you sure you want to clear this list of all items?</string>
 
     <!-- Power Search Fragment -->
 

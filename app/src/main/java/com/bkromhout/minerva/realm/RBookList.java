@@ -110,21 +110,25 @@ public class RBookList extends RealmObject {
     }
 
     /**
-     * Removes a single {@link RBook}s from an {@link RBookList}.
-     * @param list List to remove {@code book} from.
-     * @param book Book to remove from {@code list}.
-     */
-    public static void removeBook(RBookList list, RBook book) {
-        // TODO
-    }
-
-    /**
      * Removes multiple {@link RBook}s from an {@link RBookList}.
      * @param list  List to remove {@code books} from.
      * @param books Books to remove from {@code list}.
      */
     public static void removeBooks(RBookList list, Iterable<RBook> books) {
         // TODO
+    }
+
+    /**
+     * Deletes an {@link RBookList} from Realm.
+     * @param list The list to delete.
+     */
+    public static void deleteList(RBookList list) {
+        try (Realm realm = Realm.getDefaultInstance()) {
+            realm.executeTransaction(tRealm -> {
+                // First, delete the list items.
+
+            });
+        }
     }
 
     /**
@@ -188,6 +192,12 @@ public class RBookList extends RealmObject {
         }
     }
 
+    /**
+     * Swaps the positions of {@code item1} and {@code item2}. Will do nothing if the items are the same.
+     * @param item1 An item.
+     * @param item2 Another item.
+     * @throws IllegalArgumentException if either item is null or items aren't from the same list.
+     */
     public static void swapItemPositions(RBookListItem item1, RBookListItem item2) {
         if (item1 == null || item2 == null) throw new IllegalArgumentException("No nulls allowed.");
         if (!RBookListItem.areFromSameList(item1.getKey(), item2.getKey())) throw new IllegalArgumentException(
@@ -201,6 +211,22 @@ public class RBookList extends RealmObject {
             item2.setPos(temp);
             realm.commitTransaction();
         }
+    }
+
+    /**
+     * Moves the given {@link RBookListItem}s to the start of the list.
+     * @param itemsToMove Items to move.
+     */
+    public static void moveItemsToStart(List<RBookListItem> itemsToMove) {
+        // TODO
+    }
+
+    /**
+     * Moves the given {@link RBookListItem}s to the end of the list.
+     * @param itemsToMove Items to move.
+     */
+    public static void moveItemsToEnd(List<RBookListItem> itemsToMove) {
+        // TODO.
     }
 
     /**
