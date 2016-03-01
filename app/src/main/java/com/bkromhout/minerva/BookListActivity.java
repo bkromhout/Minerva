@@ -16,10 +16,12 @@ import com.bkromhout.minerva.adapters.BookItemCardAdapter;
 import com.bkromhout.minerva.adapters.BookItemCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookItemCardNoCoverAdapter;
 import com.bkromhout.minerva.events.BookCardClickEvent;
+import com.bkromhout.minerva.events.RatedEvent;
 import com.bkromhout.minerva.prefs.AllListsPrefs;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
+import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.realmrecyclerview.RealmRecyclerView;
 import io.realm.Realm;
@@ -27,6 +29,8 @@ import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+
+import java.util.List;
 
 /**
  * Activity which displays a list of books based on an {@link RBookList}.
@@ -232,7 +236,9 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 TaggingActivity.start(this, RBookListItem.booksFromBookListItems(adapter.getSelectedRealmObjects()));
                 return true;
             case R.id.action_rate:
-                // TODO Open the rating dialog to rate the selected items.
+                int initialRating = adapter.getItemCount() == 1
+                        ? ((RBook) adapter.getSelectedRealmObjects().get(0)).getRating() : 0;
+                Dialogs.showRatingDialog(this, initialRating);
                 return true;
             case R.id.action_select_all:
                 adapter.selectAll();
@@ -250,11 +256,25 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 // TODO Re-import the selected items.
                 return true;
             case R.id.action_remove:
-                // TODO Remove the selected items from the list.
+                // TODO Remove the selected items from the list after confirming in dialog.
                 return true;
             default:
                 return false;
         }
+    }
+
+    /**
+     * Called when we saved a rating from the rating dialog. Updates the ratings of the selected items.
+     * @param event {@link RatedEvent}.
+     */
+    @Subscribe
+    public void onRatedEvent(RatedEvent event) {
+        //noinspection unchecked
+        List<RBook> selectedItems = RBookListItem.booksFromBookListItems(adapter.getSelectedRealmObjects());
+        realm.executeTransaction(tRealm -> {
+            for (RBook item : selectedItems) item.setRating(event.getRating());
+        });
+        if (actionMode != null) actionMode.finish();
     }
 
     /**
