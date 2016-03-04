@@ -30,6 +30,7 @@ import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -218,17 +219,12 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 showCardStyleDialog();
                 return true;
             case R.id.action_clear:
-                new MaterialDialog.Builder(this)
-                        .title(R.string.title_clear_list)
-                        .content(R.string.clear_list_prompt)
-                        .positiveText(R.string.yes)
-                        .negativeText(R.string.no)
-                        .onPositive((dialog, which) ->
-                                EventBus.getDefault().post(new ActionEvent(R.id.action_clear, null)))
-                        .show();
+                Dialogs.simpleYesNoDialog(this, R.string.title_clear_list, R.string.clear_list_prompt,
+                        R.id.action_clear);
                 return true;
             case R.id.action_delete_list:
-                // TODO
+                Dialogs.simpleYesNoDialog(this, R.string.title_delete_list, R.string.delete_list_prompt,
+                        R.id.action_delete_list);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -246,7 +242,17 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
             case R.id.action_rate:
                 int initialRating = adapter.getItemCount() == 1
                         ? ((RBook) adapter.getSelectedRealmObjects().get(0)).getRating() : 0;
-                Dialogs.showRatingDialog(this, initialRating);
+                Dialogs.ratingDialog(this, initialRating);
+                return true;
+            case R.id.action_move_to_top:
+                //noinspection unchecked
+                RBookList.moveItemsToStart(adapter.getSelectedRealmObjects());
+                actionMode.finish();
+                return true;
+            case R.id.action_move_to_bottom:
+                //noinspection unchecked
+                RBookList.moveItemsToEnd(adapter.getSelectedRealmObjects());
+                actionMode.finish();
                 return true;
             case R.id.action_select_all:
                 adapter.selectAll();
@@ -254,28 +260,17 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
             case R.id.action_select_none:
                 adapter.clearSelections();
                 return true;
-            case R.id.action_move_to_top:
-                //noinspection unchecked
-                RBookList.moveItemsToStart(adapter.getSelectedRealmObjects());
-                return true;
-            case R.id.action_move_to_bottom:
-                //noinspection unchecked
-                RBookList.moveItemsToEnd(adapter.getSelectedRealmObjects());
-                return true;
             case R.id.action_re_import:
-                // TODO Re-import the selected items.
+                Dialogs.simpleYesNoDialog(this, R.string.title_dialog_reimport, R.string.reimport_prompt,
+                        R.id.action_re_import);
                 return true;
             case R.id.action_remove:
-                // Show dialog to confirm removal from list. TODO move to Dialogs.
-                new MaterialDialog.Builder(this)
-                        .title(R.string.title_remove_from_list)
-                        .content(R.string.remove_from_list_prompt)
-                        .positiveText(R.string.yes)
-                        .negativeText(R.string.no)
-                        .onPositive((dialog, which) ->
-                                EventBus.getDefault().post(new ActionEvent(R.id.action_remove, null)))
-                        .show();
+                Dialogs.simpleYesNoDialog(this, R.string.title_remove_from_list, R.string.remove_from_list_prompt,
+                        R.id.action_remove);
                 return true;
+            case R.id.action_delete:
+                Dialogs.yesNoCheckBoxDialog(this, R.string.title_delete_books, R.string.delete_books_prompt,
+                        R.string.delete_from_device_too, R.id.action_delete);
             default:
                 return false;
         }
@@ -291,25 +286,46 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         List<RBook> selectedItems = adapter.getSelectedRealmObjects();
 
         switch (event.getActionId()) {
-            case R.id.action_add_to_list: {
-                // TODO actually implement a move/copy to other lists feature???
-                //RBookList list = realm.where(RBookList.class).equalTo("name", (String) event.getData()).findFirst();
-                //RBookList.addBooks(list, selectedItems);
+            case R.id.action_clear: {
+                realm.executeTransaction(tRealm -> srcList.getListItems().clear());
+                break;
+            }
+            case R.id.action_delete_list: {
+                // Delete the list currently being shown, then finish the activity.
+                RBookList.deleteList(srcList);
+                finish();
                 break;
             }
             case R.id.action_rate: {
                 realm.executeTransaction(tRealm -> {
                     for (RBook item : selectedItems) item.setRating((Integer) event.getData());
                 });
-                if (actionMode != null) actionMode.finish();
                 break;
             }
-            case R.id.action_clear: {
-                realm.executeTransaction(tRealm -> srcList.getListItems().clear());
+            case R.id.action_add_to_list: {
+                // TODO actually implement a move/copy to other lists feature???
+                //RBookList list = realm.where(RBookList.class).equalTo("name", (String) event.getData()).findFirst();
+                //RBookList.addBooks(list, selectedItems);
+                break;
+            }
+            case R.id.action_re_import: {
+                // TODO re-import items
                 break;
             }
             case R.id.action_remove: {
                 RBookList.removeBooks(srcList, selectedItems);
+                break;
+            }
+            case R.id.action_delete: {
+                // Delete the RBooks from Realm.
+                List<String> relPaths = RBook.deleteBooks(selectedItems);
+                // If the user wants us to, also try to delete the corresponding files from the device.
+                if ((boolean) event.getData()) {
+                    for (String relPath : relPaths) {
+                        File file = Util.getFileFromRelPath(relPath);
+                        if (file != null) file.delete();
+                    }
+                }
                 break;
             }
         }
@@ -393,8 +409,6 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     }
 
     /**
-     * TODO move to Dialogs.
-     * <p>
      * Shows a dialog which allows the user to pick the card style.
      */
     private void showCardStyleDialog() {

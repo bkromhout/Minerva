@@ -35,6 +35,7 @@ import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -211,7 +212,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_to_list:
-                Dialogs.showAddToListDialogOrToast(getActivity(), realm);
+                Dialogs.addToListDialogOrToast(getActivity(), realm);
                 return true;
             case R.id.action_tag:
                 //noinspection unchecked
@@ -221,7 +222,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
             case R.id.action_rate:
                 int initialRating = adapter.getItemCount() == 1
                         ? ((RBook) adapter.getSelectedRealmObjects().get(0)).getRating() : 0;
-                Dialogs.showRatingDialog(getContext(), initialRating);
+                Dialogs.ratingDialog(getContext(), initialRating);
                 return true;
             case R.id.action_select_all:
                 adapter.selectAll();
@@ -230,10 +231,12 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
                 adapter.clearSelections();
                 return true;
             case R.id.action_re_import:
-                // TODO make into a common dialog and event.
+                Dialogs.simpleYesNoDialog(getContext(), R.string.title_dialog_reimport, R.string.reimport_prompt,
+                        R.id.action_re_import);
                 return true;
             case R.id.action_delete:
-                // TODO make into a common dialog and event.
+                Dialogs.yesNoCheckBoxDialog(getContext(), R.string.title_delete_books, R.string.delete_books_prompt,
+                        R.string.delete_from_device_too, R.id.action_delete);
                 return true;
             default:
                 return false;
@@ -259,7 +262,6 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
                 realm.executeTransaction(tRealm -> {
                     for (RBook item : selectedItems) item.setRating((Integer) event.getData());
                 });
-                if (actionMode != null) actionMode.finish();
                 break;
             }
             case R.id.action_re_import: {
@@ -267,7 +269,15 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
                 break;
             }
             case R.id.action_delete: {
-                // TODO Delete the selected items from our DB (and optionally the device).
+                // Delete the RBooks from Realm.
+                List<String> relPaths = RBook.deleteBooks(selectedItems);
+                // If the user wants us to, also try to delete the corresponding files from the device.
+                if ((boolean) event.getData()) {
+                    for (String relPath : relPaths) {
+                        File file = Util.getFileFromRelPath(relPath);
+                        if (file != null) file.delete();
+                    }
+                }
                 break;
             }
         }

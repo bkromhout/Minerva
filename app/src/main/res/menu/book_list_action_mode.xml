@@ -15,18 +15,6 @@
             android:title="@string/action_rate"/>
 
     <item
-            android:id="@+id/action_select_all"
-            app:showAsAction="never"
-            android:icon="@drawable/ic_select_all"
-            android:title="@string/action_select_all"/>
-
-    <item
-            android:id="@+id/action_select_none"
-            app:showAsAction="never"
-            android:icon="@drawable/ic_select_none"
-            android:title="@string/action_select_none"/>
-
-    <item
             android:id="@+id/action_move_to_top"
             app:showAsAction="never"
             android:icon="@drawable/ic_move_to_top"
@@ -39,6 +27,18 @@
             android:title="@string/action_move_to_bottom"/>
 
     <item
+            android:id="@+id/action_select_all"
+            app:showAsAction="never"
+            android:icon="@drawable/ic_select_all"
+            android:title="@string/action_select_all"/>
+
+    <item
+            android:id="@+id/action_select_none"
+            app:showAsAction="never"
+            android:icon="@drawable/ic_select_none"
+            android:title="@string/action_select_none"/>
+
+    <item
             android:id="@+id/action_re_import"
             app:showAsAction="never"
             android:icon="@drawable/ic_import"
@@ -49,4 +49,10 @@
             app:showAsAction="never"
             android:icon="@drawable/ic_remove_filled"
             android:title="@string/action_remove"/>
+
+    <item
+            android:id="@+id/action_delete"
+            app:showAsAction="never"
+            android:icon="@drawable/ic_delete"
+            android:title="@string/action_delete"/>
 </menu>

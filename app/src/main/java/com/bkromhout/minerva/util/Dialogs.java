@@ -2,8 +2,11 @@ package com.bkromhout.minerva.util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.annotation.IdRes;
+import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.RatingBar;
 import android.widget.Toast;
 import butterknife.ButterKnife;
@@ -27,7 +30,7 @@ public class Dialogs {
      * @param ctx           Context to use.
      * @param initialRating The rating that the rating bar should show initially.
      */
-    public static void showRatingDialog(Context ctx, int initialRating) {
+    public static void ratingDialog(Context ctx, int initialRating) {
         @SuppressLint("InflateParams")
         View view = LayoutInflater.from(ctx).inflate(R.layout.dialog_rating, null);
         final RatingBar ratingBar = ButterKnife.findById(view, R.id.rating_bar);
@@ -50,7 +53,7 @@ public class Dialogs {
      * @param ctx   Context to use.
      * @param realm Realm instance to use.
      */
-    public static void showAddToListDialogOrToast(Context ctx, Realm realm) {
+    public static void addToListDialogOrToast(Context ctx, Realm realm) {
         // Get list of lists (list-ception?)
         RealmResults<RBookList> lists = realm.where(RBookList.class).findAllSorted("sortName");
 
@@ -70,5 +73,49 @@ public class Dialogs {
                             EventBus.getDefault().post(new ActionEvent(R.id.action_add_to_list, text)))
                     .show();
         }
+    }
+
+    /**
+     * Shows a simple Yes/No dialog using the given {@code title} and {@code text} string resources. Upon Yes being
+     * clicked, fires an {@link ActionEvent} using the given {@code actionId}.
+     * @param ctx      Context to use.
+     * @param title    String resource to use for title.
+     * @param text     String resource to use for text.
+     * @param actionId Action ID to send if Yes is clicked.
+     */
+    public static void simpleYesNoDialog(Context ctx, @StringRes int title, @StringRes int text, @IdRes int actionId) {
+        new MaterialDialog.Builder(ctx)
+                .title(title)
+                .content(text)
+                .positiveText(R.string.yes)
+                .negativeText(R.string.no)
+                .onPositive((dialog, which) -> EventBus.getDefault().post(new ActionEvent(actionId, null)))
+                .show();
+    }
+
+    /**
+     * Same as {@link #simpleYesNoDialog(Context, int, int, int)}, but adds a single check box which allows for
+     * additional input.
+     * @param ctx          Context to use.
+     * @param title        String resource to use for title.
+     * @param text         String resource to use for text.
+     * @param checkBoxText String resource to use for the checkbox.
+     * @param actionId     Action ID to send if Yes is clicked.
+     */
+    public static void yesNoCheckBoxDialog(Context ctx, @StringRes int title, @StringRes int text,
+                                         @StringRes int checkBoxText, @IdRes int actionId) {
+        // Create the checkbox.
+        final CheckBox checkbox = new CheckBox(ctx);
+        checkbox.setText(checkBoxText);
+
+        new MaterialDialog.Builder(ctx)
+                .title(title)
+                .content(text)
+                .customView(checkbox, false)
+                .positiveText(R.string.yes)
+                .negativeText(R.string.no)
+                .onPositive((dialog, which) ->
+                        EventBus.getDefault().post(new ActionEvent(actionId, checkbox.isChecked())))
+                .show();
     }
 }

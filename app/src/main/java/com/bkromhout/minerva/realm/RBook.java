@@ -4,6 +4,7 @@ import com.bkromhout.minerva.data.SuperBook;
 import com.bkromhout.minerva.prefs.DBPrefs;
 import com.bkromhout.minerva.util.BookUtils;
 import com.bkromhout.minerva.util.Util;
+import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
@@ -12,8 +13,10 @@ import io.realm.annotations.Required;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Identifier;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Represents a book in Realm.
@@ -178,6 +181,30 @@ public class RBook extends RealmObject {
         this.isInRecents = false;
         this.rating = 0;
         this.uniqueId = DBPrefs.get().getNextRBookUid();
+    }
+
+    /**
+     * Removes the {@link RBook}s from Realm, and returns the relative paths from each one.
+     * @param books List of {@link RBook}s to delete.
+     * @return List of relative paths.
+     */
+    public static List<String> deleteBooks(List<RBook> books) {
+        if (books == null) return null;
+        if (books.isEmpty()) return new ArrayList<>();
+
+        // Delete any RBookListItems which may exist for these books.
+        RBookListItem.deleteAnyForBooks(books);
+
+        List<String> relPaths = new ArrayList<>(books.size());
+        try (Realm realm = Realm.getDefaultInstance()) {
+            realm.executeTransaction(tRealm -> {
+                for (RBook book : books) {
+                    relPaths.add(book.getRelPath());
+                    book.removeFromRealm();
+                }
+            });
+        }
+        return relPaths;
     }
 
     public String getRelPath() {
