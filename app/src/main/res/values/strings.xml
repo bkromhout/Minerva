@@ -113,6 +113,7 @@
     <string name="fil_err_generic">Error while importing and converting files</string>
     <string name="fil_err_processing_file">ERROR while importing \"%1$s\"\n</string>
     <string name="fil_err_invalid_lib_dir">Invalid library folder, cancelling import</string>
+    <string name="fil_err_no_files">There are no files to import</string>
     <string name="fil_err_realm">Realm error</string>
 
     <!-- All Lists Fragment -->

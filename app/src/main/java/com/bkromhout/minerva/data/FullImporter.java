@@ -207,7 +207,7 @@ public class FullImporter {
         // Check file list.
         if (files.isEmpty()) {
             // We don't have any files.
-            // TODO add log here
+            logSubject.onNext(C.getStr(R.string.fil_err_no_files));
             resetState();
             return;
         }
@@ -252,7 +252,6 @@ public class FullImporter {
                 .doOnUnsubscribe(() -> fileImporterSubscription = null)
                 .map(this::convertFileToSuperBook) // Create a SuperBook from the file.
                 .filter(sb -> sb != null)
-                //.observeOn(Schedulers.computation()) //TODO test to see if this matters
                 .map(RBook::new) // Create an RBook from the SuperBook.
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onImportedBookFile, this::onFileImporterError, this::onAllFilesImported);

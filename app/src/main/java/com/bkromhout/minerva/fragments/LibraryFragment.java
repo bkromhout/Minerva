@@ -23,7 +23,6 @@ import com.bkromhout.minerva.adapters.BookCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
-import com.bkromhout.minerva.events.RatedEvent;
 import com.bkromhout.minerva.prefs.LibraryPrefs;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
@@ -256,6 +255,13 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
                 RBookList.addBooks(list, selectedItems);
                 break;
             }
+            case R.id.action_rate: {
+                realm.executeTransaction(tRealm -> {
+                    for (RBook item : selectedItems) item.setRating((Integer) event.getData());
+                });
+                if (actionMode != null) actionMode.finish();
+                break;
+            }
             case R.id.action_re_import: {
                 // TODO Re-import the selected items.
                 break;
@@ -265,22 +271,6 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
                 break;
             }
         }
-        if (actionMode != null) actionMode.finish();
-    }
-
-    /**
-     * TODO collapse RatedEvent into ActionEvent and remove this.
-     * <p>
-     * Called when we saved a rating from the rating dialog. Updates the ratings of the selected items.
-     * @param event {@link RatedEvent}.
-     */
-    @Subscribe
-    public void onRatedEvent(RatedEvent event) {
-        //noinspection unchecked
-        List<RBook> selectedItems = adapter.getSelectedRealmObjects();
-        realm.executeTransaction(tRealm -> {
-            for (RBook item : selectedItems) item.setRating(event.getRating());
-        });
         if (actionMode != null) actionMode.finish();
     }
 

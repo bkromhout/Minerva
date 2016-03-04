@@ -195,7 +195,6 @@ public class AllListsFragment extends Fragment {
                         .negativeText(R.string.cancel)
                         .onNegative((dialog, which) -> dialog.dismiss())
                         .input(C.getStr(R.string.list_name_hint), listName, false, ((dialog, input) -> {
-                            // TODO put innerRealm in a try block for easier closing.
                             // If it's the same name, do nothing.
                             String newName = input.toString().trim();
                             if (listName.equals(newName)) {
@@ -204,24 +203,22 @@ public class AllListsFragment extends Fragment {
                             }
 
                             // Get Realm to check if name exists.
-                            Realm innerRealm = Realm.getDefaultInstance();
-
-                            // If the name exists (other than the list's current name), set the error text on the
-                            // edit text. If it doesn't, rename the RBookList.
-                            if (innerRealm.where(RBookList.class).equalTo("name", newName).findFirst() != null) {
-                                //noinspection ConstantConditions
-                                dialog.getInputEditText().setError(C.getStr(R.string.err_name_taken));
-                                innerRealm.close();
-                            } else {
-                                innerRealm.executeTransaction(tRealm -> {
-                                    RBookList list = tRealm.where(RBookList.class)
-                                                           .equalTo("name", listName)
-                                                           .findFirst();
-                                    list.setName(newName);
-                                    list.setSortName(newName.toLowerCase()); // TODO Work-around
-                                });
-                                innerRealm.close();
-                                dialog.dismiss();
+                            try (Realm innerRealm = Realm.getDefaultInstance()) {
+                                // If the name exists (other than the list's current name), set the error text on the
+                                // edit text. If it doesn't, rename the RBookList.
+                                if (innerRealm.where(RBookList.class).equalTo("name", newName).findFirst() != null) {
+                                    //noinspection ConstantConditions
+                                    dialog.getInputEditText().setError(C.getStr(R.string.err_name_taken));
+                                } else {
+                                    innerRealm.executeTransaction(tRealm -> {
+                                        RBookList list = tRealm.where(RBookList.class)
+                                                               .equalTo("name", listName)
+                                                               .findFirst();
+                                        list.setName(newName);
+                                        list.setSortName(newName.toLowerCase()); // TODO Work-around
+                                    });
+                                    dialog.dismiss();
+                                }
                             }
                         }))
                         .show();

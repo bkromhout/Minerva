@@ -10,7 +10,6 @@ import butterknife.ButterKnife;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.events.ActionEvent;
-import com.bkromhout.minerva.events.RatedEvent;
 import com.bkromhout.minerva.realm.RBookList;
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -41,7 +40,8 @@ public class Dialogs {
                 .negativeText(R.string.clear)
                 .neutralText(R.string.cancel)
                 .onNegative((dialog, which) -> ratingBar.setRating(0F))
-                .onPositive((dialog, which) -> EventBus.getDefault().post(new RatedEvent((int) ratingBar.getRating())))
+                .onPositive((dialog, which) ->
+                        EventBus.getDefault().post(new ActionEvent(R.id.action_rate, (int) ratingBar.getRating())))
                 .show();
     }
 
