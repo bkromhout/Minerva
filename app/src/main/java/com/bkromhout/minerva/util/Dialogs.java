@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.ButterKnife;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -42,9 +43,13 @@ public class Dialogs {
                 .positiveText(R.string.save)
                 .negativeText(R.string.clear)
                 .neutralText(R.string.cancel)
+                .autoDismiss(false)
+                .onNeutral((dialog, which) -> dialog.dismiss())
                 .onNegative((dialog, which) -> ratingBar.setRating(0F))
-                .onPositive((dialog, which) ->
-                        EventBus.getDefault().post(new ActionEvent(R.id.action_rate, (int) ratingBar.getRating())))
+                .onPositive((dialog, which) -> {
+                    EventBus.getDefault().post(new ActionEvent(R.id.action_rate, (int) ratingBar.getRating()));
+                    dialog.dismiss();
+                })
                 .show();
     }
 
@@ -103,19 +108,21 @@ public class Dialogs {
      * @param actionId     Action ID to send if Yes is clicked.
      */
     public static void yesNoCheckBoxDialog(Context ctx, @StringRes int title, @StringRes int text,
-                                         @StringRes int checkBoxText, @IdRes int actionId) {
-        // Create the checkbox.
-        final CheckBox checkbox = new CheckBox(ctx);
-        checkbox.setText(checkBoxText);
+                                           @StringRes int checkBoxText, @IdRes int actionId) {
+        @SuppressLint("InflateParams")
+        View view = LayoutInflater.from(ctx).inflate(R.layout.dialog_yes_no_checkbox, null);
+        final TextView content = ButterKnife.findById(view, R.id.content);
+        final CheckBox checkBox = ButterKnife.findById(view, R.id.checkbox);
+        content.setText(text);
+        checkBox.setText(checkBoxText);
 
         new MaterialDialog.Builder(ctx)
                 .title(title)
-                .content(text)
-                .customView(checkbox, false)
+                .customView(view, false)
                 .positiveText(R.string.yes)
                 .negativeText(R.string.no)
                 .onPositive((dialog, which) ->
-                        EventBus.getDefault().post(new ActionEvent(actionId, checkbox.isChecked())))
+                        EventBus.getDefault().post(new ActionEvent(actionId, checkBox.isChecked())))
                 .show();
     }
 }

@@ -220,7 +220,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
                 actionMode.finish();
                 return true;
             case R.id.action_rate:
-                int initialRating = adapter.getItemCount() == 1
+                int initialRating = adapter.getNumSelected() == 1
                         ? ((RBook) adapter.getSelectedRealmObjects().get(0)).getRating() : 0;
                 Dialogs.ratingDialog(getContext(), initialRating);
                 return true;

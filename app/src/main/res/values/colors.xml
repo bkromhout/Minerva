@@ -26,6 +26,7 @@
     <color name="colorAccent">@color/redA200</color>
     <color name="textColorPrimary">@android:color/white</color>
     <color name="textColorSecondary">@color/grey500</color>
+    <color name="textColorDialogContent">#C7C7C7</color>
     <!-- inverse text color: 87% black -->
     <color name="textColorPrimaryInverse">#DE000000</color>
     <color name="textColorSecondaryInverse">@color/grey500</color>
