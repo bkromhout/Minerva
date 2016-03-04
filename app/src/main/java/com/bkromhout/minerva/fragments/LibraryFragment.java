@@ -344,7 +344,8 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
         // Do something based on the click type.
         switch (event.getType()) {
             case NORMAL:
-                // TODO Open the book file.
+                // Open the book file.
+                Util.openFileUsingIntent(getContext(), Util.getFileFromRelPath(book.getRelPath()));
                 break;
             case LONG:
                 // Start multi-select.

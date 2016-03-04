@@ -1,6 +1,7 @@
 package com.bkromhout.minerva.util;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,6 +16,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.view.menu.MenuBuilder;
 import android.util.Log;
 import android.view.Menu;
+import android.webkit.MimeTypeMap;
+import android.widget.Toast;
+import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.MainActivity;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
@@ -125,6 +129,24 @@ public class Util {
     }
 
     /**
+     * Opens a file using an intent.
+     * @param context The context to use to build the intent.
+     * @param file    The file to open.
+     */
+    public static void openFileUsingIntent(Context context, File file) {
+        MimeTypeMap myMime = MimeTypeMap.getSingleton();
+        String mimeType = myMime.getMimeTypeFromExtension(getExtFromFName(file.getName()));
+        Intent newIntent = new Intent(Intent.ACTION_VIEW);
+        newIntent.setDataAndType(Uri.fromFile(file), mimeType);
+        newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        try {
+            context.startActivity(newIntent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(context, C.getStr(R.string.toast_err_no_apps), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
      * Checks whether there is a present, valid library directory set.
      * @return True if there is a path set and the path points to a valid folder that is readable.
      */
@@ -168,6 +190,18 @@ public class Util {
     public static String getExtFromFName(String fileName) {
         if (fileName == null || fileName.lastIndexOf('.') == -1) return null;
         return fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+    }
+
+    /**
+     * Returns a File using the given {@code relPath} and the currently defined library path.
+     * @param relPath The path to the book file, relative to the library path.
+     * @return A File, or null.
+     */
+    public static File getFileFromRelPath(String relPath) {
+        String libDir = DefaultPrefs.get().getLibDir(null);
+        if (libDir == null || libDir.isEmpty() || relPath == null || relPath.isEmpty()) return null;
+        File file = new File(libDir + relPath);
+        return file.exists() ? file : null;
     }
 
     /**

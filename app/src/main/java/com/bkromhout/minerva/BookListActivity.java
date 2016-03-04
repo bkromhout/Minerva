@@ -371,7 +371,8 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         // Do something based on the click type.
         switch (event.getType()) {
             case NORMAL:
-                // TODO Open the book file.
+                // Open the book file.
+                Util.openFileUsingIntent(this, Util.getFileFromRelPath(book.getRelPath()));
                 break;
             case LONG:
                 // Start multi-select.

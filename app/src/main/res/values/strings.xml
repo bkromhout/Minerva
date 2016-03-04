@@ -25,6 +25,7 @@
 
     <!-- Common error strings -->
     <string name="err_name_taken">Name is already taken.</string>
+    <string name="toast_err_no_apps">No apps installed which can open this file.</string>
 
     <!-- Permissions -->
     <string name="storage_permission">Storage Permission</string>
