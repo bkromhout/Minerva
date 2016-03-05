@@ -23,6 +23,7 @@ import com.bkromhout.minerva.adapters.BookCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
+import com.bkromhout.minerva.events.UpdateSelectedItemsEvent;
 import com.bkromhout.minerva.prefs.LibraryPrefs;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
@@ -79,7 +80,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
     /**
      * Action mode.
      */
-    private ActionMode actionMode;
+    private static ActionMode actionMode;
 
     public LibraryFragment() {
         // Required empty public constructor
@@ -161,6 +162,18 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        // Check to see if we need to update the selected items.
+        UpdateSelectedItemsEvent updateSelectedItemsEvent =
+                EventBus.getDefault().removeStickyEvent(UpdateSelectedItemsEvent.class);
+        if (updateSelectedItemsEvent != null) {
+            adapter.notifySelectedItemsChanged();
+            if (actionMode != null) actionMode.finish();
+        }
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
@@ -217,7 +230,6 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
             case R.id.action_tag:
                 //noinspection unchecked
                 TaggingActivity.start(getActivity(), adapter.getSelectedRealmObjects());
-                actionMode.finish();
                 return true;
             case R.id.action_rate:
                 int initialRating = adapter.getNumSelected() == 1

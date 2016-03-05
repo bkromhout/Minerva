@@ -17,6 +17,7 @@ import com.bkromhout.minerva.adapters.BookItemCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookItemCardNoCoverAdapter;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
+import com.bkromhout.minerva.events.UpdateSelectedItemsEvent;
 import com.bkromhout.minerva.prefs.AllListsPrefs;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
@@ -77,7 +78,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     /**
      * Action mode.
      */
-    private ActionMode actionMode;
+    private static ActionMode actionMode;
     /**
      * Whether or not the current action mode is the normal or reorder mode.
      */
@@ -160,6 +161,18 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        // Check to see if we need to update the selected items.
+        UpdateSelectedItemsEvent updateSelectedItemsEvent =
+                EventBus.getDefault().removeStickyEvent(UpdateSelectedItemsEvent.class);
+        if (updateSelectedItemsEvent != null) {
+            adapter.notifySelectedItemsChanged();
+            if (actionMode != null) actionMode.finish();
+        }
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
@@ -237,7 +250,6 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
             case R.id.action_tag:
                 //noinspection unchecked
                 TaggingActivity.start(this, RBookListItem.booksFromBookListItems(adapter.getSelectedRealmObjects()));
-                actionMode.finish();
                 return true;
             case R.id.action_rate:
                 int initialRating = adapter.getNumSelected() == 1
