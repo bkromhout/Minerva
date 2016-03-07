@@ -77,6 +77,8 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     private BaseBookCardAdapter adapter;
     /**
      * Action mode.
+     * <p>
+     * TODO get this to go away when returning from TaggingActivity.
      */
     private static ActionMode actionMode;
     /**

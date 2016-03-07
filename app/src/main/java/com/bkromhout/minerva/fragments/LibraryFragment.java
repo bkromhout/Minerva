@@ -79,6 +79,8 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
     private RealmBasedRecyclerViewAdapter adapter;
     /**
      * Action mode.
+     * <p>
+     * TODO get this to go away when returning from TaggingActivity.
      */
     private static ActionMode actionMode;
 
