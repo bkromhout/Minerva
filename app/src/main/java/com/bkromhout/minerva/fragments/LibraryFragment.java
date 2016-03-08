@@ -225,6 +225,16 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
 
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        // Handle select all/none first, and if it isn't those then don't do anything if we haven't selected any items.
+        if (item.getItemId() == R.id.action_select_all) {
+            adapter.selectAll();
+            return true;
+        } else if (item.getItemId() == R.id.action_select_none) {
+            adapter.clearSelections();
+            return true;
+        } else if (adapter.getSelectedItemCount() == 0) return true;
+
+        // Handle actions.
         switch (item.getItemId()) {
             case R.id.action_add_to_list:
                 Dialogs.addToListDialogOrToast(getActivity(), realm);
@@ -234,15 +244,9 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
                 TaggingActivity.start(getActivity(), adapter.getSelectedRealmObjects());
                 return true;
             case R.id.action_rate:
-                int initialRating = adapter.getNumSelected() == 1
+                int initialRating = adapter.getSelectedItemCount() == 1
                         ? ((RBook) adapter.getSelectedRealmObjects().get(0)).getRating() : 0;
                 Dialogs.ratingDialog(getContext(), initialRating);
-                return true;
-            case R.id.action_select_all:
-                adapter.selectAll();
-                return true;
-            case R.id.action_select_none:
-                adapter.clearSelections();
                 return true;
             case R.id.action_re_import:
                 Dialogs.simpleYesNoDialog(getContext(), R.string.title_dialog_reimport, R.string.reimport_prompt,
