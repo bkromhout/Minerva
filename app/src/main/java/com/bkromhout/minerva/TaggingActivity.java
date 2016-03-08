@@ -128,6 +128,9 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Set result as canceled.
+        setResult(RESULT_CANCELED);
+
         // Create and bind views.
         setContentView(R.layout.activity_tagging);
         ButterKnife.bind(this);
@@ -292,6 +295,14 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
     }
 
     /**
+     * Called when the cancel button is clicked.
+     */
+    @OnClick(R.id.cancel)
+    void onCancelButtonClicked() {
+        finish();
+    }
+
+    /**
      * Called when the save button is clicked.
      */
     @OnClick(R.id.save)
@@ -308,6 +319,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
         // Reset the TaggingHelper and finish this activity.
         taggingHelper = null;
         TaggingHelper.reset();
+        setResult(RESULT_OK);
         finish();
     }
 

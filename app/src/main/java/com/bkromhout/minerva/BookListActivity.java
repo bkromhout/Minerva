@@ -344,9 +344,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 // Came back from TaggingActivity.
                 if (resultCode == Activity.RESULT_OK) {
                     // We've changed the tags on some books.
-                    adapter.notifySelectedItemsChanged();
                     if (actionMode != null) actionMode.finish();
-                    // TODO does this work?
                 }
                 break;
             }
