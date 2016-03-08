@@ -1,7 +1,9 @@
 package com.bkromhout.minerva.fragments;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
@@ -23,7 +25,6 @@ import com.bkromhout.minerva.adapters.BookCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
-import com.bkromhout.minerva.events.UpdateSelectedItemsEvent;
 import com.bkromhout.minerva.prefs.LibraryPrefs;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
@@ -79,8 +80,6 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
     private RealmBasedRecyclerViewAdapter adapter;
     /**
      * Action mode.
-     * <p>
-     * TODO get this to go away when returning from TaggingActivity.
      */
     private static ActionMode actionMode;
 
@@ -164,18 +163,6 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        // Check to see if we need to update the selected items.
-        UpdateSelectedItemsEvent updateSelectedItemsEvent =
-                EventBus.getDefault().removeStickyEvent(UpdateSelectedItemsEvent.class);
-        if (updateSelectedItemsEvent != null) {
-            adapter.notifySelectedItemsChanged();
-            if (actionMode != null) actionMode.finish();
-        }
-    }
-
-    @Override
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
@@ -241,7 +228,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
                 return true;
             case R.id.action_tag:
                 //noinspection unchecked
-                TaggingActivity.start(getActivity(), adapter.getSelectedRealmObjects());
+                TaggingActivity.start(this, adapter.getSelectedRealmObjects());
                 return true;
             case R.id.action_rate:
                 int initialRating = adapter.getSelectedItemCount() == 1
@@ -300,6 +287,22 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
             }
         }
         if (actionMode != null) actionMode.finish();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case C.RC_TAG_ACTIVITY: {
+                // Came back from TaggingActivity.
+                if (resultCode == Activity.RESULT_OK) {
+                    // We've changed the tags on some books.
+                    adapter.notifySelectedItemsChanged();
+                    if (actionMode != null) actionMode.finish();
+                    // TODO does this work?
+                }
+                break;
+            }
+        }
     }
 
     /**
@@ -387,8 +390,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
                 Util.startAct(getActivity(), BookInfoActivity.class, b);
                 break;
             case QUICK_TAG:
-                //noinspection unchecked
-                TaggingActivity.start(getActivity(), book);
+                TaggingActivity.start(this, book);
                 break;
         }
     }

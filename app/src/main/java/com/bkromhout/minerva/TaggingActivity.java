@@ -1,7 +1,9 @@
 package com.bkromhout.minerva;
 
-import android.content.Context;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.ButtonBarLayout;
@@ -82,25 +84,44 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
     private Subscription filterChangeSub;
 
     /**
-     * Convenience method to set up the {@link TaggingHelper} then start this activity.
-     * @param ctx  The context to start this activity with.
-     * @param book The selected {@link RBook}.
+     * Convenience method to set up the {@link TaggingHelper} then start this activity from a fragment.
+     * @param fragment The fragment to return a result to.
+     * @param book     The selected {@link RBook}.
      */
-    public static void start(Context ctx, RBook book) {
-        start(ctx, Lists.asList(book, new RBook[] {}));
+    public static void start(Fragment fragment, RBook book) {
+        start(fragment, Lists.asList(book, new RBook[] {}));
     }
 
     /**
-     * Convenience method to set up the {@link TaggingHelper} then start this activity.
-     * @param ctx           The context to start this activity with.
+     * Convenience method to set up the {@link TaggingHelper} then start this activity from a fragment.
+     * @param fragment      The fragment to return a result to.
      * @param selectedBooks The selected {@link RBook}s.
      */
-    public static void start(Context ctx, List<RBook> selectedBooks) {
+    public static void start(Fragment fragment, List<RBook> selectedBooks) {
+        TaggingActivity.TaggingHelper.get().init(selectedBooks,
+                RTag.tagListToStringList(RTag.listOfCommonTags(selectedBooks)));
+        fragment.startActivityForResult(new Intent(fragment.getContext(), TaggingActivity.class), C.RC_TAG_ACTIVITY);
+    }
+
+    /**
+     * Convenience method to set up the {@link TaggingHelper} then start this activity from an activity.
+     * @param activity The activity to return a result to.
+     * @param book     The selected {@link RBook}.
+     */
+    public static void start(Activity activity, RBook book) {
+        start(activity, Lists.asList(book, new RBook[] {}));
+    }
+
+    /**
+     * Convenience method to set up the {@link TaggingHelper} then start this activity from an activity.
+     * @param activity      The activity to return a result to.
+     * @param selectedBooks The selected {@link RBook}s.
+     */
+    public static void start(Activity activity, List<RBook> selectedBooks) {
         // Initialize the tagging helper.
         TaggingActivity.TaggingHelper.get().init(selectedBooks,
                 RTag.tagListToStringList(RTag.listOfCommonTags(selectedBooks)));
-        // Open the tagging activity to tag the selected items.
-        Util.startAct(ctx, TaggingActivity.class, null);
+        activity.startActivityForResult(new Intent(activity, TaggingActivity.class), C.RC_TAG_ACTIVITY);
     }
 
     @Override

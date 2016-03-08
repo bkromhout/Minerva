@@ -35,6 +35,9 @@ public final class C {
     public static final String BOOK_CARD_NO_COVER = "BOOK_CARD_NO_COVER";
     public static final String BOOK_CARD_COMPACT = "BOOK_CARD_COMPACT";
 
+    /* Request codes. */
+    public static final int RC_TAG_ACTIVITY = 1;
+
     /**
      * Get a string resource using the application context.
      * @param resId String resource ID.

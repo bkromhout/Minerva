@@ -115,6 +115,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Pass down to fragments.
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     /**
      * Initializes the Navigation Drawer.
      */

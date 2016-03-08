@@ -1,6 +1,8 @@
 package com.bkromhout.minerva;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
@@ -17,7 +19,6 @@ import com.bkromhout.minerva.adapters.BookItemCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookItemCardNoCoverAdapter;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
-import com.bkromhout.minerva.events.UpdateSelectedItemsEvent;
 import com.bkromhout.minerva.prefs.AllListsPrefs;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
@@ -77,8 +78,6 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     private BaseBookCardAdapter adapter;
     /**
      * Action mode.
-     * <p>
-     * TODO get this to go away when returning from TaggingActivity.
      */
     private static ActionMode actionMode;
     /**
@@ -160,18 +159,6 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Check to see if we need to update the selected items.
-        UpdateSelectedItemsEvent updateSelectedItemsEvent =
-                EventBus.getDefault().removeStickyEvent(UpdateSelectedItemsEvent.class);
-        if (updateSelectedItemsEvent != null) {
-            adapter.notifySelectedItemsChanged();
-            if (actionMode != null) actionMode.finish();
-        }
     }
 
     @Override
@@ -350,6 +337,22 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         if (actionMode != null) actionMode.finish();
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case C.RC_TAG_ACTIVITY: {
+                // Came back from TaggingActivity.
+                if (resultCode == Activity.RESULT_OK) {
+                    // We've changed the tags on some books.
+                    adapter.notifySelectedItemsChanged();
+                    if (actionMode != null) actionMode.finish();
+                    // TODO does this work?
+                }
+                break;
+            }
+        }
+    }
+
     /**
      * Create a {@link RealmBasedRecyclerViewAdapter} based on the current view options and return it.
      * @return New {@link RealmBasedRecyclerViewAdapter}. Will return null if we cannot get the activity context, if
@@ -420,7 +423,6 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 Util.startAct(this, BookInfoActivity.class, b);
                 break;
             case QUICK_TAG:
-                //noinspection unchecked
                 TaggingActivity.start(this, book);
                 break;
         }
