@@ -308,7 +308,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
     @OnClick(R.id.save)
     void onSaveButtonClicked() {
         // Use the two lists to get deltas, then use them to figure out which tags were added and which were removed.
-        Patch<String> patch = DiffUtils.diff(taggingHelper.origCheckedItems, taggingHelper.newCheckedItems);
+        Patch<String> patch = DiffUtils.diff(taggingHelper.oldCheckedItems, taggingHelper.newCheckedItems);
         List<String> removedTagNames = getDeltaLines(Delta.TYPE.DELETE, patch.getDeltas());
         List<String> addedTagNames = getDeltaLines(Delta.TYPE.INSERT, patch.getDeltas());
 
@@ -370,7 +370,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
                         .content(R.string.rename_tag_prompt)
                         .autoDismiss(false)
                         .negativeText(R.string.cancel)
-                        .input(R.string.tag_name_hint, 0, false, (dialog, input) -> {
+                        .input(C.getStr(R.string.tag_name_hint), event.getName(), false, (dialog, input) -> {
                             String newName = input.toString().trim();
 
                             // If it's the same name, do nothing, just dismiss.
@@ -382,8 +382,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
                             // Get Realm and check if name already exists.
                             try (Realm iRealm = Realm.getDefaultInstance()) {
                                 if (iRealm.where(RTag.class).equalTo("name", newName).findFirst() == null) {
-                                    // Name is available; rename the RTag then dismiss the dialog.
-                                    // TODO Do we need to manually rename/readd the tags??
+                                    // Name is available; rename the RTag.
                                     iRealm.executeTransaction(tRealm -> {
                                         RTag rTag = tRealm.where(RTag.class)
                                                           .equalTo("name", event.getName())
@@ -391,6 +390,12 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
                                         rTag.setName(newName);
                                         rTag.setSortName(newName.toLowerCase());
                                     });
+
+                                    // Now make sure that we swap the old name for the new one in the old/new lists.
+                                    TaggingHelper th = TaggingHelper.get();
+                                    if (th.oldCheckedItems.remove(event.getName())) th.oldCheckedItems.add(newName);
+                                    if (th.newCheckedItems.remove(event.getName())) th.newCheckedItems.add(newName);
+
                                     dialog.dismiss();
                                 } else {
                                     // Name already exists, set the error text and _don't_ dismiss the dialog.
@@ -420,7 +425,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
 
                             // Remove tag name from the lists (if present).
                             TaggingHelper th = TaggingHelper.get();
-                            th.origCheckedItems.remove(event.getName());
+                            th.oldCheckedItems.remove(event.getName());
                             th.newCheckedItems.remove(event.getName());
                         })
                         .show();
@@ -444,7 +449,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
         /**
          * List of originally checked tags.
          */
-        public List<String> origCheckedItems;
+        public List<String> oldCheckedItems;
         /**
          * List of finally checked tags.
          */
@@ -472,7 +477,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
 
         private TaggingHelper() {
             selectedBooks = null;
-            origCheckedItems = new ArrayList<>();
+            oldCheckedItems = new ArrayList<>();
             newCheckedItems = new ArrayList<>();
         }
 
@@ -483,7 +488,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
          */
         public void init(List<RBook> books, List<String> currCheckedItems) {
             this.selectedBooks = books;
-            this.origCheckedItems = currCheckedItems;
+            this.oldCheckedItems = currCheckedItems;
             this.newCheckedItems = new ArrayList<>(currCheckedItems);
         }
     }
