@@ -5,11 +5,11 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.0.0-beta6'
+        classpath 'com.android.tools.build:gradle:2.1.0-alpha1'
         classpath 'me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'me.tatarka:gradle-retrolambda:3.3.0-beta4'
-        classpath "io.realm:realm-gradle-plugin:0.87.5"
+        classpath "io.realm:realm-gradle-plugin:0.88.0"
     }
     // Use custom lombok version.
     configurations.classpath.exclude group: 'com.android.tools.external.lombok'
