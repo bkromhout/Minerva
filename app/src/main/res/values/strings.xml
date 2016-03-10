@@ -25,11 +25,11 @@
 
     <!-- Common Dialogs -->
     <string name="title_dialog_rating">Rating</string>
-
     <string name="title_dialog_reimport">Re-Import Files</string>
-    <string name="reimport_prompt">Are you sure you want to re-import the selected books?</string>
-
+    <string name="title_remove_books">Remove Books</string>
     <string name="title_delete_books">Delete Books</string>
+
+    <string name="reimport_prompt">Are you sure you want to re-import the selected books?</string>
     <string name="delete_books_prompt">Are you sure you want to delete the selected books from your library?</string>
     <string name="delete_from_device_too">Delete from device too</string>
 
@@ -63,6 +63,10 @@
 
     <!-- Recent Fragment -->
     <string name="action_resume_reading">Resume reading</string>
+    <string name="action_clear_recents">Clear Recents</string>
+
+    <string name="clear_recents_prompt">Are you sure you wish to clear all books from the recents list?</string>
+    <string name="remove_from_recents_prompt">Are you sure you wish to remove the selected items from the recents list?</string>
 
     <!-- Library Fragment -->
     <string name="action_import">Import</string>
@@ -141,7 +145,6 @@
     <!-- Book List Activity -->
     <string name="title_activity_book_list">Book List</string>
     <string name="title_reorder_mode">Reorder Mode</string>
-    <string name="title_remove_from_list">Remove Books</string>
     <string name="title_clear_list">Clear List</string>
     <string name="action_card_type">Card Style</string>
     <string name="action_reorder">Reorder</string>

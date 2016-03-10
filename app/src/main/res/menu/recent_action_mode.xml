@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+            android:id="@+id/action_tag"
+            app:showAsAction="ifRoom"
+            android:icon="@drawable/ic_tags"
+            android:title="@string/action_tag"/>
+
+    <item
+            android:id="@+id/action_rate"
+            app:showAsAction="ifRoom"
+            android:icon="@drawable/ic_stars"
+            android:title="@string/action_rate"/>
+
+    <item
+            android:id="@+id/action_add_to_list"
+            app:showAsAction="ifRoom"
+            android:icon="@drawable/ic_list_add"
+            android:title="@string/action_add_to_list"/>
+
+    <item
+            android:id="@+id/action_select_all"
+            app:showAsAction="never"
+            android:icon="@drawable/ic_select_all"
+            android:title="@string/action_select_all"/>
+
+    <item
+            android:id="@+id/action_select_none"
+            app:showAsAction="never"
+            android:icon="@drawable/ic_select_none"
+            android:title="@string/action_select_none"/>
+
+    <item
+            android:id="@+id/action_re_import"
+            app:showAsAction="never"
+            android:icon="@drawable/ic_import"
+            android:title="@string/action_re_import"/>
+
+    <item
+            android:id="@+id/action_remove"
+            app:showAsAction="never"
+            android:icon="@drawable/ic_remove_filled"
+            android:title="@string/action_remove"/>
+
+    <item
+            android:id="@+id/action_delete"
+            app:showAsAction="never"
+            android:icon="@drawable/ic_delete"
+            android:title="@string/action_delete"/>
+</menu>

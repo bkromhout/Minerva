@@ -31,6 +31,7 @@ public final class C {
     public static final String SORT_DESC = "DESC";
 
     /* Book card types. */
+    // TODO make into an enum class!!
     public static final String BOOK_CARD_NORMAL = "BOOK_CARD_NORMAL";
     public static final String BOOK_CARD_NO_COVER = "BOOK_CARD_NO_COVER";
     public static final String BOOK_CARD_COMPACT = "BOOK_CARD_COMPACT";

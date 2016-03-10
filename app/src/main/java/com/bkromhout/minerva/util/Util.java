@@ -1,7 +1,6 @@
 package com.bkromhout.minerva.util;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -16,9 +15,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.view.menu.MenuBuilder;
 import android.util.Log;
 import android.view.Menu;
-import android.webkit.MimeTypeMap;
-import android.widget.Toast;
-import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.MainActivity;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
@@ -126,24 +122,6 @@ public class Util {
         myAppSettings.addCategory(Intent.CATEGORY_DEFAULT);
         myAppSettings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(myAppSettings);
-    }
-
-    /**
-     * Opens a file using an intent.
-     * @param context The context to use to build the intent.
-     * @param file    The file to open.
-     */
-    public static void openFileUsingIntent(Context context, File file) {
-        MimeTypeMap myMime = MimeTypeMap.getSingleton();
-        String mimeType = myMime.getMimeTypeFromExtension(getExtFromFName(file.getName()));
-        Intent newIntent = new Intent(Intent.ACTION_VIEW);
-        newIntent.setDataAndType(Uri.fromFile(file), mimeType);
-        newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        try {
-            context.startActivity(newIntent);
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(context, C.getStr(R.string.toast_err_no_apps), Toast.LENGTH_LONG).show();
-        }
     }
 
     /**

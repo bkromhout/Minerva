@@ -270,7 +270,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                         R.id.action_re_import);
                 return true;
             case R.id.action_remove:
-                Dialogs.simpleYesNoDialog(this, R.string.title_remove_from_list, R.string.remove_from_list_prompt,
+                Dialogs.simpleYesNoDialog(this, R.string.title_remove_books, R.string.remove_from_list_prompt,
                         R.id.action_remove);
                 return true;
             case R.id.action_delete:
@@ -407,7 +407,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         switch (event.getType()) {
             case NORMAL:
                 // Open the book file.
-                Util.openFileUsingIntent(this, Util.getFileFromRelPath(book.getRelPath()));
+                book.openFileUsingIntent(this);
                 break;
             case LONG:
                 // Start multi-select.
@@ -428,6 +428,8 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
 
     /**
      * Shows a dialog which allows the user to pick the card style.
+     * <p>
+     * TODO move to Dialogs after making card type into an enum class.
      */
     private void showCardStyleDialog() {
         new MaterialDialog.Builder(this)

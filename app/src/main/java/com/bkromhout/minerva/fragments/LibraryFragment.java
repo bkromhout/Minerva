@@ -307,59 +307,6 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
     }
 
     /**
-     * Uses the current view options to resort the current {@link RealmResults} in {@link #books}. This method makes no
-     * attempts to force a redraw on the actual recycler view.
-     * <p>
-     * If {@link #realm} or {@link #books} are {@code null}, or otherwise not available/ready, this method does
-     * nothing.
-     */
-    private void sortRealmResults() {
-        if (realm == null || realm.isClosed() || books == null || !books.isValid()) return;
-        books.sort(C.getRealmSortField(sortType), C.getRealmSortDir(sortDir));
-    }
-
-    /**
-     * Create a {@link RealmBasedRecyclerViewAdapter} based on the current view options and return it.
-     * @return New {@link RealmBasedRecyclerViewAdapter}. Will return null if we cannot get the activity context, if
-     * {@link #books} is null or invalid, or if the current value of {@link #cardType} is not valid.
-     */
-    private RealmBasedRecyclerViewAdapter makeAdapter() {
-        Context ctx = getActivity();
-        if (ctx == null || books == null || !books.isValid()) return null;
-
-        // Create a new adapter based on the card type.
-        switch (cardType) {
-            case C.BOOK_CARD_NORMAL:
-                return new BookCardAdapter(ctx, books);
-            case C.BOOK_CARD_NO_COVER:
-                return new BookCardNoCoverAdapter(ctx, books);
-            case C.BOOK_CARD_COMPACT:
-                return new BookCardCompactAdapter(ctx, books);
-            default:
-                return null;
-        }
-    }
-
-    /**
-     * Uses the current view options to change the card layout currently in use. Preserves the position currently
-     * scrolled to in the list before switching adapters.
-     */
-    private void changeCardType() {
-        // Store the current last visible item position so that we can scroll back to it after switching adapters.
-        int currLastVisPos = recyclerView.getLayoutManger().findLastCompletelyVisibleItemPosition();
-
-        // Swap the adapter
-        if (adapter != null) adapter.close();
-        adapter = makeAdapter();
-        recyclerView.setAdapter(adapter);
-
-        // Scroll back to the same position.
-        // TODO this probably won't show the expected item it both the card and sort type/dir are changed, because while
-        // TODO the position will be correct, the item at that position will be different... we'll figure it out.
-        if (currLastVisPos != RecyclerView.NO_POSITION) recyclerView.scrollToPosition(currLastVisPos);
-    }
-
-    /**
      * Called when one of the cards is clicked.
      * @param event {@link BookCardClickEvent}.
      */
@@ -377,7 +324,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
         switch (event.getType()) {
             case NORMAL:
                 // Open the book file.
-                Util.openFileUsingIntent(getContext(), Util.getFileFromRelPath(book.getRelPath()));
+                book.openFileUsingIntent(getContext());
                 break;
             case LONG:
                 // Start multi-select.
@@ -446,6 +393,59 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
                     if ((sortTypeChanged || sortDirChanged) && !cardTypeChanged) adapter.notifyDataSetChanged();
                 })
                 .show();
+    }
+
+    /**
+     * Uses the current view options to resort the current {@link RealmResults} in {@link #books}. This method makes no
+     * attempts to force a redraw on the actual recycler view.
+     * <p>
+     * If {@link #realm} or {@link #books} are {@code null}, or otherwise not available/ready, this method does
+     * nothing.
+     */
+    private void sortRealmResults() {
+        if (realm == null || realm.isClosed() || books == null || !books.isValid()) return;
+        books.sort(C.getRealmSortField(sortType), C.getRealmSortDir(sortDir));
+    }
+
+    /**
+     * Create a {@link RealmBasedRecyclerViewAdapter} based on the current view options and return it.
+     * @return New {@link RealmBasedRecyclerViewAdapter}. Will return null if we cannot get the activity context, if
+     * {@link #books} is null or invalid, or if the current value of {@link #cardType} is not valid.
+     */
+    private RealmBasedRecyclerViewAdapter makeAdapter() {
+        Context ctx = getActivity();
+        if (ctx == null || books == null || !books.isValid()) return null;
+
+        // Create a new adapter based on the card type.
+        switch (cardType) {
+            case C.BOOK_CARD_NORMAL:
+                return new BookCardAdapter(ctx, books);
+            case C.BOOK_CARD_NO_COVER:
+                return new BookCardNoCoverAdapter(ctx, books);
+            case C.BOOK_CARD_COMPACT:
+                return new BookCardCompactAdapter(ctx, books);
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Uses the current view options to change the card layout currently in use. Preserves the position currently
+     * scrolled to in the list before switching adapters.
+     */
+    private void changeCardType() {
+        // Store the current last visible item position so that we can scroll back to it after switching adapters.
+        int currLastVisPos = recyclerView.getLayoutManger().findLastCompletelyVisibleItemPosition();
+
+        // Swap the adapter
+        if (adapter != null) adapter.close();
+        adapter = makeAdapter();
+        recyclerView.setAdapter(adapter);
+
+        // Scroll back to the same position.
+        // TODO this probably won't show the expected item it both the card and sort type/dir are changed, because while
+        // TODO the position will be correct, the item at that position will be different... we'll figure it out.
+        if (currLastVisPos != RecyclerView.NO_POSITION) recyclerView.scrollToPosition(currLastVisPos);
     }
 
     /**

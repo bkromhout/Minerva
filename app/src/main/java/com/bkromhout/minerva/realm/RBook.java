@@ -1,5 +1,13 @@
 package com.bkromhout.minerva.realm;
 
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.webkit.MimeTypeMap;
+import android.widget.Toast;
+import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.SuperBook;
 import com.bkromhout.minerva.prefs.DBPrefs;
 import com.bkromhout.minerva.util.BookUtils;
@@ -13,6 +21,7 @@ import io.realm.annotations.Required;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Identifier;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -181,6 +190,31 @@ public class RBook extends RealmObject {
         this.isInRecents = false;
         this.rating = 0;
         this.uniqueId = DBPrefs.get().getNextRBookUid();
+    }
+
+    /**
+     * Open the underlying file in some application. This will also put the book at the top of the recents list.
+     * @param context The context to use to open the file.
+     */
+    public void openFileUsingIntent(Context context) {
+        File file = Util.getFileFromRelPath(getRelPath());
+        // TODO make the user aware that the underlying file doesn't exist!
+        if (file == null) return;
+
+        Intent newIntent = new Intent(Intent.ACTION_VIEW);
+        newIntent.setDataAndType(Uri.fromFile(file),
+                MimeTypeMap.getSingleton().getMimeTypeFromExtension(Util.getExtFromFName(file.getName())));
+        newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        try (Realm realm = Realm.getDefaultInstance()) {
+            context.startActivity(newIntent);
+            realm.executeTransaction(tRealm -> {
+                this.setLastReadDate(Calendar.getInstance().getTime());
+                this.setInRecents(true);
+            });
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(context, C.getStr(R.string.toast_err_no_apps), Toast.LENGTH_LONG).show();
+        }
     }
 
     /**

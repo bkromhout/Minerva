@@ -17,6 +17,8 @@ import io.realm.RealmResults;
 
 /**
  * Fragment in charge of letting the user power search.
+ * <p>
+ * TODO
  */
 public class PowerSearchFragment extends Fragment {
     // Views.
