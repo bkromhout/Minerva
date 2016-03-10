@@ -16,7 +16,7 @@ public class TagCardClickEvent {
      */
     private final Type type;
     /**
-     * Name of the list; can used to get a copy of the {@link com.bkromhout.minerva.realm.RTag}.
+     * Name of the tag; can used to get a copy of the {@link com.bkromhout.minerva.realm.RTag}.
      */
     private final String name;
 
