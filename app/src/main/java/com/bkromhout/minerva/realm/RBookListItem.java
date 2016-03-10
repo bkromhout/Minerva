@@ -35,8 +35,6 @@ public class RBookListItem extends RealmObject {
      * Positions start out as 100 spaces apart (so, first item is 0, next is 100, next is 200, etc); this allows us to
      * more easily update positions of the books in the database (hopefully) without having to do cascading updates of
      * multiple items.
-     * <p>
-     * TODO At some point, we'll have a task that runs once per day to reset the positions for all items in all lists.
      */
     @Index
     private Long pos;
@@ -171,5 +169,23 @@ public class RBookListItem extends RealmObject {
 
     public void setUniqueId(long uniqueId) {
         this.uniqueId = uniqueId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RBookListItem)) return false;
+
+        RBookListItem that = (RBookListItem) o;
+
+        if (getUniqueId() != that.getUniqueId()) return false;
+        return getKey().equals(that.getKey());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getKey().hashCode();
+        result = 31 * result + (int) (getUniqueId() ^ (getUniqueId() >>> 32));
+        return result;
     }
 }

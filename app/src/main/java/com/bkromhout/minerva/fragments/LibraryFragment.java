@@ -259,8 +259,11 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
 
         switch (event.getActionId()) {
             case R.id.action_add_to_list: {
-                RBookList list = realm.where(RBookList.class).equalTo("name", (String) event.getData()).findFirst();
-                RBookList.addBooks(list, selectedItems);
+                // Add books to the list selected list.
+                realm.where(RBookList.class)
+                     .equalTo("name", (String) event.getData())
+                     .findFirst()
+                     .addBooks(selectedItems);
                 break;
             }
             case R.id.action_rate: {

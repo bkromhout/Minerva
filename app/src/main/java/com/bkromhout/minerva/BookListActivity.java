@@ -257,12 +257,12 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 return true;
             case R.id.action_move_to_top:
                 //noinspection unchecked
-                RBookList.moveItemsToStart(adapter.getSelectedRealmObjects());
+                srcList.moveItemsToStart(adapter.getSelectedRealmObjects());
                 actionMode.finish();
                 return true;
             case R.id.action_move_to_bottom:
                 //noinspection unchecked
-                RBookList.moveItemsToEnd(adapter.getSelectedRealmObjects());
+                srcList.moveItemsToEnd(adapter.getSelectedRealmObjects());
                 actionMode.finish();
                 return true;
             case R.id.action_re_import:
@@ -297,7 +297,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
             }
             case R.id.action_delete_list: {
                 // Delete the list currently being shown, then finish the activity.
-                RBookList.deleteList(srcList);
+                srcList.deleteList();
                 finish();
                 break;
             }
@@ -318,7 +318,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 break;
             }
             case R.id.action_remove: {
-                RBookList.removeBooks(srcList, selectedItems);
+                srcList.removeBooks(selectedItems);
                 break;
             }
             case R.id.action_delete: {

@@ -390,4 +390,22 @@ public class RBook extends RealmObject {
     public void setUniqueId(long uniqueId) {
         this.uniqueId = uniqueId;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RBook)) return false;
+
+        RBook rBook = (RBook) o;
+
+        if (getUniqueId() != rBook.getUniqueId()) return false;
+        return getRelPath().equals(rBook.getRelPath());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getRelPath().hashCode();
+        result = 31 * result + (int) (getUniqueId() ^ (getUniqueId() >>> 32));
+        return result;
+    }
 }

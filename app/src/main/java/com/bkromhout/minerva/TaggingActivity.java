@@ -99,7 +99,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
      */
     public static void start(Fragment fragment, List<RBook> selectedBooks) {
         TaggingActivity.TaggingHelper.get().init(selectedBooks,
-                RTag.tagListToStringList(RTag.listOfCommonTags(selectedBooks)));
+                RTag.tagListToStringList(RTag.listOfSharedTags(selectedBooks)));
         fragment.startActivityForResult(new Intent(fragment.getContext(), TaggingActivity.class), C.RC_TAG_ACTIVITY);
     }
 
@@ -120,7 +120,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
     public static void start(Activity activity, List<RBook> selectedBooks) {
         // Initialize the tagging helper.
         TaggingActivity.TaggingHelper.get().init(selectedBooks,
-                RTag.tagListToStringList(RTag.listOfCommonTags(selectedBooks)));
+                RTag.tagListToStringList(RTag.listOfSharedTags(selectedBooks)));
         activity.startActivityForResult(new Intent(activity, TaggingActivity.class), C.RC_TAG_ACTIVITY);
     }
 

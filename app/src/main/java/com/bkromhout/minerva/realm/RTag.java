@@ -109,7 +109,7 @@ public class RTag extends RealmObject {
      * @param books A list of {@link RBook}s.
      * @return A list of {@link RTag}s the {@code books} have in common.
      */
-    public static List<RTag> listOfCommonTags(List<RBook> books) {
+    public static List<RTag> listOfSharedTags(List<RBook> books) {
         if (books == null) throw new IllegalArgumentException("books must not be null.");
         if (books.isEmpty()) return new ArrayList<>();
         ArrayList<RTag> tags = null;
@@ -203,5 +203,20 @@ public class RTag extends RealmObject {
 
     public void setTaggedBooks(RealmList<RBook> taggedBooks) {
         this.taggedBooks = taggedBooks;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RTag)) return false;
+
+        RTag rTag = (RTag) o;
+
+        return getName().equals(rTag.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return getName().hashCode();
     }
 }
