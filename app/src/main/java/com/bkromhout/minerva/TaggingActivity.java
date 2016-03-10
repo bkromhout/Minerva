@@ -419,7 +419,6 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
                         .negativeText(R.string.no)
                         .onPositive((dialog, which) -> {
                             // Get Realm instance, then delete the list.
-                            // TODO do we need to manually loop through the tagged books and remove the tag first???
                             Realm.getDefaultInstance()
                                  .executeTransaction(tRealm -> tRealm
                                          .where(RTag.class)

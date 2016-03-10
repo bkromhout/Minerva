@@ -44,7 +44,6 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
      */
     public TagCardAdapter(Context context, RealmResults<RTag> realmResults) {
         super(context, realmResults, true, true, null);
-        //TODO it's a reference, so these stay updated right??
         this.checkedItems = TaggingActivity.TaggingHelper.get().newCheckedItems;
     }
 
