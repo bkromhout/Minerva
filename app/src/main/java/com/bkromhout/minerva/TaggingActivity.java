@@ -304,6 +304,10 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
 
     /**
      * Called when the save button is clicked.
+     * <p>
+     * TODO find a way to make sure that other items are updated in the RV if needed. Example, rename a tag but not...
+     * all of the books which have that tag are selected, so some items may be wrong if they don't get refreshed by RV
+     * before the user can see them (i.e., they are not selected but are within the set of already-drawn RV items).
      */
     @OnClick(R.id.save)
     void onSaveButtonClicked() {
