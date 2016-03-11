@@ -353,6 +353,7 @@ public class FullImporter {
     private void fullImportFinished() {
         // Save current time to prefs to indicate a full import completed, then tell listener we finished.
         DefaultPrefs.get().putLastFullImportTime(Calendar.getInstance().getTimeInMillis());
+        // TODO print finished with errors if applicable here
         logSubject.onNext(C.getStr(R.string.fil_finished));
         resetState();
         if (listener != null) listener.setReady();

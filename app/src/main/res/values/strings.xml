@@ -123,10 +123,11 @@
     <string name="fil_all_files_read">\nAll files read\n\n</string>
     <string name="fil_saving_files">Saving file data…</string>
     <string name="fil_finished">\nFinished with full import!</string>
+    <string name="fil_finished_with_errors">\nFinished full import, with errors.</string>
     <string name="fil_cancelling">\nCancelling…</string>
 
     <string name="fil_err_generic">Error while importing and converting files</string>
-    <string name="fil_err_processing_file">ERROR while importing \"%1$s\"\n</string>
+    <string name="fil_err_processing_file">Error while importing \"%1$s\"\n</string>
     <string name="fil_err_invalid_lib_dir">Invalid library folder, cancelling import</string>
     <string name="fil_err_no_files">There are no files to import</string>
     <string name="fil_err_realm">Realm error</string>
@@ -140,8 +141,13 @@
     <string name="ril_build_file_list">Building file list…</string>
     <string name="ril_reading_file">Reading file for \"%1$s\"</string>
     <string name="ril_saving_data">Saving data for \"%1$s\"</string>
+    <string name="ril_done">Done</string>
+    <string name="ril_done_with_errors">Done, with errors</string>
 
-    <string name="ril_err_reading">Error while reading file for \"%1$s\"\n</string>
+    <string name="ril_err_getting_file">Error getting file for \"%1$s\"\n</string>
+    <string name="ril_err_getting_files">Error while getting files</string>
+    <string name="ril_err_reading_file">Error while reading \"%1$s\"\n</string>
+    <string name="ril_err_reading_files">Error while reading files</string>
     <string name="ril_err_realm">@string/fil_err_realm</string>
 
     <!-- All Lists Fragment -->

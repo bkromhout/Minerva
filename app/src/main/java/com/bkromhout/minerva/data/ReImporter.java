@@ -168,7 +168,8 @@ public class ReImporter {
         subs.add(Observable.from(books)
                            .map(book -> {
                                File file = Util.getFileFromRelPath(book.getRelPath());
-                               if (file == null) errors.append(C.getStr(R.string.ril_err_reading, book.getTitle()));
+                               if (file == null)
+                                   errors.append(C.getStr(R.string.ril_err_getting_file, book.getTitle()));
                                return file;
                            })
                            .filter(file -> file != null)
