@@ -333,7 +333,7 @@ public class FullImporter {
 
                         // If we have an existing RBook for this file, just update the fields which we read from the
                         // file. If we don't have one, create one.
-                        if (existingBook != null) existingBook.updateFromOtherRBook(book);
+                        if (existingBook != null) existingBook.updateFromOtherRBook(bgRealm, book);
                         else bgRealm.copyToRealmOrUpdate(book);
                     }
                 },

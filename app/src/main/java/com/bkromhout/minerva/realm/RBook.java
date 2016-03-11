@@ -195,33 +195,36 @@ public class RBook extends RealmObject {
     /**
      * Update this {@link RBook} with the given {@code otherBook}'s data. However, we only copy the data that was read
      * from the book's file, not the data which we've filled in.
+     * <p>
+     * IMPORTANT: Only call this method from within a Realm transaction. ({@code realm} will be checked to enforce
+     * this!)
+     * @param realm     The Realm instance handling the transaction that this call is within.
      * @param otherBook {@link RBook} to copy data from.
      */
-    public void updateFromOtherRBook(RBook otherBook) {
-        if (otherBook == null) throw new IllegalArgumentException("otherBook cannot be null");
-        try (Realm realm = Realm.getDefaultInstance()) {
-            realm.executeTransaction(tRealm -> {
-                setHash(otherBook.getHash());
+    public void updateFromOtherRBook(Realm realm, RBook otherBook) {
+        if (realm == null || otherBook == null) throw new IllegalArgumentException("realm, otherBook cannot be null.");
+        if (!realm.isInTransaction())
+            throw new IllegalStateException("You must call this method from within a Realm transaction.");
 
-                setTitle(otherBook.getTitle());
-                setAuthor(otherBook.getAuthor());
-                setDesc(otherBook.getDesc());
-                setSubjects(otherBook.getSubjects());
-                setTypes(otherBook.getTypes());
-                setFormat(otherBook.getFormat());
-                setLanguage(otherBook.getLanguage());
-                setPublisher(otherBook.getPublisher());
-                setBookId(otherBook.getBookId());
-                setCreateDate(otherBook.getCreateDate());
-                setPubDate(otherBook.getPubDate());
-                setModDate(otherBook.getModDate());
-                setNumChaps(otherBook.getNumChaps());
-                setHasCoverImage(otherBook.isHasCoverImage()); // TODO Change the cover image.
+        setHash(otherBook.getHash());
 
-                setLastImportDate(otherBook.getLastImportDate());
-                setLastModifiedDate(otherBook.getLastModifiedDate());
-            });
-        }
+        setTitle(otherBook.getTitle());
+        setAuthor(otherBook.getAuthor());
+        setDesc(otherBook.getDesc());
+        setSubjects(otherBook.getSubjects());
+        setTypes(otherBook.getTypes());
+        setFormat(otherBook.getFormat());
+        setLanguage(otherBook.getLanguage());
+        setPublisher(otherBook.getPublisher());
+        setBookId(otherBook.getBookId());
+        setCreateDate(otherBook.getCreateDate());
+        setPubDate(otherBook.getPubDate());
+        setModDate(otherBook.getModDate());
+        setNumChaps(otherBook.getNumChaps());
+        setHasCoverImage(otherBook.isHasCoverImage()); // TODO Change the cover image.
+
+        setLastImportDate(otherBook.getLastImportDate());
+        setLastModifiedDate(otherBook.getLastModifiedDate());
     }
 
     /**
