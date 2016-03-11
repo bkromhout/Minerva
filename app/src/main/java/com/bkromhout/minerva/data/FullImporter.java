@@ -186,7 +186,6 @@ public class FullImporter {
                 .subscribe(this::onGotFileList);
     }
 
-
     /**
      * Called by {@link #fileWalkerSubscription} when it calls {@code onNext()}.
      * <p>
