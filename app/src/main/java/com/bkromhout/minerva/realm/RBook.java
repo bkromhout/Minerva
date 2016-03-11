@@ -166,7 +166,7 @@ public class RBook extends RealmObject {
         this.relPath = superBook.getPath();
         this.hash = superBook.getHash();
 
-        // Fill in data from Book.
+        // Fill in data from Book file.
         Book book = superBook.getBook();
         this.title = book.getTitle();
         this.author = BookUtils.getFirstAuthor(book);
@@ -190,6 +190,38 @@ public class RBook extends RealmObject {
         this.isInRecents = false;
         this.rating = 0;
         this.uniqueId = DBPrefs.get().getNextRBookUid();
+    }
+
+    /**
+     * Update this {@link RBook} with the given {@code otherBook}'s data. However, we only copy the data that was read
+     * from the book's file, not the data which we've filled in.
+     * @param otherBook {@link RBook} to copy data from.
+     */
+    public void updateFromOtherRBook(RBook otherBook) {
+        if (otherBook == null) throw new IllegalArgumentException("otherBook cannot be null");
+        try (Realm realm = Realm.getDefaultInstance()) {
+            realm.executeTransaction(tRealm -> {
+                setHash(otherBook.getHash());
+
+                setTitle(otherBook.getTitle());
+                setAuthor(otherBook.getAuthor());
+                setDesc(otherBook.getDesc());
+                setSubjects(otherBook.getSubjects());
+                setTypes(otherBook.getTypes());
+                setFormat(otherBook.getFormat());
+                setLanguage(otherBook.getLanguage());
+                setPublisher(otherBook.getPublisher());
+                setBookId(otherBook.getBookId());
+                setCreateDate(otherBook.getCreateDate());
+                setPubDate(otherBook.getPubDate());
+                setModDate(otherBook.getModDate());
+                setNumChaps(otherBook.getNumChaps());
+                setHasCoverImage(otherBook.isHasCoverImage()); // TODO Change the cover image.
+
+                setLastImportDate(otherBook.getLastImportDate());
+                setLastModifiedDate(otherBook.getLastModifiedDate());
+            });
+        }
     }
 
     /**

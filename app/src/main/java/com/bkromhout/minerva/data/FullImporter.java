@@ -323,24 +323,30 @@ public class FullImporter {
 
         // We've finished importing all books, now we'll persist them to Realm.
         Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(bgRealm -> bgRealm.copyToRealmOrUpdate(bookQueue),
-                new Realm.Transaction.Callback() {
-                    @Override
-                    public void onSuccess() {
-                        super.onSuccess();
-                        logSubject.onNext(C.getStr(R.string.fil_done));
-                        fullImportFinished();
-                    }
+        realm.executeTransactionAsync(
+                bgRealm -> {
+                    for (RBook book : bookQueue) {
+                        // Try to find existing RBook before adding a new one.
+                        RBook existingBook = bgRealm.where(RBook.class)
+                                                    .equalTo("relPath", book.getRelPath())
+                                                    .findFirst();
 
-                    @Override
-                    public void onError(Exception e) {
-                        super.onError(e);
-                        String s = C.getStr(R.string.fil_err_realm);
-                        Log.e("FullImporter", s, e);
-                        logSubject.onNext("\n" + s + "\n");
-                        errorSubject.onNext("\n" + s + "\n");
-                        unsafeCancelFullImport();
+                        // If we have an existing RBook for this file, just update the fields which we read from the
+                        // file. If we don't have one, create one.
+                        if (existingBook != null) existingBook.updateFromOtherRBook(book);
+                        else bgRealm.copyToRealmOrUpdate(book);
                     }
+                },
+                () -> {
+                    logSubject.onNext(C.getStr(R.string.fil_done));
+                    fullImportFinished();
+                },
+                error -> {
+                    String s = C.getStr(R.string.fil_err_realm);
+                    Log.e("FullImporter", s, error);
+                    logSubject.onNext("\n" + s + "\n");
+                    errorSubject.onNext("\n" + s + "\n");
+                    unsafeCancelFullImport();
                 });
     }
 

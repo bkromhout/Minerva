@@ -7,7 +7,6 @@ import nl.siegmann.epublib.domain.Book;
  * Holds a {@link nl.siegmann.epublib.domain.Book}, plus other data.
  */
 public class SuperBook {
-
     private final Book book;
     private final String path;
     private final String hash;
