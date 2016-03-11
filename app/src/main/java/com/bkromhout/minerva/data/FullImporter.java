@@ -319,7 +319,7 @@ public class FullImporter {
         progressSubject.onNext(-1);
 
         // We've finished importing all books, now we'll persist them to Realm.
-        Realm realm = Realm.getDefaultInstance();
+        realm = Realm.getDefaultInstance();
         realm.executeTransactionAsync(
                 bgRealm -> {
                     for (RBook book : bookQueue) {
