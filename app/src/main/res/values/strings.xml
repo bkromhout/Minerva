@@ -139,8 +139,9 @@
     <!-- Re-Import Dialog Message Strings -->
     <string name="ril_starting">Starting re-import</string>
     <string name="ril_build_file_list">Building file list…</string>
-    <string name="ril_reading_file">Reading file for \"%1$s\"</string>
-    <string name="ril_saving_data">Saving data for \"%1$s\"</string>
+    <string name="ril_reading_files">Reading files…</string>
+    <string name="ril_read_file">Read file for \"%1$s\"</string>
+    <string name="ril_saving_data">Saving data…</string>
     <string name="ril_done">Done</string>
     <string name="ril_done_with_errors">Done, with errors</string>
 

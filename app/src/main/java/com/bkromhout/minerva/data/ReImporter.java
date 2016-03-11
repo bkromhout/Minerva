@@ -19,9 +19,12 @@ import io.realm.Realm;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
@@ -54,13 +57,13 @@ public class ReImporter {
     private TextView errors;
 
     /**
-     * Key for current instance.
-     */
-    private long key;
-    /**
      * The current state of the importer.
      */
     private State currState;
+    /**
+     * What directory the importer is currently importing from.
+     */
+    private File currDir;
     /**
      * List of {@link RBook}s to re-import.
      */
@@ -129,7 +132,8 @@ public class ReImporter {
 
         // Get importer ready.
         currState = State.PREP;
-        realm = Realm.getDefaultInstance();
+        subs = new CompositeSubscription();
+        bookQueue = new LinkedList<>();
 
         // Create the view we will use in the dialog, then bind our local view references.
         LayoutInflater inflater = LayoutInflater.from(Minerva.getAppCtx());
@@ -138,7 +142,6 @@ public class ReImporter {
 
         // Get views ready.
         progressBar.setIndeterminate(true);
-        progressBar.setMax(books.size());
         message.setText(R.string.ril_starting);
 
         // Go ahead and create the dialog and show it.
@@ -155,8 +158,16 @@ public class ReImporter {
         // We no longer need to be registered with the event bus.
         EventBus.getDefault().unregister(this);
 
-        // Ensure before we go on that we have a non-null library path.
-        if (DefaultPrefs.get().getLibDir(null) == null) {
+        // Make sure we should continue.
+        if (currState != State.PREP) {
+            if (!hasErrors()) currState = State.FINISHING;
+            tearDown();
+            return;
+        }
+
+        // Ensure before we go on that we have a valid library directory.
+        if ((currDir = Util.tryResolveDir(DefaultPrefs.get().getLibDir(null))) == null) {
+            // We don't have a valid library directory.
             currState = State.ERROR;
             errors.append(C.getStr(R.string.fil_err_invalid_lib_dir));
             dismissDialogUnlessErrors();
@@ -166,8 +177,9 @@ public class ReImporter {
         // Convert RBooks to a list of Files.
         message.setText(R.string.ril_build_file_list);
         subs.add(Observable.from(books)
+                           .subscribeOn(Schedulers.io())
                            .map(book -> {
-                               File file = Util.getFileFromRelPath(book.getRelPath());
+                               File file = Util.getFileFromRelPath(currDir, book.getRelPath());
                                if (file == null)
                                    errors.append(C.getStr(R.string.ril_err_getting_file, book.getTitle()));
                                return file;
@@ -175,16 +187,167 @@ public class ReImporter {
                            .filter(file -> file != null)
                            .toList()
                            .single()
-                           .subscribe(this::onGotFiles, this::onErrorWhileGettingFiles)
+                           .observeOn(AndroidSchedulers.mainThread())
+                           .subscribe(this::onGotFiles, throwable -> {
+                               currState = State.ERROR;
+                               throwable.printStackTrace();
+                               message.setText(R.string.ril_err_getting_files);
+                               tearDown();
+                               dismissDialogUnlessErrors();
+                           })
         );
     }
 
+    /**
+     * Called when the list of files to re-import has been obtained.
+     * @param files List of files to re-import.
+     */
     private void onGotFiles(List<File> files) {
-        // TODO
+        // Make sure we should continue.
+        if (currState != State.PREP) {
+            if (!hasErrors()) currState = State.FINISHING;
+            tearDown();
+            return;
+        }
+
+        // Update views.
+        progressBar.setIndeterminate(false);
+        progressBar.setMax(files.size());
+        progressBar.setProgress(0);
+
+        // Start re-importing files.
+        doImportFiles(files);
     }
 
-    private void onErrorWhileGettingFiles(Throwable e) {
-        // TODO
+    /**
+     * Called to start re-importing the {@code files}.
+     * @param files List of files to re-import.
+     */
+    private void doImportFiles(List<File> files) {
+        // Make sure we should continue.
+        if (currState != State.PREP) {
+            if (!hasErrors()) currState = State.FINISHING;
+            tearDown();
+            return;
+        }
+
+        // Update state and start re-importing.
+        currState = State.IMPORTING;
+        message.setText(R.string.ril_reading_files);
+        subs.add(Observable.from(files)
+                           .subscribeOn(Schedulers.io())
+                           .map(this::convertFileToSuperBook) // Create a SuperBook from the file.
+                           .filter(sb -> sb != null)
+                           .map(RBook::new) // Create an RBook from the SuperBook.
+                           .observeOn(AndroidSchedulers.mainThread())
+                           .subscribe(this::onImportedBook, this::onBookImportingError, this::onAllBooksImported));
+    }
+
+    /**
+     * Convert the given file to a {@link SuperBook}.
+     * @param file File.
+     * @return New SuperBook, or null if there were issues.
+     */
+    private SuperBook convertFileToSuperBook(File file) {
+        String relPath = file.getAbsolutePath().replace(currDir.getAbsolutePath(), "");
+        try {
+            return new SuperBook(Util.readEpubFile(file), relPath);
+        } catch (IllegalArgumentException e) {
+            errors.append(C.getStr(R.string.ril_err_reading_file, file.getAbsolutePath()));
+            return null;
+        }
+    }
+
+    /**
+     * What to do when we've finished importing and processing a book file.
+     * <p>
+     * This is called at the end of the import flow, it should be lightweight!!
+     * @param book The {@link RBook} we created using info from the file.
+     */
+    private void onImportedBook(RBook book) {
+        // Make sure we should continue.
+        if (currState != State.IMPORTING) {
+            if (!hasErrors()) currState = State.FINISHING;
+            tearDown();
+            return;
+        }
+
+        // Add RBook to queue, update message and progress.
+        bookQueue.add(book);
+        message.setText(C.getStr(R.string.ril_read_file, book.getTitle()));
+        progressBar.incrementProgressBy(1);
+    }
+
+    /**
+     * What to do if an error is thrown during import.
+     * @param t Throwable.
+     */
+    private void onBookImportingError(Throwable t) {
+        currState = State.ERROR;
+        t.printStackTrace();
+        message.setText(R.string.ril_err_reading_files);
+        tearDown();
+        dismissDialogUnlessErrors();
+    }
+
+    /**
+     * What to do after we've finished importing all books.
+     */
+    private void onAllBooksImported() {
+        // Make sure we should continue.
+        if (currState != State.IMPORTING) {
+            if (!hasErrors()) currState = State.FINISHING;
+            tearDown();
+            return;
+        }
+
+        // Update state and disable cancel button.
+        currState = State.SAVING;
+        disableCancelButtonIfNeeded();
+        progressBar.setIndeterminate(true);
+        message.setText(R.string.ril_saving_data);
+
+        // Get Realm and update books.
+        realm = Realm.getDefaultInstance();
+        realm.executeTransactionAsync(
+                bgRealm -> {
+                    for (RBook book : bookQueue) {
+                        // Try to find existing RBook before adding a new one.
+                        RBook existingBook = bgRealm.where(RBook.class)
+                                                    .equalTo("relPath", book.getRelPath())
+                                                    .findFirst();
+
+                        // If we have an existing RBook for this file, just update the fields which we read from the
+                        // file. If we don't have one, create one.
+                        if (existingBook != null) existingBook.updateFromOtherRBook(bgRealm, book);
+                        else bgRealm.copyToRealmOrUpdate(book);
+                    }
+                },
+                this::finished,
+                error -> {
+                    currState = State.ERROR;
+                    error.printStackTrace();
+                    message.setText(R.string.ril_err_realm);
+                    tearDown();
+                    dismissDialogUnlessErrors();
+                });
+    }
+
+    /**
+     * Called when we've finished saving all of the re-imported data.
+     */
+    private void finished() {
+        // Update state and views.
+        currState = State.FINISHING;
+        progressBar.setIndeterminate(false);
+        progressBar.setProgress(progressBar.getMax());
+        message.setText(hasErrors() ? R.string.ril_done_with_errors : R.string.ril_done);
+
+        // Notify listener that we're finished, tear down, then dismiss dialog (unless there are errors, give the
+        // user a chance to see them).
+        if (listener != null) listener.onReImportFinished();
+        tearDown();
+        dismissDialogUnlessErrors();
     }
 
     /**
@@ -210,11 +373,12 @@ public class ReImporter {
     }
 
     /**
-     * Disables the cancel button on the dialog if the {@link #dialog} isn't null and we aren't in the PREP or IMPORTING
-     * state.
+     * Disables the cancel button on the dialog if the {@link #dialog} isn't null and we're in the SAVING, FINISHING, or
+     * CANCELLING state.
      */
     private void disableCancelButtonIfNeeded() {
-        if (dialog != null && currState != State.PREP && currState != State.IMPORTING && currState != State.ERROR)
+        if ((currState == State.SAVING || currState == State.FINISHING || currState == State.CANCELLING) &&
+                dialog != null)
             dialog.getActionButton(DialogAction.NEGATIVE).setEnabled(false);
     }
 
@@ -223,7 +387,7 @@ public class ReImporter {
      * the cancel button to "Done" so that the user has a chance to look at the errors.
      */
     private void dismissDialogUnlessErrors() {
-        if (errors.length() == 0) dismissDialog();
+        if (!hasErrors()) dismissDialog();
         else {
             dialog.setActionButton(DialogAction.NEGATIVE, R.string.ok);
             dialog.getActionButton(DialogAction.NEGATIVE).setEnabled(true);
@@ -234,19 +398,29 @@ public class ReImporter {
      * Dismiss the dialog.
      */
     private void dismissDialog() {
-        if (dialog == null) return;
-        dialog.dismiss();
-        dialog = null;
+        if (dialog != null) {
+            dialog.dismiss();
+            dialog = null;
+        }
+    }
+
+    /**
+     * Get whether or not there are currently errors.
+     * @return True if there are error messages or we've explicitly set the error state.
+     */
+    private boolean hasErrors() {
+        return currState == State.ERROR || errors.length() != 0;
     }
 
     /**
      * Cancel the import. Does nothing if <i>not</i> in the PREP, IMPORTING, or ERROR state.
      */
     private void cancel() {
-        if (currState != State.PREP && currState != State.IMPORTING && currState != State.ERROR) return;
-        currState = State.CANCELLING;
-        disableCancelButtonIfNeeded();
-        tearDown();
+        if (currState == State.PREP || currState == State.IMPORTING || currState == State.ERROR) {
+            currState = State.CANCELLING;
+            disableCancelButtonIfNeeded();
+            tearDown();
+        }
     }
 
     /**
@@ -267,7 +441,7 @@ public class ReImporter {
     }
 
     /**
-     * Interface of listener.
+     * Listener interface.
      */
     public interface IReImportListener {
         /**

@@ -178,7 +178,19 @@ public class Util {
     public static File getFileFromRelPath(String relPath) {
         String libDir = DefaultPrefs.get().getLibDir(null);
         if (libDir == null || libDir.isEmpty() || relPath == null || relPath.isEmpty()) return null;
-        File file = new File(libDir + relPath);
+        File file = new File(libDir, relPath);
+        return file.exists() ? file : null;
+    }
+
+    /**
+     * Returns a File using the given {@code baseDir} and the given {@code relPath}.
+     * @param baseDir The base directory of the file. Must exist.
+     * @param relPath The path to the file relative to {@code baseDir}.
+     * @return A File, or null.
+     */
+    public static File getFileFromRelPath(File baseDir, String relPath) {
+        if (baseDir == null || !baseDir.exists() || relPath == null || relPath.isEmpty()) return null;
+        File file = new File(baseDir, relPath);
         return file.exists() ? file : null;
     }
 
