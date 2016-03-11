@@ -25,11 +25,11 @@
 
     <!-- Common Dialogs -->
     <string name="title_dialog_rating">Rating</string>
-    <string name="title_dialog_reimport">Re-Import Files</string>
+    <string name="title_dialog_re_import">Re-Import Files</string>
     <string name="title_remove_books">Remove Books</string>
     <string name="title_delete_books">Delete Books</string>
 
-    <string name="reimport_prompt">Are you sure you want to re-import the selected books?</string>
+    <string name="re_import_prompt">Are you sure you want to re-import the selected books?</string>
     <string name="delete_books_prompt">Are you sure you want to delete the selected books from your library?</string>
     <string name="delete_from_device_too">Delete from device too</string>
 
@@ -130,6 +130,19 @@
     <string name="fil_err_invalid_lib_dir">Invalid library folder, cancelling import</string>
     <string name="fil_err_no_files">There are no files to import</string>
     <string name="fil_err_realm">Realm error</string>
+
+    <!-- Re-Import Dialog -->
+    <string name="title_dialog_re_import_progress">Re-Import Progress</string>
+    <string name="cancel_re_import">Cancel Re-Import</string>
+
+    <!-- Re-Import Dialog Message Strings -->
+    <string name="ril_starting">Starting re-import</string>
+    <string name="ril_build_file_list">Building file list…</string>
+    <string name="ril_reading_file">Reading file for \"%1$s\"</string>
+    <string name="ril_saving_data">Saving data for \"%1$s\"</string>
+
+    <string name="ril_err_reading">Error while reading file for \"%1$s\"\n</string>
+    <string name="ril_err_realm">@string/fil_err_realm</string>
 
     <!-- All Lists Fragment -->
     <string name="action_new_list">New List</string>

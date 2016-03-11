@@ -29,8 +29,6 @@ import java.util.Queue;
 public class FullImporter {
     /**
      * Various state the importer can be in.
-     * <p>
-     * Ready, Preparing, Running, Cancelling, Finishing.
      */
     private enum State {
         READY, PREP, IMPORTING, SAVING, CANCELLING, FINISHING
@@ -84,7 +82,7 @@ public class FullImporter {
      */
     private Queue<RBook> bookQueue;
     /**
-     * Realm for accessing... Be sure to close when finished!!
+     * Instance of Realm.
      */
     private Realm realm;
 

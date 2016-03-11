@@ -266,7 +266,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 actionMode.finish();
                 return true;
             case R.id.action_re_import:
-                Dialogs.simpleYesNoDialog(this, R.string.title_dialog_reimport, R.string.reimport_prompt,
+                Dialogs.simpleYesNoDialog(this, R.string.title_dialog_re_import, R.string.re_import_prompt,
                         R.id.action_re_import);
                 return true;
             case R.id.action_remove:

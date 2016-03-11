@@ -236,7 +236,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback {
                 Dialogs.ratingDialog(getContext(), initialRating);
                 return true;
             case R.id.action_re_import:
-                Dialogs.simpleYesNoDialog(getContext(), R.string.title_dialog_reimport, R.string.reimport_prompt,
+                Dialogs.simpleYesNoDialog(getContext(), R.string.title_dialog_re_import, R.string.re_import_prompt,
                         R.id.action_re_import);
                 return true;
             case R.id.action_delete:
