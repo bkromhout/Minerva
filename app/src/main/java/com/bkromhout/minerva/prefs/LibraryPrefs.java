@@ -3,17 +3,20 @@ package com.bkromhout.minerva.prefs;
 import android.content.Context;
 import android.content.SharedPreferences;
 import com.bkromhout.minerva.Minerva;
+import com.bkromhout.minerva.enums.BookCardType;
+import com.bkromhout.minerva.enums.SortDir;
+import com.bkromhout.minerva.enums.SortType;
+import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 
 /**
  * Preferences class for {@link com.bkromhout.minerva.fragments.LibraryFragment}.
  */
-public class LibraryPrefs {
+public class LibraryPrefs implements BCTPref {
     // File name.
     private static final String FILE_NAME = "library";
     // Key strings.
     private static final String SORT_TYPE = "SORT_TYPE";
     private static final String SORT_DIR = "SORT_DIRECTION";
-    private static final String CARD_TYPE = "CARD_TYPE";
 
     /**
      * Static instance.
@@ -40,67 +43,63 @@ public class LibraryPrefs {
     }
 
     /**
-     * Get sort type string.
+     * Get sort type.
      * @param defValue The default value to return if nothing is set.
-     * @return Sort type string.
+     * @return Sort type.
      */
-    public String getSortType(String defValue) {
-        return prefs.getString(SORT_TYPE, defValue);
+    public SortType getSortType(SortType defValue) {
+        SortType sortType = SortType.fromName(prefs.getString(SORT_TYPE, null));
+        return sortType != null ? sortType : defValue;
     }
 
     /**
-     * Put sort type string.
-     * @param sortType Sort type string.
+     * Put sort type.
+     * @param sortType Sort type.
      */
-    public void putSortType(String sortType) {
-        prefs.edit().putString(SORT_TYPE, sortType).apply();
+    public void putSortType(SortType sortType) {
+        prefs.edit().putString(SORT_TYPE, sortType.name()).apply();
     }
 
     /**
-     * Get sort direction string.
+     * Get sort direction.
      * @param defValue The default value to return if nothing is set.
-     * @return Sort direction string.
+     * @return Sort direction.
      */
-    public String getSortDir(String defValue) {
-        return prefs.getString(SORT_DIR, defValue);
+    public SortDir getSortDir(SortDir defValue) {
+        SortDir sortDir = SortDir.fromName(prefs.getString(SORT_DIR, null));
+        return sortDir != null ? sortDir : defValue;
     }
 
     /**
-     * Put sort direction string.
-     * @param sortDir Sort direction string.
+     * Put sort direction.
+     * @param sortDir Sort direction.
      */
-    public void putSortDir(String sortDir) {
-        prefs.edit().putString(SORT_DIR, sortDir).apply();
+    public void putSortDir(SortDir sortDir) {
+        prefs.edit().putString(SORT_DIR, sortDir.name()).apply();
     }
 
-    /**
-     * Get card type string.
-     * @param defValue The default value to return if nothing is set.
-     * @return Card type string.
-     */
-    public String getCardType(String defValue) {
-        return prefs.getString(CARD_TYPE, defValue);
+    @Override
+    public BookCardType getCardType(BookCardType defValue) {
+        BookCardType type = BookCardType.fromName(prefs.getString(CARD_TYPE, null));
+        return type != null ? type : defValue;
     }
 
-    /**
-     * Put card type string.
-     * @param cardType Card type string.
-     */
-    public void putCardType(String cardType) {
-        prefs.edit().putString(CARD_TYPE, cardType).apply();
+    @Override
+    public void putCardType(BookCardType cardType) {
+        prefs.edit().putString(CARD_TYPE, cardType.name()).apply();
     }
 
     /**
      * Put all library view options in one call.
-     * @param sortType Sort type string.
-     * @param sortDir  Sort direction string.
-     * @param cardType Card type string.
+     * @param sortType Sort type.
+     * @param sortDir  Sort direction.
+     * @param cardType Card type.
      */
-    public void putLibraryViewOpts(String sortType, String sortDir, String cardType) {
+    public void putLibraryViewOpts(SortType sortType, SortDir sortDir, BookCardType cardType) {
         prefs.edit()
-             .putString(SORT_TYPE, sortType)
-             .putString(SORT_DIR, sortDir)
-             .putString(CARD_TYPE, cardType)
+             .putString(SORT_TYPE, sortType.name())
+             .putString(SORT_DIR, sortDir.name())
+             .putString(CARD_TYPE, cardType.name())
              .apply();
     }
 }

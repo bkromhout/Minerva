@@ -7,34 +7,34 @@ import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 
 /**
- * Preferences class for {@link com.bkromhout.minerva.fragments.RecentFragment}.
+ * Preferences class for list-related preferences.
  */
-public class RecentPrefs implements BCTPref {
+public class ListsPrefs implements BCTPref {
     // File name.
-    private static final String FILE_NAME = "recent";
+    private static final String FILE_NAME = "all_lists";
     // Key Strings.
 
     /**
      * Static instance.
      */
-    private static RecentPrefs INSTANCE = null;
+    private static ListsPrefs INSTANCE = null;
     /**
      * Shared Preferences.
      */
     private SharedPreferences prefs;
 
     // No public construction allowed.
-    private RecentPrefs() {
+    private ListsPrefs() {
         // Get shared preferences.
         this.prefs = Minerva.getAppCtx().getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
     }
 
     /**
      * Get an instance.
-     * @return {@link RecentPrefs}.
+     * @return {@link ListsPrefs}.
      */
-    public static RecentPrefs get() {
-        if (INSTANCE == null) INSTANCE = new RecentPrefs();
+    public static ListsPrefs get() {
+        if (INSTANCE == null) INSTANCE = new ListsPrefs();
         return INSTANCE;
     }
 

@@ -14,7 +14,7 @@ import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.adapters.BookListCardAdapter;
 import com.bkromhout.minerva.events.BookListCardClickEvent;
-import com.bkromhout.minerva.prefs.AllListsPrefs;
+import com.bkromhout.minerva.prefs.ListsPrefs;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.realmrecyclerview.RealmRecyclerView;
@@ -37,7 +37,7 @@ public class AllListsFragment extends Fragment {
     /**
      * Preferences.
      */
-    private AllListsPrefs allListsPrefs;
+    private ListsPrefs listsPrefs;
     /**
      * Instance of Realm.
      */
@@ -82,7 +82,7 @@ public class AllListsFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         // Read prefs to fill in vars.
-        allListsPrefs = AllListsPrefs.get();
+        listsPrefs = ListsPrefs.get();
         readPrefs();
 
         // Get Realm.

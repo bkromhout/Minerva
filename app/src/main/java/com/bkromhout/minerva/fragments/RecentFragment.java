@@ -1,6 +1,5 @@
 package com.bkromhout.minerva.fragments;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,7 +13,6 @@ import android.view.*;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkromhout.minerva.BookInfoActivity;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
@@ -24,9 +22,12 @@ import com.bkromhout.minerva.adapters.BookCardAdapter;
 import com.bkromhout.minerva.adapters.BookCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
 import com.bkromhout.minerva.data.ReImporter;
+import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
+import com.bkromhout.minerva.events.PrefChangeEvent;
 import com.bkromhout.minerva.prefs.RecentPrefs;
+import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.util.Dialogs;
@@ -59,7 +60,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
     /**
      * Which type of card to use.
      */
-    private String cardType;
+    private BookCardType cardType;
     /**
      * Instance of Realm.
      */
@@ -128,7 +129,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
      * Read preferences into variables.
      */
     private void readPrefs() {
-        cardType = recentPrefs.getCardType(C.BOOK_CARD_NORMAL);
+        cardType = recentPrefs.getCardType(BookCardType.NORMAL);
     }
 
     /**
@@ -218,7 +219,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_card_type:
-                showCardStyleDialog();
+                Dialogs.cardStyleDialog(getContext(), recentPrefs);
                 return true;
             case R.id.action_clear:
                 Dialogs.simpleYesNoDialog(getContext(), R.string.title_clear_list, R.string.clear_list_prompt,
@@ -416,11 +417,11 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
 
         // Create a new adapter based on the card type.
         switch (cardType) {
-            case C.BOOK_CARD_NORMAL:
+            case NORMAL:
                 return new BookCardAdapter(getActivity(), books);
-            case C.BOOK_CARD_NO_COVER:
+            case NO_COVER:
                 return new BookCardNoCoverAdapter(getActivity(), books);
-            case C.BOOK_CARD_COMPACT:
+            case COMPACT:
                 return new BookCardCompactAdapter(getActivity(), books);
             default:
                 return null;
@@ -445,67 +446,16 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
     }
 
     /**
-     * Shows a dialog which allows the user to pick the card style.
-     * <p>
-     * TODO move to Dialogs after making card type into an enum class.
+     * React to a changed preference.
+     * @param event {@link PrefChangeEvent}.
      */
-    private void showCardStyleDialog() {
-        new MaterialDialog.Builder(getContext())
-                .title(R.string.action_card_type)
-                .items(C.getStr(R.string.card_normal),
-                        C.getStr(R.string.card_no_cover),
-                        C.getStr(R.string.card_compact))
-                .itemsCallbackSingleChoice(idxFromStrConst(cardType), (dialog, itemView, which, text) -> {
-                    // Do nothing if it's the same.
-                    if (idxFromStrConst(cardType) == which) return true;
-
-                    // Persist the new card style.
-                    cardType = strConstFromIdx(which);
-                    recentPrefs.putCardType(cardType);
-
-                    // Change the adapter.
-                    changeCardType();
-                    return true;
-                })
-                .show();
-    }
-
-    /**
-     * Convert an index to the string constant that that index represents.
-     * @param idx An index.
-     * @return A string constant.
-     */
-    @SuppressLint("DefaultLocale")
-    private static String strConstFromIdx(int idx) {
-        switch (idx) {
-            // Card types.
-            case 0:
-                return C.BOOK_CARD_NORMAL;
-            case 1:
-                return C.BOOK_CARD_NO_COVER;
-            case 2:
-                return C.BOOK_CARD_COMPACT;
-            default:
-                throw new IllegalArgumentException(String.format("Invalid resource ID: %d", idx));
-        }
-    }
-
-    /**
-     * Convert a string constant to the index that represents it.
-     * @param str String constant.
-     * @return An index.
-     */
-    private static Integer idxFromStrConst(String str) {
-        switch (str) {
-            // Card types.
-            case C.BOOK_CARD_NORMAL:
-                return 0;
-            case C.BOOK_CARD_NO_COVER:
-                return 1;
-            case C.BOOK_CARD_COMPACT:
-                return 2;
-            default:
-                throw new IllegalArgumentException(String.format("Invalid string constant: %s", str));
+    @Subscribe
+    public void onPrefChangeEvent(PrefChangeEvent event) {
+        // Do something different based on name of changed preference.
+        switch (event.getPrefName()) {
+            case BCTPref.CARD_TYPE:
+                changeCardType();
+                break;
         }
     }
 

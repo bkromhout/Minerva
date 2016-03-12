@@ -13,7 +13,10 @@ import android.widget.Toast;
 import butterknife.ButterKnife;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkromhout.minerva.R;
+import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.events.ActionEvent;
+import com.bkromhout.minerva.events.PrefChangeEvent;
+import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 import com.bkromhout.minerva.realm.RBookList;
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -26,6 +29,31 @@ import rx.Observable;
  * The dialogs here will usually fire some sort of event when dismissed in certain ways.
  */
 public class Dialogs {
+    /**
+     * Show a simple book card style chooser dialog.
+     * @param ctx   Context to use.
+     * @param prefs Some *Prefs object which implements {@link BCTPref} so that we may get/put the current/new
+     *              preference.
+     */
+    public static void cardStyleDialog(Context ctx, BCTPref prefs) {
+        // Get current card type from prefs.
+        final BookCardType cardType = prefs.getCardType(BookCardType.NORMAL);
+        // Show dialog.
+        new MaterialDialog.Builder(ctx)
+                .title(R.string.action_card_type)
+                .items(BookCardType.names())
+                .itemsCallbackSingleChoice(cardType.getNum(), (dialog, itemView, which, text) -> {
+                    // Do nothing if it's the same.
+                    if (cardType.getNum() == which) return true;
+
+                    // Persist the new card style and fire event to let caller know.
+                    prefs.putCardType(BookCardType.fromNumber(which));
+                    EventBus.getDefault().post(new PrefChangeEvent(BCTPref.CARD_TYPE));
+                    return true;
+                })
+                .show();
+    }
+
     /**
      * Show a rating dialog.
      * @param ctx           Context to use.

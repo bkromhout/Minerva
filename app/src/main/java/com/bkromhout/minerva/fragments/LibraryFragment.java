@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -24,6 +23,9 @@ import com.bkromhout.minerva.adapters.BookCardAdapter;
 import com.bkromhout.minerva.adapters.BookCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
 import com.bkromhout.minerva.data.ReImporter;
+import com.bkromhout.minerva.enums.BookCardType;
+import com.bkromhout.minerva.enums.SortDir;
+import com.bkromhout.minerva.enums.SortType;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
 import com.bkromhout.minerva.prefs.LibraryPrefs;
@@ -58,15 +60,15 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
     /**
      * The current sort type.
      */
-    private String sortType;
+    private SortType sortType;
     /**
      * The current sort direction.
      */
-    private String sortDir;
+    private SortDir sortDir;
     /**
      * The current card type.
      */
-    private String cardType;
+    private BookCardType cardType;
     /**
      * Instance of Realm.
      */
@@ -135,9 +137,9 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
      * Read preferences into variables.
      */
     private void readPrefs() {
-        sortType = libraryPrefs.getSortType(C.SORT_TITLE);
-        sortDir = libraryPrefs.getSortDir(C.SORT_ASC);
-        cardType = libraryPrefs.getCardType(C.BOOK_CARD_NORMAL);
+        sortType = libraryPrefs.getSortType(SortType.TITLE);
+        sortDir = libraryPrefs.getSortDir(SortDir.ASC);
+        cardType = libraryPrefs.getCardType(BookCardType.NORMAL);
     }
 
     /**
@@ -397,9 +399,9 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
         final RadioGroup rgCardType = ButterKnife.findById(view, R.id.rg_card_type);
 
         // Set up views.
-        rgSortType.check(idFromStrConst(sortType));
-        rgSortDir.check(idFromStrConst(sortDir));
-        rgCardType.check(idFromStrConst(cardType));
+        rgSortType.check(sortType.getResId());
+        rgSortDir.check(sortDir.getResId());
+        rgCardType.check(cardType.getResId());
 
         // Construct material dialog.
         new MaterialDialog.Builder(getContext())
@@ -411,14 +413,14 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
                 .negativeText(R.string.cancel)
                 .onPositive((dialog, which) -> {
                     // Figure out which options are different.
-                    boolean sortTypeChanged = !strConstFromId(rgSortType.getCheckedRadioButtonId()).equals(sortType);
-                    boolean sortDirChanged = !strConstFromId(rgSortDir.getCheckedRadioButtonId()).equals(sortDir);
-                    boolean cardTypeChanged = !strConstFromId(rgCardType.getCheckedRadioButtonId()).equals(cardType);
+                    boolean sortTypeChanged = rgSortType.getCheckedRadioButtonId() != sortType.getResId();
+                    boolean sortDirChanged = rgSortDir.getCheckedRadioButtonId() != sortDir.getResId();
+                    boolean cardTypeChanged = rgCardType.getCheckedRadioButtonId() != cardType.getResId();
 
                     // Save new options locally if different, then persist them all to preferences.
-                    if (sortTypeChanged) sortType = strConstFromId(rgSortType.getCheckedRadioButtonId());
-                    if (sortDirChanged) sortDir = strConstFromId(rgSortDir.getCheckedRadioButtonId());
-                    if (cardTypeChanged) cardType = strConstFromId(rgCardType.getCheckedRadioButtonId());
+                    if (sortTypeChanged) sortType = SortType.fromResId(rgSortType.getCheckedRadioButtonId());
+                    if (sortDirChanged) sortDir = SortDir.fromResId(rgSortDir.getCheckedRadioButtonId());
+                    if (cardTypeChanged) cardType = BookCardType.fromResId(rgCardType.getCheckedRadioButtonId());
                     libraryPrefs.putLibraryViewOpts(sortType, sortDir, cardType);
 
                     // Re-sort data if necessary.
@@ -445,7 +447,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
      */
     private void sortRealmResults() {
         if (realm == null || realm.isClosed() || books == null || !books.isValid()) return;
-        books.sort(C.getRealmSortField(sortType), C.getRealmSortDir(sortDir));
+        books.sort(sortType.getRealmField(), sortDir.getRealmSort());
     }
 
     /**
@@ -459,11 +461,11 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
 
         // Create a new adapter based on the card type.
         switch (cardType) {
-            case C.BOOK_CARD_NORMAL:
+            case NORMAL:
                 return new BookCardAdapter(ctx, books);
-            case C.BOOK_CARD_NO_COVER:
+            case NO_COVER:
                 return new BookCardNoCoverAdapter(ctx, books);
-            case C.BOOK_CARD_COMPACT:
+            case COMPACT:
                 return new BookCardCompactAdapter(ctx, books);
             default:
                 return null;
@@ -487,73 +489,6 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
         // TODO this probably won't show the expected item it both the card and sort type/dir are changed, because while
         // TODO the position will be correct, the item at that position will be different... we'll figure it out.
         if (currLastVisPos != RecyclerView.NO_POSITION) recyclerView.scrollToPosition(currLastVisPos);
-    }
-
-    /**
-     * Convert a view ID to the string constant that that view represents.
-     * @param id A view ID.
-     * @return A string constant.
-     */
-    @SuppressLint("DefaultLocale")
-    private static String strConstFromId(@IdRes int id) {
-        switch (id) {
-            // Sort types.
-            case R.id.sort_title:
-                return C.SORT_TITLE;
-            case R.id.sort_author:
-                return C.SORT_AUTHOR;
-            case R.id.sort_time_added:
-                return C.SORT_TIME_ADDED;
-            case R.id.sort_rating:
-                return C.SORT_RATING;
-            // Sort directions.
-            case R.id.sort_asc:
-                return C.SORT_ASC;
-            case R.id.sort_desc:
-                return C.SORT_DESC;
-            // Card types.
-            case R.id.card_normal:
-                return C.BOOK_CARD_NORMAL;
-            case R.id.card_no_cover:
-                return C.BOOK_CARD_NO_COVER;
-            case R.id.card_compact:
-                return C.BOOK_CARD_COMPACT;
-            default:
-                throw new IllegalArgumentException(String.format("Invalid resource ID: %d", id));
-        }
-    }
-
-    /**
-     * Convert a string constant to the id of a view that represents it.
-     * @param str String constant.
-     * @return A view ID.
-     */
-    private static Integer idFromStrConst(String str) {
-        switch (str) {
-            // Sort types.
-            case C.SORT_TITLE:
-                return R.id.sort_title;
-            case C.SORT_AUTHOR:
-                return R.id.sort_author;
-            case C.SORT_TIME_ADDED:
-                return R.id.sort_time_added;
-            case C.SORT_RATING:
-                return R.id.sort_rating;
-            // Sort directions.
-            case C.SORT_ASC:
-                return R.id.sort_asc;
-            case C.SORT_DESC:
-                return R.id.sort_desc;
-            // Card types.
-            case C.BOOK_CARD_NORMAL:
-                return R.id.card_normal;
-            case C.BOOK_CARD_NO_COVER:
-                return R.id.card_no_cover;
-            case C.BOOK_CARD_COMPACT:
-                return R.id.card_compact;
-            default:
-                throw new IllegalArgumentException(String.format("Invalid string constant: %s", str));
-        }
     }
 
     @Override

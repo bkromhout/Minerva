@@ -16,8 +16,8 @@ public class BookCardClickEvent {
      */
     private final Type type;
     /**
-     * Value of {@link com.bkromhout.minerva.realm.RBook#relPath relPath} for the {@link com.bkromhout.minerva.realm.RBook} that the
-     * clicked card is showing data for.
+     * Value of {@link com.bkromhout.minerva.realm.RBook#relPath relPath} for the {@link
+     * com.bkromhout.minerva.realm.RBook} that the clicked card is showing data for.
      */
     private final String relPath;
     /**
@@ -28,8 +28,8 @@ public class BookCardClickEvent {
     /**
      * Create a new {@link BookCardClickEvent}.
      * @param type     Type of click.
-     * @param relPath  The value of {@link com.bkromhout.minerva.realm.RBook#relPath relPath} for the view's corresponding
-     *                 {@link com.bkromhout.minerva.realm.RBook}
+     * @param relPath  The value of {@link com.bkromhout.minerva.realm.RBook#relPath relPath} for the view's
+     *                 corresponding {@link com.bkromhout.minerva.realm.RBook}
      * @param position The position of the clicked view in the adapter.
      */
     public BookCardClickEvent(Type type, String relPath, int position) {

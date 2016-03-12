@@ -54,7 +54,8 @@ public class BookListCardClickEvent {
     }
 
     /**
-     * Get the name of the list, which can be used to get the corresponding {@link com.bkromhout.minerva.realm.RBookList}.
+     * Get the name of the list, which can be used to get the corresponding
+     * {@link com.bkromhout.minerva.realm.RBookList}.
      * @return List name.
      */
     public String getName() {
