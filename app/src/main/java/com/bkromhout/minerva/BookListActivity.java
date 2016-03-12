@@ -17,6 +17,7 @@ import com.bkromhout.minerva.adapters.BaseBookCardAdapter;
 import com.bkromhout.minerva.adapters.BookItemCardAdapter;
 import com.bkromhout.minerva.adapters.BookItemCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookItemCardNoCoverAdapter;
+import com.bkromhout.minerva.data.ReImporter;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
 import com.bkromhout.minerva.prefs.AllListsPrefs;
@@ -38,9 +39,10 @@ import java.util.List;
 /**
  * Activity which displays a list of books based on an {@link RBookList}.
  */
-public class BookListActivity extends AppCompatActivity implements ActionMode.Callback {
+public class BookListActivity extends AppCompatActivity implements ActionMode.Callback, ReImporter.IReImportListener {
     // Key strings for the bundle passed when this activity is started.
     public static final String LIST_SEL_STR = "LIST_SEL_STR";
+    private static final String KEY_IS_REORDER_MODE = "IS_REORDER_MODE";
 
     // Views.
     @Bind(R.id.toolbar)
@@ -114,6 +116,14 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         // Set title, then set up the rest of UI.
         setTitle(srcList.getName());
         initUi();
+
+        // If we have a saved instance state, check to see if we were in action mode.
+        if (savedInstanceState != null && savedInstanceState.getBoolean(C.IS_IN_ACTION_MODE)) {
+            // If we were in action mode, restore the adapter's state and start action mode.
+            isReorderMode = savedInstanceState.getBoolean(KEY_IS_REORDER_MODE);
+            adapter.restoreInstanceState(savedInstanceState);
+            startActionMode();
+        }
     }
 
     /**
@@ -159,12 +169,29 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+        // Reattach to the ReImporter if it's currently running so that it can draw its dialog.
+        ReImporter.reAttachIfExists(this);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Save adapter state if we're in action mode.
+        if (actionMode != null) {
+            adapter.saveInstanceState(outState);
+            outState.putBoolean(C.IS_IN_ACTION_MODE, true);
+            outState.putBoolean(KEY_IS_REORDER_MODE, isReorderMode);
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
+        // Detach from the ReImporter if it's currently running.
+        ReImporter.detachListener();
+        // Finish action mode so that it doesn't leak.
+        if (actionMode != null) actionMode.finish();
     }
 
     @Override
@@ -177,6 +204,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
             realm.close();
             realm = null;
         }
+        if (actionMode != null) actionMode.finish();
     }
 
     @Override
@@ -215,7 +243,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 return true;
             case R.id.action_reorder:
                 isReorderMode = true;
-                startSupportActionMode(this);
+                startActionMode();
                 return true;
             case R.id.action_card_type:
                 showCardStyleDialog();
@@ -314,8 +342,9 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 break;
             }
             case R.id.action_re_import: {
-                // TODO re-import items
-                break;
+                ReImporter.reImportBooks(selectedItems, this);
+                // Don't dismiss action mode yet.
+                return;
             }
             case R.id.action_remove: {
                 srcList.removeBooks(selectedItems);
@@ -349,6 +378,21 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 break;
             }
         }
+    }
+
+    @Override
+    public void onReImportFinished(boolean wasSuccess) {
+        // Notify the adapter that it should refresh the layouts of the selected items.
+        adapter.notifySelectedItemsChanged();
+        // If we finished successfully, finish the action mode.
+        if (wasSuccess) actionMode.finish();
+    }
+
+    /**
+     * Starts action mode (if it hasn't been already).
+     */
+    private void startActionMode() {
+        if (actionMode == null) actionMode = startSupportActionMode(this);
     }
 
     /**
@@ -412,7 +456,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
             case LONG:
                 // Start multi-select.
                 adapter.toggleSelected(event.getPosition());
-                if (actionMode == null) actionMode = startSupportActionMode(this);
+                startActionMode();
                 break;
             case INFO:
                 // Open BookInfoActivity.
@@ -489,5 +533,11 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
             default:
                 throw new IllegalArgumentException(String.format("Invalid string constant: %s", str));
         }
+    }
+
+    @Override
+    public Activity getCtx() {
+        // Provide our activity context to the ReImporter so that it can draw its progress dialog.
+        return this;
     }
 }

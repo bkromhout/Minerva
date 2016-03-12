@@ -11,6 +11,9 @@ import java.util.List;
  * Constants.
  */
 public final class C {
+    /* Keys */
+    public static final String IS_IN_ACTION_MODE = "is_in_action_mode";
+
     /**
      * The initial number of position numbers between each item in a book list.
      */

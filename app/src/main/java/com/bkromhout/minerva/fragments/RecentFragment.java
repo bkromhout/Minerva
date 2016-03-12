@@ -23,6 +23,7 @@ import com.bkromhout.minerva.adapters.BaseBookCardAdapter;
 import com.bkromhout.minerva.adapters.BookCardAdapter;
 import com.bkromhout.minerva.adapters.BookCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
+import com.bkromhout.minerva.data.ReImporter;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
 import com.bkromhout.minerva.prefs.RecentPrefs;
@@ -44,7 +45,7 @@ import java.util.List;
 /**
  * Fragment in charge of showing recently opened books.
  */
-public class RecentFragment extends Fragment implements ActionMode.Callback {
+public class RecentFragment extends Fragment implements ActionMode.Callback, ReImporter.IReImportListener {
     // Views.
     @Bind(R.id.fab)
     FloatingActionButton fabViewOpts;
@@ -114,6 +115,13 @@ public class RecentFragment extends Fragment implements ActionMode.Callback {
         realm = Realm.getDefaultInstance();
 
         initUi();
+
+        // If we have a saved instance state, check to see if we were in action mode.
+        if (savedInstanceState != null && savedInstanceState.getBoolean(C.IS_IN_ACTION_MODE)) {
+            // If we were in action mode, restore the adapter's state and start action mode.
+            adapter.restoreInstanceState(savedInstanceState);
+            startActionMode();
+        }
     }
 
     /**
@@ -151,12 +159,28 @@ public class RecentFragment extends Fragment implements ActionMode.Callback {
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+        // Reattach to the ReImporter if it's currently running so that it can draw its dialog.
+        ReImporter.reAttachIfExists(this);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Save adapter state if we're in action mode.
+        if (actionMode != null) {
+            adapter.saveInstanceState(outState);
+            outState.putBoolean(C.IS_IN_ACTION_MODE, true);
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
+        // Detach from the ReImporter if it's currently running.
+        ReImporter.detachListener();
+        // Finish action mode so that it doesn't leak.
+        if (actionMode != null) actionMode.finish();
     }
 
     @Override
@@ -169,6 +193,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback {
             realm.close();
             realm = null;
         }
+        if (actionMode != null) actionMode.finish();
     }
 
     @Override
@@ -280,8 +305,9 @@ public class RecentFragment extends Fragment implements ActionMode.Callback {
                 break;
             }
             case R.id.action_re_import: {
-                // TODO Re-import the selected items.
-                break;
+                ReImporter.reImportBooks(selectedItems, this);
+                // Don't dismiss action mode yet.
+                return;
             }
             case R.id.action_remove: {
                 realm.executeTransaction(tRealm -> {
@@ -320,6 +346,21 @@ public class RecentFragment extends Fragment implements ActionMode.Callback {
         }
     }
 
+    @Override
+    public void onReImportFinished(boolean wasSuccess) {
+        // Notify the adapter that it should refresh the layouts of the selected items.
+        adapter.notifySelectedItemsChanged();
+        // If we finished successfully, finish the action mode.
+        if (wasSuccess) actionMode.finish();
+    }
+
+    /**
+     * Starts action mode (if it hasn't been already).
+     */
+    private void startActionMode() {
+        if (actionMode == null) actionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(this);
+    }
+
     /**
      * Called when one of the cards is clicked.
      * @param event {@link BookCardClickEvent}.
@@ -343,7 +384,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback {
             case LONG:
                 // Start multi-select.
                 adapter.toggleSelected(event.getPosition());
-                if (actionMode == null) actionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(this);
+                startActionMode();
                 break;
             case INFO:
                 // Open BookInfoActivity.
@@ -466,5 +507,11 @@ public class RecentFragment extends Fragment implements ActionMode.Callback {
             default:
                 throw new IllegalArgumentException(String.format("Invalid string constant: %s", str));
         }
+    }
+
+    @Override
+    public Activity getCtx() {
+        // Provide our activity context to the ReImporter so that it can draw its progress dialog.
+        return getActivity();
     }
 }
