@@ -176,17 +176,16 @@ public class ReImporter {
         // Convert RBooks to a list of Files.
         message.setText(R.string.ril_build_file_list);
         subs.add(Observable.from(books)
-                           .subscribeOn(Schedulers.io())
-                           .map(book -> {
-                               File file = Util.getFileFromRelPath(currDir, book.getRelPath());
-                               if (file == null)
-                                   errors.append(C.getStr(R.string.ril_err_getting_file, book.getTitle()));
+                           .map(RBook::getRelPath)
+                           .map(relPath -> {
+                               File file = Util.getFileFromRelPath(currDir, relPath);
+                               if (file == null) errors.append(C.getStr(R.string.ril_err_getting_file,
+                                       currDir.getAbsolutePath() + relPath));
                                return file;
                            })
                            .filter(file -> file != null)
                            .toList()
                            .single()
-                           .observeOn(AndroidSchedulers.mainThread())
                            .subscribe(this::onGotFiles, throwable -> {
                                currState = State.ERROR;
                                throwable.printStackTrace();

@@ -145,7 +145,7 @@
     <string name="ril_done">Done</string>
     <string name="ril_done_with_errors">Done, with errors</string>
 
-    <string name="ril_err_getting_file">Error getting file for \"%1$s\"\n</string>
+    <string name="ril_err_getting_file">Error getting file \"%1$s\"\n</string>
     <string name="ril_err_getting_files">Error while getting files</string>
     <string name="ril_err_reading_file">Error while reading \"%1$s\"\n</string>
     <string name="ril_err_reading_files">Error while reading files</string>
