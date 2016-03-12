@@ -52,9 +52,9 @@ public class ReImporter {
     @Bind(R.id.message)
     TextView message;
     @Bind(R.id.progress_bar)
-    private ProgressBar progressBar;
+    ProgressBar progressBar;
     @Bind(R.id.error_messages)
-    private TextView errors;
+    TextView errors;
 
     /**
      * The current state of the importer.
@@ -117,8 +117,7 @@ public class ReImporter {
      * Hides the dialog and removes the reference to the listener.
      */
     public static void detachListener() {
-        if (INSTANCE == null) return;
-        if (INSTANCE.listener == null) throw new IllegalStateException("No Listener attached!");
+        if (INSTANCE == null || INSTANCE.listener == null) return;
 
         INSTANCE.dismissDialog();
         INSTANCE.listener = null;
@@ -161,7 +160,7 @@ public class ReImporter {
         // Make sure we should continue.
         if (currState != State.PREP) {
             if (!hasErrors()) currState = State.FINISHING;
-            tearDown();
+            tearDown(false);
             return;
         }
 
@@ -192,7 +191,7 @@ public class ReImporter {
                                currState = State.ERROR;
                                throwable.printStackTrace();
                                message.setText(R.string.ril_err_getting_files);
-                               tearDown();
+                               tearDown(false);
                                dismissDialogUnlessErrors();
                            })
         );
@@ -206,7 +205,7 @@ public class ReImporter {
         // Make sure we should continue.
         if (currState != State.PREP) {
             if (!hasErrors()) currState = State.FINISHING;
-            tearDown();
+            tearDown(false);
             return;
         }
 
@@ -227,7 +226,7 @@ public class ReImporter {
         // Make sure we should continue.
         if (currState != State.PREP) {
             if (!hasErrors()) currState = State.FINISHING;
-            tearDown();
+            tearDown(false);
             return;
         }
 
@@ -268,7 +267,7 @@ public class ReImporter {
         // Make sure we should continue.
         if (currState != State.IMPORTING) {
             if (!hasErrors()) currState = State.FINISHING;
-            tearDown();
+            tearDown(false);
             return;
         }
 
@@ -286,7 +285,7 @@ public class ReImporter {
         currState = State.ERROR;
         t.printStackTrace();
         message.setText(R.string.ril_err_reading_files);
-        tearDown();
+        tearDown(false);
         dismissDialogUnlessErrors();
     }
 
@@ -297,7 +296,7 @@ public class ReImporter {
         // Make sure we should continue.
         if (currState != State.IMPORTING) {
             if (!hasErrors()) currState = State.FINISHING;
-            tearDown();
+            tearDown(false);
             return;
         }
 
@@ -328,7 +327,7 @@ public class ReImporter {
                     currState = State.ERROR;
                     error.printStackTrace();
                     message.setText(R.string.ril_err_realm);
-                    tearDown();
+                    tearDown(false);
                     dismissDialogUnlessErrors();
                 });
     }
@@ -345,8 +344,7 @@ public class ReImporter {
 
         // Notify listener that we're finished, tear down, then dismiss dialog (unless there are errors, give the
         // user a chance to see them).
-        if (listener != null) listener.onReImportFinished();
-        tearDown();
+        tearDown(true);
         dismissDialogUnlessErrors();
     }
 
@@ -356,7 +354,7 @@ public class ReImporter {
     private void showDialog() {
         if (listener == null || dialog != null) return;
 
-        dialog = new MaterialDialog.Builder(listener.getContext())
+        dialog = new MaterialDialog.Builder(listener.getCtx())
                 .title(R.string.title_dialog_re_import_progress)
                 .customView(dialogContent, true)
                 .autoDismiss(false) // Do not dismiss when button is clicked.
@@ -419,14 +417,15 @@ public class ReImporter {
         if (currState == State.PREP || currState == State.IMPORTING || currState == State.ERROR) {
             currState = State.CANCELLING;
             disableCancelButtonIfNeeded();
-            tearDown();
+            tearDown(false);
         }
     }
 
     /**
      * Tear down. This will remove the reference to the {@link ReImporter} stored in {@link #INSTANCE}.
+     * @param wasSuccess Whether or not we're calling this because we successfully finished.
      */
-    private void tearDown() {
+    private void tearDown(boolean wasSuccess) {
         // Unsubscribe from any Rx subscriptions.
         subs.unsubscribe();
         // Close Realm.
@@ -434,8 +433,11 @@ public class ReImporter {
             realm.close();
             realm = null;
         }
-        // Remove reference to listener.
-        listener = null;
+        // Tell listener that we finished, then remove reference to it.
+        if (listener != null) {
+            listener.onReImportFinished(wasSuccess);
+            listener = null;
+        }
         // Remove reference to INSTANCE.
         INSTANCE = null;
     }
@@ -445,15 +447,17 @@ public class ReImporter {
      */
     public interface IReImportListener {
         /**
-         * Obtain an activity context so that we may draw a dialog.
+         * Called by {@link ReImporter} so that it has access to a context it can use to create a dialog.
          * @return Activity context.
          */
-        Activity getContext();
+        Activity getCtx();
 
         /**
-         * Called when the re-import is finished.
+         * Called by {@link ReImporter} when the re-import is finished.
+         * @param wasSuccess If true, the re-import was successful and the listener should assume it needs to update the
+         *                   UI to reflect new data.
          */
-        void onReImportFinished();
+        void onReImportFinished(boolean wasSuccess);
     }
 
     private static class StartImportEvent {}
