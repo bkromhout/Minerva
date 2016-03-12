@@ -12,7 +12,7 @@ public class MinervaDebug extends Minerva {
     @Override
     public void onCreate() {
         super.onCreate();
-        //initStetho();
+        initStetho();
     }
 
     /**
