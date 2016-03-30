@@ -1,5 +1,6 @@
 package com.bkromhout.minerva.realm;
 
+import com.bkromhout.ruqus.Hide;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -26,10 +27,12 @@ public class RTag extends RealmObject {
      * Same as {@link #name}, but in lower-case.
      */
     @Index
+    @Hide
     private String sortName;
     /**
      * {@link RBook}s which are tagged with this tag.
      */
+    @Hide
     private RealmList<RBook> taggedBooks;
 
     /**

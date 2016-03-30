@@ -11,6 +11,7 @@ import java.util.List;
 public final class C {
     /* Keys */
     public static final String IS_IN_ACTION_MODE = "is_in_action_mode";
+    public static final String RUQ = "realm_user_query";
 
     /**
      * The initial number of position numbers between each item in a book list.
@@ -23,6 +24,7 @@ public final class C {
 
     /* Request codes. */
     public static final int RC_TAG_ACTIVITY = 1;
+    public static final int RC_QUERY_BUILDER_ACTIVITY = 2;
 
     /**
      * Get a string resource using the application context.

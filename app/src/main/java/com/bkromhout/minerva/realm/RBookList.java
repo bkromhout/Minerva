@@ -1,6 +1,7 @@
 package com.bkromhout.minerva.realm;
 
 import com.bkromhout.minerva.C;
+import com.bkromhout.ruqus.Hide;
 import com.google.common.math.LongMath;
 import io.realm.*;
 import io.realm.annotations.Index;
@@ -24,14 +25,17 @@ public class RBookList extends RealmObject {
      * Same as {@link #name}, but in lower-case.
      */
     @Index
+    @Hide
     private String sortName;
     /**
      * Position number for the next item to be added to this list.
      */
+    @Hide
     private Long nextPos;
     /**
      * References to the {@link RBookListItem}s that this list contains.
      */
+    @Hide
     private RealmList<RBookListItem> listItems;
 
     /**

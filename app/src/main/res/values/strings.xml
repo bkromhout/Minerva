@@ -36,6 +36,7 @@
     <!-- Common error strings -->
     <string name="err_name_taken">Name is already taken.</string>
     <string name="toast_err_no_apps">No apps installed which can open this file.</string>
+    <string name="toast_err_invalid_query">Invalid Query</string>
 
     <!-- Permissions -->
     <string name="storage_permission">Storage Permission</string>
@@ -176,6 +177,9 @@
     <!-- Power Search Fragment -->
     <string name="sort_asc">Ascending</string>
     <string name="sort_desc">Descending</string>
+
+    <!-- Query Builder Activity -->
+    <string name="title_activity_query_builder">Query Builder</string>
 
     <!-- Book Card/Book Info Activity -->
     <string name="title_activity_info">Book Info</string>

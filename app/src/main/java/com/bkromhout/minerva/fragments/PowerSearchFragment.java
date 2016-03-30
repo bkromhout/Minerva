@@ -1,5 +1,7 @@
 package com.bkromhout.minerva.fragments;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -7,18 +9,26 @@ import android.support.v4.app.Fragment;
 import android.view.*;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.QueryBuilderActivity;
 import com.bkromhout.minerva.R;
+import com.bkromhout.minerva.adapters.*;
+import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.realm.RBook;
+import com.bkromhout.minerva.realm.RBookListItem;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.realmrecyclerview.RealmRecyclerView;
+import com.bkromhout.ruqus.RealmUserQuery;
 import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
+import io.realm.RealmObject;
 import io.realm.RealmResults;
 
 /**
  * Fragment in charge of letting the user power search.
  * <p>
- * TODO
+ * TODO add ability to create "Smart List" from here.
  */
 public class PowerSearchFragment extends Fragment {
     // Views.
@@ -32,9 +42,17 @@ public class PowerSearchFragment extends Fragment {
      */
     private Realm realm;
     /**
-     * {@link RBook}s currently shown in the recycler view.
+     * Current {@link RealmUserQuery} in the view.
      */
-    private RealmResults<RBook> books;
+    private RealmUserQuery ruq;
+    /**
+     * Current query results.
+     */
+    private RealmResults<? extends RealmObject> results;
+    /**
+     * Which type of card to use. TODO add ability to change this.
+     */
+    private BookCardType cardType = BookCardType.COMPACT;
     /**
      * Adapter currently being used by the recycler view.
      */
@@ -73,14 +91,13 @@ public class PowerSearchFragment extends Fragment {
         // Get Realm.
         realm = Realm.getDefaultInstance();
 
-        initUi();
-    }
+        // Restore RealmUserQuery if we're coming back from a configuration change.
+        if (savedInstanceState != null && savedInstanceState.containsKey(C.RUQ))
+            ruq = savedInstanceState.getParcelable(C.RUQ);
 
-    /**
-     * Initialize the UI.
-     */
-    private void initUi() {
+        // TODO restore scroll state?
 
+        updateUi();
     }
 
     @Override
@@ -93,6 +110,12 @@ public class PowerSearchFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.power_search, menu);
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (ruq != null) outState.putParcelable(C.RUQ, ruq);
     }
 
     @Override
@@ -113,5 +136,79 @@ public class PowerSearchFragment extends Fragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    // TODO add all of the actions and such.
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+//            case C.RC_TAG_ACTIVITY: {
+//                // Came back from TaggingActivity.
+//                if (resultCode == Activity.RESULT_OK) {
+//                    // We've changed the tags on some books.
+//                    if (actionMode != null) actionMode.finish();
+//                }
+//                break;
+//            }
+            case C.RC_QUERY_BUILDER_ACTIVITY: {
+                // Came back from QueryBuilderActivity.
+                if (resultCode == Activity.RESULT_OK) {
+                    // We've changed our query.
+                    ruq = data.getParcelableExtra(C.RUQ);
+                    updateUi();
+                }
+            }
+        }
+    }
+
+    /**
+     * Show the {@link com.bkromhout.minerva.QueryBuilderActivity} when the FAB is clicked.
+     */
+    @OnClick(R.id.fab)
+    void onFabClick() {
+        // Start QueryBuilderActivity, passing it the currently help RealmUserQuery.
+        QueryBuilderActivity.start(this, ruq);
+    }
+
+    /**
+     * Update the UI.
+     */
+    private void updateUi() {
+        if (ruq != null) results = ruq.execute(realm);
+        adapter = makeAdapter();
+        recyclerView.setAdapter(adapter);
+    }
+
+    /**
+     * Make adapter based on {@link RealmUserQuery#getQueryClass() ruq#getQueryClass()} and {@link #cardType}.
+     * @return Adapter, or null if {@link #ruq} is null/invalid or {@link #cardType} is null/invalid.
+     */
+    @SuppressWarnings("unchecked")
+    private RealmBasedRecyclerViewAdapter makeAdapter() {
+        if (ruq == null || !ruq.isQueryValid()) return null;
+        else if (RBook.class.getCanonicalName().equals(ruq.getQueryClass().getCanonicalName())) {
+            switch (cardType) {
+                case NORMAL:
+                    return new BookCardAdapter(getContext(), (RealmResults<RBook>) results);
+                case NO_COVER:
+                    return new BookCardNoCoverAdapter(getContext(), (RealmResults<RBook>) results);
+                case COMPACT:
+                    return new BookCardCompactAdapter(getContext(), (RealmResults<RBook>) results);
+                default:
+                    return null;
+            }
+        } else if (RBookListItem.class.getCanonicalName().equals(ruq.getQueryClass().getCanonicalName())) {
+            switch (cardType) {
+                case NORMAL:
+                    return new BookItemCardAdapter(getContext(), (RealmResults<RBookListItem>) results);
+                case NO_COVER:
+                    return new BookItemCardNoCoverAdapter(getContext(), (RealmResults<RBookListItem>) results);
+                case COMPACT:
+                    return new BookItemCardCompactAdapter(getContext(), (RealmResults<RBookListItem>) results);
+                default:
+                    return null;
+            }
+        } else return null;
     }
 }

@@ -40,6 +40,8 @@ import org.greenrobot.eventbus.Subscribe;
 
 /**
  * Main activity, responsible for hosting fragments.
+ * <p>
+ * TODO fails to retain current fragment's title when rotating.
  */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     // Represents the various fragments that this activity can show.

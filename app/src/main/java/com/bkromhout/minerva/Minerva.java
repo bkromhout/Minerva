@@ -2,6 +2,7 @@ package com.bkromhout.minerva;
 
 import android.app.Application;
 import android.content.Context;
+import com.bkromhout.ruqus.Ruqus;
 import com.karumi.dexter.Dexter;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -24,6 +25,8 @@ public class Minerva extends Application {
         Dexter.initialize(this);
         // Set up Realm.
         setupRealm();
+        // Init Ruqus.
+        Ruqus.init(this);
     }
 
     /**

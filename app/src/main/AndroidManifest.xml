@@ -48,6 +48,11 @@
                 android:theme="@style/AppTheme">
         </activity>
         <activity
+                android:name=".QueryBuilderActivity"
+                android:label="@string/title_activity_query_builder"
+                android:theme="@style/AppTheme">
+        </activity>
+        <activity
                 android:name=".SettingsActivity"
                 android:label="@string/title_activity_settings"
                 android:parentActivityName=".MainActivity"

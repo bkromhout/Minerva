@@ -5,11 +5,11 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0-alpha1'
+        classpath 'com.android.tools.build:gradle:2.1.0-alpha4'
         classpath 'me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'me.tatarka:gradle-retrolambda:3.3.0-beta4'
-        classpath "io.realm:realm-gradle-plugin:0.88.0"
+        classpath 'io.realm:realm-gradle-plugin:0.88.2'
     }
     // Use custom lombok version.
     configurations.classpath.exclude group: 'com.android.tools.external.lombok'
@@ -18,9 +18,10 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
-        maven {url "https://jitpack.io"}
+        maven {url 'https://jitpack.io'}
         maven {url 'https://github.com/psiegman/mvn-repo/raw/master/releases'}
         maven {url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo'}
+        maven {url 'https://dl.bintray.com/bkromhout/maven'}
     }
 }
 

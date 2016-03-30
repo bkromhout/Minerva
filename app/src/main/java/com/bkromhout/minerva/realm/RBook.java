@@ -12,6 +12,9 @@ import com.bkromhout.minerva.data.SuperBook;
 import com.bkromhout.minerva.prefs.DBPrefs;
 import com.bkromhout.minerva.util.BookUtils;
 import com.bkromhout.minerva.util.Util;
+import com.bkromhout.ruqus.Hide;
+import com.bkromhout.ruqus.Queryable;
+import com.bkromhout.ruqus.VisibleAs;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -30,6 +33,7 @@ import java.util.List;
 /**
  * Represents a book in Realm.
  */
+@Queryable(name = "Book")
 public class RBook extends RealmObject {
     public static final String SUBJECT_STR_SEP = ";SUBJECT_STR_SEP;";
     public static final String TYPE_STR_SEP = ";TYPE_STR_SEP;";
@@ -37,6 +41,7 @@ public class RBook extends RealmObject {
      * Path to book file (relative to library directory).
      */
     @PrimaryKey
+    @VisibleAs(string = "Relative Path")
     private String relPath;
     /**
      * Book title from epub. (We only get the first one for this)
@@ -53,6 +58,7 @@ public class RBook extends RealmObject {
     /**
      * Book description from epub.
      */
+    @VisibleAs(string = "Description")
     private String desc;
     /**
      * Book subjects from epub. Comma separated.
@@ -79,23 +85,28 @@ public class RBook extends RealmObject {
      * <p>
      * Note that this is just simply whatever is set in the epub, we can't guarantee that it's unique!
      */
+    @VisibleAs(string = "Book ID")
     private String bookId;
     /**
      * Date that the epub reports it was created.
      */
+    @Hide
     private String createDate;
     /**
      * Date that the epub reports it was published.
      */
+    @VisibleAs(string = "Date Published (String)")
     private String pubDate;
     /**
      * Date that the epub reports it was modified.
      */
+    @VisibleAs(string = "Date Modified (String)")
     private String modDate;
     /**
      * Number of chapters in the book. We get this number by getting the size of the TOC... epub is a weird standard, so
      * that might not work.
      */
+    @VisibleAs(string = "Number of chapters")
     private int numChaps;
     /**
      * Whether or not the book has a cover image.
@@ -107,6 +118,7 @@ public class RBook extends RealmObject {
     /**
      * Hash of file from the last time it was imported.
      */
+    @Hide
     private String hash;
     /**
      * Date that the data for this book was last modified.
@@ -137,6 +149,7 @@ public class RBook extends RealmObject {
      * A unique long value.
      */
     @Index
+    @Hide
     private long uniqueId;
 
     /**

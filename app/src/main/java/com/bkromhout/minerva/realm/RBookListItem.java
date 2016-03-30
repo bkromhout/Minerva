@@ -2,6 +2,8 @@ package com.bkromhout.minerva.realm;
 
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.prefs.DBPrefs;
+import com.bkromhout.ruqus.Hide;
+import com.bkromhout.ruqus.Queryable;
 import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
@@ -13,6 +15,7 @@ import java.util.List;
 /**
  * Represents an item in a book list in Realm.
  */
+@Queryable(name = "Book in list")
 public class RBookListItem extends RealmObject {
     private static final String KEY_SEP = "##BLI_KEY##";
     /**
@@ -20,6 +23,7 @@ public class RBookListItem extends RealmObject {
      * are themselves primary keys) and combining them like so: "[owning list's name]$$[book's relative path]".
      */
     @PrimaryKey
+    @Hide
     private String key;
     /**
      * The {@link RBookList} which this item belongs to.
@@ -37,11 +41,13 @@ public class RBookListItem extends RealmObject {
      * multiple items.
      */
     @Index
+    @Hide
     private Long pos;
     /**
      * A unique long value.
      */
     @Index
+    @Hide
     private long uniqueId;
 
     /**
