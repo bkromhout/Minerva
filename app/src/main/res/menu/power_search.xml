@@ -2,4 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item
+            android:id="@+id/action_card_type"
+            app:showAsAction="ifRoom"
+            android:icon="@drawable/ic_eye"
+            android:title="@string/action_card_type"/>
+
+    <item
+            android:id="@+id/action_save_as_smart_list"
+            app:showAsAction="ifRoom"
+            android:icon=""
+            android:title="@string/action_save_as_smart_list"/>
 </menu>

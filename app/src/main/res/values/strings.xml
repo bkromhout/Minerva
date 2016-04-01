@@ -177,6 +177,7 @@
     <!-- Power Search Fragment -->
     <string name="sort_asc">Ascending</string>
     <string name="sort_desc">Descending</string>
+    <string name="action_save_as_smart_list">Save As Smart List</string>
 
     <!-- Query Builder Activity -->
     <string name="title_activity_query_builder">Query Builder</string>
