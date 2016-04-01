@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * Represents a book in Realm.
  */
-@Queryable(name = "Book")
+@Queryable(name = "Books")
 public class RBook extends RealmObject {
     public static final String SUBJECT_STR_SEP = ";SUBJECT_STR_SEP;";
     public static final String TYPE_STR_SEP = ";TYPE_STR_SEP;";
@@ -95,18 +95,18 @@ public class RBook extends RealmObject {
     /**
      * Date that the epub reports it was published.
      */
-    @VisibleAs(string = "Date Published (String)")
+    @VisibleAs(string = "Date Book Published (String)")
     private String pubDate;
     /**
      * Date that the epub reports it was modified.
      */
-    @VisibleAs(string = "Date Modified (String)")
+    @Hide
     private String modDate;
     /**
      * Number of chapters in the book. We get this number by getting the size of the TOC... epub is a weird standard, so
      * that might not work.
      */
-    @VisibleAs(string = "Number of chapters")
+    @VisibleAs(string = "Chapter Count")
     private int numChaps;
     /**
      * Whether or not the book has a cover image.

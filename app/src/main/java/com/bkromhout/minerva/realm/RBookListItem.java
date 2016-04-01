@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Represents an item in a book list in Realm.
  */
-@Queryable(name = "Book in list")
+@Queryable(name = "Books in lists")
 public class RBookListItem extends RealmObject {
     private static final String KEY_SEP = "##BLI_KEY##";
     /**
