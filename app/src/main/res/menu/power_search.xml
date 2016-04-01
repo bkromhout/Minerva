@@ -11,6 +11,6 @@
     <item
             android:id="@+id/action_save_as_smart_list"
             app:showAsAction="ifRoom"
-            android:icon=""
+            android:icon="@drawable/ic_lightbulb"
             android:title="@string/action_save_as_smart_list"/>
 </menu>
