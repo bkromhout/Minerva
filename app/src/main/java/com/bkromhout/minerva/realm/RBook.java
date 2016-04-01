@@ -249,6 +249,7 @@ public class RBook extends RealmObject {
         // TODO make the user aware that the underlying file doesn't exist!
         if (file == null) return;
 
+        // TODO make this work using content URI??? But the receiving app needs to know it's the same file...
         Intent newIntent = new Intent(Intent.ACTION_VIEW);
         newIntent.setDataAndType(Uri.fromFile(file),
                 MimeTypeMap.getSingleton().getMimeTypeFromExtension(Util.getExtFromFName(file.getName())));
