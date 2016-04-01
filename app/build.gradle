@@ -57,7 +57,7 @@ dependencies {
     compile 'com.google.guava:guava:19.0'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.jakewharton:butterknife:7.0.1'
-    compile 'io.reactivex:rxjava:1.1.1'
+    compile 'io.reactivex:rxjava:1.1.2'
     compile 'io.reactivex:rxandroid:1.1.0'
     compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
     compile ('com.github.greenfrvr:hashtag-view:1.2.1@aar') // Note that we must include Guava ourselves for this.
@@ -69,11 +69,11 @@ dependencies {
     compile ('com.bkromhout.ruqus:ruqus-core:1.0.2@aar') {
         transitive = true
     }
-    compile 'com.karumi:dexter:2.2.1'
-    compile('com.github.afollestad.material-dialogs:core:0.8.5.6@aar') {
+    compile 'com.karumi:dexter:2.2.2'
+    compile('com.github.afollestad.material-dialogs:core:0.8.5.7@aar') {
         transitive = true
     }
-    compile('com.github.afollestad.material-dialogs:commons:0.8.5.6@aar') {
+    compile('com.github.afollestad.material-dialogs:commons:0.8.5.7@aar') {
         transitive = true
     }
     compile('nl.siegmann.epublib:epublib-core:3.1') {
