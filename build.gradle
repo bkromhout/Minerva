@@ -21,7 +21,6 @@ allprojects {
         maven {url 'https://jitpack.io'}
         maven {url 'https://github.com/psiegman/mvn-repo/raw/master/releases'}
         maven {url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo'}
-        maven {url 'https://dl.bintray.com/bkromhout/maven'}
     }
 }
 
