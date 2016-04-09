@@ -1,6 +1,8 @@
 package com.bkromhout.minerva;
 
+import android.content.res.ColorStateList;
 import android.support.annotation.StringRes;
+import android.support.v4.content.ContextCompat;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
@@ -21,6 +23,11 @@ public final class C {
      * Valid file extensions.
      */
     public static final List<String> VALID_EXTS = ImmutableList.of("epub");
+    /**
+     * Color selector for card view backgrounds.
+     */
+    public static final ColorStateList CARD_BG_COLORS = ContextCompat.getColorStateList(Minerva.getAppCtx(),
+            R.color.card_bg_color);
 
     /* Request codes. */
     public static final int RC_TAG_ACTIVITY = 1;

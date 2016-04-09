@@ -1,12 +1,14 @@
 package com.bkromhout.minerva.adapters;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.*;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.events.BookCardClickEvent;
 import com.bkromhout.minerva.realm.RBook;
@@ -55,8 +57,11 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Base
         if (book == null || rippleFgListener == null) throw new IllegalArgumentException();
         boolean selected = selectedPositions.contains(position);
 
-        // Do common bindings. First, change the card's background color based on whether or not the item is selected.
-        viewHolder.cardView.setCardBackgroundColor(selected ? R.color.selectedCard : R.color.cardview_dark_background);
+        // Do common bindings. First, make sure the card's background color changes based on whether or not the item is
+        // selected.
+        viewHolder.cardView.getBackground().setTintMode(PorterDuff.Mode.SRC);
+        viewHolder.cardView.getBackground().setTintList(C.CARD_BG_COLORS);
+        viewHolder.cardView.setActivated(selected);
 
         // Make the card ripple when touched.
         viewHolder.content.setOnTouchListener(rippleFgListener);
@@ -152,8 +157,8 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Base
 
     /**
      * Set whether or not the adapter may start view drags currently. Note that if the {@link
-     * com.bkromhout.rrvl.RealmRecyclerView} this adapter is bound to is set to automatically begin drags
-     * on long click, this will be ignored.
+     * com.bkromhout.rrvl.RealmRecyclerView} this adapter is bound to is set to automatically begin drags on long click,
+     * this will be ignored.
      * @param mayStartDrags If true, the adapter can start item drags.
      */
     public void setDragMode(boolean mayStartDrags) {

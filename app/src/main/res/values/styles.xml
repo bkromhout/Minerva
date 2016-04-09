@@ -18,4 +18,17 @@
     <!-- PopupMenu -->
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat">
     </style>
+
+    <!-- Dark Cards -->
+    <style name="MinervaDarkCard" parent="CardView.Dark">
+        <item name="android:layout_marginStart">@dimen/card_margin_left</item>
+        <item name="android:layout_marginTop">@dimen/card_margin_top</item>
+        <item name="android:layout_marginEnd">@dimen/card_margin_right</item>
+        <item name="android:layout_marginBottom">@dimen/card_margin_bottom</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="cardBackgroundColor">@color/card_bg_color</item>
+        <item name="cardElevation">@dimen/card_elevation</item>
+    </style>
 </resources>
