@@ -27,7 +27,7 @@ import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
-import com.bkromhout.realmrecyclerview.RealmRecyclerView;
+import com.bkromhout.rrvl.RealmRecyclerView;
 import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;

@@ -20,7 +20,7 @@
             android:maxLines="1"
             android:hint="@string/action_filter"/>
 
-    <com.bkromhout.realmrecyclerview.RealmRecyclerView
+    <com.bkromhout.rrvl.RealmRecyclerView
             android:id="@id/recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

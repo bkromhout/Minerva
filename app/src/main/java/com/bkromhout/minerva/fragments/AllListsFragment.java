@@ -17,7 +17,7 @@ import com.bkromhout.minerva.events.BookListCardClickEvent;
 import com.bkromhout.minerva.prefs.ListsPrefs;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.util.Util;
-import com.bkromhout.realmrecyclerview.RealmRecyclerView;
+import com.bkromhout.rrvl.RealmRecyclerView;
 import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;

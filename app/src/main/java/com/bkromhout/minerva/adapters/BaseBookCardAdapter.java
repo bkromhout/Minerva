@@ -152,7 +152,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Base
 
     /**
      * Set whether or not the adapter may start view drags currently. Note that if the {@link
-     * com.bkromhout.realmrecyclerview.RealmRecyclerView} this adapter is bound to is set to automatically begin drags
+     * com.bkromhout.rrvl.RealmRecyclerView} this adapter is bound to is set to automatically begin drags
      * on long click, this will be ignored.
      * @param mayStartDrags If true, the adapter can start item drags.
      */

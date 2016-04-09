@@ -1,12 +1,18 @@
 package com.bkromhout.minerva;
 
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.aboutlibraries.ui.LibsSupportFragment;
@@ -15,15 +21,16 @@ import com.mikepenz.aboutlibraries.ui.LibsSupportFragment;
  * Shows information about the Application.
  */
 public class AboutActivity extends AppCompatActivity {
-    /**
-     * Libraries info fragment.
-     */
-    private LibsSupportFragment libsFrag;
+    @Bind(R.id.about_app_version)
+    TextView version;
+    @Bind(R.id.github)
+    ImageButton github;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
+        ButterKnife.bind(this);
 
         // Set up toolbar.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -42,15 +49,13 @@ public class AboutActivity extends AppCompatActivity {
         // Set version text.
         try {
             PackageInfo pkgInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            //noinspection ConstantConditions
-            ((TextView) findViewById(R.id.about_app_version))
-                    .setText(C.getStr(R.string.version_string, pkgInfo.versionName, pkgInfo.versionCode));
+            version.setText(C.getStr(R.string.version_string, pkgInfo.versionName, pkgInfo.versionCode));
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
 
         // Fill in libraries.
-        libsFrag = new LibsBuilder()
+        LibsSupportFragment libsFrag = new LibsBuilder()
                 .withActivityStyle(Libs.ActivityStyle.DARK)
                 .supportFragment();
         getSupportFragmentManager().beginTransaction().add(R.id.about_libs, libsFrag).commit();
@@ -66,5 +71,11 @@ public class AboutActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @OnClick(R.id.github)
+    void onGitHubLogoClicked() {
+        // Open Minerva's GitHub repo in browser.
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/bkromhout/Minerva")));
     }
 }

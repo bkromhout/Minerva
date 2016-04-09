@@ -23,7 +23,7 @@ import com.bkromhout.minerva.events.TagCardClickEvent;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.util.Util;
-import com.bkromhout.realmrecyclerview.RealmRecyclerView;
+import com.bkromhout.rrvl.RealmRecyclerView;
 import com.google.common.collect.Lists;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.jakewharton.rxbinding.widget.TextViewTextChangeEvent;
