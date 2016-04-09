@@ -71,15 +71,22 @@
 
         <ImageButton
                 android:id="@+id/github"
-                app:layout_heightPercent="10%"
+                app:layout_heightPercent="9.5%"
                 app:layout_aspectRatio="100%"
+                android:layout_marginBottom="8dp"
                 android:layout_centerHorizontal="true"
                 android:layout_below="@id/about_app_version"
                 android:backgroundTint="@android:color/transparent"
                 android:src="@drawable/github_logo"
                 android:tint="@color/textColorPrimary"
                 android:scaleType="fitCenter"
-                android:adjustViewBounds="true"/>
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/acc_github_logo"/>
 
+        <FrameLayout
+                android:id="@+id/about_libs"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/github"/>
     </android.support.percent.PercentRelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

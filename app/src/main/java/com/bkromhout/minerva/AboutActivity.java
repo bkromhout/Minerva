@@ -1,14 +1,24 @@
 package com.bkromhout.minerva;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.TextView;
+import com.mikepenz.aboutlibraries.Libs;
+import com.mikepenz.aboutlibraries.LibsBuilder;
+import com.mikepenz.aboutlibraries.ui.LibsSupportFragment;
 
 /**
- * TODO
+ * Shows information about the Application.
  */
 public class AboutActivity extends AppCompatActivity {
+    /**
+     * Libraries info fragment.
+     */
+    private LibsSupportFragment libsFrag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,11 +31,29 @@ public class AboutActivity extends AppCompatActivity {
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+
+        initUi();
     }
 
+    /**
+     * Initialize UI.
+     */
     private void initUi() {
-        // TODO fill in version text
+        // Set version text.
+        try {
+            PackageInfo pkgInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            //noinspection ConstantConditions
+            ((TextView) findViewById(R.id.about_app_version))
+                    .setText(C.getStr(R.string.version_string, pkgInfo.versionName, pkgInfo.versionCode));
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
 
+        // Fill in libraries.
+        libsFrag = new LibsBuilder()
+                .withActivityStyle(Libs.ActivityStyle.DARK)
+                .supportFragment();
+        getSupportFragmentManager().beginTransaction().add(R.id.about_libs, libsFrag).commit();
     }
 
     @Override
@@ -37,7 +65,6 @@ public class AboutActivity extends AppCompatActivity {
                 onBackPressed();
                 return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }
