@@ -69,6 +69,9 @@ dependencies {
     compile ('com.bkromhout.ruqus:ruqus-core:1.0.2@aar') {
         transitive = true
     }
+    compile('com.mikepenz:aboutlibraries:5.6.5@aar') {
+        transitive = true
+    }
     compile 'com.karumi:dexter:2.2.2'
     compile('com.github.afollestad.material-dialogs:core:0.8.5.7@aar') {
         transitive = true

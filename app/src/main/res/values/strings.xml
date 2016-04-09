@@ -1,7 +1,7 @@
 <resources>
     <!-- General -->
     <string name="app_name">Minerva</string>
-    <string name="tag_line">Organize your books with ease!</string>
+    <string name="tag_line">Organize your eBooks with ease!</string>
     <string name="ok">OK</string>
     <string name="yes">Yes</string>
     <string name="save">Save</string>
@@ -222,6 +222,9 @@
 
     <!-- About Activity -->
     <string name="title_activity_about">@string/nav_item_about</string>
-
+    <string name="app_name_part">inerva</string>
+    <string name="acc_app_icon">App Icon</string>
+    <string name="acc_github_logo">GitHub Logo</string>
+    <string name="github_label">Minerva is open source, check it out on GitHub!</string>
 
 </resources>
