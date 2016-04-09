@@ -131,7 +131,7 @@
                     app:tagTextColor="@color/grey200"
                     app:tagTextSize="12sp"
                     app:tagEllipsize="end"
-                    app:tagBackground="@color/grey800"
+                    app:tagBackground="@color/grey700"
                     app:tagMargin="1dp"
                     app:tagMaxWidth="100sp"
                     app:tagPaddingTop="0dp"
