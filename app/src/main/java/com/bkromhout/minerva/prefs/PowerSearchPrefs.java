@@ -46,6 +46,6 @@ public class PowerSearchPrefs implements BCTPref {
 
     @Override
     public void putCardType(BookCardType cardType) {
-        prefs.edit().putString(CARD_TYPE, cardType.name()).apply();
+        prefs.edit().putString(CARD_TYPE, cardType.getName()).apply();
     }
 }

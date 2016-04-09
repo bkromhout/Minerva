@@ -83,18 +83,8 @@ public enum SortType {
      * @return SortType, or null if not a valid {@code number}.
      */
     public static SortType fromNumber(@IntRange(from = 0, to = 3) int number) {
-        switch (number) {
-            case 0:
-                return TITLE;
-            case 1:
-                return AUTHOR;
-            case 2:
-                return TIME_ADDED;
-            case 3:
-                return RATING;
-            default:
-                return null;
-        }
+        for (SortType sortType : SortType.values()) if (sortType.getNum() == number) return sortType;
+        return null;
     }
 
     /**
@@ -103,18 +93,8 @@ public enum SortType {
      * @return SortType, or null if not a valid resource ID.
      */
     public static SortType fromResId(@IdRes int idRes) {
-        switch (idRes) {
-            case R.id.sort_title:
-                return TITLE;
-            case R.id.sort_author:
-                return AUTHOR;
-            case R.id.sort_time_added:
-                return TIME_ADDED;
-            case R.id.sort_rating:
-                return RATING;
-            default:
-                return null;
-        }
+        for (SortType sortType : SortType.values()) if (sortType.getResId() == idRes) return sortType;
+        return null;
     }
 
     /**
@@ -123,10 +103,7 @@ public enum SortType {
      * @return SortType, or null if not a valid name.
      */
     public static SortType fromName(String name) {
-        if (TITLE.name.equals(name)) return TITLE;
-        else if (AUTHOR.name.equals(name)) return AUTHOR;
-        else if (TIME_ADDED.name.equals(name)) return TIME_ADDED;
-        else if (RATING.name.equals(name)) return RATING;
-        else return null;
+        for (SortType sortType : SortType.values()) if (sortType.getName().equals(name)) return sortType;
+        return null;
     }
 }

@@ -480,6 +480,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         // Do something different based on name of changed preference.
         switch (event.getPrefName()) {
             case BCTPref.CARD_TYPE:
+                cardType = listsPrefs.getCardType(cardType);
                 changeCardType();
                 break;
         }

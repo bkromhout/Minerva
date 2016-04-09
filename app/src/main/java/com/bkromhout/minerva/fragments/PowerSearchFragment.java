@@ -483,6 +483,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
         // Do something different based on name of changed preference.
         switch (event.getPrefName()) {
             case BCTPref.CARD_TYPE:
+                cardType = powerSearchPrefs.getCardType(cardType);
                 changeCardType();
                 break;
         }

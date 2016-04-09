@@ -57,7 +57,7 @@ public class LibraryPrefs implements BCTPref {
      * @param sortType Sort type.
      */
     public void putSortType(SortType sortType) {
-        prefs.edit().putString(SORT_TYPE, sortType.name()).apply();
+        prefs.edit().putString(SORT_TYPE, sortType.getName()).apply();
     }
 
     /**
@@ -75,7 +75,7 @@ public class LibraryPrefs implements BCTPref {
      * @param sortDir Sort direction.
      */
     public void putSortDir(SortDir sortDir) {
-        prefs.edit().putString(SORT_DIR, sortDir.name()).apply();
+        prefs.edit().putString(SORT_DIR, sortDir.getName()).apply();
     }
 
     @Override
@@ -86,7 +86,7 @@ public class LibraryPrefs implements BCTPref {
 
     @Override
     public void putCardType(BookCardType cardType) {
-        prefs.edit().putString(CARD_TYPE, cardType.name()).apply();
+        prefs.edit().putString(CARD_TYPE, cardType.getName()).apply();
     }
 
     /**
@@ -97,9 +97,9 @@ public class LibraryPrefs implements BCTPref {
      */
     public void putLibraryViewOpts(SortType sortType, SortDir sortDir, BookCardType cardType) {
         prefs.edit()
-             .putString(SORT_TYPE, sortType.name())
-             .putString(SORT_DIR, sortDir.name())
-             .putString(CARD_TYPE, cardType.name())
+             .putString(SORT_TYPE, sortType.getName())
+             .putString(SORT_DIR, sortDir.getName())
+             .putString(CARD_TYPE, cardType.getName())
              .apply();
     }
 }

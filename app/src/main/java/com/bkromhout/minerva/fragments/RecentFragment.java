@@ -454,6 +454,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
         // Do something different based on name of changed preference.
         switch (event.getPrefName()) {
             case BCTPref.CARD_TYPE:
+                cardType = recentPrefs.getCardType(cardType);
                 changeCardType();
                 break;
         }

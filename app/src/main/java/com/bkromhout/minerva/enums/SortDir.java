@@ -82,14 +82,8 @@ public enum SortDir {
      * @return SortDir, or null if not a valid {@code number}.
      */
     public static SortDir fromNumber(@IntRange(from = 0, to = 1) int number) {
-        switch (number) {
-            case 0:
-                return ASC;
-            case 1:
-                return DESC;
-            default:
-                return null;
-        }
+        for (SortDir dir : SortDir.values()) if (dir.getNum() == number) return dir;
+        return null;
     }
 
     /**
@@ -98,14 +92,8 @@ public enum SortDir {
      * @return SortDir, or null if not a valid resource ID.
      */
     public static SortDir fromResId(@IdRes int idRes) {
-        switch (idRes) {
-            case R.id.sort_asc:
-                return ASC;
-            case R.id.sort_desc:
-                return DESC;
-            default:
-                return null;
-        }
+        for (SortDir dir : SortDir.values()) if (dir.getResId() == idRes) return dir;
+        return null;
     }
 
     /**
@@ -114,8 +102,7 @@ public enum SortDir {
      * @return SortDir, or null if not a valid name.
      */
     public static SortDir fromName(String name) {
-        if (ASC.name.equals(name)) return ASC;
-        else if (DESC.name.equals(name)) return DESC;
-        else return null;
+        for (SortDir dir : SortDir.values()) if (dir.getName().equals(name)) return dir;
+        return null;
     }
 }

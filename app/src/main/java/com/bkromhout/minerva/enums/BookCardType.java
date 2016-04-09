@@ -35,7 +35,7 @@ public enum BookCardType {
      * @return Number.
      */
     public final int getNum() {
-        return num;
+        return this.num;
     }
 
     /**
@@ -44,7 +44,7 @@ public enum BookCardType {
      */
     @IdRes
     public final int getResId() {
-        return id;
+        return this.id;
     }
 
     /**
@@ -52,7 +52,7 @@ public enum BookCardType {
      * @return Name.
      */
     public final String getName() {
-        return name;
+        return this.name;
     }
 
     /**
@@ -71,16 +71,8 @@ public enum BookCardType {
      * @return BookCardType, or null if not a valid {@code number}.
      */
     public static BookCardType fromNumber(@IntRange(from = 0, to = 2) int number) {
-        switch (number) {
-            case 0:
-                return NORMAL;
-            case 1:
-                return NO_COVER;
-            case 2:
-                return COMPACT;
-            default:
-                return null;
-        }
+        for (BookCardType type : BookCardType.values()) if (type.getNum() == number) return type;
+        return null;
     }
 
     /**
@@ -89,16 +81,8 @@ public enum BookCardType {
      * @return BookCardType, or null if not a valid resource ID.
      */
     public static BookCardType fromResId(@IdRes int idRes) {
-        switch (idRes) {
-            case R.id.card_normal:
-                return NORMAL;
-            case R.id.card_no_cover:
-                return NO_COVER;
-            case R.id.card_compact:
-                return COMPACT;
-            default:
-                return null;
-        }
+        for (BookCardType type : BookCardType.values()) if (type.getResId() == idRes) return type;
+        return null;
     }
 
     /**
@@ -107,9 +91,7 @@ public enum BookCardType {
      * @return BookCardType, or null if not a valid name.
      */
     public static BookCardType fromName(String name) {
-        if (NORMAL.name.equals(name)) return NORMAL;
-        else if (NO_COVER.name.equals(name)) return NO_COVER;
-        else if (COMPACT.name.equals(name)) return COMPACT;
-        else return null;
+        for (BookCardType type : BookCardType.values()) if (type.getName().equals(name)) return type;
+        return null;
     }
 }
