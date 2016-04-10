@@ -110,7 +110,7 @@
                     android:progressBackgroundTint="@color/grey700"
                     android:numStars="5"
                     android:rating="3"
-                    style="@android:style/Widget.Material.RatingBar.Small"/>
+                    style="@style/Widget.AppCompat.RatingBar.Small"/>
 
             <com.greenfrvr.hashtagview.HashtagView
                     android:id="@+id/tags"

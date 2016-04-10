@@ -212,6 +212,9 @@
     <string name="acc_actions">Actions</string>
     <string name="acc_rating">Rating</string>
 
+    <string name="no_tags">This book has no tags</string>
+    <string name="no_lists">This book isn\'t in any lists</string>
+
     <string name="dummy_title">The Title of a Book</string>
     <string name="dummy_author">Firstname Lastname</string>
     <string name="dummy_desc">This is a fairly sizable dummy portion of text which is useful for showing in textviews

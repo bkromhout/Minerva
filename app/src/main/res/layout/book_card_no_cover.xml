@@ -49,7 +49,7 @@
                     android:progressBackgroundTint="@color/grey700"
                     android:numStars="5"
                     android:rating="3"
-                    style="@android:style/Widget.Material.RatingBar.Small"/>
+                    style="@style/Widget.AppCompat.RatingBar.Small"/>
 
             <View
                     android:id="@+id/sep1"
