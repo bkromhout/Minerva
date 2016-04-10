@@ -18,6 +18,7 @@ import com.bkromhout.ruqus.VisibleAs;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.RealmResults;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -288,6 +289,23 @@ public class RBook extends RealmObject {
             });
         }
         return relPaths;
+    }
+
+    /**
+     * Get names of {@link RBookList}s which {@code book} is in.
+     * @param book  Book to search for.
+     * @param realm Instance of Realm to use.
+     * @return List of list names.
+     */
+    public static List<String> listsBookIsIn(RBook book, Realm realm) {
+        List<String> listNames = new ArrayList<>();
+        if (book != null) {
+            RealmResults<RBookListItem> listItems = realm.where(RBookListItem.class)
+                                                         .equalTo("book.relPath", book.getRelPath())
+                                                         .findAll();
+            for (int i = listItems.size() - 1; i >= 0; i--) listNames.add(listItems.get(i).getOwningList().getName());
+        }
+        return listNames;
     }
 
     public String getRelPath() {

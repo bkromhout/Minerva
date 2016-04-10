@@ -9,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,14 +23,20 @@ import butterknife.OnClick;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.realm.RBook;
+import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.greenfrvr.hashtagview.HashtagView;
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import org.greenrobot.eventbus.Subscribe;
+
+import java.util.List;
 
 /**
  * Displays information for some {@link com.bkromhout.minerva.realm.RBook}.
+ * <p>
+ * TODO Make it so that clicking the header image view will show the cover in full screen.
  */
 public class BookInfoActivity extends AppCompatActivity {
     // Key strings for the bundle passed when this activity is started.
@@ -114,10 +121,6 @@ public class BookInfoActivity extends AppCompatActivity {
     TextView modDate;
 
     /**
-     * Relative path to use to find an {@link com.bkromhout.minerva.realm.RBook}.
-     */
-    private String relPath;
-    /**
      * Realm instance.
      */
     private Realm realm;
@@ -125,6 +128,10 @@ public class BookInfoActivity extends AppCompatActivity {
      * {@link RBook} whose information is being displayed.
      */
     private RBook book;
+    /**
+     * Listen for changes to {@link #book}. Call {@link #updateUi()} when they occur.
+     */
+    private RealmChangeListener bookListener = this::updateUi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,24 +148,20 @@ public class BookInfoActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
 
         // Get Realm and read extras bundle.
+        String relPath = getIntent().getExtras().getString(BOOK_SEL_STR, null);
+        if (relPath == null || relPath.isEmpty())
+            throw new IllegalArgumentException("Must supply non-null, non-empty relative path.");
         realm = Realm.getDefaultInstance();
-        readExtras(getIntent().getExtras());
 
         // Get RBook.
         book = realm.where(RBook.class).equalTo("relPath", relPath).findFirst();
         if (book == null) throw new IllegalArgumentException("Invalid relative path, no matching RBook found.");
 
-        // Set up the rest of the UI.
-        initUi();
-    }
+        // Set up the UI. TODO will adding the change listener make it be called once?
+        updateUi();
 
-    /**
-     * Fill in variables using the extras bundle.
-     * @param b Extras bundle from intent used to start this activity.
-     */
-    private void readExtras(Bundle b) {
-        if (b == null) return;
-        relPath = b.getString(BOOK_SEL_STR, null);
+        // Add the change listener to the RBook.
+        book.addChangeListener(bookListener);
     }
 
     @Override
@@ -177,6 +180,8 @@ public class BookInfoActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        // Remove listener.
+        book.removeChangeListener(bookListener);
         // Close Realm.
         if (realm != null) {
             realm.close();
@@ -190,8 +195,6 @@ public class BookInfoActivity extends AppCompatActivity {
             case R.id.action_read:
                 // Open the book file.
                 book.openFileUsingIntent(this);
-                // TODO Refresh last read date view.
-
                 return true;
             case android.R.id.home:
                 onBackPressed();
@@ -211,7 +214,6 @@ public class BookInfoActivity extends AppCompatActivity {
             case R.id.action_rate: {
                 // Save rating and update UI.
                 realm.executeTransaction(tRealm -> book.setRating((Integer) event.getData()));
-                rating.setNumStars((Integer) event.getData());
                 break;
             }
             case R.id.action_add_to_list: {
@@ -244,8 +246,7 @@ public class BookInfoActivity extends AppCompatActivity {
             case C.RC_TAG_ACTIVITY: {
                 // Came back from TaggingActivity.
                 if (resultCode == Activity.RESULT_OK) {
-                    // We've changed the tags on some books.
-                    // TODO Check book's tags, then toggle tags view based on that.
+                    // We've changed the tags on some books, but our change listener updates things for us.
                 }
                 break;
             }
@@ -280,10 +281,10 @@ public class BookInfoActivity extends AppCompatActivity {
     }
 
     /**
-     * Init the UI.
+     * Update the UI using the data in {@link #book}.
      */
     @SuppressLint("SetTextI18n")
-    private void initUi() {
+    private void updateUi() {
         // Set title.
         collapsibleToolbar.setTitle(book.getTitle());
 
@@ -298,6 +299,77 @@ public class BookInfoActivity extends AppCompatActivity {
         rating.setNumStars(book.getRating());
         path.setText(DefaultPrefs.get().getLibDir("") + book.getRelPath());
 
+        lastReadDate.setText(book.getLastReadDate() == null ? C.getStr(R.string.never)
+                : DateUtils.getRelativeDateTimeString(this, book.getLastReadDate().getTime(),
+                DateUtils.SECOND_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_SHOW_TIME));
+
+        lastImportDate.setText(DateUtils.getRelativeDateTimeString(this, book.getLastImportDate().getTime(),
+                DateUtils.SECOND_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_SHOW_TIME));
+
+        // Fill in tags or show empty view.
+        if (book.getTags().isEmpty()) togglePart(Part.TAGS, false);
+        else {
+            togglePart(Part.TAGS, true);
+            tags.setData(RTag.tagListToStringList(book.getTags()));
+        }
+
+        // Fill in lists or show empty view.
+        List<String> listNames = RBook.listsBookIsIn(book, realm);
+        if (listNames.isEmpty()) togglePart(Part.LISTS, false);
+        else {
+            togglePart(Part.LISTS, true);
+            lists.setText(Util.listToString(listNames, ", "));
+        }
+
+        // Fill in or hide conditional views using book data.
+        String temp = book.getSubjects();
+        if (temp == null || temp.isEmpty()) togglePart(Part.SUBJECTS, false);
+        else {
+            togglePart(Part.SUBJECTS, true);
+            subjects.setText(temp);
+        }
+
+        temp = book.getTypes();
+        if (temp == null || temp.isEmpty()) togglePart(Part.TYPES, false);
+        else {
+            togglePart(Part.TYPES, true);
+            types.setText(temp);
+        }
+
+        temp = book.getFormat();
+        if (temp == null || temp.isEmpty()) togglePart(Part.FORMAT, false);
+        else {
+            togglePart(Part.FORMAT, true);
+            format.setText(temp);
+        }
+
+        temp = book.getLanguage();
+        if (temp == null || temp.isEmpty()) togglePart(Part.LANGUAGE, false);
+        else {
+            togglePart(Part.LANGUAGE, true);
+            language.setText(temp);
+        }
+
+        temp = book.getPublisher();
+        if (temp == null || temp.isEmpty()) togglePart(Part.PUBLISHER, false);
+        else {
+            togglePart(Part.PUBLISHER, true);
+            publisher.setText(temp);
+        }
+
+        temp = book.getPubDate();
+        if (temp == null || temp.isEmpty()) togglePart(Part.PUBLISH_DATE, false);
+        else {
+            togglePart(Part.PUBLISH_DATE, true);
+            publishDate.setText(temp);
+        }
+
+        temp = book.getModDate();
+        if (temp == null || temp.isEmpty()) togglePart(Part.MOD_DATE, false);
+        else {
+            togglePart(Part.MOD_DATE, true);
+            modDate.setText(temp);
+        }
     }
 
     /**

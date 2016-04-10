@@ -48,7 +48,7 @@
     </style>
 
     <style name="BookInfoRatingBar" parent="Widget.AppCompat.RatingBar.Small">
-        <item name="progressDrawable">@drawable/rating_bar_stars</item>
-        <item name="indeterminateDrawable">@drawable/rating_bar_stars</item>
+        <item name="android:progressDrawable">@drawable/rating_bar_stars</item>
+        <item name="android:indeterminateDrawable">@drawable/rating_bar_stars</item>
     </style>
 </resources>
