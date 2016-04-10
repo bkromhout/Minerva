@@ -184,13 +184,34 @@
 
     <!-- Book Card/Book Info Activity -->
     <string name="title_activity_info">Book Information</string>
+
+    <string name="lbl_title">Title</string>
+    <string name="lbl_author">Author</string>
+    <string name="lbl_desc">Description</string>
+    <string name="lbl_rating">Rating</string>
+    <string name="lbl_chap_count">Chapter Count</string>
+    <string name="lbl_tags">Tags</string>
+    <string name="lbl_in_lists">In Lists</string>
+    <string name="lbl_path">Path</string>
+    <string name="lbl_last_read_date">Last Read</string>
+    <string name="lbl_last_import_date">Last Imported</string>
+    <string name="lbl_subjects">Subjects</string>
+    <string name="lbl_types">Types</string>
+    <string name="lbl_format">Format</string>
+    <string name="lbl_language">Language</string>
+    <string name="lbl_publisher">Publisher</string>
+    <string name="lbl_publish_date">Published</string>
+    <string name="lbl_mod_date">Modified</string>
+
+    <string name="lbl_rating_colon">Rating:</string>
+    <string name="lbl_tags_colon">Tags:</string>
+
     <string name="acc_book_cover">Book cover image</string>
     <string name="acc_book_info">View book info</string>
     <string name="acc_quick_tag">Quick tag</string>
     <string name="acc_actions">Actions</string>
     <string name="acc_rating">Rating</string>
-    <string name="lbl_rating">Rating:</string>
-    <string name="lbl_tags">Tags:</string>
+
     <string name="dummy_title">The Title of a Book</string>
     <string name="dummy_author">Firstname Lastname</string>
     <string name="dummy_desc">This is a fairly sizable dummy portion of text which is useful for showing in textviews

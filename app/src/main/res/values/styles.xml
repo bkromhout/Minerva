@@ -31,4 +31,9 @@
         <item name="cardBackgroundColor">@color/card_bg_color</item>
         <item name="cardElevation">@dimen/card_elevation</item>
     </style>
+
+    <style name="BookInfoLabelText" parent="TextAppearance.AppCompat.Button">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/grey400</item>
+    </style>
 </resources>
