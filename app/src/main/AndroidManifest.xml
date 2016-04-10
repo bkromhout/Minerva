@@ -45,7 +45,7 @@
         <activity
                 android:name=".BookInfoActivity"
                 android:label="@string/title_activity_info"
-                android:theme="@style/AppTheme">
+                android:theme="@style/AppTheme.TransparentStatus">
         </activity>
         <activity
                 android:name=".QueryBuilderActivity"

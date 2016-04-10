@@ -4,7 +4,7 @@
 
     <item
             android:id="@+id/action_read"
-            app:showAsAction="ifRoom"
+            app:showAsAction="never"
             android:icon="@drawable/ic_read"
             android:title="@string/action_resume_reading"/>
 </menu>

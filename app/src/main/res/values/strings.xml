@@ -183,7 +183,7 @@
     <string name="title_activity_query_builder">Query Builder</string>
 
     <!-- Book Card/Book Info Activity -->
-    <string name="title_activity_info">Book Info</string>
+    <string name="title_activity_info">Book Information</string>
     <string name="acc_book_cover">Book cover image</string>
     <string name="acc_book_info">View book info</string>
     <string name="acc_quick_tag">Quick tag</string>

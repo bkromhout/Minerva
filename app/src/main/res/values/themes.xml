@@ -14,4 +14,11 @@
         <item name="windowActionModeOverlay">true</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
     </style>
+
+    <!-- Default dark theme + transparent status bar -->
+    <style name="AppTheme.TransparentStatus" parent="AppTheme">
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
 </resources>
