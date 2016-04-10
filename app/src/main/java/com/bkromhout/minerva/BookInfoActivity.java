@@ -29,6 +29,7 @@ import com.bkromhout.minerva.util.Util;
 import com.greenfrvr.hashtagview.HashtagView;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.List;
@@ -178,6 +179,18 @@ public class BookInfoActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         // Remove listener.
@@ -296,7 +309,7 @@ public class BookInfoActivity extends AppCompatActivity {
         author.setText(book.getAuthor());
         desc.setText(book.getDesc());
         chapCount.setText(String.valueOf(book.getNumChaps()));
-        rating.setNumStars(book.getRating());
+        rating.setRating(book.getRating());
         path.setText(DefaultPrefs.get().getLibDir("") + book.getRelPath());
 
         lastReadDate.setText(book.getLastReadDate() == null ? C.getStr(R.string.never)

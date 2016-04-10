@@ -145,7 +145,7 @@
 
                 <TextView
                         android:id="@+id/lbl_rating"
-                        app:layout_widthPercent="24%"
+                        app:layout_widthPercent="25%"
                         android:layout_height="wrap_content"
                         android:layout_toEndOf="@id/lbl_chap_count"
                         android:text="@string/lbl_rating"
@@ -153,15 +153,15 @@
 
                 <RatingBar
                         android:id="@+id/rating"
-                        app:layout_widthPercent="24%"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignStart="@id/lbl_rating"
                         android:layout_below="@id/lbl_rating"
                         android:progressTint="@color/grey200"
                         android:progressBackgroundTint="@color/grey700"
                         android:numStars="5"
-                        android:rating="5"
-                        style="@style/Widget.AppCompat.RatingBar.Small"/>
+                        android:rating="3"
+                        style="?android:attr/ratingBarStyleSmall"/>
 
                 <ImageButton
                         android:id="@+id/edit_rating"
@@ -224,8 +224,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/grey600"
-                        style="@style/BookInfoTextSmall"
-                        tools:text="@string/no_tags"/>
+                        android:text="@string/no_tags"
+                        style="@style/BookInfoTextSmall"/>
             </FrameLayout>
 
             <TextView
@@ -255,8 +255,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/grey600"
-                        style="@style/BookInfoTextSmall"
-                        tools:text="@string/no_lists"/>
+                        android:text="@string/no_lists"
+                        style="@style/BookInfoTextSmall"/>
             </FrameLayout>
 
             <TextView
