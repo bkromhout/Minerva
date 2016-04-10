@@ -2,6 +2,7 @@ package com.bkromhout.minerva;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -21,6 +22,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.events.ActionEvent;
+import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RTag;
@@ -41,7 +43,8 @@ import java.util.List;
  */
 public class BookInfoActivity extends AppCompatActivity {
     // Key strings for the bundle passed when this activity is started.
-    public static final String BOOK_SEL_STR = "BOOK_SEL_STR";
+    private static final String REL_PATH = "REL_PATH";
+    private static final String UPDATE_POS = "UPDATE_POS";
 
     /**
      * Part of the information for which views are conditionally shown.
@@ -122,6 +125,10 @@ public class BookInfoActivity extends AppCompatActivity {
     TextView modDate;
 
     /**
+     * Position of the book card
+     */
+    private int updatePos;
+    /**
      * Realm instance.
      */
     private Realm realm;
@@ -133,6 +140,21 @@ public class BookInfoActivity extends AppCompatActivity {
      * Listen for changes to {@link #book}. Call {@link #updateUi()} when they occur.
      */
     private RealmChangeListener bookListener = this::updateUi;
+
+    /**
+     * Start the {@link BookInfoActivity} for the {@link RBook} with the given {@code relPath}.
+     * @param context   Context to use to start the activity.
+     * @param relPath   Relative path which will be used to get the {@link RBook}.
+     * @param updatePos Position which should be updated when the activity closes.
+     */
+    public static void start(Context context, String relPath, int updatePos) {
+        if (relPath == null || relPath.isEmpty())
+            throw new IllegalArgumentException("Must supply non-null, non-empty relative path.");
+        if (updatePos < 0)
+            throw new IllegalArgumentException("Must supply a position >= 0.");
+        context.startActivity(new Intent(context, BookInfoActivity.class).putExtra(REL_PATH, relPath)
+                                                                         .putExtra(UPDATE_POS, updatePos));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,9 +171,8 @@ public class BookInfoActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
 
         // Get Realm and read extras bundle.
-        String relPath = getIntent().getExtras().getString(BOOK_SEL_STR, null);
-        if (relPath == null || relPath.isEmpty())
-            throw new IllegalArgumentException("Must supply non-null, non-empty relative path.");
+        String relPath = getIntent().getStringExtra(REL_PATH);
+        updatePos = getIntent().getIntExtra(UPDATE_POS, -1);
         realm = Realm.getDefaultInstance();
 
         // Get RBook.
@@ -187,6 +208,7 @@ public class BookInfoActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
+        EventBus.getDefault().postSticky(new UpdatePosEvent(updatePos));
         EventBus.getDefault().unregister(this);
     }
 

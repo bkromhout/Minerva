@@ -26,6 +26,7 @@ import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
 import com.bkromhout.minerva.events.PrefChangeEvent;
+import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.prefs.RecentPrefs;
 import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 import com.bkromhout.minerva.realm.RBook;
@@ -389,9 +390,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
                 break;
             case INFO:
                 // Open BookInfoActivity.
-                Bundle b = new Bundle();
-                b.putString(BookInfoActivity.BOOK_SEL_STR, event.getRelPath());
-                Util.startAct(getActivity(), BookInfoActivity.class, b);
+                BookInfoActivity.start(getActivity(), event.getRelPath(), event.getPosition());
                 break;
             case QUICK_TAG:
                 TaggingActivity.start(this, book);
@@ -458,6 +457,18 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
                 changeCardType();
                 break;
         }
+    }
+
+    /**
+     * When called, update the item at the position carried in the event.
+     * @param event {@link UpdatePosEvent}.
+     */
+    @Subscribe(sticky = true)
+    public void onUpdatePosEvent(UpdatePosEvent event) {
+        // Remove the sticky event.
+        EventBus.getDefault().removeStickyEvent(event);
+        // Update the item at the position in the event.
+        adapter.notifyItemChanged(event.getPosition());
     }
 
     @Override
