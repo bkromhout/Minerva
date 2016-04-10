@@ -46,9 +46,4 @@
     <style name="BookInfoTextSmall" parent="TextAppearance.AppCompat.Medium">
         <item name="android:textSize">14sp</item>
     </style>
-
-    <style name="BookInfoRatingBar" parent="Widget.AppCompat.RatingBar.Small">
-        <item name="android:progressDrawable">@drawable/rating_bar_stars</item>
-        <item name="android:indeterminateDrawable">@drawable/rating_bar_stars</item>
-    </style>
 </resources>

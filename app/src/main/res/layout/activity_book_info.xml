@@ -161,7 +161,7 @@
                         android:progressBackgroundTint="@color/grey700"
                         android:numStars="5"
                         android:rating="5"
-                        style="@style/BookInfoRatingBar"/>
+                        style="@style/Widget.AppCompat.RatingBar.Small"/>
 
                 <ImageButton
                         android:id="@+id/edit_rating"
