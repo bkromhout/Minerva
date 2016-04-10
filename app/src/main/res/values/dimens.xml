@@ -10,6 +10,9 @@
     <dimen name="nav_header_vertical_spacing">16dp</dimen>
     <dimen name="nav_header_height">160dp</dimen>
 
+    <!-- Book Info -->
+    <dimen name="collapsible_header_height">256dp</dimen>
+
     <!-- Cards -->
     <dimen name="book_card_height">180dp</dimen>
     <dimen name="book_card_no_cover_height">128dp</dimen>

@@ -1,16 +1,22 @@
 package com.bkromhout.minerva;
 
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.util.Util;
+import io.realm.Realm;
 
 /**
- * TODO
+ * Displays information for some {@link com.bkromhout.minerva.realm.RBook}.
  */
 public class BookInfoActivity extends AppCompatActivity {
     // Key strings for the bundle passed when this activity is started.
@@ -19,11 +25,26 @@ public class BookInfoActivity extends AppCompatActivity {
     // Views.
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+    @Bind(R.id.collapsing_toolbar)
+    CollapsingToolbarLayout collapsibleToolbar;
+    @Bind(R.id.cover_image)
+    ImageView coverImage;
+    @Bind(R.id.fab)
+    FloatingActionButton fab;
+
 
     /**
-     * Unique string to help find the correct book to display from the DB.
+     * Relative path to use to find an {@link com.bkromhout.minerva.realm.RBook}.
      */
-    private String selStr;
+    private String relPath;
+    /**
+     * Realm instance.
+     */
+    private Realm realm;
+    /**
+     * {@link RBook} whose information is being displayed.
+     */
+    private RBook book;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,13 +60,16 @@ public class BookInfoActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        // Read extras bundle.
+        // Get Realm and read extras bundle.
+        realm = Realm.getDefaultInstance();
         readExtras(getIntent().getExtras());
+
+        // Get RBook.
+        book = realm.where(RBook.class).equalTo("relPath", relPath).findFirst();
+        if (book == null) throw new IllegalArgumentException("Invalid relative path, no matching RBook found.");
 
         // Set up the rest of the UI.
         initUi();
-
-        // TODO set the title in here somewhere.
     }
 
     /**
@@ -54,21 +78,20 @@ public class BookInfoActivity extends AppCompatActivity {
      */
     private void readExtras(Bundle b) {
         if (b == null) return;
-        selStr = b.getString(BOOK_SEL_STR, null);
+        relPath = b.getString(BOOK_SEL_STR, null);
     }
 
     /**
      * Init the UI.
      */
     private void initUi() {
-        if (selStr == null) {
-            // TODO something here.
-            return;
-        }
+        // Set title.
+        collapsibleToolbar.setTitle(book.getTitle());
 
-        // TODO use sel string to somehow get the book from the database.
+        // TODO Set cover image.
+
+        // TODO
     }
-
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -84,14 +107,36 @@ public class BookInfoActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Close Realm.
+        if (realm != null) {
+            realm.close();
+            realm = null;
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_read:
+                // Open the book file.
+                book.openFileUsingIntent(this);
+                return true;
             case android.R.id.home:
                 onBackPressed();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Open the book when the FAB is clicked.
+     */
+    @OnClick(R.id.fab)
+    void onReadFabClicked() {
+        // Open the book file.
+        book.openFileUsingIntent(this);
+    }
 }
