@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        tools:context=".BookInfoActivity">
+
+    <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/collapsible_header_height"
+            android:theme="@style/AppTheme.AppBarOverlay"
+            android:fitsSystemWindows="true">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+                android:id="@+id/collapsing_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                app:contentScrim="?attr/colorPrimary"
+                app:expandedTitleMarginStart="32dp"
+                app:expandedTitleMarginEnd="64dp"
+                app:expandedTitleTextAppearance="@android:style/TextAppearance.Large"
+                app:titleEnabled="true"
+                app:toolbarId="@+id/toolbar">
+
+            <ImageView
+                    android:id="@+id/cover_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="@string/acc_book_cover"
+                    android:fitsSystemWindows="true"
+                    app:layout_collapseMode="parallax"/>
+
+            <android.support.v7.widget.Toolbar
+                    android:id="@id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    app:popupTheme="@style/AppTheme.PopupOverlay"
+                    app:layout_collapseMode="pin"/>
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            app:layout_anchor="@id/appbar"
+            app:layout_anchorGravity="bottom|right|end"
+            android:tint="@color/textColorPrimary"
+            android:src="@drawable/ic_read"
+            android:clickable="true"/>
+
+    <android.support.v4.widget.NestedScrollView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingStart="@dimen/activity_horizontal_margin"
+                android:paddingTop="24dp"
+                android:paddingEnd="@dimen/activity_horizontal_margin"
+                android:paddingBottom="@dimen/activity_vertical_margin">
+
+            <TextView
+                    android:id="@+id/lbl_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:text="@string/lbl_title"
+                    style="@style/BookInfoLabelText"/>
+
+            <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/lbl_title"
+                    style="@style/BookInfoText"
+                    tools:text="A Cannon's Harpy"/>
+
+            <TextView
+                    android:id="@+id/lbl_author"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/title"
+                    android:text="@string/lbl_author"
+                    style="@style/BookInfoLabelText"/>
+
+            <TextView
+                    android:id="@+id/author"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/lbl_author"
+                    style="@style/BookInfoText"
+                    tools:text="st122"/>
+
+            <TextView
+                    android:id="@+id/lbl_desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/author"
+                    android:text="@string/lbl_desc"
+                    style="@style/BookInfoLabelText"/>
+
+            <TextView
+                    android:id="@+id/desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/lbl_desc"
+                    style="@style/BookInfoTextSmall"
+                    tools:text="Ginny begins her life after school and a career in Quidditch. How will her new coach change her life? AU"/>
+
+            <android.support.percent.PercentRelativeLayout
+                    android:id="@+id/high_value"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/desc">
+
+                <TextView
+                        android:id="@+id/lbl_chap_count"
+                        app:layout_widthPercent="25%"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="20dp"
+                        android:text="@string/lbl_chap_count"
+                        style="@style/BookInfoLabelText"/>
+
+                <TextView
+                        android:id="@+id/chap_count"
+                        app:layout_widthPercent="25%"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/lbl_chap_count"
+                        style="@style/BookInfoTextSmall"
+                        tools:text="28"/>
+
+                <TextView
+                        android:id="@+id/lbl_rating"
+                        app:layout_widthPercent="25%"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/lbl_chap_count"
+                        android:text="@string/lbl_rating"
+                        style="@style/BookInfoLabelText"/>
+
+                <RatingBar
+                        android:id="@+id/rating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignStart="@id/lbl_rating"
+                        android:layout_below="@id/lbl_rating"
+                        android:progressTint="@color/grey200"
+                        android:progressBackgroundTint="@color/grey700"
+                        android:numStars="5"
+                        android:rating="3"
+                        style="?android:attr/ratingBarStyleSmall"/>
+
+                <ImageButton
+                        android:id="@+id/edit_rating"
+                        app:layout_widthPercent="17%"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_toStartOf="@+id/edit_tags"
+                        android:backgroundTint="@color/colorAccent"
+                        android:tint="@color/textColorPrimary"
+                        android:contentDescription="@string/acc_rating"
+                        android:src="@drawable/ic_stars"/>
+
+                <ImageButton
+                        android:id="@id/edit_tags"
+                        app:layout_widthPercent="17%"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginStart="8dp"
+                        android:backgroundTint="@color/colorAccent"
+                        android:tint="@color/textColorPrimary"
+                        android:contentDescription="@string/acc_quick_tag"
+                        android:src="@drawable/ic_tags"/>
+            </android.support.percent.PercentRelativeLayout>
+
+            <TextView
+                    android:id="@+id/lbl_tags"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/high_value"
+                    android:text="@string/lbl_tags"
+                    style="@style/BookInfoLabelText"/>
+
+            <FrameLayout
+                    android:id="@+id/tags_cont"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/lbl_tags">
+
+                <com.greenfrvr.hashtagview.HashtagView
+                        android:id="@+id/tags"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:tagTextColor="@color/grey200"
+                        app:tagBackground="@color/grey700"
+                        app:tagMargin="1dp"
+                        app:tagMaxWidth="100sp"
+                        app:tagPaddingTop="0dp"
+                        app:tagPaddingRight="2dp"
+                        app:tagPaddingBottom="1dp"
+                        app:tagPaddingLeft="2dp"
+                        app:rowMargin="1dp"
+                        app:rowGravity="left"
+                        app:rowDistribution="left"
+                        app:rowMode="wrap"
+                        android:visibility="gone"/>
+
+                <TextView
+                        android:id="@+id/no_tags"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/grey600"
+                        android:text="@string/no_tags"
+                        style="@style/BookInfoTextSmall"/>
+            </FrameLayout>
+
+            <TextView
+                    android:id="@+id/lbl_in_lists"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tags_cont"
+                    android:text="@string/lbl_in_lists"
+                    style="@style/BookInfoLabelText"/>
+
+            <FrameLayout
+                    android:id="@+id/lists_cont"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/lbl_in_lists">
+
+                <TextView
+                        android:id="@+id/lists"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        style="@style/BookInfoText"
+                        tools:text="List 1, List 2, List 3"/>
+
+                <TextView
+                        android:id="@+id/no_lists"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/grey600"
+                        android:text="@string/no_lists"
+                        style="@style/BookInfoTextSmall"/>
+            </FrameLayout>
+
+            <TextView
+                    android:id="@+id/lbl_path"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/lists_cont"
+                    android:text="@string/lbl_path"
+                    style="@style/BookInfoLabelText"/>
+
+            <TextView
+                    android:id="@+id/path"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/lbl_path"
+                    style="@style/BookInfoTextSmall"
+                    tools:text="/Books/Fics/A Cannon's Harpy.epub"/>
+
+            <TextView
+                    android:id="@+id/lbl_last_read_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/path"
+                    android:text="@string/lbl_last_read_date"
+                    style="@style/BookInfoLabelText"/>
+
+            <TextView
+                    android:id="@+id/last_read_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/lbl_last_read_date"
+                    style="@style/BookInfoTextSmall"
+                    tools:text="1 week ago"/>
+
+            <TextView
+                    android:id="@+id/lbl_last_import_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/last_read_date"
+                    android:text="@string/lbl_last_import_date"
+                    style="@style/BookInfoLabelText"/>
+
+            <TextView
+                    android:id="@+id/last_import_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/lbl_last_import_date"
+                    style="@style/BookInfoTextSmall"
+                    tools:text="2 days ago"/>
+
+            <TextView
+                    android:id="@+id/lbl_subjects"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/last_import_date"
+                    android:text="@string/lbl_subjects"
+                    style="@style/BookInfoLabelText"/>
+
+            <TextView
+                    android:id="@+id/subjects"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/lbl_subjects"
+                    style="@style/BookInfoTextSmall"
+                    tools:text="Romance/Adventure, Fan Fiction, Harry Potter"/>
+
+            <TextView
+                    android:id="@+id/lbl_types"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/subjects"
+                    android:text="@string/lbl_types"
+                    style="@style/BookInfoLabelText"/>
+
+            <TextView
+                    android:id="@+id/types"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/lbl_types"
+                    style="@style/BookInfoTextSmall"
+                    tools:text="Fiction T"/>
+
+            <TextView
+                    android:id="@+id/lbl_format"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/types"
+                    android:text="@string/lbl_format"
+                    style="@style/BookInfoLabelText"/>
+
+            <TextView
+                    android:id="@+id/format"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/lbl_format"
+                    style="@style/BookInfoTextSmall"
+                    tools:text="ePub"/>
+
+            <TextView
+                    android:id="@+id/lbl_language"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/format"
+                    android:text="@string/lbl_language"
+                    style="@style/BookInfoLabelText"/>
+
+            <TextView
+                    android:id="@+id/language"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/lbl_language"
+                    style="@style/BookInfoTextSmall"
+                    tools:text="English"/>
+
+            <TextView
+                    android:id="@+id/lbl_publisher"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/language"
+                    android:text="@string/lbl_publisher"
+                    style="@style/BookInfoLabelText"/>
+
+            <TextView
+                    android:id="@+id/publisher"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/lbl_publisher"
+                    style="@style/BookInfoTextSmall"
+                    tools:text="FanFiction.net"/>
+
+            <TextView
+                    android:id="@+id/lbl_publish_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/publisher"
+                    android:text="@string/lbl_publish_date"
+                    style="@style/BookInfoLabelText"/>
+
+            <TextView
+                    android:id="@+id/publish_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/lbl_publish_date"
+                    style="@style/BookInfoTextSmall"
+                    tools:text="Jan 23, 2012"/>
+
+            <TextView
+                    android:id="@+id/lbl_mod_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/publish_date"
+                    android:text="@string/lbl_mod_date"
+                    style="@style/BookInfoLabelText"/>
+
+            <TextView
+                    android:id="@+id/mod_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/lbl_mod_date"
+                    style="@style/BookInfoTextSmall"
+                    tools:text="Aug 3, 2014"/>
+        </RelativeLayout>
+    </android.support.v4.widget.NestedScrollView>
+</android.support.design.widget.CoordinatorLayout>
