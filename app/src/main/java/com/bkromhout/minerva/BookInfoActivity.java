@@ -295,7 +295,7 @@ public class BookInfoActivity extends AppCompatActivity {
         title.setText(book.getTitle());
         author.setText(book.getAuthor());
         desc.setText(book.getDesc());
-        chapCount.setText(book.getNumChaps());
+        chapCount.setText(String.valueOf(book.getNumChaps()));
         rating.setNumStars(book.getRating());
         path.setText(DefaultPrefs.get().getLibDir("") + book.getRelPath());
 
