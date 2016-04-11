@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                                    android:id="@+id/card"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="@dimen/book_card_height"
+                                    style="@style/MinervaDarkCard">
+
+    <RelativeLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <ImageView
+                android:id="@+id/cover_image"
+                android:layout_width="@dimen/large_cover_width"
+                android:layout_height="@dimen/large_cover_height"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_alignParentStart="true"
+                android:background="@color/grey800"
+                android:src="@drawable/epub_logo_color"
+                android:contentDescription="@string/acc_book_cover"/>
+
+        <RelativeLayout
+                android:id="@+id/details"
+                android:layout_toEndOf="@id/cover_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp">
+
+            <android.support.v7.widget.ButtonBarLayout
+                    android:id="@+id/buttons"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignBottom="@+id/author">
+
+                <ImageButton
+                        android:id="@+id/btn_info"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:tint="@color/textColorSecondary"
+                        android:backgroundTint="@android:color/transparent"
+                        android:src="@drawable/ic_info_unfilled"
+                        android:contentDescription="@string/acc_book_info"/>
+
+                <ImageButton
+                        android:id="@+id/btn_quick_tag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:tint="@color/textColorSecondary"
+                        android:backgroundTint="@android:color/transparent"
+                        android:src="@drawable/ic_tags"
+                        android:contentDescription="@string/acc_quick_tag"/>
+            </android.support.v7.widget.ButtonBarLayout>
+
+            <TextView
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@id/buttons"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textStyle="bold"
+                    style="@style/TextAppearance.AppCompat.Medium"
+                    android:text="@string/dummy_title"/>
+
+            <TextView
+                    android:id="@id/author"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/title"
+                    android:layout_toStartOf="@id/buttons"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:text="@string/dummy_author"/>
+
+            <View
+                    android:id="@+id/sep1"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@id/author"
+                    android:background="@color/grey700"/>
+
+            <TextView
+                    android:id="@+id/description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/sep1"
+                    android:layout_marginBottom="2dp"
+                    android:maxLines="3"
+                    android:ellipsize="end"
+                    android:textColor="@color/grey500"
+                    android:text="@string/dummy_desc"/>
+
+            <TextView
+                    android:id="@+id/lbl_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="2dp"
+                    android:layout_below="@id/description"
+                    android:textColor="@color/grey200"
+                    android:text="@string/lbl_rating_colon"/>
+
+            <RatingBar
+                    android:id="@+id/rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/description"
+                    android:layout_toEndOf="@id/lbl_rating"
+                    android:progressTint="@color/grey200"
+                    android:progressBackgroundTint="@color/grey700"
+                    android:numStars="5"
+                    android:rating="3"
+                    style="@style/Widget.AppCompat.RatingBar.Small"/>
+
+            <com.greenfrvr.hashtagview.HashtagView
+                    android:id="@+id/tags"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="6dp"
+                    android:layout_below="@id/lbl_rating"
+                    app:tagTextColor="@color/grey200"
+                    app:tagTextSize="12sp"
+                    app:tagEllipsize="end"
+                    app:tagBackground="@color/grey700"
+                    app:tagMargin="1dp"
+                    app:tagMaxWidth="100sp"
+                    app:tagPaddingTop="0dp"
+                    app:tagPaddingRight="2dp"
+                    app:tagPaddingBottom="1dp"
+                    app:tagPaddingLeft="2dp"
+                    app:rowMargin="1dp"
+                    app:rowGravity="left"
+                    app:rowDistribution="random"
+                    app:rowMode="wrap"
+                    app:rowsQuantity="2"/>
+        </RelativeLayout>
+    </RelativeLayout>
+</android.support.v7.widget.CardView>
