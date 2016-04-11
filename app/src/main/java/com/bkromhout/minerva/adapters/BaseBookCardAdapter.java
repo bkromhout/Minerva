@@ -1,6 +1,6 @@
 package com.bkromhout.minerva.adapters;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.PorterDuff;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -10,12 +10,14 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
+import com.bkromhout.minerva.data.CoverHelper;
 import com.bkromhout.minerva.events.BookCardClickEvent;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.util.RippleForegroundListener;
+import com.bumptech.glide.Glide;
 import com.greenfrvr.hashtagview.HashtagView;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmObject;
@@ -27,17 +29,23 @@ import org.greenrobot.eventbus.EventBus;
  */
 public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends BaseBookCardAdapter.BaseCardVH> extends
         RealmBasedRecyclerViewAdapter<T, VH> {
+
     /**
      * Help our cards ripple.
      */
     RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.card);
     /**
+     * Activity to pass to Glide so that it will automatically get lifecycle events.
+     */
+    private Activity activity;
+    /**
      * Whether or not this adapter may allow item drags to start.
      */
     boolean mayStartDrags = false;
 
-    public BaseBookCardAdapter(Context context, RealmResults<T> realmResults) {
-        super(context, realmResults, true, true, null);
+    public BaseBookCardAdapter(Activity activity, RealmResults<T> realmResults) {
+        super(activity, realmResults, true, true, null);
+        this.activity = activity;
         setHasStableIds(true);
     }
 
@@ -129,9 +137,10 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Base
      */
     private void bindNormalBookCard(NormalCardVH resolvedVH, RBook book) {
         // Set cover image.
-        if (book.hasCoverImage()) {
-            // TODO load cover image.
-        }
+        if (book.hasCoverImage()) Glide.with(activity)
+                                       .load(CoverHelper.get().getCoverImageFile(book.getRelPath()))
+                                       .centerCrop()
+                                       .into(resolvedVH.ivCoverImage);
     }
 
     /**

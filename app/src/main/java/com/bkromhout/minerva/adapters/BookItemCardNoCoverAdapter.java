@@ -1,6 +1,6 @@
 package com.bkromhout.minerva.adapters;
 
-import android.content.Context;
+import android.app.Activity;
 import android.view.ViewGroup;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.realm.RBook;
@@ -13,11 +13,11 @@ import io.realm.RealmResults;
 public class BookItemCardNoCoverAdapter extends BaseBookCardAdapter<RBookListItem, BaseBookCardAdapter.NoCoverCardVH> {
     /**
      * Create a new {@link BookItemCardNoCoverAdapter}.
-     * @param context      Context.
+     * @param activity     Activity.
      * @param realmResults Results of a Realm query to display.
      */
-    public BookItemCardNoCoverAdapter(Context context, RealmResults<RBookListItem> realmResults) {
-        super(context, realmResults);
+    public BookItemCardNoCoverAdapter(Activity activity, RealmResults<RBookListItem> realmResults) {
+        super(activity, realmResults);
     }
 
     @Override

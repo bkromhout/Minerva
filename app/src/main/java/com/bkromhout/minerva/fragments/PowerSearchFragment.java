@@ -434,22 +434,22 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
         else if (queryType == QueryType.RBOOK) {
             switch (cardType) {
                 case NORMAL:
-                    return new BookCardAdapter(getContext(), (RealmResults<RBook>) results);
+                    return new BookCardAdapter(getActivity(), (RealmResults<RBook>) results);
                 case NO_COVER:
-                    return new BookCardNoCoverAdapter(getContext(), (RealmResults<RBook>) results);
+                    return new BookCardNoCoverAdapter(getActivity(), (RealmResults<RBook>) results);
                 case COMPACT:
-                    return new BookCardCompactAdapter(getContext(), (RealmResults<RBook>) results);
+                    return new BookCardCompactAdapter(getActivity(), (RealmResults<RBook>) results);
                 default:
                     return null;
             }
         } else if (queryType == QueryType.RBOOKLISTITEM) {
             switch (cardType) {
                 case NORMAL:
-                    return new BookItemCardAdapter(getContext(), (RealmResults<RBookListItem>) results);
+                    return new BookItemCardAdapter(getActivity(), (RealmResults<RBookListItem>) results);
                 case NO_COVER:
-                    return new BookItemCardNoCoverAdapter(getContext(), (RealmResults<RBookListItem>) results);
+                    return new BookItemCardNoCoverAdapter(getActivity(), (RealmResults<RBookListItem>) results);
                 case COMPACT:
-                    return new BookItemCardCompactAdapter(getContext(), (RealmResults<RBookListItem>) results);
+                    return new BookItemCardCompactAdapter(getActivity(), (RealmResults<RBookListItem>) results);
                 default:
                     return null;
             }
