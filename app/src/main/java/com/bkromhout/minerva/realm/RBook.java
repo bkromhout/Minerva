@@ -8,6 +8,7 @@ import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
+import com.bkromhout.minerva.data.CoverHelper;
 import com.bkromhout.minerva.data.SuperBook;
 import com.bkromhout.minerva.prefs.DBPrefs;
 import com.bkromhout.minerva.util.BookUtils;
@@ -26,6 +27,7 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Identifier;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -195,7 +197,16 @@ public class RBook extends RealmObject {
         this.pubDate = BookUtils.getFirstBookDate(book, nl.siegmann.epublib.domain.Date.Event.PUBLICATION);
         this.modDate = BookUtils.getFirstBookDate(book, nl.siegmann.epublib.domain.Date.Event.MODIFICATION);
         this.numChaps = book.getTableOfContents().getAllUniqueResources().size();
-        this.hasCoverImage = book.getCoverImage() != null; // TODO test to make sure...
+        if (book.getCoverImage() != null) {
+            try {
+                // Get the cover image and store it.
+                CoverHelper.get().saveStreamAsCoverImage(book.getCoverImage().getInputStream(), relPath);
+                this.hasCoverImage = true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                hasCoverImage = false;
+            }
+        } else hasCoverImage = false;
 
         // Fill in other data.
         this.lastImportDate = Calendar.getInstance().getTime();
@@ -235,7 +246,9 @@ public class RBook extends RealmObject {
         setPubDate(otherBook.getPubDate());
         setModDate(otherBook.getModDate());
         setNumChaps(otherBook.getNumChaps());
-        setHasCoverImage(otherBook.isHasCoverImage()); // TODO Change the cover image.
+        // Delete the cover image if the other book doesn't have one.
+        if (hasCoverImage() && !otherBook.hasCoverImage()) CoverHelper.get().deleteCoverImage(getRelPath());
+        setHasCoverImage(otherBook.hasCoverImage());
 
         setLastImportDate(otherBook.getLastImportDate());
         setLastModifiedDate(otherBook.getLastModifiedDate());
@@ -283,7 +296,10 @@ public class RBook extends RealmObject {
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.executeTransaction(tRealm -> {
                 for (RBook book : books) {
-                    relPaths.add(book.getRelPath());
+                    String relPath = book.getRelPath();
+                    // Be sure to delete the cover file, if we have one.
+                    if (book.hasCoverImage()) CoverHelper.get().deleteCoverImage(relPath);
+                    relPaths.add(relPath);
                     book.removeFromRealm();
                 }
             });
@@ -420,7 +436,7 @@ public class RBook extends RealmObject {
         this.numChaps = numChaps;
     }
 
-    public boolean isHasCoverImage() {
+    public boolean hasCoverImage() {
         return hasCoverImage;
     }
 

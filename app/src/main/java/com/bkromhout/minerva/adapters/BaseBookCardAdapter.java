@@ -129,7 +129,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Base
      */
     private void bindNormalBookCard(NormalCardVH resolvedVH, RBook book) {
         // Set cover image.
-        if (book.isHasCoverImage()) {
+        if (book.hasCoverImage()) {
             // TODO load cover image.
         }
     }
