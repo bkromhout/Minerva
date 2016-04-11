@@ -20,6 +20,7 @@ import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.bkromhout.minerva.data.CoverHelper;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
@@ -27,6 +28,7 @@ import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
+import com.bumptech.glide.Glide;
 import com.greenfrvr.hashtagview.HashtagView;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
@@ -178,7 +180,15 @@ public class BookInfoActivity extends AppCompatActivity {
         book = realm.where(RBook.class).equalTo("relPath", relPath).findFirst();
         if (book == null) throw new IllegalArgumentException("Invalid relative path, no matching RBook found.");
 
-        // Set up the UI.
+        // Set cover image (we do this separately since we don't want flickering if the change listener fires).
+        if (book.hasCoverImage()) {
+            Glide.with(this)
+                 .load(CoverHelper.get().getCoverImageFile(book.getRelPath()))
+                 .centerCrop()
+                 .into(coverImage);
+        }
+        else coverImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.epub_logo_color));
+        // Set up the rest of the UI.
         updateUi();
 
         // Add the change listener to the RBook.
@@ -308,9 +318,6 @@ public class BookInfoActivity extends AppCompatActivity {
     private void updateUi() {
         // Set title.
         collapsibleToolbar.setTitle(book.getTitle());
-
-        // TODO Set cover image.
-        coverImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.epub_logo_color));
 
         // Fill in common views using book data.
         title.setText(book.getTitle());

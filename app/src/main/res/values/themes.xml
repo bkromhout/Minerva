@@ -17,8 +17,8 @@
 
     <!-- Default dark theme + transparent status bar -->
     <style name="AppTheme.TransparentStatus" parent="AppTheme">
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:windowTranslucentStatus">false</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
+        <!--<item name="android:windowDrawsSystemBarBackgrounds">true</item>-->
+        <item name="android:windowTranslucentStatus">true</item>
+        <!--<item name="android:statusBarColor">@android:color/transparent</item>-->
     </style>
 </resources>
