@@ -192,7 +192,8 @@ public class RBook extends RealmObject {
         this.format = book.getMetadata().getFormat();
         this.language = book.getMetadata().getLanguage();
         this.publisher = BookUtils.getFirstPublisher(book);
-        this.bookId = Identifier.getBookIdIdentifier(book.getMetadata().getIdentifiers()).toString();
+        Identifier identifier = Identifier.getBookIdIdentifier(book.getMetadata().getIdentifiers());
+        this.bookId = identifier == null ? null : identifier.toString();
         this.createDate = BookUtils.getFirstBookDate(book, nl.siegmann.epublib.domain.Date.Event.CREATION);
         this.pubDate = BookUtils.getFirstBookDate(book, nl.siegmann.epublib.domain.Date.Event.PUBLICATION);
         this.modDate = BookUtils.getFirstBookDate(book, nl.siegmann.epublib.domain.Date.Event.MODIFICATION);
