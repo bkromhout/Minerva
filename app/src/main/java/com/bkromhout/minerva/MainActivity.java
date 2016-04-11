@@ -40,10 +40,9 @@ import org.greenrobot.eventbus.Subscribe;
 
 /**
  * Main activity, responsible for hosting fragments.
- * <p>
- * TODO fails to retain current fragment's title when rotating.
  */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private static final String TITLE = "TITLE";
     // Represents the various fragments that this activity can show.
     public static final int FRAG_RECENT = 0;
     public static final int FRAG_LIBRARY = 1;
@@ -114,6 +113,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             int frag = defaultPrefs.getCurrFrag(-1);
             switchFragments(frag != -1 ? frag : FRAG_LIBRARY);
             navigationView.setCheckedItem(Util.navIdFromFragConst(frag));
+        } else {
+            // Make sure we set the title back to what it was otherwise.
+            setTitle(savedInstanceState.getString(TITLE));
         }
     }
 
@@ -217,6 +219,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)) drawer.closeDrawer(GravityCompat.START);
         else super.onBackPressed();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(TITLE, getTitle().toString());
     }
 
     @Override
