@@ -58,7 +58,7 @@ public class AboutActivity extends AppCompatActivity {
         LibsSupportFragment libsFrag = new LibsBuilder()
                 .withActivityStyle(Libs.ActivityStyle.DARK)
                 .supportFragment();
-        getSupportFragmentManager().beginTransaction().add(R.id.about_libs, libsFrag).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.about_libs, libsFrag).commit();
     }
 
     @Override
