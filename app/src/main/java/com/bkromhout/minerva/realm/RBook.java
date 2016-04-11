@@ -3,7 +3,7 @@ package com.bkromhout.minerva.realm;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
+import android.support.v4.content.FileProvider;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 import com.bkromhout.minerva.C;
@@ -250,11 +250,11 @@ public class RBook extends RealmObject {
         // TODO make the user aware that the underlying file doesn't exist!
         if (file == null) return;
 
-        // TODO make this work using content URI??? But the receiving app needs to know it's the same file...
         Intent newIntent = new Intent(Intent.ACTION_VIEW);
-        newIntent.setDataAndType(Uri.fromFile(file),
+        newIntent.setDataAndType(FileProvider.getUriForFile(context, "com.bkromhout.minerva.Minerva.files", file),
                 MimeTypeMap.getSingleton().getMimeTypeFromExtension(Util.getExtFromFName(file.getName())));
-        newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION |
+                Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
         try (Realm realm = Realm.getDefaultInstance()) {
             context.startActivity(newIntent);
