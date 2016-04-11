@@ -2,6 +2,7 @@ package com.bkromhout.minerva.adapters;
 
 import android.app.Activity;
 import android.graphics.PorterDuff;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.*;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.CoverHelper;
 import com.bkromhout.minerva.events.BookCardClickEvent;
@@ -141,6 +143,8 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Base
                                        .load(CoverHelper.get().getCoverImageFile(book.getRelPath()))
                                        .centerCrop()
                                        .into(resolvedVH.ivCoverImage);
+        else resolvedVH.ivCoverImage
+                .setImageDrawable(ContextCompat.getDrawable(Minerva.getAppCtx(), R.drawable.epub_logo_color));
     }
 
     /**
