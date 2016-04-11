@@ -3,6 +3,7 @@ package com.bkromhout.minerva.data;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.util.Util;
 import com.google.common.io.ByteStreams;
+import com.google.common.io.Files;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -43,8 +44,11 @@ public class CoverHelper {
      */
     public void saveStreamAsCoverImage(InputStream in, String relPath) {
         File coverFile = new File(dir, relPath + COVER_EXT);
-        try (FileOutputStream out = new FileOutputStream(coverFile)) {
-            ByteStreams.copy(in, out);
+        try {
+            Files.createParentDirs(coverFile);
+            try (FileOutputStream out = new FileOutputStream(coverFile)) {
+                ByteStreams.copy(in, out);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
