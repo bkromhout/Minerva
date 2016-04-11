@@ -1,7 +1,6 @@
 package com.bkromhout.minerva;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -179,7 +178,7 @@ public class BookInfoActivity extends AppCompatActivity {
         book = realm.where(RBook.class).equalTo("relPath", relPath).findFirst();
         if (book == null) throw new IllegalArgumentException("Invalid relative path, no matching RBook found.");
 
-        // Set up the UI. TODO will adding the change listener make it be called once?
+        // Set up the UI.
         updateUi();
 
         // Add the change listener to the RBook.
@@ -272,19 +271,6 @@ public class BookInfoActivity extends AppCompatActivity {
                 }
                 break;
             }*/
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case C.RC_TAG_ACTIVITY: {
-                // Came back from TaggingActivity.
-                if (resultCode == Activity.RESULT_OK) {
-                    // We've changed the tags on some books, but our change listener updates things for us.
-                }
-                break;
-            }
         }
     }
 
