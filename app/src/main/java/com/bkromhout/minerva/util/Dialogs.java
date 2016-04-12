@@ -87,8 +87,10 @@ public class Dialogs {
      * @param realm Realm instance to use.
      */
     public static void addToListDialogOrToast(Context ctx, Realm realm) {
-        // Get list of lists (list-ception?)
-        RealmResults<RBookList> lists = realm.where(RBookList.class).findAllSorted("sortName");
+        // Get list of normal lists (list-ception anyone?)
+        RealmResults<RBookList> lists = realm.where(RBookList.class)
+                                             .equalTo("isSmartList", false)
+                                             .findAllSorted("sortName");
 
         if (lists.size() == 0) {
             // If we don't have any lists, just show a toast.

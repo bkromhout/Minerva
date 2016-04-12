@@ -186,8 +186,12 @@ public class AllListsFragment extends Fragment {
 
         // Do something based on the menu item ID.
         switch (actionId) {
+            case R.id.action_show_query: {
+                // TODO
+                break;
+            }
             case R.id.action_rename_list: {
-                // Show a dialog to rename the list.
+                // Show a dialog to rename the list. TODO make this use Dialogs.java
                 new MaterialDialog.Builder(getActivity())
                         .title(R.string.title_rename_list)
                         .content(R.string.rename_list_prompt)
@@ -224,8 +228,20 @@ public class AllListsFragment extends Fragment {
                         .show();
                 break;
             }
+            case R.id.action_rename_smart_list: {
+                // TODO
+                break;
+            }
+            case R.id.action_edit_smart_list: {
+                // TODO
+                break;
+            }
+            case R.id.action_convert_to_normal_list: {
+                // TODO
+                break;
+            }
             case R.id.action_delete_list: {
-                // Show a confirmation dialog for deleting the list.
+                // Show a confirmation dialog for deleting the list. TODO make this use Dialogs.java
                 // TODO have this work with an undo snackbar...needs to be more complex that simply waiting??
                 // TODO maybe a boolean on the model called "isDeleting", and have the query not include those?
                 new MaterialDialog.Builder(getActivity())
@@ -245,6 +261,10 @@ public class AllListsFragment extends Fragment {
                         .show();
                 break;
             }
+            case R.id.action_delete_smart_list: {
+                // TODO
+                break;
+            }
         }
     }
 
@@ -253,6 +273,7 @@ public class AllListsFragment extends Fragment {
      */
     @OnClick(R.id.fab)
     void onFabClick() {
+        // TODO somehow make this allow adding smart lists... or put that into the options menu
         new MaterialDialog.Builder(getActivity())
                 .title(R.string.action_new_list)
                 .content(R.string.new_list_prompt)

@@ -64,6 +64,9 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
             return true;
         });
 
+        // Set visibility of smart list icon.
+        viewHolder.btnSmartIcon.setVisibility(rBookList.isSmartList() ? View.VISIBLE : View.GONE);
+
         // Set list name.
         viewHolder.tvListName.setText(rBookList.getName());
     }
@@ -76,6 +79,8 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
         public RelativeLayout content;
         @Bind(R.id.list_name)
         public TextView tvListName;
+        @Bind(R.id.smart_list_icon)
+        public ImageButton btnSmartIcon;
         @Bind(R.id.btn_actions)
         public ImageButton btnActions;
 
@@ -86,10 +91,16 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
             // Set up btnActions so that it displays a popup menu.
             btnActions.setOnClickListener(view -> {
                 PopupMenu menu = new PopupMenu(view.getContext(), view);
-                menu.getMenuInflater().inflate(R.menu.book_list_card_actions, menu.getMenu());
+                menu.getMenuInflater().inflate(btnSmartIcon.getVisibility() == View.GONE ? R.menu.book_list_card_actions
+                        : R.menu.book_list_smart_card_actions, menu.getMenu());
                 menu.setOnMenuItemClickListener(BookListCardVH.this);
                 menu.show();
             });
+
+            // Set up btnSmartIcon so that it fires an event when pressed.
+            btnSmartIcon.setOnClickListener(view -> EventBus.getDefault().post(
+                    new BookListCardClickEvent(BookListCardClickEvent.Type.ACTIONS, tvListName.getText().toString(),
+                            R.id.action_show_query)));
         }
 
         @Override

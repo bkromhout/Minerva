@@ -37,6 +37,17 @@ public class RBookList extends RealmObject {
      */
     @Hide
     private RealmList<RBookListItem> listItems;
+    /**
+     * Whether or not this list is a smart list.
+     */
+    @Hide
+    private boolean isSmartList;
+    /**
+     * If {@link #isSmartList} is true, this will be the string representation of a {@link
+     * com.bkromhout.ruqus.RealmUserQuery}.
+     */
+    @Hide
+    private String smartListRuqString;
 
     /**
      * Create a default {@link RBookList}.
@@ -49,6 +60,8 @@ public class RBookList extends RealmObject {
         this.sortName = null;
         this.nextPos = 0L;
         this.listItems = null;
+        this.isSmartList = false;
+        this.smartListRuqString = null;
     }
 
     /**
@@ -56,10 +69,21 @@ public class RBookList extends RealmObject {
      * @param name Name of the book list. This MUST be unique!
      */
     public RBookList(String name) {
+        this(name, false);
+    }
+
+    /**
+     * Create a new {@link RBookList} with the given {@code name}.
+     * @param name        Name of the book list. This MUST be unique!
+     * @param isSmartList If true, this will be a smart list instead of a normal list.
+     */
+    public RBookList(String name, boolean isSmartList) {
         this.name = name;
         this.sortName = name.toLowerCase();
         this.nextPos = 0L;
         this.listItems = null;
+        this.isSmartList = isSmartList;
+        this.smartListRuqString = null;
     }
 
     /**
@@ -68,6 +92,7 @@ public class RBookList extends RealmObject {
      * @return True if {@code book} is in this list, otherwise false.
      */
     public boolean isBookInList(RBook book) {
+        // TODO smart list support
         return getListItems()
                 .where()
                 .equalTo("key", RBookListItem.makeBookListItemKey(getName(), book.getRelPath()))
@@ -79,6 +104,7 @@ public class RBookList extends RealmObject {
      * @param book Book to add to this list.
      */
     public void addBook(RBook book) {
+        // TODO smart list support
         // Don't re-add the book if it's already in the list.
         if (isBookInList(book)) return;
 
@@ -92,6 +118,7 @@ public class RBookList extends RealmObject {
      * @param books Books to add to {@code list}.
      */
     public void addBooks(Iterable<RBook> books) {
+        // TODO smart list support
         // Create a list of RBookListItems from books, ignoring any RBooks which are already in the given list.
         List<RBookListItem> newItems = Observable.from(books)
                                                  .filter(book -> !isBookInList(book))
@@ -110,6 +137,7 @@ public class RBookList extends RealmObject {
      * @param books Books to remove from {@code list}.
      */
     public void removeBooks(Iterable<RBook> books) {
+        // TODO smart list support
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.executeTransaction(tRealm -> {
                 RealmList<RBookListItem> listItems = getListItems();
@@ -124,6 +152,7 @@ public class RBookList extends RealmObject {
      * Deletes this list, and all of its {@link RBookListItem}s, from Realm.
      */
     public void deleteList() {
+        // TODO smart list support
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.executeTransaction(tRealm -> {
                 // First, delete the list items.
@@ -143,6 +172,7 @@ public class RBookList extends RealmObject {
      * TODO At some point, we'll have a task that runs once per day to reset the positions for all items in all lists.
      */
     public void resetPositions() {
+        // TODO smart list support
         // Get the list's items.
         RealmResults<RBookListItem> items = getListItems().where().findAllSorted("pos");
 
@@ -175,6 +205,7 @@ public class RBookList extends RealmObject {
      * @param itemsToMove Items to move. Items must already exist in Realm and be from the same book list.
      */
     public void moveItemsToStart(List<RBookListItem> itemsToMove) {
+        // TODO smart list support
         if (itemsToMove == null || itemsToMove.isEmpty()) return;
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.executeTransaction(tRealm -> {
@@ -194,6 +225,7 @@ public class RBookList extends RealmObject {
      * @param itemsToMove Items to move. Items must already exist in Realm and be from the same book list.
      */
     public void moveItemsToEnd(List<RBookListItem> itemsToMove) {
+        // TODO smart list support
         if (itemsToMove == null || itemsToMove.isEmpty()) return;
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.executeTransaction(tRealm -> {
@@ -230,6 +262,7 @@ public class RBookList extends RealmObject {
      * @param item2      The item which will now follow {@code itemToMove}.
      */
     public void moveItemToBetween(RBookListItem itemToMove, RBookListItem item1, RBookListItem item2) {
+        // TODO smart list support
         if (itemToMove == null || (item1 == null && item2 == null))
             throw new IllegalArgumentException("itemToMove, or both of item1 and item2 are null.");
 
@@ -271,6 +304,7 @@ public class RBookList extends RealmObject {
      * @return The position number between the two items, or {@code null} if there's no space between the items.
      */
     public Long findMiddlePos(RBookListItem item1, RBookListItem item2) {
+        // TODO smart list support
         // Handle nulls which should throw IllegalArgumentException.
         if (item1 == null && item2 == null) throw new IllegalArgumentException("Null list or both items are null.");
 
@@ -289,6 +323,8 @@ public class RBookList extends RealmObject {
         return getListItems().where().equalTo("pos", pos).findFirst() == null ? pos : null;
     }
 
+    // TODO write function to convert smart list to normal list.
+
     /*
      * Static methods to help with drag and drop in the adapter.
      */
@@ -300,6 +336,7 @@ public class RBookList extends RealmObject {
      * @throws IllegalArgumentException if either item is null or items aren't from the same list.
      */
     public static void swapItemPositions(String item1Key, String item2Key) {
+        // TODO smart list support
         if (item1Key == null || item2Key == null) throw new IllegalArgumentException("No nulls allowed.");
         if (!RBookListItem.areFromSameList(item1Key, item2Key)) throw new IllegalArgumentException(
                 "Items must be part of the same list.");
@@ -324,6 +361,7 @@ public class RBookList extends RealmObject {
      * @throws IllegalArgumentException if either item is null or items aren't from the same list.
      */
     public static void swapItemPositions(RBookListItem item1, RBookListItem item2) {
+        // TODO smart list support
         if (item1 == null || item2 == null) throw new IllegalArgumentException("No nulls allowed.");
         if (!RBookListItem.areFromSameList(item1.getKey(), item2.getKey())) throw new IllegalArgumentException(
                 "Items must be part of the same list.");
@@ -345,6 +383,7 @@ public class RBookList extends RealmObject {
      * @param targetItemKey Key of item which item whose key is {@code itemToMove} will be moved before.
      */
     public static void moveItemToBefore(String itemToMoveKey, String targetItemKey) {
+        // TODO smart list support
         try (Realm realm = Realm.getDefaultInstance()) {
             moveItemToBefore(realm.where(RBookListItem.class).equalTo("key", itemToMoveKey).findFirst(),
                     realm.where(RBookListItem.class).equalTo("key", targetItemKey).findFirst());
@@ -357,6 +396,7 @@ public class RBookList extends RealmObject {
      * @param targetItem Item which {@code itemToMove} will be moved before.
      */
     public static void moveItemToBefore(RBookListItem itemToMove, RBookListItem targetItem) {
+        // TODO smart list support
         if (itemToMove == null || targetItem == null) throw new IllegalArgumentException("Neither item may be null.");
         if (itemToMove.getUniqueId() == targetItem.getUniqueId()) return;
 
@@ -378,6 +418,7 @@ public class RBookList extends RealmObject {
      * @param targetItemKey Key of item which item whose key is {@code itemToMove} will be moved after.
      */
     public static void moveItemToAfter(String itemToMoveKey, String targetItemKey) {
+        // TODO smart list support
         try (Realm realm = Realm.getDefaultInstance()) {
             moveItemToAfter(realm.where(RBookListItem.class).equalTo("key", itemToMoveKey).findFirst(),
                     realm.where(RBookListItem.class).equalTo("key", targetItemKey).findFirst());
@@ -390,6 +431,7 @@ public class RBookList extends RealmObject {
      * @param targetItem Item which {@code itemToMove} will be moved after.
      */
     public static void moveItemToAfter(RBookListItem itemToMove, RBookListItem targetItem) {
+        // TODO smart list support
         if (itemToMove == null || targetItem == null) throw new IllegalArgumentException("Neither item may be null.");
         if (itemToMove.getUniqueId() == targetItem.getUniqueId()) return;
 
@@ -434,6 +476,22 @@ public class RBookList extends RealmObject {
 
     public void setListItems(RealmList<RBookListItem> listItems) {
         this.listItems = listItems;
+    }
+
+    public boolean isSmartList() {
+        return isSmartList;
+    }
+
+    public void setSmartList(boolean smartList) {
+        isSmartList = smartList;
+    }
+
+    public String getSmartListRuqString() {
+        return smartListRuqString;
+    }
+
+    public void setSmartListRuqString(String smartListRuqString) {
+        this.smartListRuqString = smartListRuqString;
     }
 
     @Override

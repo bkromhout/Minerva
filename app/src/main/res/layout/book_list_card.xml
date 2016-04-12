@@ -16,13 +16,26 @@
                 android:id="@+id/list_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toStartOf="@+id/btn_actions"
+                android:layout_toStartOf="@+id/smart_list_icon"
                 android:layout_centerVertical="true"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:textStyle="bold"
                 style="@style/TextAppearance.AppCompat.Medium"
                 tools:text="List name"/>
+
+        <ImageButton
+                android:id="@id/smart_list_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@+id/btn_actions"
+                android:layout_centerVertical="true"
+                android:tint="@color/textColorPrimary"
+                android:backgroundTint="@android:color/transparent"
+                android:src="@drawable/ic_lightbulb_filled"
+                android:contentDescription="@string/action_show_query"
+                android:visibility="gone"
+                tools:visibility="visible"/>
 
         <ImageButton
                 android:id="@id/btn_actions"
