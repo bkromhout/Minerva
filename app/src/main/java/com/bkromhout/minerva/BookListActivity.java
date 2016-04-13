@@ -121,9 +121,12 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         realm = Realm.getDefaultInstance();
         srcList = realm.where(RBookList.class).equalTo("name", selStr).findFirst();
 
-        // Set title, then set up the rest of UI.
+        // Set title, then check to see if we have a RUQ from the savedInstanceState.
         setTitle(srcList.getName());
-        // TODO Check savedInstanceState for a RUQ.
+        if (savedInstanceState != null && savedInstanceState.containsKey(C.RUQ))
+            smartListRuq = savedInstanceState.getParcelable(C.RUQ);
+
+        // Set up the UI.
         initUi();
 
         // If we have a saved instance state, check to see if we were in action mode.
@@ -209,7 +212,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         super.onSaveInstanceState(outState);
         // Save adapter state if we're in action mode.
         if (actionMode != null) {
-            // TODO Save RUQ if this is a smart list.
+            if (smartListRuq != null) outState.putParcelable(C.RUQ, smartListRuq);
             adapter.saveInstanceState(outState);
             outState.putBoolean(C.IS_IN_ACTION_MODE, true);
             outState.putBoolean(KEY_IS_REORDER_MODE, isReorderMode);
@@ -447,7 +450,8 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
             case C.RC_QUERY_BUILDER_ACTIVITY: {
                 // Came back from QueryBuilderActivity.
                 if (resultCode == RESULT_OK) {
-                    // TODO There's a valid RUQ in the extras.
+                    // There's a valid RUQ in the extras.
+                    updateRuq(data.getParcelableExtra(C.RUQ));
                 } else if (smartListRuq == null) {
                     // No valid RUQ returned, and we don't have one already, meaning that srcList's RUQ string is null.
                     // Make it empty string instead so we don't keep forcing the user back into the query builder.
@@ -466,6 +470,16 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         adapter.notifySelectedItemsChanged();
         // If we finished successfully, finish the action mode.
         if (wasSuccess) actionMode.finish();
+    }
+
+    /**
+     * Set {@link #smartListRuq} to {@code ruq}, then updates {@link #srcList}'s RUQ string.
+     * @param ruq {@link RealmUserQuery}.
+     */
+    private void updateRuq(RealmUserQuery ruq) {
+        if (ruq == null) throw new IllegalArgumentException("ruq must not be null.");
+        smartListRuq = ruq;
+        realm.executeTransaction(tRealm -> srcList.setSmartListRuqString(ruq.toRuqString()));
     }
 
     /**
