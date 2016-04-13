@@ -166,20 +166,6 @@ public class RBookList extends RealmObject {
     }
 
     /**
-     * Deletes this list, and all of its {@link RBookListItem}s, from Realm.
-     */
-    public void deleteList() {
-        try (Realm realm = Realm.getDefaultInstance()) {
-            realm.executeTransaction(tRealm -> {
-                // First, delete the list items (unless this is a smart list).
-                if (!isSmartList) listItems.clear();
-                // Then, delete the book list.
-                removeFromRealm();
-            });
-        }
-    }
-
-    /**
      * Reset the positions of the given list's items so that they are spaced evenly using the standard position gap
      * (which can be found at {@link com.bkromhout.minerva.C#LIST_ITEM_GAP}).
      * <p>

@@ -15,6 +15,7 @@ import com.bkromhout.minerva.adapters.BaseBookCardAdapter;
 import com.bkromhout.minerva.adapters.BookItemCardAdapter;
 import com.bkromhout.minerva.adapters.BookItemCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookItemCardNoCoverAdapter;
+import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.ReImporter;
 import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.events.ActionEvent;
@@ -36,7 +37,6 @@ import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -387,22 +387,21 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 break;
             }
             case R.id.action_convert_to_normal_list: {
-                // TODO
-
-                // TODO Update UI, Refresh menu options, etc
+                if (smartListRuq != null) {
+                    srcList.convertToNormalListUsingRuq(smartListRuq);
+                    // TODO Update UI, Refresh menu options, etc
+                }
                 break;
             }
             case R.id.action_delete_list:
             case R.id.action_delete_smart_list: {
                 // Delete the list currently being shown, then finish the activity.
-                srcList.deleteList();
+                ActionHelper.deleteList(realm, srcList);
                 finish();
                 break;
             }
             case R.id.action_rate: {
-                realm.executeTransaction(tRealm -> {
-                    for (RBook item : selectedItems) item.setRating((Integer) event.getData());
-                });
+                ActionHelper.rateBooks(realm, selectedItems, (Integer) event.getData());
                 break;
             }
             case R.id.action_add_to_list: {
@@ -412,7 +411,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 break;
             }
             case R.id.action_re_import: {
-                ReImporter.reImportBooks(selectedItems, this);
+                ActionHelper.reImportBooks(selectedItems, this);
                 // Don't dismiss action mode yet.
                 return;
             }
@@ -421,15 +420,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 break;
             }
             case R.id.action_delete: {
-                // Delete the RBooks from Realm.
-                List<String> relPaths = RBook.deleteBooks(selectedItems);
-                // If the user wants us to, also try to delete the corresponding files from the device.
-                if ((boolean) event.getData()) {
-                    for (String relPath : relPaths) {
-                        File file = Util.getFileFromRelPath(relPath);
-                        if (file != null) file.delete();
-                    }
-                }
+                ActionHelper.deleteBooks(selectedItems, (boolean) event.getData());
                 break;
             }
         }

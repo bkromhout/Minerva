@@ -22,6 +22,7 @@ import com.bkromhout.minerva.*;
 import com.bkromhout.minerva.adapters.BookCardAdapter;
 import com.bkromhout.minerva.adapters.BookCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
+import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.ReImporter;
 import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.enums.SortDir;
@@ -31,7 +32,6 @@ import com.bkromhout.minerva.events.BookCardClickEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.prefs.LibraryPrefs;
 import com.bkromhout.minerva.realm.RBook;
-import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.RealmRecyclerView;
@@ -41,7 +41,6 @@ import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -287,34 +286,20 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
 
         switch (event.getActionId()) {
             case R.id.action_add_to_list: {
-                // Add books to the list selected list.
-                realm.where(RBookList.class)
-                     .equalTo("name", (String) event.getData())
-                     .findFirst()
-                     .addBooks(selectedItems);
+                ActionHelper.addBooksToList(realm, selectedItems, (String) event.getData());
                 break;
             }
             case R.id.action_rate: {
-                realm.executeTransaction(tRealm -> {
-                    for (RBook item : selectedItems) item.setRating((Integer) event.getData());
-                });
+                ActionHelper.rateBooks(realm, selectedItems, (Integer) event.getData());
                 break;
             }
             case R.id.action_re_import: {
-                ReImporter.reImportBooks(selectedItems, this);
+                ActionHelper.reImportBooks(selectedItems, this);
                 // Don't dismiss action mode yet.
                 return;
             }
             case R.id.action_delete: {
-                // Delete the RBooks from Realm.
-                List<String> relPaths = RBook.deleteBooks(selectedItems);
-                // If the user wants us to, also try to delete the corresponding files from the device.
-                if ((boolean) event.getData()) {
-                    for (String relPath : relPaths) {
-                        File file = Util.getFileFromRelPath(relPath);
-                        if (file != null) file.delete();
-                    }
-                }
+                ActionHelper.deleteBooks(selectedItems, (boolean) event.getData());
                 break;
             }
         }

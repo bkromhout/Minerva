@@ -13,6 +13,7 @@ import com.bkromhout.minerva.BookListActivity;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.adapters.BookListCardAdapter;
+import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.events.BookListCardClickEvent;
 import com.bkromhout.minerva.prefs.ListsPrefs;
 import com.bkromhout.minerva.realm.RBookList;
@@ -242,21 +243,14 @@ public class AllListsFragment extends Fragment {
             }
             case R.id.action_delete_list: {
                 // Show a confirmation dialog for deleting the list. TODO make this use Dialogs.java
-                // TODO have this work with an undo snackbar...needs to be more complex that simply waiting??
-                // TODO maybe a boolean on the model called "isDeleting", and have the query not include those?
                 new MaterialDialog.Builder(getActivity())
                         .title(R.string.title_delete_list)
                         .content(C.getStr(R.string.delete_list_prompt, listName))
                         .positiveText(R.string.yes)
                         .negativeText(R.string.no)
                         .onPositive((dialog, which) -> {
-                            // Get Realm instance, then delete the list.
-                            Realm.getDefaultInstance()
-                                 .executeTransaction(tRealm -> tRealm
-                                         .where(RBookList.class)
-                                         .equalTo("name", listName)
-                                         .findFirst()
-                                         .removeFromRealm());
+                            // Delete the list.
+                            ActionHelper.deleteList(listName);
                         })
                         .show();
                 break;
