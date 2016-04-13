@@ -8,15 +8,14 @@ import android.view.*;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkromhout.minerva.BookListActivity;
-import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.adapters.BookListCardAdapter;
 import com.bkromhout.minerva.data.ActionHelper;
+import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookListCardClickEvent;
-import com.bkromhout.minerva.prefs.ListsPrefs;
 import com.bkromhout.minerva.realm.RBookList;
+import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.RealmRecyclerView;
 import io.realm.Realm;
@@ -36,10 +35,6 @@ public class AllListsFragment extends Fragment {
     RealmRecyclerView recyclerView;
 
     /**
-     * Preferences.
-     */
-    private ListsPrefs listsPrefs;
-    /**
      * Instance of Realm.
      */
     private Realm realm;
@@ -51,6 +46,14 @@ public class AllListsFragment extends Fragment {
      * Adapter for the recycler view.
      */
     private RealmBasedRecyclerViewAdapter adapter;
+    /**
+     * Action mode.
+     */
+    private ActionMode actionMode;
+    /**
+     * Temporary storage for a list name.
+     */
+    private String tempListName = null;
 
     public AllListsFragment() {
         // Required empty public constructor
@@ -82,21 +85,10 @@ public class AllListsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Read prefs to fill in vars.
-        listsPrefs = ListsPrefs.get();
-        readPrefs();
-
         // Get Realm.
         realm = Realm.getDefaultInstance();
 
         initUi();
-    }
-
-    /**
-     * Read preferences into variables.
-     */
-    private void readPrefs() {
-
     }
 
     /**
@@ -192,45 +184,13 @@ public class AllListsFragment extends Fragment {
                 break;
             }
             case R.id.action_rename_list: {
-                // Show a dialog to rename the list. TODO make this use Dialogs.java
-                new MaterialDialog.Builder(getActivity())
-                        .title(R.string.title_rename_list)
-                        .content(R.string.rename_list_prompt)
-                        .autoDismiss(false)
-                        .negativeText(R.string.cancel)
-                        .onNegative((dialog, which) -> dialog.dismiss())
-                        .input(C.getStr(R.string.list_name_hint), listName, false, ((dialog, input) -> {
-                            // If it's the same name, do nothing.
-                            String newName = input.toString().trim();
-                            if (listName.equals(newName)) {
-                                dialog.dismiss();
-                                return;
-                            }
-
-                            // Get Realm to check if name exists.
-                            try (Realm innerRealm = Realm.getDefaultInstance()) {
-                                // If the name exists (other than the list's current name), set the error text on the
-                                // edit text. If it doesn't, rename the RBookList.
-                                if (innerRealm.where(RBookList.class).equalTo("name", newName).findFirst() != null) {
-                                    //noinspection ConstantConditions
-                                    dialog.getInputEditText().setError(C.getStr(R.string.err_name_taken));
-                                } else {
-                                    innerRealm.executeTransaction(tRealm -> {
-                                        RBookList list = tRealm.where(RBookList.class)
-                                                               .equalTo("name", listName)
-                                                               .findFirst();
-                                        list.setName(newName);
-                                        list.setSortName(newName.toLowerCase()); // TODO Work-around
-                                    });
-                                    dialog.dismiss();
-                                }
-                            }
-                        }))
-                        .show();
+                Dialogs.listNameDialog(getActivity(), R.string.title_rename_list, R.string.rename_list_prompt, listName,
+                        R.id.action_rename_list);
                 break;
             }
             case R.id.action_rename_smart_list: {
-                // TODO
+                Dialogs.listNameDialog(getActivity(), R.string.title_rename_smart_list,
+                        R.string.rename_smart_list_prompt, listName, R.id.action_rename_smart_list);
                 break;
             }
             case R.id.action_edit_smart_list: {
@@ -238,28 +198,57 @@ public class AllListsFragment extends Fragment {
                 break;
             }
             case R.id.action_convert_to_normal_list: {
-                // TODO
+                Dialogs.simpleYesNoDialog(getActivity(), R.string.title_convert_to_normal_list,
+                        R.string.convert_to_normal_list_prompt, R.id.action_convert_to_normal_list);
                 break;
             }
             case R.id.action_delete_list: {
-                // Show a confirmation dialog for deleting the list. TODO make this use Dialogs.java
-                new MaterialDialog.Builder(getActivity())
-                        .title(R.string.title_delete_list)
-                        .content(C.getStr(R.string.delete_list_prompt, listName))
-                        .positiveText(R.string.yes)
-                        .negativeText(R.string.no)
-                        .onPositive((dialog, which) -> {
-                            // Delete the list.
-                            ActionHelper.deleteList(listName);
-                        })
-                        .show();
+                Dialogs.simpleYesNoDialog(getActivity(), R.string.title_delete_list, R.string.delete_list_prompt,
+                        R.id.action_delete_list);
                 break;
             }
             case R.id.action_delete_smart_list: {
-                // TODO
+                Dialogs.simpleYesNoDialog(getActivity(), R.string.title_delete_smart_list,
+                        R.string.delete_smart_list_prompt, R.id.action_delete_list);
                 break;
             }
         }
+    }
+
+    /**
+     * Called when we wish to take some action.
+     * @param event {@link ActionEvent}.
+     */
+    @Subscribe
+    public void onActionEvent(ActionEvent event) {
+        RBookList list = lists.where().equalTo("name", tempListName).findFirst();
+
+        switch (event.getActionId()) {
+            case R.id.action_new_list: {
+                ActionHelper.createNewList(realm, (String) event.getData());
+                break;
+            }
+            case R.id.action_new_smart_list: {
+                // TODO
+                break;
+            }
+            case R.id.action_rename_list:
+            case R.id.action_rename_smart_list: {
+                ActionHelper.renameList(realm, list, (String) event.getData());
+                break;
+            }
+            case R.id.action_convert_to_normal_list: {
+                list.convertToNormalList();
+                break;
+            }
+            case R.id.action_delete_list:
+            case R.id.action_delete_smart_list: {
+                // Delete the list currently being shown, then finish the activity.
+                ActionHelper.deleteList(realm, list);
+                break;
+            }
+        }
+        if (actionMode != null) actionMode.finish();
     }
 
     /**
@@ -267,32 +256,7 @@ public class AllListsFragment extends Fragment {
      */
     @OnClick(R.id.fab)
     void onFabClick() {
-        // TODO somehow make this allow adding smart lists... or put that into the options menu
-        new MaterialDialog.Builder(getActivity())
-                .title(R.string.action_new_list)
-                .content(R.string.new_list_prompt)
-                .autoDismiss(false)
-                .negativeText(R.string.cancel)
-                .onNegative((dialog, which) -> dialog.dismiss())
-                .input(R.string.list_name_hint, 0, false, (dialog, input) -> {
-                    // Get Realm instance, then check to see if the entered name has already been taken.
-                    Realm innerRealm = Realm.getDefaultInstance();
-                    String newName = input.toString().trim();
-                    boolean nameExists = innerRealm.where(RBookList.class)
-                                                   .equalTo("name", newName)
-                                                   .findFirst() != null;
-
-                    // If the name exists, set the error text on the edit text. If it doesn't, create the new RBookList.
-                    if (nameExists) {
-                        //noinspection ConstantConditions
-                        dialog.getInputEditText().setError(C.getStr(R.string.err_name_taken));
-                        innerRealm.close();
-                    } else {
-                        innerRealm.executeTransaction(tRealm -> tRealm.copyToRealm(new RBookList(newName)));
-                        innerRealm.close();
-                        dialog.dismiss();
-                    }
-                })
-                .show();
+        Dialogs.listNameDialog(getActivity(), R.string.action_new_list, R.string.new_list_prompt, null,
+                R.id.action_new_list);
     }
 }

@@ -17,6 +17,7 @@ import com.bkromhout.minerva.adapters.BookItemCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookItemCardNoCoverAdapter;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.ReImporter;
+import com.bkromhout.minerva.enums.AdapterType;
 import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
@@ -78,6 +79,10 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
      * will be null.
      */
     private RealmUserQuery smartListRuq = null;
+    /**
+     * Type of objects in the adapter.
+     */
+    private AdapterType adapterType = AdapterType.BOOK;
     /**
      * The list of {@link RBookListItem}s being shown.
      */
@@ -292,10 +297,12 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 Dialogs.cardStyleDialog(this, listsPrefs);
                 return true;
             case R.id.action_rename_list:
-                // TODO
+                Dialogs.listNameDialog(this, R.string.title_rename_list, R.string.rename_list_prompt, srcList.getName(),
+                        R.id.action_rename_list);
                 return true;
             case R.id.action_rename_smart_list:
-                // TODO
+                Dialogs.listNameDialog(this, R.string.title_rename_smart_list, R.string.rename_smart_list_prompt,
+                        srcList.getName(), R.id.action_rename_smart_list);
                 return true;
             case R.id.action_edit_smart_list:
                 // TODO
@@ -305,14 +312,16 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                         R.id.action_clear);
                 return true;
             case R.id.action_convert_to_normal_list:
-                // TODO
+                Dialogs.simpleYesNoDialog(this, R.string.title_convert_to_normal_list,
+                        R.string.convert_to_normal_list_prompt, R.id.action_convert_to_normal_list);
                 return true;
             case R.id.action_delete_list:
                 Dialogs.simpleYesNoDialog(this, R.string.title_delete_list, R.string.delete_list_prompt,
                         R.id.action_delete_list);
                 return true;
             case R.id.action_delete_smart_list:
-                // TODO
+                Dialogs.simpleYesNoDialog(this, R.string.title_delete_smart_list, R.string.delete_smart_list_prompt,
+                        R.id.action_delete_smart_list);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -334,11 +343,10 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         switch (item.getItemId()) {
             case R.id.action_tag:
                 //noinspection unchecked
-                TaggingActivity.start(this, RBookListItem.booksFromBookListItems(adapter.getSelectedRealmObjects()));
+                TaggingActivity.start(this, getSelectedBooks());
                 return true;
             case R.id.action_rate:
-                int initialRating = adapter.getSelectedItemCount() == 1
-                        ? ((RBook) adapter.getSelectedRealmObjects().get(0)).getRating() : 0;
+                int initialRating = adapter.getSelectedItemCount() == 1 ? getSelectedBooks().get(0).getRating() : 0;
                 Dialogs.ratingDialog(this, initialRating);
                 return true;
             case R.id.action_move_to_top:
@@ -373,9 +381,6 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
      */
     @Subscribe
     public void onActionEvent(ActionEvent event) {
-        //noinspection unchecked
-        List<RBook> selectedItems = adapter.getSelectedRealmObjects();
-
         switch (event.getActionId()) {
             case R.id.action_clear: {
                 realm.executeTransaction(tRealm -> srcList.getListItems().clear());
@@ -383,7 +388,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
             }
             case R.id.action_rename_list:
             case R.id.action_rename_smart_list: {
-                // TODO
+                ActionHelper.renameList(realm, srcList, (String) event.getData());
                 break;
             }
             case R.id.action_convert_to_normal_list: {
@@ -401,7 +406,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 break;
             }
             case R.id.action_rate: {
-                ActionHelper.rateBooks(realm, selectedItems, (Integer) event.getData());
+                ActionHelper.rateBooks(realm, getSelectedBooks(), (Integer) event.getData());
                 break;
             }
             case R.id.action_add_to_list: {
@@ -411,16 +416,16 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 break;
             }
             case R.id.action_re_import: {
-                ActionHelper.reImportBooks(selectedItems, this);
+                ActionHelper.reImportBooks(getSelectedBooks(), this);
                 // Don't dismiss action mode yet.
                 return;
             }
             case R.id.action_remove: {
-                srcList.removeBooks(selectedItems);
+                srcList.removeBooks(getSelectedBooks());
                 break;
             }
             case R.id.action_delete: {
-                ActionHelper.deleteBooks(selectedItems, (boolean) event.getData());
+                ActionHelper.deleteBooks(getSelectedBooks(), (boolean) event.getData());
                 break;
             }
         }
@@ -478,6 +483,19 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
      */
     private void startActionMode() {
         if (actionMode == null) actionMode = startSupportActionMode(this);
+    }
+
+    /**
+     * Get the list of {@link RBook}s which are currently selected.
+     * @return List of selected books.
+     */
+    @SuppressWarnings("unchecked")
+    private List<RBook> getSelectedBooks() {
+        if (adapterType == AdapterType.BOOK)
+            return adapter.getSelectedRealmObjects();
+        else if (adapterType == AdapterType.BOOK_LIST_ITEM) return RBookListItem.booksFromBookListItems(
+                adapter.getSelectedRealmObjects());
+        else throw new IllegalArgumentException("Invalid type.");
     }
 
     /**

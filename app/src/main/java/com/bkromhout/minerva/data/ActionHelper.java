@@ -68,12 +68,8 @@ public class ActionHelper {
     List Actions.
      */
 
-    public static void deleteList(String listName) {
-        try (Realm realm = Realm.getDefaultInstance()) {
-            deleteList(realm, realm.where(RBookList.class)
-                                   .equalTo("name", listName)
-                                   .findFirst());
-        }
+    public static void createNewList(Realm realm, String listName) {
+        realm.executeTransaction(tRealm -> tRealm.copyToRealm(new RBookList(listName)));
     }
 
     /**
@@ -92,7 +88,10 @@ public class ActionHelper {
         }
     }
 
-    public static void renameList(RBookList list, String newName) {
-
+    public static void renameList(Realm realm, RBookList list, String newName) {
+        realm.executeTransaction(tRealm -> {
+            list.setName(newName);
+            list.setSortName(newName.toLowerCase()); // TODO Work-around
+        });
     }
 }

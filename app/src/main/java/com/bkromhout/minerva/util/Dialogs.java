@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.ButterKnife;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.events.ActionEvent;
@@ -153,6 +154,49 @@ public class Dialogs {
                 .negativeText(R.string.no)
                 .onPositive((dialog, which) ->
                         EventBus.getDefault().post(new ActionEvent(actionId, checkBox.isChecked())))
+                .show();
+    }
+
+    /**
+     * Shows an input dialog which will check the input against the current list names before allowing the {@link
+     * ActionEvent} to be fired. The event will only be fired if the input text is non-empty and not already used as a
+     * list's name. If entered text is the same as {@code preFill}, the dialog will be dismissed without doing
+     * anything.
+     * @param ctx      Context to use.
+     * @param title    String resource to use for title.
+     * @param text     String resource to use for text.
+     * @param preFill  String to pre-fill the edit text with.
+     * @param actionId Action ID to send if Yes is clicked and checks all pass.
+     */
+    public static void listNameDialog(Context ctx, @StringRes int title, @StringRes int text, String preFill,
+                                      @IdRes int actionId) {
+        new MaterialDialog.Builder(ctx)
+                .title(title)
+                .content(text)
+                .autoDismiss(false)
+                .negativeText(R.string.cancel)
+                .onNegative((dialog, which) -> dialog.dismiss())
+                .input(C.getStr(R.string.list_name_hint), preFill, false, (dialog, input) -> {
+                    // If it's the same value, do nothing.
+                    String newName = input.toString().trim();
+                    if (preFill != null && preFill.equals(newName)) {
+                        dialog.dismiss();
+                        return;
+                    }
+
+                    // Get Realm to check if name exists.
+                    try (Realm innerRealm = Realm.getDefaultInstance()) {
+                        // If the name exists (other than the list's current name), set the error text on the
+                        // edit text. If it doesn't, fire an event off and dismiss the dialog.
+                        if (innerRealm.where(RBookList.class).equalTo("name", newName).findFirst() != null) {
+                            //noinspection ConstantConditions
+                            dialog.getInputEditText().setError(C.getStr(R.string.err_name_taken));
+                        } else {
+                            EventBus.getDefault().post(new ActionEvent(actionId, newName));
+                            dialog.dismiss();
+                        }
+                    }
+                })
                 .show();
     }
 }

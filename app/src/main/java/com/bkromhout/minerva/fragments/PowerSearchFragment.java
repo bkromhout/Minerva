@@ -17,6 +17,7 @@ import com.bkromhout.minerva.*;
 import com.bkromhout.minerva.adapters.*;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.ReImporter;
+import com.bkromhout.minerva.enums.AdapterType;
 import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
@@ -51,10 +52,6 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     @Bind(R.id.recycler)
     RealmRecyclerView recyclerView;
 
-    private enum QueryType {
-        RBOOK, RBOOKLISTITEM
-    }
-
     /**
      * Preferences.
      */
@@ -74,7 +71,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     /**
      * Current query type. Changes as {@link #ruq} changes.
      */
-    private QueryType queryType;
+    private AdapterType queryType;
     /**
      * Current query results.
      */
@@ -128,7 +125,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
         // Restore RealmUserQuery if we're coming back from a configuration change.
         if (savedInstanceState != null && savedInstanceState.containsKey(C.RUQ)) {
             ruq = savedInstanceState.getParcelable(C.RUQ);
-            queryType = QueryType.values()[savedInstanceState.getInt(QUERY_TYPE)];
+            queryType = AdapterType.values()[savedInstanceState.getInt(QUERY_TYPE)];
         }
 
         updateUi();
@@ -256,11 +253,10 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
                 return true;
             case R.id.action_tag:
                 //noinspection unchecked
-                TaggingActivity.start(this, adapter.getSelectedRealmObjects());
+                TaggingActivity.start(this, getSelectedBooks());
                 return true;
             case R.id.action_rate:
-                int initialRating = adapter.getSelectedItemCount() == 1
-                        ? ((RBook) adapter.getSelectedRealmObjects().get(0)).getRating() : 0;
+                int initialRating = adapter.getSelectedItemCount() == 1 ? getSelectedBooks().get(0).getRating() : 0;
                 Dialogs.ratingDialog(getContext(), initialRating);
                 return true;
             case R.id.action_re_import:
@@ -282,25 +278,22 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
      */
     @Subscribe
     public void onActionEvent(ActionEvent event) {
-        //noinspection unchecked
-        List<RBook> selectedItems = adapter.getSelectedRealmObjects();
-
         switch (event.getActionId()) {
             case R.id.action_add_to_list: {
-                ActionHelper.addBooksToList(realm, selectedItems, (String) event.getData());
+                ActionHelper.addBooksToList(realm, getSelectedBooks(), (String) event.getData());
                 break;
             }
             case R.id.action_rate: {
-                ActionHelper.rateBooks(realm, selectedItems, (Integer) event.getData());
+                ActionHelper.rateBooks(realm, getSelectedBooks(), (Integer) event.getData());
                 break;
             }
             case R.id.action_re_import: {
-                ActionHelper.reImportBooks(selectedItems, this);
+                ActionHelper.reImportBooks(getSelectedBooks(), this);
                 // Don't dismiss action mode yet.
                 return;
             }
             case R.id.action_delete: {
-                ActionHelper.deleteBooks(selectedItems, (boolean) event.getData());
+                ActionHelper.deleteBooks(getSelectedBooks(), (boolean) event.getData());
                 break;
             }
         }
@@ -316,10 +309,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
                     // We've changed our query. Get the RealmUserQuery.
                     ruq = data.getParcelableExtra(C.RUQ);
                     // Figure out the query type.
-                    if (RBook.class.getCanonicalName().equals(ruq.getQueryClass().getCanonicalName()))
-                        queryType = QueryType.RBOOK;
-                    else if (RBookListItem.class.getCanonicalName().equals(ruq.getQueryClass().getCanonicalName()))
-                        queryType = QueryType.RBOOKLISTITEM;
+                    queryType = AdapterType.fromRealmClass(ruq.getQueryClass());
                     // Update the UI.
                     updateUi();
                 }
@@ -359,9 +349,9 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     public void onCardClicked(BookCardClickEvent event) {
         // Get the associated RBook.
         RBook book;
-        if (queryType == QueryType.RBOOK)
+        if (queryType == AdapterType.BOOK)
             book = (RBook) results.where().equalTo("relPath", event.getRelPath()).findFirst();
-        else if (queryType == QueryType.RBOOKLISTITEM)
+        else if (queryType == AdapterType.BOOK_LIST_ITEM)
             book = ((RBookListItem) results.where().equalTo("book.relPath", event.getRelPath()).findFirst()).getBook();
         else throw new IllegalArgumentException("Invalid queryType");
 
@@ -410,13 +400,26 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     }
 
     /**
+     * Get the list of {@link RBook}s which are currently selected.
+     * @return List of selected books.
+     */
+    @SuppressWarnings("unchecked")
+    private List<RBook> getSelectedBooks() {
+        if (queryType == AdapterType.BOOK)
+            return adapter.getSelectedRealmObjects();
+        else if (queryType == AdapterType.BOOK_LIST_ITEM) return RBookListItem.booksFromBookListItems(
+                adapter.getSelectedRealmObjects());
+        else throw new IllegalArgumentException("Invalid type.");
+    }
+
+    /**
      * Make adapter based on {@link RealmUserQuery#getQueryClass() ruq#getQueryClass()} and {@link #cardType}.
      * @return Adapter, or null if {@link #ruq} is null/invalid or {@link #cardType} is null/invalid.
      */
     @SuppressWarnings("unchecked")
     private RealmBasedRecyclerViewAdapter makeAdapter() {
         if (ruq == null || !ruq.isQueryValid()) return null;
-        else if (queryType == QueryType.RBOOK) {
+        else if (queryType == AdapterType.BOOK) {
             switch (cardType) {
                 case NORMAL:
                     return new BookCardAdapter(getActivity(), (RealmResults<RBook>) results);
@@ -427,7 +430,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
                 default:
                     return null;
             }
-        } else if (queryType == QueryType.RBOOKLISTITEM) {
+        } else if (queryType == AdapterType.BOOK_LIST_ITEM) {
             switch (cardType) {
                 case NORMAL:
                     return new BookItemCardAdapter(getActivity(), (RealmResults<RBookListItem>) results);
