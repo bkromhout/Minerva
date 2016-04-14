@@ -4,6 +4,7 @@ import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
 import com.bkromhout.minerva.util.Util;
+import com.bkromhout.ruqus.RealmUserQuery;
 import com.google.common.collect.Lists;
 import io.realm.Realm;
 
@@ -70,6 +71,14 @@ public class ActionHelper {
 
     public static void createNewList(Realm realm, String listName) {
         realm.executeTransaction(tRealm -> tRealm.copyToRealm(new RBookList(listName)));
+    }
+
+    public static void createNewSmartList(Realm realm, String listName, RealmUserQuery realmUserQuery) {
+        realm.executeTransaction(tRealm -> tRealm.copyToRealm(new RBookList(listName, realmUserQuery)));
+    }
+
+    public static void updateSmartList(Realm realm, RBookList list, String ruqString) {
+        realm.executeTransaction(tRealm -> list.setSmartListRuqString(ruqString));
     }
 
     /**

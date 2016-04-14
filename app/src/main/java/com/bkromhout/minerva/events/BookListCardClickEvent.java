@@ -58,7 +58,7 @@ public class BookListCardClickEvent {
      * {@link com.bkromhout.minerva.realm.RBookList}.
      * @return List name.
      */
-    public String getName() {
+    public String getListName() {
         return name;
     }
 

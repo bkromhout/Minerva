@@ -31,6 +31,52 @@ import rx.Observable;
  */
 public class Dialogs {
     /**
+     * Shows a simple Yes/No dialog using the given {@code title} and {@code text} string resources. Upon Yes being
+     * clicked, fires an {@link ActionEvent} using the given {@code actionId}.
+     * @param ctx      Context to use.
+     * @param title    String resource to use for title.
+     * @param text     String resource to use for text.
+     * @param actionId Action ID to send if Yes is clicked.
+     */
+    public static void simpleYesNoDialog(Context ctx, @StringRes int title, @StringRes int text, @IdRes int actionId) {
+        new MaterialDialog.Builder(ctx)
+                .title(title)
+                .content(text)
+                .positiveText(R.string.yes)
+                .negativeText(R.string.no)
+                .onPositive((dialog, which) -> EventBus.getDefault().post(new ActionEvent(actionId, null)))
+                .show();
+    }
+
+    /**
+     * Same as {@link #simpleYesNoDialog(Context, int, int, int)}, but adds a single check box which allows for
+     * additional input.
+     * @param ctx          Context to use.
+     * @param title        String resource to use for title.
+     * @param text         String resource to use for text.
+     * @param checkBoxText String resource to use for the checkbox.
+     * @param actionId     Action ID to send if Yes is clicked.
+     */
+    public static void yesNoCheckBoxDialog(Context ctx, @StringRes int title, @StringRes int text,
+                                           @StringRes int checkBoxText, @IdRes int actionId) {
+        @SuppressLint("InflateParams")
+        View view = LayoutInflater.from(ctx).inflate(R.layout.dialog_yes_no_checkbox, null);
+        final TextView content = ButterKnife.findById(view, R.id.content);
+        final CheckBox checkBox = ButterKnife.findById(view, R.id.checkbox);
+        content.setText(text);
+        checkBox.setText(checkBoxText);
+
+        new MaterialDialog.Builder(ctx)
+                .title(title)
+                .customView(view, false)
+                .positiveText(R.string.yes)
+                .negativeText(R.string.no)
+                .onPositive((dialog, which) ->
+                        EventBus.getDefault().post(new ActionEvent(actionId, checkBox.isChecked())))
+                .show();
+    }
+
+    /**
      * Show a simple book card style chooser dialog.
      * @param ctx   Context to use.
      * @param prefs Some *Prefs object which implements {@link BCTPref} so that we may get/put the current/new
@@ -112,52 +158,6 @@ public class Dialogs {
     }
 
     /**
-     * Shows a simple Yes/No dialog using the given {@code title} and {@code text} string resources. Upon Yes being
-     * clicked, fires an {@link ActionEvent} using the given {@code actionId}.
-     * @param ctx      Context to use.
-     * @param title    String resource to use for title.
-     * @param text     String resource to use for text.
-     * @param actionId Action ID to send if Yes is clicked.
-     */
-    public static void simpleYesNoDialog(Context ctx, @StringRes int title, @StringRes int text, @IdRes int actionId) {
-        new MaterialDialog.Builder(ctx)
-                .title(title)
-                .content(text)
-                .positiveText(R.string.yes)
-                .negativeText(R.string.no)
-                .onPositive((dialog, which) -> EventBus.getDefault().post(new ActionEvent(actionId, null)))
-                .show();
-    }
-
-    /**
-     * Same as {@link #simpleYesNoDialog(Context, int, int, int)}, but adds a single check box which allows for
-     * additional input.
-     * @param ctx          Context to use.
-     * @param title        String resource to use for title.
-     * @param text         String resource to use for text.
-     * @param checkBoxText String resource to use for the checkbox.
-     * @param actionId     Action ID to send if Yes is clicked.
-     */
-    public static void yesNoCheckBoxDialog(Context ctx, @StringRes int title, @StringRes int text,
-                                           @StringRes int checkBoxText, @IdRes int actionId) {
-        @SuppressLint("InflateParams")
-        View view = LayoutInflater.from(ctx).inflate(R.layout.dialog_yes_no_checkbox, null);
-        final TextView content = ButterKnife.findById(view, R.id.content);
-        final CheckBox checkBox = ButterKnife.findById(view, R.id.checkbox);
-        content.setText(text);
-        checkBox.setText(checkBoxText);
-
-        new MaterialDialog.Builder(ctx)
-                .title(title)
-                .customView(view, false)
-                .positiveText(R.string.yes)
-                .negativeText(R.string.no)
-                .onPositive((dialog, which) ->
-                        EventBus.getDefault().post(new ActionEvent(actionId, checkBox.isChecked())))
-                .show();
-    }
-
-    /**
      * Shows an input dialog which will check the input against the current list names before allowing the {@link
      * ActionEvent} to be fired. The event will only be fired if the input text is non-empty and not already used as a
      * list's name. If entered text is the same as {@code preFill}, the dialog will be dismissed without doing
@@ -197,6 +197,24 @@ public class Dialogs {
                         }
                     }
                 })
+                .show();
+    }
+
+    /**
+     * Shows a dialog which will either display {@code queryString} or a message about not having a query for a smart
+     * list. Also has a button to open the query builder which will fire an {@link ActionEvent} to do just that.
+     * @param ctx         Context to use.
+     * @param queryString Query string to display, or null to show "no query string" message.
+     */
+    public static void smartListQueryDialog(Context ctx, String queryString) {
+        new MaterialDialog.Builder(ctx)
+                .title(R.string.title_smart_list_query)
+                .content(queryString == null || queryString.isEmpty()
+                        ? C.getStr(R.string.no_query_for_smart_list) : queryString)
+                .positiveText(R.string.ok)
+                .neutralText(R.string.open_query_builder)
+                .onNeutral((dialog, which) ->
+                        EventBus.getDefault().post(new ActionEvent(R.id.action_open_query_builder, null)))
                 .show();
     }
 }

@@ -9,6 +9,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.BookListActivity;
+import com.bkromhout.minerva.QueryBuilderActivity;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.adapters.BookListCardAdapter;
 import com.bkromhout.minerva.data.ActionHelper;
@@ -18,6 +19,7 @@ import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.RealmRecyclerView;
+import com.bkromhout.ruqus.RealmUserQuery;
 import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
@@ -51,9 +53,9 @@ public class AllListsFragment extends Fragment {
      */
     private ActionMode actionMode;
     /**
-     * Temporary storage for a list name.
+     * Temporary storage for a list.
      */
-    private String tempListName = null;
+    private RBookList tempList;
 
     public AllListsFragment() {
         // Required empty public constructor
@@ -155,9 +157,7 @@ public class AllListsFragment extends Fragment {
         // Do something based on the click type.
         switch (event.getType()) {
             case NORMAL:
-                Bundle b = new Bundle();
-                b.putString(BookListActivity.LIST_SEL_STR, event.getName());
-                Util.startAct(getActivity(), BookListActivity.class, b);
+                BookListActivity.start(getActivity(), event.getListName());
                 break;
             case LONG:
                 // TODO Start multi-select.
@@ -165,7 +165,7 @@ public class AllListsFragment extends Fragment {
                 break;
             case ACTIONS:
                 // Handle action.
-                onCardMenuActionClicked(event.getActionId(), event.getName());
+                onCardMenuActionClicked(event.getActionId(), event.getListName());
                 break;
         }
     }
@@ -176,11 +176,12 @@ public class AllListsFragment extends Fragment {
      */
     private void onCardMenuActionClicked(int actionId, String listName) {
         if (actionId < 0 || listName == null) throw new IllegalArgumentException();
+        tempList = lists.where().equalTo("name", listName).findFirst();
 
         // Do something based on the menu item ID.
         switch (actionId) {
             case R.id.action_show_query: {
-                // TODO
+                Dialogs.smartListQueryDialog(getActivity(), tempList.getSmartListRuqString());
                 break;
             }
             case R.id.action_rename_list: {
@@ -194,7 +195,9 @@ public class AllListsFragment extends Fragment {
                 break;
             }
             case R.id.action_edit_smart_list: {
-                // TODO
+                String ruqString = tempList.getSmartListRuqString();
+                QueryBuilderActivity.start(this, ruqString == null || ruqString.isEmpty()
+                        ? null : new RealmUserQuery(ruqString));
                 break;
             }
             case R.id.action_convert_to_normal_list: {
@@ -217,34 +220,41 @@ public class AllListsFragment extends Fragment {
 
     /**
      * Called when we wish to take some action.
+     * <p>
+     * TODO handle multi-select correctly.
      * @param event {@link ActionEvent}.
      */
     @Subscribe
     public void onActionEvent(ActionEvent event) {
-        RBookList list = lists.where().equalTo("name", tempListName).findFirst();
-
         switch (event.getActionId()) {
             case R.id.action_new_list: {
                 ActionHelper.createNewList(realm, (String) event.getData());
                 break;
             }
             case R.id.action_new_smart_list: {
-                // TODO
+                ActionHelper.createNewSmartList(realm, (String) event.getData(), null);
+                BookListActivity.start(getActivity(), (String) event.getData());
+                break;
+            }
+            case R.id.action_open_query_builder: {
+                String ruqString = tempList.getSmartListRuqString();
+                QueryBuilderActivity.start(this, ruqString == null || ruqString.isEmpty()
+                        ? null : new RealmUserQuery(ruqString));
                 break;
             }
             case R.id.action_rename_list:
             case R.id.action_rename_smart_list: {
-                ActionHelper.renameList(realm, list, (String) event.getData());
+                ActionHelper.renameList(realm, tempList, (String) event.getData());
                 break;
             }
             case R.id.action_convert_to_normal_list: {
-                list.convertToNormalList();
+                tempList.convertToNormalList();
                 break;
             }
             case R.id.action_delete_list:
             case R.id.action_delete_smart_list: {
                 // Delete the list currently being shown, then finish the activity.
-                ActionHelper.deleteList(realm, list);
+                ActionHelper.deleteList(realm, tempList);
                 break;
             }
         }

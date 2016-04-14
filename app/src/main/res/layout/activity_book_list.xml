@@ -23,4 +23,30 @@
             android:padding="@dimen/recycler_view_padding"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:rrvDragAndDrop="true"/>
+
+    <LinearLayout
+            android:id="@+id/smart_list_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:gravity="center"
+            tools:visibility="visible">
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:gravity="center_horizontal"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:text="@string/no_query_for_smart_list_n"/>
+
+        <Button
+                android:id="@+id/open_query_builder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/colorAccent"
+                android:text="@string/open_query_builder"/>
+    </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

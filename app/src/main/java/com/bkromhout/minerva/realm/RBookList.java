@@ -71,21 +71,26 @@ public class RBookList extends RealmObject {
      * @param name Name of the book list. This MUST be unique!
      */
     public RBookList(String name) {
-        this(name, false);
-    }
-
-    /**
-     * Create a new {@link RBookList} with the given {@code name}.
-     * @param name        Name of the book list. This MUST be unique!
-     * @param isSmartList If true, this will be a smart list instead of a normal list.
-     */
-    public RBookList(String name, boolean isSmartList) {
         this.name = name;
         this.sortName = name.toLowerCase();
         this.nextPos = 0L;
         this.listItems = null;
-        this.isSmartList = isSmartList;
+        this.isSmartList = false;
         this.smartListRuqString = null;
+    }
+
+    /**
+     * Create a new {@link RBookList} with the given {@code name} and the given {@code realmUserQuery}.
+     * @param name           Name of the book list. This MUST be unique!
+     * @param realmUserQuery Realm user query to use for the smart list. Can be null.
+     */
+    public RBookList(String name, RealmUserQuery realmUserQuery) {
+        this.name = name;
+        this.sortName = name.toLowerCase();
+        this.nextPos = 0L;
+        this.listItems = null;
+        this.isSmartList = true;
+        this.smartListRuqString = realmUserQuery == null ? null : realmUserQuery.toRuqString();
     }
 
     /**
@@ -324,15 +329,14 @@ public class RBookList extends RealmObject {
     public void convertToNormalList() {
         // If this isn't a smart list, do nothing.
         if (!isSmartList) return;
-        // If this is a smart list but it doesn't actually have a query, just toggle the boolean.
-        if (smartListRuqString == null || smartListRuqString.isEmpty()) {
-            try (Realm realm = Realm.getDefaultInstance()) {
+        try (Realm realm = Realm.getDefaultInstance()) {
+            // If this is a smart list but it doesn't actually have a query, just toggle the boolean.
+            // If there is a query, we'll need to actually add the items, which means we need to get a
+            // RealmUserQuery first.
+            if (smartListRuqString == null || smartListRuqString.isEmpty())
                 realm.executeTransaction(tRealm -> setSmartList(false));
-            }
-            return;
+            else convertToNormalListUsingRuq(realm, new RealmUserQuery(smartListRuqString));
         }
-        // If there is a query, we'll need to actually add the items, which means we need to get a RealmUserQuery first.
-        convertToNormalListUsingRuq(new RealmUserQuery(smartListRuqString));
     }
 
     /**
@@ -340,21 +344,19 @@ public class RBookList extends RealmObject {
      * multiple times, they will only be added once.
      * @param ruq The RealmUserQuery from which to get the books to add to this list.
      */
-    public void convertToNormalListUsingRuq(RealmUserQuery ruq) {
+    public void convertToNormalListUsingRuq(Realm realm, RealmUserQuery ruq) {
         // Don't allow this to occur unless this list is a smart list currently.
         if (!isSmartList) return;
         if (ruq == null || !ruq.isQueryValid()) throw new IllegalArgumentException("ruq must be non-null and valid.");
 
-        try (Realm realm = Realm.getDefaultInstance()) {
-            // Create RBookListItems from RBooks returned by query.
-            List<RBookListItem> bookListItems = booksToBookListItems(ruq.execute(realm));
-            realm.executeTransaction(tRealm -> {
-                // Turn this into a normal list.
-                setSmartList(false);
-                getListItems().addAll(bookListItems);
-                setSmartListRuqString(null);
-            });
-        }
+        // Create RBookListItems from RBooks returned by query.
+        List<RBookListItem> bookListItems = booksToBookListItems(ruq.execute(realm));
+        realm.executeTransaction(tRealm -> {
+            // Turn this into a normal list.
+            setSmartList(false);
+            getListItems().addAll(bookListItems);
+            setSmartListRuqString(null);
+        });
     }
 
     /*

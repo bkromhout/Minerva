@@ -1,6 +1,7 @@
 package com.bkromhout.minerva;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,8 +10,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.bkromhout.minerva.adapters.BaseBookCardAdapter;
 import com.bkromhout.minerva.adapters.BookItemCardAdapter;
 import com.bkromhout.minerva.adapters.BookItemCardCompactAdapter;
@@ -53,6 +57,8 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     Toolbar toolbar;
     @Bind(R.id.recycler)
     RealmRecyclerView recyclerView;
+    @Bind(R.id.smart_list_empty)
+    LinearLayout emptySmartList;
 
     /**
      * Preferences.
@@ -100,6 +106,12 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
      */
     private boolean isReorderMode;
 
+    public static void start(Context context, String listName) {
+        if (listName == null) throw new IllegalArgumentException("Cannot start this activity without a list name.");
+        context.startActivity(new Intent(context, BookListActivity.class)
+                .putExtra(BookListActivity.LIST_SEL_STR, listName));
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,7 +128,6 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
 
         // Read extras bundle.
         readExtras(getIntent().getExtras());
-        if (selStr == null) throw new IllegalArgumentException("Cannot start this activity without a selector string.");
 
         // Get and read preferences.
         listsPrefs = ListsPrefs.get();
@@ -132,7 +143,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
             smartListRuq = savedInstanceState.getParcelable(C.RUQ);
 
         // Set up the UI.
-        initUi();
+        updateUi();
 
         // If we have a saved instance state, check to see if we were in action mode.
         if (savedInstanceState != null && savedInstanceState.getBoolean(C.IS_IN_ACTION_MODE)) {
@@ -162,11 +173,15 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     /**
      * Init the UI.
      */
-    private void initUi() {
+    private void updateUi() {
+        emptySmartList.setVisibility(View.GONE);
         // If we already have a RealmUserQuery, just use that right away.
         if (smartListRuq != null) {
-            // TODO Use RUQ to set up UI.
-
+            // Use RUQ to set up UI.
+            adapterType = AdapterType.fromRealmClass(smartListRuq.getQueryClass());
+            items = smartListRuq.execute(realm);
+            adapter = makeAdapter();
+            recyclerView.setAdapter(adapter);
             return;
         }
         // Check first to see if list is a smart list.
@@ -174,14 +189,15 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
             String ruqString = srcList.getSmartListRuqString();
             // Smart list; check to see if we need to set it up.
             if (ruqString != null && !ruqString.isEmpty()) {
-                // TODO Smart list already has a non-empty RUQ string, create a RUQ and use it.
-
+                // Smart list already has a non-empty RUQ string, create a RUQ and then set up the UI using it.
+                smartListRuq = new RealmUserQuery(srcList.getSmartListRuqString());
+                updateUi();
             } else if (ruqString == null) {
-                // TODO We need to set up the smart list first. Open the query builder.
-
-            } else { // ruqString.isEmpty() = true;
-                //TODO User has already been to the query builder once, it's up to them now, show a message saying that.
-
+                // We need to set up the smart list first. Open the query builder.
+                QueryBuilderActivity.start(this, null);
+            } else { // ruqString.isEmpty() == true here.
+                //User has already been to the query builder once, it's up to them now, show a message saying that.
+                emptySmartList.setVisibility(View.VISIBLE);
             }
         } else {
             // Normal list.
@@ -200,7 +216,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.book_list, menu);
+        getMenuInflater().inflate(smartListRuq == null ? R.menu.book_list : R.menu.book_list_smart, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -291,7 +307,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 startActionMode();
                 return true;
             case R.id.action_show_query:
-                // TODO
+                Dialogs.smartListQueryDialog(this, srcList.getSmartListRuqString());
                 return true;
             case R.id.action_card_type:
                 Dialogs.cardStyleDialog(this, listsPrefs);
@@ -305,7 +321,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                         srcList.getName(), R.id.action_rename_smart_list);
                 return true;
             case R.id.action_edit_smart_list:
-                // TODO
+                QueryBuilderActivity.start(this, smartListRuq);
                 return true;
             case R.id.action_clear:
                 Dialogs.simpleYesNoDialog(this, R.string.title_clear_list, R.string.clear_list_prompt,
@@ -386,6 +402,10 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 realm.executeTransaction(tRealm -> srcList.getListItems().clear());
                 break;
             }
+            case R.id.action_open_query_builder: {
+                QueryBuilderActivity.start(this, smartListRuq);
+                break;
+            }
             case R.id.action_rename_list:
             case R.id.action_rename_smart_list: {
                 ActionHelper.renameList(realm, srcList, (String) event.getData());
@@ -393,8 +413,11 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
             }
             case R.id.action_convert_to_normal_list: {
                 if (smartListRuq != null) {
-                    srcList.convertToNormalListUsingRuq(smartListRuq);
-                    // TODO Update UI, Refresh menu options, etc
+                    srcList.convertToNormalListUsingRuq(realm, smartListRuq);
+                    smartListRuq = null;
+                    // Refresh options menu, then update the UI.
+                    invalidateOptionsMenu();
+                    updateUi();
                 }
                 break;
             }
@@ -451,10 +474,10 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 } else if (smartListRuq == null) {
                     // No valid RUQ returned, and we don't have one already, meaning that srcList's RUQ string is null.
                     // Make it empty string instead so we don't keep forcing the user back into the query builder.
-                    srcList.setSmartListRuqString("");
+                    ActionHelper.updateSmartList(realm, srcList, "");
                 }
                 // Update the UI.
-                initUi();
+                updateUi();
                 break;
             }
         }
@@ -475,7 +498,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     private void updateRuq(RealmUserQuery ruq) {
         if (ruq == null) throw new IllegalArgumentException("ruq must not be null.");
         smartListRuq = ruq;
-        realm.executeTransaction(tRealm -> srcList.setSmartListRuqString(ruq.toRuqString()));
+        ActionHelper.updateSmartList(realm, srcList, ruq.toRuqString());
     }
 
     /**
@@ -596,6 +619,14 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         EventBus.getDefault().removeStickyEvent(event);
         // Update the item at the position in the event.
         adapter.notifyItemChanged(event.getPosition());
+    }
+
+    /**
+     * Open the query builder when the button shown for an empty smart list is clicked.
+     */
+    @OnClick(R.id.open_query_builder)
+    void onOpenQueryBuilderClicked() {
+        QueryBuilderActivity.start(this, null);
     }
 
     @Override

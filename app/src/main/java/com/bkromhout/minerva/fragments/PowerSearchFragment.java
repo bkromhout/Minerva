@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
@@ -228,7 +229,8 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
                 Dialogs.cardStyleDialog(getContext(), powerSearchPrefs);
                 return true;
             case R.id.action_save_as_smart_list:
-                // TODO Show dialog to enter name for smart list.
+                Dialogs.listNameDialog(getActivity(), R.string.action_new_smart_list, R.string.new_smart_list_prompt,
+                        null, R.id.action_new_smart_list);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -294,6 +296,11 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
             }
             case R.id.action_delete: {
                 ActionHelper.deleteBooks(getSelectedBooks(), (boolean) event.getData());
+                break;
+            }
+            case R.id.action_new_smart_list: {
+                ActionHelper.createNewSmartList(realm, (String) event.getData(), ruq);
+                Snackbar.make(recyclerView, R.string.smart_list_created, Snackbar.LENGTH_SHORT).show();
                 break;
             }
         }
