@@ -181,7 +181,9 @@ public class AllListsFragment extends Fragment {
         // Do something based on the menu item ID.
         switch (actionId) {
             case R.id.action_show_query: {
-                Dialogs.smartListQueryDialog(getActivity(), tempList.getSmartListRuqString());
+                Dialogs.smartListQueryDialog(getActivity(),
+                        tempList.getSmartListRuqString() == null || tempList.getSmartListRuqString().isEmpty() ? null :
+                                new RealmUserQuery(tempList.getSmartListRuqString()).toString());
                 break;
             }
             case R.id.action_rename_list: {

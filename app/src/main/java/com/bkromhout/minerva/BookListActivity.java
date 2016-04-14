@@ -307,7 +307,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 startActionMode();
                 return true;
             case R.id.action_show_query:
-                Dialogs.smartListQueryDialog(this, srcList.getSmartListRuqString());
+                Dialogs.smartListQueryDialog(this, smartListRuq == null ? null : smartListRuq.toString());
                 return true;
             case R.id.action_card_type:
                 Dialogs.cardStyleDialog(this, listsPrefs);
