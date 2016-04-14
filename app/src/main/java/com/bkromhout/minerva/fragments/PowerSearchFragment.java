@@ -229,6 +229,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
                 Dialogs.cardStyleDialog(getContext(), powerSearchPrefs);
                 return true;
             case R.id.action_save_as_smart_list:
+                if (ruq == null) return true;
                 Dialogs.listNameDialog(getActivity(), R.string.action_new_smart_list, R.string.new_smart_list_prompt,
                         null, R.id.action_new_smart_list);
                 return true;
