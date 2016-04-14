@@ -107,6 +107,15 @@ public class RBookList extends RealmObject {
      */
     public boolean isBookInList(RBook book) {
         throwIfSmartList();
+        return _isBookInList(book);
+    }
+
+    /**
+     * Checks to see if {@code book} is already in this list.
+     * @param book Book to check for.
+     * @return True if {@code book} is in this list, otherwise false.
+     */
+    private boolean _isBookInList(RBook book) {
         return getListItems()
                 .where()
                 .equalTo("key", RBookListItem.makeBookListItemKey(name, book.getRelPath()))
@@ -148,7 +157,7 @@ public class RBookList extends RealmObject {
      */
     private List<RBookListItem> booksToBookListItems(Iterable<RBook> books) {
         return Observable.from(books)
-                         .filter(book -> !isBookInList(book))
+                         .filter(book -> !_isBookInList(book))
                          .map(book -> new RBookListItem(this, book))
                          .toList()
                          .toBlocking()

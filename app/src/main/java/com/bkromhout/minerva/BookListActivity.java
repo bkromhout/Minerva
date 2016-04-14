@@ -15,10 +15,7 @@ import android.widget.LinearLayout;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.bkromhout.minerva.adapters.BaseBookCardAdapter;
-import com.bkromhout.minerva.adapters.BookItemCardAdapter;
-import com.bkromhout.minerva.adapters.BookItemCardCompactAdapter;
-import com.bkromhout.minerva.adapters.BookItemCardNoCoverAdapter;
+import com.bkromhout.minerva.adapters.*;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.ReImporter;
 import com.bkromhout.minerva.enums.AdapterType;
@@ -38,6 +35,7 @@ import com.bkromhout.rrvl.RealmRecyclerView;
 import com.bkromhout.ruqus.RealmUserQuery;
 import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
+import io.realm.RealmObject;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -92,11 +90,11 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     /**
      * The list of {@link RBookListItem}s being shown.
      */
-    private RealmResults<RBookListItem> items;
+    private RealmResults<? extends RealmObject> items;
     /**
      * Recycler view adapter.
      */
-    private BaseBookCardAdapter adapter;
+    private RealmBasedRecyclerViewAdapter adapter;
     /**
      * Action mode.
      */
@@ -274,7 +272,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         } else {
             // Normal list; reorder mode.
             mode.setTitle(R.string.title_reorder_mode);
-            adapter.setDragMode(true);
+            ((BaseBookCardAdapter) adapter).setDragMode(true);
         }
         return true;
     }
@@ -290,7 +288,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         if (!isReorderMode) {
             adapter.clearSelections();
         } else {
-            adapter.setDragMode(false);
+            ((BaseBookCardAdapter) adapter).setDragMode(false);
             isReorderMode = false;
         }
         actionMode = null;
@@ -522,24 +520,34 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     }
 
     /**
-     * Create a {@link RealmBasedRecyclerViewAdapter} based on the current view options and return it.
-     * @return New {@link RealmBasedRecyclerViewAdapter}. Will return null if we cannot get the activity context, if
-     * {@link #items} is null or invalid, or if the current value of {@link #cardType} is not valid.
+     * Make adapter based on {@link RealmUserQuery#getQueryClass() ruq#getQueryClass()} and {@link #cardType}.
+     * @return Adapter.
      */
-    private BaseBookCardAdapter makeAdapter() {
-        if (items == null || !items.isValid()) return null;
-
-        // Create a new adapter based on the card type.
-        switch (cardType) {
-            case NORMAL:
-                return new BookItemCardAdapter(this, items);
-            case NO_COVER:
-                return new BookItemCardNoCoverAdapter(this, items);
-            case COMPACT:
-                return new BookItemCardCompactAdapter(this, items);
-            default:
-                return null;
-        }
+    @SuppressWarnings("unchecked")
+    private RealmBasedRecyclerViewAdapter makeAdapter() {
+        if (adapterType == AdapterType.BOOK) {
+            switch (cardType) {
+                case NORMAL:
+                    return new BookCardAdapter(this, (RealmResults<RBook>) items);
+                case NO_COVER:
+                    return new BookCardNoCoverAdapter(this, (RealmResults<RBook>) items);
+                case COMPACT:
+                    return new BookCardCompactAdapter(this, (RealmResults<RBook>) items);
+                default:
+                    return null;
+            }
+        } else if (adapterType == AdapterType.BOOK_LIST_ITEM) {
+            switch (cardType) {
+                case NORMAL:
+                    return new BookItemCardAdapter(this, (RealmResults<RBookListItem>) items);
+                case NO_COVER:
+                    return new BookItemCardNoCoverAdapter(this, (RealmResults<RBookListItem>) items);
+                case COMPACT:
+                    return new BookItemCardCompactAdapter(this, (RealmResults<RBookListItem>) items);
+                default:
+                    return null;
+            }
+        } else throw new IllegalArgumentException("Invalid adapter type.");
     }
 
     /**
@@ -566,7 +574,12 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     @Subscribe
     public void onCardClicked(BookCardClickEvent event) {
         // Get the associated RBook.
-        RBook book = items.where().equalTo("book.relPath", event.getRelPath()).findFirst().getBook();
+        RBook book;
+        if (adapterType == AdapterType.BOOK)
+            book = realm.where(RBook.class).equalTo("relPath", event.getRelPath()).findFirst();
+        else if (adapterType == AdapterType.BOOK_LIST_ITEM)
+            book = realm.where(RBookListItem.class).equalTo("book.relPath", event.getRelPath()).findFirst().getBook();
+        else throw new IllegalArgumentException("Invalid adapter type.");
 
         if (actionMode != null) {
             if (event.getType() == BookCardClickEvent.Type.LONG) adapter.extendSelectionTo(event.getPosition());

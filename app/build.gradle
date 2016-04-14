@@ -66,8 +66,8 @@ dependencies {
     compile ('com.bkromhout:realm-recyclerview-lite:1.5.0@aar') {
         transitive = true
     }
-    apt 'com.bkromhout.ruqus:ruqus-compiler:1.0.5'
-    compile ('com.bkromhout.ruqus:ruqus-core:1.0.5@aar') {
+    apt 'com.bkromhout.ruqus:ruqus-compiler:1.0.6'
+    compile ('com.bkromhout.ruqus:ruqus-core:1.0.6@aar') {
         transitive = true
     }
     compile('com.mikepenz:aboutlibraries:5.6.5@aar') {

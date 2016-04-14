@@ -28,6 +28,8 @@ import org.greenrobot.eventbus.Subscribe;
 
 /**
  * Fragment in charge of showing all of the book lists.
+ * <p>
+ * TODO update item if converted from smart to normal list. Both from here and from book list activity.
  */
 public class AllListsFragment extends Fragment {
     // Views.
