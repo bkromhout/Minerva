@@ -2,7 +2,6 @@ package com.bkromhout.minerva.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -55,14 +54,32 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
         // Set card click handler.
         viewHolder.content.setOnClickListener(view ->
                 EventBus.getDefault().post(new BookListCardClickEvent(BookListCardClickEvent.Type.NORMAL,
-                        rBookList.getName())));
+                        rBookList.getName(), position)));
 
         // Set card long click handler.
         viewHolder.content.setOnLongClickListener(view -> {
             EventBus.getDefault().post(
-                    new BookListCardClickEvent(BookListCardClickEvent.Type.LONG, rBookList.getName()));
+                    new BookListCardClickEvent(BookListCardClickEvent.Type.LONG, rBookList.getName(), position));
             return true;
         });
+
+        // Set up btnActions so that it displays a popup menu.
+        viewHolder.btnActions.setOnClickListener(view -> {
+            PopupMenu menu = new PopupMenu(view.getContext(), view);
+            menu.getMenuInflater().inflate(!rBookList.isSmartList() ? R.menu.book_list_card_actions
+                    : R.menu.book_list_smart_card_actions, menu.getMenu());
+            menu.setOnMenuItemClickListener(item -> {
+                EventBus.getDefault().post(new BookListCardClickEvent(BookListCardClickEvent.Type.ACTIONS,
+                        rBookList.getName(), item.getItemId(), position));
+                return true;
+            });
+            menu.show();
+        });
+
+        // Set up btnSmartIcon so that it fires an event when pressed.
+        viewHolder.btnSmartIcon.setOnClickListener(view -> EventBus.getDefault().post(
+                new BookListCardClickEvent(BookListCardClickEvent.Type.ACTIONS, rBookList.getName(),
+                        R.id.action_show_query, position)));
 
         // Set visibility of smart list icon.
         viewHolder.btnSmartIcon.setVisibility(rBookList.isSmartList() ? View.VISIBLE : View.GONE);
@@ -74,7 +91,7 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
     /**
      * BookListCardVH class.
      */
-    public class BookListCardVH extends RecyclerView.ViewHolder implements PopupMenu.OnMenuItemClickListener {
+    public class BookListCardVH extends RecyclerView.ViewHolder {
         @Bind(R.id.content)
         public RelativeLayout content;
         @Bind(R.id.list_name)
@@ -87,27 +104,6 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
         public BookListCardVH(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-
-            // Set up btnActions so that it displays a popup menu.
-            btnActions.setOnClickListener(view -> {
-                PopupMenu menu = new PopupMenu(view.getContext(), view);
-                menu.getMenuInflater().inflate(btnSmartIcon.getVisibility() == View.GONE ? R.menu.book_list_card_actions
-                        : R.menu.book_list_smart_card_actions, menu.getMenu());
-                menu.setOnMenuItemClickListener(BookListCardVH.this);
-                menu.show();
-            });
-
-            // Set up btnSmartIcon so that it fires an event when pressed.
-            btnSmartIcon.setOnClickListener(view -> EventBus.getDefault().post(
-                    new BookListCardClickEvent(BookListCardClickEvent.Type.ACTIONS, tvListName.getText().toString(),
-                            R.id.action_show_query)));
-        }
-
-        @Override
-        public boolean onMenuItemClick(MenuItem item) {
-            EventBus.getDefault().post(new BookListCardClickEvent(BookListCardClickEvent.Type.ACTIONS,
-                    tvListName.getText().toString(), item.getItemId()));
-            return true;
         }
     }
 }

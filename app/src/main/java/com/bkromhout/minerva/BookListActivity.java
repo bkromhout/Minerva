@@ -47,8 +47,10 @@ import java.util.List;
  */
 public class BookListActivity extends AppCompatActivity implements ActionMode.Callback, ReImporter.IReImportListener {
     // Key strings for the bundle passed when this activity is started.
-    public static final String LIST_SEL_STR = "LIST_SEL_STR";
+    public static final String LIST_NAME = "LIST_NAME";
+    private static final String POS_TO_UPDATE = "POS_TO_UPDATE";
     private static final String KEY_IS_REORDER_MODE = "IS_REORDER_MODE";
+    private static final String NEEDS_POS_UPDATE = "NEEDS_POS_UPDATE";
 
     // Views.
     @Bind(R.id.toolbar)
@@ -66,6 +68,15 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
      * Unique string to help find the correct list to display from the DB.
      */
     private String selStr;
+    /**
+     * Position to use in any {@link UpdatePosEvent}s which might be sent.
+     */
+    private int posToUpdate;
+    /**
+     * If true, send a {@link UpdatePosEvent} to the {@link com.bkromhout.minerva.fragments.AllListsFragment} when we
+     * exit this activity.
+     */
+    private boolean needsPosUpdate = false;
     /**
      * Which type of card to use.
      */
@@ -104,10 +115,11 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
      */
     private boolean isReorderMode;
 
-    public static void start(Context context, String listName) {
+    public static void start(Context context, String listName, int posToUpdate) {
         if (listName == null) throw new IllegalArgumentException("Cannot start this activity without a list name.");
         context.startActivity(new Intent(context, BookListActivity.class)
-                .putExtra(BookListActivity.LIST_SEL_STR, listName));
+                .putExtra(LIST_NAME, listName)
+                .putExtra(POS_TO_UPDATE, posToUpdate));
     }
 
     @Override
@@ -143,12 +155,17 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         // Set up the UI.
         updateUi();
 
-        // If we have a saved instance state, check to see if we were in action mode.
-        if (savedInstanceState != null && savedInstanceState.getBoolean(C.IS_IN_ACTION_MODE)) {
-            // If we were in action mode, restore the adapter's state and start action mode.
-            isReorderMode = savedInstanceState.getBoolean(KEY_IS_REORDER_MODE);
-            adapter.restoreInstanceState(savedInstanceState);
-            startActionMode();
+        // If we have a saved instance state...
+        if (savedInstanceState != null) {
+            // ...check to see if we were in action mode.
+            if (savedInstanceState.getBoolean(C.IS_IN_ACTION_MODE)) {
+                // If we were in action mode, restore the adapter's state and start action mode.
+                isReorderMode = savedInstanceState.getBoolean(KEY_IS_REORDER_MODE);
+                adapter.restoreInstanceState(savedInstanceState);
+                startActionMode();
+            }
+            // ...And whether we will still need to send a position update.
+            if (savedInstanceState.getBoolean(NEEDS_POS_UPDATE)) needsPosUpdate = true;
         }
     }
 
@@ -158,7 +175,8 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
      */
     private void readExtras(Bundle b) {
         if (b == null) return;
-        selStr = b.getString(LIST_SEL_STR, null);
+        selStr = b.getString(LIST_NAME, null);
+        posToUpdate = b.getInt(POS_TO_UPDATE, -1);
     }
 
     /**
@@ -235,6 +253,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
             adapter.saveInstanceState(outState);
             outState.putBoolean(C.IS_IN_ACTION_MODE, true);
             outState.putBoolean(KEY_IS_REORDER_MODE, isReorderMode);
+            outState.putBoolean(NEEDS_POS_UPDATE, needsPosUpdate);
         }
     }
 
@@ -259,6 +278,8 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
             realm = null;
         }
         if (actionMode != null) actionMode.finish();
+        // If we need to update the list's card in AllListsFragment, send the sticky event now.
+        if (needsPosUpdate) EventBus.getDefault().post(new UpdatePosEvent(posToUpdate));
     }
 
     @Override
@@ -305,18 +326,18 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 startActionMode();
                 return true;
             case R.id.action_show_query:
-                Dialogs.smartListQueryDialog(this, smartListRuq == null ? null : smartListRuq.toString());
+                Dialogs.smartListQueryDialog(this, smartListRuq == null ? null : smartListRuq.toString(), -1);
                 return true;
             case R.id.action_card_type:
                 Dialogs.cardStyleDialog(this, listsPrefs);
                 return true;
             case R.id.action_rename_list:
                 Dialogs.listNameDialog(this, R.string.title_rename_list, R.string.rename_list_prompt, srcList.getName(),
-                        R.id.action_rename_list);
+                        R.id.action_rename_list, posToUpdate);
                 return true;
             case R.id.action_rename_smart_list:
                 Dialogs.listNameDialog(this, R.string.title_rename_smart_list, R.string.rename_smart_list_prompt,
-                        srcList.getName(), R.id.action_rename_smart_list);
+                        srcList.getName(), R.id.action_rename_smart_list, posToUpdate);
                 return true;
             case R.id.action_edit_smart_list:
                 QueryBuilderActivity.start(this, smartListRuq);
@@ -407,6 +428,10 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
             case R.id.action_rename_list:
             case R.id.action_rename_smart_list: {
                 ActionHelper.renameList(realm, srcList, (String) event.getData());
+                setTitle((String) event.getData());
+                // Update intent used to start activity so that we don't crash if we rotate or something.
+                getIntent().putExtra(LIST_NAME, (String) event.getData());
+                //needsPosUpdate = true;
                 break;
             }
             case R.id.action_convert_to_normal_list: {
@@ -416,6 +441,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                     // Refresh options menu, then update the UI.
                     invalidateOptionsMenu();
                     updateUi();
+                    needsPosUpdate = true;
                 }
                 break;
             }

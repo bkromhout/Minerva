@@ -17,6 +17,7 @@ import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.PrefChangeEvent;
+import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 import com.bkromhout.minerva.realm.RBookList;
 import io.realm.Realm;
@@ -162,14 +163,16 @@ public class Dialogs {
      * ActionEvent} to be fired. The event will only be fired if the input text is non-empty and not already used as a
      * list's name. If entered text is the same as {@code preFill}, the dialog will be dismissed without doing
      * anything.
-     * @param ctx      Context to use.
-     * @param title    String resource to use for title.
-     * @param text     String resource to use for text.
-     * @param preFill  String to pre-fill the edit text with.
-     * @param actionId Action ID to send if Yes is clicked and checks all pass.
+     * @param ctx         Context to use.
+     * @param title       String resource to use for title.
+     * @param text        String resource to use for text.
+     * @param preFill     String to pre-fill the edit text with.
+     * @param actionId    Action ID to send if Yes is clicked and checks all pass.
+     * @param posToUpdate If not -1, the position to put into a {@link UpdatePosEvent} which will be fired if the {@link
+     *                    ActionEvent} is fired.
      */
     public static void listNameDialog(Context ctx, @StringRes int title, @StringRes int text, String preFill,
-                                      @IdRes int actionId) {
+                                      @IdRes int actionId, int posToUpdate) {
         new MaterialDialog.Builder(ctx)
                 .title(title)
                 .content(text)
@@ -192,7 +195,7 @@ public class Dialogs {
                             //noinspection ConstantConditions
                             dialog.getInputEditText().setError(C.getStr(R.string.err_name_taken));
                         } else {
-                            EventBus.getDefault().post(new ActionEvent(actionId, newName));
+                            EventBus.getDefault().post(new ActionEvent(actionId, newName, posToUpdate));
                             dialog.dismiss();
                         }
                     }
@@ -205,8 +208,10 @@ public class Dialogs {
      * list. Also has a button to open the query builder which will fire an {@link ActionEvent} to do just that.
      * @param ctx         Context to use.
      * @param queryString Query string to display, or null to show "no query string" message.
+     * @param posToUpdate If not -1, the position to put into a {@link UpdatePosEvent} which will be fired if the {@link
+     *                    ActionEvent} is fired.
      */
-    public static void smartListQueryDialog(Context ctx, String queryString) {
+    public static void smartListQueryDialog(Context ctx, String queryString, int posToUpdate) {
         new MaterialDialog.Builder(ctx)
                 .title(R.string.title_smart_list_query)
                 .content(queryString == null || queryString.isEmpty()
@@ -214,7 +219,7 @@ public class Dialogs {
                 .positiveText(R.string.ok)
                 .neutralText(R.string.open_query_builder)
                 .onNeutral((dialog, which) ->
-                        EventBus.getDefault().post(new ActionEvent(R.id.action_open_query_builder, null)))
+                        EventBus.getDefault().post(new ActionEvent(R.id.action_open_query_builder, null, posToUpdate)))
                 .show();
     }
 }

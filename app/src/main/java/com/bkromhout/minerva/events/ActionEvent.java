@@ -12,6 +12,22 @@ public class ActionEvent {
      * Extra data to help take the action.
      */
     private final Object data;
+    /**
+     * If not -1, a position to update after the action is taken.
+     */
+    private final int posToUpdate;
+
+    /**
+     * Create a new {@link ActionEvent}.
+     * @param actionId    Action to take.
+     * @param data        Extra data.
+     * @param posToUpdate Position to update, or -1 if none.
+     */
+    public ActionEvent(int actionId, Object data, int posToUpdate) {
+        this.actionId = actionId;
+        this.data = data;
+        this.posToUpdate = posToUpdate;
+    }
 
     /**
      * Create a new {@link ActionEvent}.
@@ -19,8 +35,7 @@ public class ActionEvent {
      * @param data     Extra data.
      */
     public ActionEvent(int actionId, Object data) {
-        this.actionId = actionId;
-        this.data = data;
+        this(actionId, data, -1);
     }
 
     public int getActionId() {
@@ -29,5 +44,9 @@ public class ActionEvent {
 
     public Object getData() {
         return data;
+    }
+
+    public int getPosToUpdate() {
+        return posToUpdate;
     }
 }

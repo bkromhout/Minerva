@@ -23,6 +23,10 @@ public class BookListCardClickEvent {
      * If the type is {@link Type#ACTIONS}, this is ID of the menu item that was clicked.
      */
     private final int actionId;
+    /**
+     * Position of the book list card in the adapter.
+     */
+    private final int position;
 
     /**
      * Create a new {@link BookListCardClickEvent}
@@ -30,10 +34,11 @@ public class BookListCardClickEvent {
      * @param name     Name of the list.
      * @param actionId ID of the clicked menu item (if applicable).
      */
-    public BookListCardClickEvent(Type type, String name, int actionId) {
+    public BookListCardClickEvent(Type type, String name, int actionId, int position) {
         this.type = type;
         this.name = name;
         this.actionId = actionId;
+        this.position = position;
     }
 
     /**
@@ -41,8 +46,8 @@ public class BookListCardClickEvent {
      * @param type Type of click.
      * @param name Name of the list.
      */
-    public BookListCardClickEvent(Type type, String name) {
-        this(type, name, -1);
+    public BookListCardClickEvent(Type type, String name, int position) {
+        this(type, name, -1, position);
     }
 
     /**
@@ -68,5 +73,13 @@ public class BookListCardClickEvent {
      */
     public int getActionId() {
         return actionId;
+    }
+
+    /**
+     * Get the position of the card in the list.
+     * @return Position.
+     */
+    public int getPosition() {
+        return position;
     }
 }

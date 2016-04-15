@@ -73,8 +73,11 @@ public class ActionHelper {
         realm.executeTransaction(tRealm -> tRealm.copyToRealm(new RBookList(listName)));
     }
 
-    public static void createNewSmartList(Realm realm, String listName, RealmUserQuery realmUserQuery) {
-        realm.executeTransaction(tRealm -> tRealm.copyToRealm(new RBookList(listName, realmUserQuery)));
+    public static RBookList createNewSmartList(Realm realm, String listName, RealmUserQuery realmUserQuery) {
+        realm.beginTransaction();
+        RBookList newSmartList = realm.copyToRealm(new RBookList(listName, realmUserQuery));
+        realm.commitTransaction();
+        return newSmartList;
     }
 
     public static void updateSmartList(Realm realm, RBookList list, String ruqString) {

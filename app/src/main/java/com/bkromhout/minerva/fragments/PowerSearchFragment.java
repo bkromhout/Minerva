@@ -231,7 +231,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
             case R.id.action_save_as_smart_list:
                 if (ruq == null) return true;
                 Dialogs.listNameDialog(getActivity(), R.string.action_new_smart_list, R.string.new_smart_list_prompt,
-                        null, R.id.action_new_smart_list);
+                        null, R.id.action_new_smart_list, -1);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

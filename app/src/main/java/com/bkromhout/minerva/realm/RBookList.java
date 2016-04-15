@@ -299,8 +299,8 @@ public class RBookList extends RealmObject {
      * the returned position already being taken.
      * <p>
      * {@code null} can be passed for ONE of {@code item1} or {@code item2}:<br/>If {@code item1} is null, the number
-     * returned will be {@code item1.getPos() + gap}<br/>If {@code item2} is null, the number returned will be {@code
-     * item2.getPos() - gap}.<br/>(The current spacing gap can be found at
+     * returned will be {@code item1.getPosition() + gap}<br/>If {@code item2} is null, the number returned will be {@code
+     * item2.getPosition() - gap}.<br/>(The current spacing gap can be found at
      * {@link com.bkromhout.minerva.C#LIST_ITEM_GAP}.)
      * <p>
      * Please note that passing {@code null} for one of the items assumes that the non-null item is either the first (if

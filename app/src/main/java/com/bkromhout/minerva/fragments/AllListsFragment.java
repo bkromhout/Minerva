@@ -15,6 +15,7 @@ import com.bkromhout.minerva.adapters.BookListCardAdapter;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookListCardClickEvent;
+import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
@@ -25,6 +26,8 @@ import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+
+import java.util.ArrayList;
 
 /**
  * Fragment in charge of showing all of the book lists.
@@ -159,7 +162,7 @@ public class AllListsFragment extends Fragment {
         // Do something based on the click type.
         switch (event.getType()) {
             case NORMAL:
-                BookListActivity.start(getActivity(), event.getListName());
+                BookListActivity.start(getActivity(), event.getListName(), event.getPosition());
                 break;
             case LONG:
                 // TODO Start multi-select.
@@ -167,7 +170,7 @@ public class AllListsFragment extends Fragment {
                 break;
             case ACTIONS:
                 // Handle action.
-                onCardMenuActionClicked(event.getActionId(), event.getListName());
+                onCardMenuActionClicked(event.getActionId(), event.getListName(), event.getPosition());
                 break;
         }
     }
@@ -176,7 +179,7 @@ public class AllListsFragment extends Fragment {
      * Called when one of the actions in a card's popup menu is clicked.
      * @param actionId The ID of the popup menu item.
      */
-    private void onCardMenuActionClicked(int actionId, String listName) {
+    private void onCardMenuActionClicked(int actionId, String listName, int position) {
         if (actionId < 0 || listName == null) throw new IllegalArgumentException();
         tempList = lists.where().equalTo("name", listName).findFirst();
 
@@ -185,17 +188,17 @@ public class AllListsFragment extends Fragment {
             case R.id.action_show_query: {
                 Dialogs.smartListQueryDialog(getActivity(),
                         tempList.getSmartListRuqString() == null || tempList.getSmartListRuqString().isEmpty() ? null :
-                                new RealmUserQuery(tempList.getSmartListRuqString()).toString());
+                                new RealmUserQuery(tempList.getSmartListRuqString()).toString(), position);
                 break;
             }
             case R.id.action_rename_list: {
                 Dialogs.listNameDialog(getActivity(), R.string.title_rename_list, R.string.rename_list_prompt, listName,
-                        R.id.action_rename_list);
+                        R.id.action_rename_list, position);
                 break;
             }
             case R.id.action_rename_smart_list: {
                 Dialogs.listNameDialog(getActivity(), R.string.title_rename_smart_list,
-                        R.string.rename_smart_list_prompt, listName, R.id.action_rename_smart_list);
+                        R.string.rename_smart_list_prompt, listName, R.id.action_rename_smart_list, position);
                 break;
             }
             case R.id.action_edit_smart_list: {
@@ -207,6 +210,7 @@ public class AllListsFragment extends Fragment {
             case R.id.action_convert_to_normal_list: {
                 Dialogs.simpleYesNoDialog(getActivity(), R.string.title_convert_to_normal_list,
                         R.string.convert_to_normal_list_prompt, R.id.action_convert_to_normal_list);
+
                 break;
             }
             case R.id.action_delete_list: {
@@ -236,8 +240,8 @@ public class AllListsFragment extends Fragment {
                 break;
             }
             case R.id.action_new_smart_list: {
-                ActionHelper.createNewSmartList(realm, (String) event.getData(), null);
-                BookListActivity.start(getActivity(), (String) event.getData());
+                BookListActivity.start(getActivity(), (String) event.getData(), new ArrayList<>(lists).indexOf(
+                        ActionHelper.createNewSmartList(realm, (String) event.getData(), null)));
                 break;
             }
             case R.id.action_open_query_builder: {
@@ -249,10 +253,12 @@ public class AllListsFragment extends Fragment {
             case R.id.action_rename_list:
             case R.id.action_rename_smart_list: {
                 ActionHelper.renameList(realm, tempList, (String) event.getData());
+                if (event.getPosToUpdate() != -1) adapter.notifyItemChanged(event.getPosToUpdate());
                 break;
             }
             case R.id.action_convert_to_normal_list: {
                 tempList.convertToNormalList();
+                if (event.getPosToUpdate() != -1) adapter.notifyItemChanged(event.getPosToUpdate());
                 break;
             }
             case R.id.action_delete_list:
@@ -266,11 +272,23 @@ public class AllListsFragment extends Fragment {
     }
 
     /**
+     * When called, update the item at the position carried in the event.
+     * @param event {@link UpdatePosEvent}.
+     */
+    @Subscribe(sticky = true)
+    public void onUpdatePosEvent(UpdatePosEvent event) {
+        // Remove the sticky event.
+        EventBus.getDefault().removeStickyEvent(event);
+        // Update the item at the position in the event.
+        adapter.notifyItemChanged(event.getPosition());
+    }
+
+    /**
      * Show the new list dialog when the FAB is clicked.
      */
     @OnClick(R.id.fab)
     void onFabClick() {
         Dialogs.listNameDialog(getActivity(), R.string.action_new_list, R.string.new_list_prompt, null,
-                R.id.action_new_list);
+                R.id.action_new_list, -1);
     }
 }
