@@ -190,13 +190,13 @@ public class AllListsFragment extends Fragment {
                 break;
             }
             case R.id.action_rename_list: {
-                Dialogs.listNameDialog(getActivity(), R.string.title_rename_list, R.string.rename_list_prompt, listName,
+                Dialogs.listNameDialog(getActivity(), R.string.title_rename_list, R.string.prompt_rename_list, listName,
                         R.id.action_rename_list, position);
                 break;
             }
             case R.id.action_rename_smart_list: {
                 Dialogs.listNameDialog(getActivity(), R.string.title_rename_smart_list,
-                        R.string.rename_smart_list_prompt, listName, R.id.action_rename_smart_list, position);
+                        R.string.prompt_rename_smart_list, listName, R.id.action_rename_smart_list, position);
                 break;
             }
             case R.id.action_edit_smart_list: {
@@ -207,18 +207,18 @@ public class AllListsFragment extends Fragment {
             }
             case R.id.action_convert_to_normal_list: {
                 Dialogs.simpleYesNoDialog(getActivity(), R.string.title_convert_to_normal_list,
-                        R.string.convert_to_normal_list_prompt, R.id.action_convert_to_normal_list);
+                        R.string.prompt_convert_to_normal_list, R.id.action_convert_to_normal_list);
 
                 break;
             }
             case R.id.action_delete_list: {
-                Dialogs.simpleYesNoDialog(getActivity(), R.string.title_delete_list, R.string.delete_list_prompt,
+                Dialogs.simpleYesNoDialog(getActivity(), R.string.title_delete_list, R.string.prompt_delete_list,
                         R.id.action_delete_list);
                 break;
             }
             case R.id.action_delete_smart_list: {
                 Dialogs.simpleYesNoDialog(getActivity(), R.string.title_delete_smart_list,
-                        R.string.delete_smart_list_prompt, R.id.action_delete_list);
+                        R.string.prompt_delete_smart_list, R.id.action_delete_list);
                 break;
             }
         }
@@ -286,7 +286,7 @@ public class AllListsFragment extends Fragment {
      */
     @OnClick(R.id.fab)
     void onFabClick() {
-        Dialogs.listNameDialog(getActivity(), R.string.action_new_list, R.string.new_list_prompt, null,
+        Dialogs.listNameDialog(getActivity(), R.string.action_new_list, R.string.prompt_new_list, null,
                 R.id.action_new_list, -1);
     }
 }

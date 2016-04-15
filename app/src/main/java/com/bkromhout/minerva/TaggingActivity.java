@@ -233,7 +233,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
             case R.id.action_new_tag:
                 new MaterialDialog.Builder(this)
                         .title(R.string.action_new_tag)
-                        .content(R.string.new_tag_prompt)
+                        .content(R.string.prompt_new_tag)
                         .autoDismiss(false)
                         .negativeText(R.string.cancel)
                         .input(R.string.tag_name_hint, 0, false, (dialog, input) -> {
@@ -371,7 +371,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
                 // Show rename dialog.
                 new MaterialDialog.Builder(this)
                         .title(R.string.title_rename_tag)
-                        .content(R.string.rename_tag_prompt)
+                        .content(R.string.prompt_rename_tag)
                         .autoDismiss(false)
                         .negativeText(R.string.cancel)
                         .input(C.getStr(R.string.tag_name_hint), event.getName(), false, (dialog, input) -> {
@@ -414,7 +414,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
                 // Show delete confirm dialog.
                 new MaterialDialog.Builder(this)
                         .title(R.string.title_delete_tag)
-                        .content(C.getStr(R.string.delete_tag_prompt, event.getName()))
+                        .content(C.getStr(R.string.prompt_delete_tag, event.getName()))
                         .positiveText(R.string.yes)
                         .negativeText(R.string.no)
                         .onPositive((dialog, which) -> {

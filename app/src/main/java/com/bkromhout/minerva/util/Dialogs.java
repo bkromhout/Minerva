@@ -217,7 +217,7 @@ public class Dialogs {
                 .content(queryString == null || queryString.isEmpty()
                         ? C.getStr(R.string.no_query_for_smart_list) : queryString)
                 .positiveText(R.string.ok)
-                .neutralText(R.string.open_query_builder)
+                .neutralText(R.string.action_open_query_builder)
                 .onNeutral((dialog, which) ->
                         EventBus.getDefault().post(new ActionEvent(R.id.action_open_query_builder, null, posToUpdate)))
                 .show();

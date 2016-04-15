@@ -1,7 +1,9 @@
 <resources>
-    <!-- General -->
+    <!-- ******************************** General ******************************** -->
     <string name="app_name">Minerva</string>
     <string name="tag_line">Organize your eBooks with ease!</string>
+    <string name="app_info">App Info</string>
+
     <string name="ok">OK</string>
     <string name="yes">Yes</string>
     <string name="save">Save</string>
@@ -11,29 +13,10 @@
     <string name="settings">Settings</string>
     <string name="retry">Retry</string>
     <string name="undo">Undo</string>
-    <string name="app_info">App Info</string>
     <string name="never">Never</string>
 
-    <!-- Common action Strings (may be used in multiple places) -->
-    <string name="action_rename">Rename</string>
-    <string name="action_edit">Edit</string>
-    <string name="action_delete">Delete</string>
-    <string name="action_remove">Remove</string>
-    <string name="action_clear">@string/clear</string>
-    <string name="action_sort">Sort</string>
-    <string name="action_search">Search</string>
-    <string name="action_select_all">Select All</string>
-    <string name="action_select_none">Select None</string>
-
-    <!-- Common Dialogs -->
-    <string name="title_dialog_rating">Rating</string>
-    <string name="title_dialog_re_import">Re-Import Files</string>
-    <string name="title_remove_books">Remove Books</string>
-    <string name="title_delete_books">Delete Books</string>
-
-    <string name="re_import_prompt">Are you sure you want to re-import the selected books?</string>
-    <string name="delete_books_prompt">Are you sure you want to delete the selected books from your library?</string>
-    <string name="delete_from_device_too">Delete from device too</string>
+    <string name="sort_asc">Ascending</string>
+    <string name="sort_desc">Descending</string>
 
     <!-- Common error strings -->
     <string name="err_name_taken">Name is already taken.</string>
@@ -52,7 +35,63 @@
         folder you specify.\n\nSince you\'ve permanently denied the Storage permission, you\'ll need to manually grant
         it from the App Info screen.</string>
 
-    <!-- Nav Drawer -->
+    <!-- Query Builder Activity -->
+    <string name="title_activity_query_builder">Query Builder</string>
+
+
+    <!-- ******************************** Action Strings (Alphabetical order). ******************************** -->
+    <!-- Add To List -->
+    <string name="action_add_to_list">Add To List</string>
+
+    <!-- Clear -->
+    <string name="action_clear">@string/clear</string>
+    <string name="action_clear_list">Clear List</string>
+    <string name="prompt_clear_list">Are you sure you want to clear this list of all items?</string>
+    <string name="action_clear_recents">Clear Recents</string>
+    <string name="prompt_clear_recents">Are you sure you wish to clear all books from the recents list?</string>
+
+    <!-- Delete -->
+    <string name="action_delete">Delete</string>
+    <string name="title_delete_book">Delete Book</string>
+    <string name="title_delete_books">Delete Books</string>
+    <string name="title_delete_list">Delete List</string>
+    <string name="title_delete_lists">Delete Lists</string>
+    <string name="prompt_delete_book">Are you sure you want to delete the selected books from your library?</string>
+    <string name="prompt_delete_books">Are you sure you want to delete this book from your library?</string>
+    <string name="prompt_delete_from_device_too">Delete from device too</string>
+    <string name="prompt_delete_list">Are you sure you want to delete this list?</string>
+    <string name="prompt_delete_lists">Are you sure you want to delete the selected lists?</string>
+
+    <!-- Rate -->
+    <string name="action_rate">Rate</string>
+    <string name="title_dialog_rating">Rating</string>
+
+    <!-- Re-Import -->
+    <string name="action_re_import">Re-Import</string>
+    <string name="title_re_import_book">Re-Import Book</string>
+    <string name="title_re_import_books">Re-Import Books</string>
+    <string name="prompt_re_import_book">Are you sure you want to re-import this book?</string>
+    <string name="prompt_re_import_books">Are you sure you want to re-import the selected books?</string>
+
+    <!-- Remove -->
+    <string name="action_remove">Remove</string>
+    <string name="title_remove_book">Remove Book</string>
+    <string name="title_remove_books">Remove Books</string>
+    <string name="prompt_remove_from_list">Are you sure you want to remove the selected items from this list?</string>
+    <string name="prompt_remove_from_recents">Are you sure you wish to remove the selected items from the recents list?</string>
+
+    <!-- Actions name strings for actions without many associated strings (i.e., they're more "standalone"), or whose
+         associated strings are contained to one area of the app and thus are in another part of this file. -->
+    <string name="action_open_query_builder">Open Query Builder</string>
+    <string name="action_resume_reading">Resume Reading</string>
+    <string name="action_search">Search</string>
+    <string name="action_select_all">Select All</string>
+    <string name="action_select_none">Select None</string>
+    <string name="action_sort">Sort</string>
+    <string name="action_tag">Tag</string>
+
+
+    <!-- ******************************** Main Activity/Nav Drawer/Fragment Titles ******************************** -->
     <string name="nav_item_recent">Recent</string>
     <string name="nav_item_library">Library</string>
     <string name="nav_item_lists">Lists</string>
@@ -60,26 +99,14 @@
     <string name="nav_item_settings">@string/settings</string>
     <string name="nav_item_about">About</string>
 
-    <!-- Main Activity -->
     <string name="acc_navigation_drawer_open">Open navigation drawer</string>
     <string name="acc_navigation_drawer_close">Close navigation drawer</string>
 
-    <!-- Recent Fragment -->
-    <string name="action_resume_reading">Resume reading</string>
-    <string name="action_clear_recents">Clear Recents</string>
 
-    <string name="clear_recents_prompt">Are you sure you wish to clear all books from the recents list?</string>
-    <string name="remove_from_recents_prompt">Are you sure you wish to remove the selected items from the recents list?</string>
-
-    <!-- Library Fragment -->
+    <!-- ******************************** Library Fragment ******************************** -->
     <string name="action_import">Import</string>
     <string name="action_filter">Filter</string>
     <string name="action_view_opts">View Options</string>
-
-    <string name="action_add_to_list">Add To List</string>
-    <string name="action_tag">Tag</string>
-    <string name="action_rate">Rate</string>
-    <string name="action_re_import">Re-Import</string>
 
     <string name="lbl_sort_opts">Sort By</string>
     <string name="sort_title">Title</string>
@@ -94,6 +121,8 @@
 
     <string name="toast_no_lists">There are no lists</string>
 
+
+    <!-- ******************************** Importing Process ******************************** -->
     <!-- Full Import Activity -->
     <string name="title_activity_full_import">Library Import</string>
 
@@ -105,10 +134,10 @@
 
     <string name="lbl_folder">Folder:</string>
     <string name="lbl_last_full_import_time">Last Successful Full Import:</string>
-    <string name="def_last_full_import_time">Never</string>
+    <string name="last_full_import_time_default">Never</string>
 
-    <string name="import_red_no_cancel">Books are now being saved to the database, cancelling is not allowed.</string>
     <string name="import_red_choose_dir">You must choose a library folder before you can do a full import.</string>
+    <string name="import_red_no_cancel">Books are now being saved to the database, cancelling is not allowed.</string>
 
     <string name="start_full_import">Start Full Import</string>
     <string name="choose_library_dir">Choose Library Folder</string>
@@ -154,63 +183,59 @@
     <string name="ril_err_reading_files">Error while reading files</string>
     <string name="ril_err_realm">@string/fil_err_realm</string>
 
+
+    <!-- ******************************** Lists ******************************** -->
+    <string name="action_edit">Edit</string>
+    <string name="action_rename">Rename</string>
+    <string name="action_save_as_smart_list">Save As Smart List</string>
+
+    <!-- Book List Activity -->
+    <string name="title_activity_book_list">Book List</string>
+    <string name="title_reorder_mode">Reorder Mode</string>
+    <string name="action_card_type">Card Style</string>
+    <string name="action_reorder">Reorder</string>
+    <string name="action_move_to_top">Move To Top</string>
+    <string name="action_move_to_bottom">Move To Bottom</string>
+
     <!-- All Lists Fragment -->
     <string name="action_new_list">New List</string>
     <string name="title_rename_list">Rename List</string>
-    <string name="title_delete_list">Delete List</string>
-    <string name="title_delete_lists">Delete Lists</string>
-    <string name="new_list_prompt">Enter a name for the new list</string>
-    <string name="rename_list_prompt">Enter a new name for the list</string>
-    <string name="delete_list_prompt">Are you sure you want to delete this list?</string>
-    <string name="delete_lists_prompt">Are you sure you want to delete the selected lists?</string>
+    <string name="prompt_new_list">Enter a name for the new list</string>
+    <string name="prompt_rename_list">Enter a new name for the list</string>
     <string name="list_name_hint">Name</string>
 
     <!-- Smart Lists -->
     <string name="action_new_smart_list">New Smart List</string>
     <string name="action_show_query">Show Query</string>
     <string name="action_to_normal_list">To Normal List</string>
+
     <string name="title_smart_list_query">Smart List Query</string>
     <string name="title_rename_smart_list">Rename Smart List</string>
     <string name="title_edit_smart_list">Edit Smart List</string>
     <string name="title_convert_to_normal_list">Convert to Normal List</string>
     <string name="title_delete_smart_list">Delete Smart List</string>
-    <string name="new_smart_list_prompt">Enter a name for the new smart list</string>
-    <string name="rename_smart_list_prompt">Enter a new name for the smart list</string>
+
+    <string name="prompt_new_smart_list">Enter a name for the new smart list</string>
+    <string name="prompt_rename_smart_list">Enter a new name for the smart list</string>
+    <string name="prompt_convert_to_normal_list">Are you sure you want to convert this smart list to a normal list? You cannot undo this action.</string>
+    <string name="prompt_delete_smart_list">Are you sure you want to delete this smart list?</string>
+
     <string name="no_query_for_smart_list">You haven\'t entered a query for this smart list.</string>
     <string name="no_query_for_smart_list_n">You haven\'t entered a query\nfor this smart list.</string>
-    <string name="convert_to_normal_list_prompt">Are you sure you want to convert this smart list to a normal list? You cannot undo this action.</string>
-    <string name="delete_smart_list_prompt">Are you sure you want to delete this smart list?</string>
-    <string name="open_query_builder">Open Query Builder</string>
     <string name="smart_list_created">Smart List Created</string>
 
-    <!-- Book List Activity -->
-    <string name="title_activity_book_list">Book List</string>
-    <string name="title_reorder_mode">Reorder Mode</string>
-    <string name="title_clear_list">Clear List</string>
-    <string name="action_card_type">Card Style</string>
-    <string name="action_reorder">Reorder</string>
-    <string name="action_move_to_top">Move To Top</string>
-    <string name="action_move_to_bottom">Move To Bottom</string>
-    <string name="remove_from_list_prompt">Are you sure you want to remove the selected items from this list?</string>
-    <string name="clear_list_prompt">Are you sure you want to clear this list of all items?</string>
 
-    <!-- Power Search Fragment -->
-    <string name="sort_asc">Ascending</string>
-    <string name="sort_desc">Descending</string>
-    <string name="action_save_as_smart_list">Save As Smart List</string>
-
-    <!-- Query Builder Activity -->
-    <string name="title_activity_query_builder">Query Builder</string>
-
-    <!-- Book Card/Book Info Activity -->
+    <!-- ******************************** Book Card/Book Info Activity ******************************** -->
     <string name="title_activity_info">Book Information</string>
 
     <string name="lbl_title">Title</string>
     <string name="lbl_author">Author</string>
     <string name="lbl_desc">Description</string>
     <string name="lbl_rating">Rating</string>
+    <string name="lbl_rating_colon">Rating:</string>
     <string name="lbl_chap_count">Chapter Count</string>
     <string name="lbl_tags">Tags</string>
+    <string name="lbl_tags_colon">Tags:</string>
     <string name="lbl_in_lists">In Lists</string>
     <string name="lbl_path">Path</string>
     <string name="lbl_last_read_date">Last Read</string>
@@ -223,14 +248,11 @@
     <string name="lbl_publish_date">Published</string>
     <string name="lbl_mod_date">Modified</string>
 
-    <string name="lbl_rating_colon">Rating:</string>
-    <string name="lbl_tags_colon">Tags:</string>
-
     <string name="acc_book_cover">Book cover image</string>
     <string name="acc_book_info">View book info</string>
     <string name="acc_quick_tag">Quick tag</string>
     <string name="acc_actions">Actions</string>
-    <string name="acc_rating">Rating</string>
+    <string name="acc_rating">@string/title_dialog_rating</string>
 
     <string name="no_tags">This book has no tags</string>
     <string name="no_lists">This book isn\'t in any lists</string>
@@ -243,28 +265,31 @@
     <string name="dummy_rating">3</string>
     <string name="dummy_tags">0,H/G,Tag1,Tag Two,Tag 3,TAG FOUR,ThisIsTagFive,This is Tag Six,And this is tag 7,Ooh but don\'t forget about tag Eight!</string>
 
-    <!-- Tagging Activity -->
+    <!-- ******************************** Tagging Activity ******************************** -->
     <string name="title_activity_tagging">Choose Tags</string>
     <string name="title_tag_edit_mode">Tag Edit Mode</string>
     <string name="title_rename_tag">Rename Tag</string>
     <string name="title_delete_tag">Delete Tag</string>
+
     <string name="action_new_tag">New Tag</string>
     <string name="action_edit_tags">Edit Tags</string>
+
+    <string name="prompt_new_tag">Enter a name for the new tag.</string>
+    <string name="prompt_rename_tag">Enter a new name for the tag.</string>
+    <string name="prompt_delete_tag">Are you sure you want to delete \"%1$s\"?</string>
+
     <string name="tag_name_hint">Tag Name</string>
-    <string name="new_tag_prompt">Enter a name for the new tag.</string>
-    <string name="rename_tag_prompt">Enter a new name for the tag.</string>
-    <string name="delete_tag_prompt">Are you sure you want to delete \"%1$s\"?</string>
 
-    <!-- Settings Activity -->
+    <!-- ******************************** Settings Activity ******************************** -->
     <string name="title_activity_settings">@string/settings</string>
-
     <string name="cat_title_lib_dir">Library Folder Settings</string>
     <string name="title_lib_dir">Library Folder</string>
-    <string name="lib_dir_def">[Not Set]</string>
     <string name="title_auto_import">Auto Import</string>
+
+    <string name="lib_dir_default">[Not Set]</string>
     <string name="summary_auto_import">If enabled, will check the library folder each time the app starts and import new files</string>
 
-    <!-- About Activity -->
+    <!-- ******************************** About Activity ******************************** -->
     <string name="title_activity_about">@string/nav_item_about</string>
     <string name="app_name_part">inerva</string>
     <string name="acc_app_icon">App Icon</string>

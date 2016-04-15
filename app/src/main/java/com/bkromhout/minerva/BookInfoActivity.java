@@ -21,6 +21,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.data.CoverHelper;
+import com.bkromhout.minerva.data.ReImporter;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
@@ -29,18 +30,18 @@ import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bumptech.glide.Glide;
+import com.google.common.collect.Lists;
 import com.greenfrvr.hashtagview.HashtagView;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.File;
 import java.util.List;
 
 /**
  * Displays information for some {@link com.bkromhout.minerva.realm.RBook}.
- * <p>
- * TODO Make it so that clicking the header image view will show the cover in full screen.
  */
 public class BookInfoActivity extends AppCompatActivity {
     // Key strings for the bundle passed when this activity is started.
@@ -186,8 +187,7 @@ public class BookInfoActivity extends AppCompatActivity {
                  .load(CoverHelper.get().getCoverImageFile(book.getRelPath()))
                  .centerCrop()
                  .into(coverImage);
-        }
-        else coverImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.epub_logo_color));
+        } else coverImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.epub_logo_color));
         // Set up the rest of the UI.
         updateUi();
 
@@ -240,6 +240,23 @@ public class BookInfoActivity extends AppCompatActivity {
                 // Open the book file.
                 book.openFileUsingIntent(this);
                 return true;
+            case R.id.action_add_to_list:
+                Dialogs.addToListDialogOrToast(this, realm);
+                return true;
+            case R.id.action_tag:
+                //noinspection unchecked
+                TaggingActivity.start(this, book);
+                return true;
+            case R.id.action_rate:
+                Dialogs.ratingDialog(this, book.getRating());
+                return true;
+            case R.id.action_re_import:
+                Dialogs.simpleYesNoDialog(this, R.string.title_re_import_books, R.string.prompt_re_import_books,
+                        R.id.action_re_import);
+                return true;
+            case R.id.action_delete:
+
+                return true;
             case android.R.id.home:
                 onBackPressed();
                 return true;
@@ -265,11 +282,11 @@ public class BookInfoActivity extends AppCompatActivity {
                 //RBookList.addBooks(list, selectedItems);
                 break;
             }
-            /*case R.id.action_re_import: {
-                ReImporter.reImportBooks(selectedItems, this);
+            case R.id.action_re_import: {
+                ReImporter.reImportBooks(Lists.newArrayList(book), this);
                 return;
-            }*/
-            /*case R.id.action_delete: {
+            }
+            case R.id.action_delete: {
                 // Delete the RBooks from Realm.
                 List<String> relPaths = RBook.deleteBooks(selectedItems);
                 // If the user wants us to, also try to delete the corresponding files from the device.
@@ -280,8 +297,13 @@ public class BookInfoActivity extends AppCompatActivity {
                     }
                 }
                 break;
-            }*/
+            }
         }
+    }
+
+    @OnClick(R.id.cover_image)
+    void onHeaderImageClicked(View v) {
+        // TODO Show cover image in full screen if book actually has a cover image.
     }
 
     /**

@@ -230,7 +230,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
                 return true;
             case R.id.action_save_as_smart_list:
                 if (ruq == null) return true;
-                Dialogs.listNameDialog(getActivity(), R.string.action_new_smart_list, R.string.new_smart_list_prompt,
+                Dialogs.listNameDialog(getActivity(), R.string.action_new_smart_list, R.string.prompt_new_smart_list,
                         null, R.id.action_new_smart_list, -1);
                 return true;
             default:
@@ -263,12 +263,12 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
                 Dialogs.ratingDialog(getContext(), initialRating);
                 return true;
             case R.id.action_re_import:
-                Dialogs.simpleYesNoDialog(getContext(), R.string.title_dialog_re_import, R.string.re_import_prompt,
+                Dialogs.simpleYesNoDialog(getContext(), R.string.title_re_import_books, R.string.prompt_re_import_books,
                         R.id.action_re_import);
                 return true;
             case R.id.action_delete:
-                Dialogs.yesNoCheckBoxDialog(getContext(), R.string.title_delete_books, R.string.delete_books_prompt,
-                        R.string.delete_from_device_too, R.id.action_delete);
+                Dialogs.yesNoCheckBoxDialog(getContext(), R.string.title_delete_books, R.string.prompt_delete_book,
+                        R.string.prompt_delete_from_device_too, R.id.action_delete);
                 return true;
             default:
                 return false;

@@ -263,12 +263,12 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
                 Dialogs.ratingDialog(getContext(), initialRating);
                 return true;
             case R.id.action_re_import:
-                Dialogs.simpleYesNoDialog(getContext(), R.string.title_dialog_re_import, R.string.re_import_prompt,
+                Dialogs.simpleYesNoDialog(getContext(), R.string.title_re_import_books, R.string.prompt_re_import_books,
                         R.id.action_re_import);
                 return true;
             case R.id.action_delete:
-                Dialogs.yesNoCheckBoxDialog(getContext(), R.string.title_delete_books, R.string.delete_books_prompt,
-                        R.string.delete_from_device_too, R.id.action_delete);
+                Dialogs.yesNoCheckBoxDialog(getContext(), R.string.title_delete_books, R.string.prompt_delete_book,
+                        R.string.prompt_delete_from_device_too, R.id.action_delete);
                 return true;
             default:
                 return false;

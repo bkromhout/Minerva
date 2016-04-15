@@ -47,6 +47,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/colorAccent"
-                android:text="@string/open_query_builder"/>
+                android:text="@string/action_open_query_builder"/>
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

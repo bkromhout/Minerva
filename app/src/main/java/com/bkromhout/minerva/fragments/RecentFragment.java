@@ -222,7 +222,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
                 Dialogs.cardStyleDialog(getContext(), recentPrefs);
                 return true;
             case R.id.action_clear:
-                Dialogs.simpleYesNoDialog(getContext(), R.string.title_clear_list, R.string.clear_list_prompt,
+                Dialogs.simpleYesNoDialog(getContext(), R.string.action_clear_list, R.string.prompt_clear_list,
                         R.id.action_clear);
                 return true;
             default:
@@ -256,17 +256,17 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
                 Dialogs.addToListDialogOrToast(getActivity(), realm);
                 return true;
             case R.id.action_re_import:
-                Dialogs.simpleYesNoDialog(getContext(), R.string.title_dialog_re_import, R.string.re_import_prompt,
+                Dialogs.simpleYesNoDialog(getContext(), R.string.title_re_import_books, R.string.prompt_re_import_books,
                         R.id.action_re_import);
                 return true;
             case R.id.action_remove:
                 Dialogs.simpleYesNoDialog(getContext(), R.string.title_remove_books,
-                        R.string.remove_from_recents_prompt,
+                        R.string.prompt_remove_from_recents,
                         R.id.action_remove);
                 return true;
             case R.id.action_delete:
-                Dialogs.yesNoCheckBoxDialog(getContext(), R.string.title_delete_books, R.string.delete_books_prompt,
-                        R.string.delete_from_device_too, R.id.action_delete);
+                Dialogs.yesNoCheckBoxDialog(getContext(), R.string.title_delete_books, R.string.prompt_delete_book,
+                        R.string.prompt_delete_from_device_too, R.id.action_delete);
                 return true;
             default:
                 return false;

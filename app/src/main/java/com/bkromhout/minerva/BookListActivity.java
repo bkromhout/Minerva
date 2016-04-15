@@ -332,30 +332,30 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 Dialogs.cardStyleDialog(this, listsPrefs);
                 return true;
             case R.id.action_rename_list:
-                Dialogs.listNameDialog(this, R.string.title_rename_list, R.string.rename_list_prompt, srcList.getName(),
+                Dialogs.listNameDialog(this, R.string.title_rename_list, R.string.prompt_rename_list, srcList.getName(),
                         R.id.action_rename_list, posToUpdate);
                 return true;
             case R.id.action_rename_smart_list:
-                Dialogs.listNameDialog(this, R.string.title_rename_smart_list, R.string.rename_smart_list_prompt,
+                Dialogs.listNameDialog(this, R.string.title_rename_smart_list, R.string.prompt_rename_smart_list,
                         srcList.getName(), R.id.action_rename_smart_list, posToUpdate);
                 return true;
             case R.id.action_edit_smart_list:
                 QueryBuilderActivity.start(this, smartListRuq);
                 return true;
             case R.id.action_clear:
-                Dialogs.simpleYesNoDialog(this, R.string.title_clear_list, R.string.clear_list_prompt,
+                Dialogs.simpleYesNoDialog(this, R.string.action_clear_list, R.string.prompt_clear_list,
                         R.id.action_clear);
                 return true;
             case R.id.action_convert_to_normal_list:
                 Dialogs.simpleYesNoDialog(this, R.string.title_convert_to_normal_list,
-                        R.string.convert_to_normal_list_prompt, R.id.action_convert_to_normal_list);
+                        R.string.prompt_convert_to_normal_list, R.id.action_convert_to_normal_list);
                 return true;
             case R.id.action_delete_list:
-                Dialogs.simpleYesNoDialog(this, R.string.title_delete_list, R.string.delete_list_prompt,
+                Dialogs.simpleYesNoDialog(this, R.string.title_delete_list, R.string.prompt_delete_list,
                         R.id.action_delete_list);
                 return true;
             case R.id.action_delete_smart_list:
-                Dialogs.simpleYesNoDialog(this, R.string.title_delete_smart_list, R.string.delete_smart_list_prompt,
+                Dialogs.simpleYesNoDialog(this, R.string.title_delete_smart_list, R.string.prompt_delete_smart_list,
                         R.id.action_delete_smart_list);
                 return true;
             default:
@@ -395,16 +395,16 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 actionMode.finish();
                 return true;
             case R.id.action_re_import:
-                Dialogs.simpleYesNoDialog(this, R.string.title_dialog_re_import, R.string.re_import_prompt,
+                Dialogs.simpleYesNoDialog(this, R.string.title_re_import_books, R.string.prompt_re_import_books,
                         R.id.action_re_import);
                 return true;
             case R.id.action_remove:
-                Dialogs.simpleYesNoDialog(this, R.string.title_remove_books, R.string.remove_from_list_prompt,
+                Dialogs.simpleYesNoDialog(this, R.string.title_remove_books, R.string.prompt_remove_from_list,
                         R.id.action_remove);
                 return true;
             case R.id.action_delete:
-                Dialogs.yesNoCheckBoxDialog(this, R.string.title_delete_books, R.string.delete_books_prompt,
-                        R.string.delete_from_device_too, R.id.action_delete);
+                Dialogs.yesNoCheckBoxDialog(this, R.string.title_delete_books, R.string.prompt_delete_book,
+                        R.string.prompt_delete_from_device_too, R.id.action_delete);
             default:
                 return false;
         }

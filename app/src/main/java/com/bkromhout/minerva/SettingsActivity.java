@@ -78,7 +78,7 @@ public class SettingsActivity extends AppCompatActivity implements FolderChooser
             // Set up the library directory preference.
             Preference libDir = getPreferenceScreen().findPreference(DefaultPrefs.LIB_DIR);
             libDir.setOnPreferenceClickListener(this::onLibDirPrefClick);
-            libDir.setSummary(DefaultPrefs.get().getLibDir(getString(R.string.lib_dir_def)));
+            libDir.setSummary(DefaultPrefs.get().getLibDir(getString(R.string.lib_dir_default)));
         }
 
         @Override
@@ -105,7 +105,7 @@ public class SettingsActivity extends AppCompatActivity implements FolderChooser
             if (key.equals(DefaultPrefs.LIB_DIR)) {
                 // Update the summary for the library directory fragment to be the path.
                 getPreferenceScreen().findPreference(DefaultPrefs.LIB_DIR)
-                                     .setSummary(sharedPreferences.getString(key, getString(R.string.lib_dir_def)));
+                                     .setSummary(sharedPreferences.getString(key, getString(R.string.lib_dir_default)));
             }
         }
 

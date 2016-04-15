@@ -45,7 +45,7 @@
                 android:layout_below="@id/lbl_import_folder"
                 android:maxLines="1"
                 android:ellipsize="start"
-                android:text="@string/lib_dir_def"/>
+                android:text="@string/lib_dir_default"/>
 
         <TextView
                 android:id="@+id/lbl_last_import_time"
@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:layout_below="@id/lbl_last_import_time"
-                android:text="@string/def_last_full_import_time"/>
+                android:text="@string/last_full_import_time_default"/>
 
         <ProgressBar
                 android:id="@+id/import_progress"

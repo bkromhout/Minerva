@@ -171,7 +171,7 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
     private void updateLastImportTime() {
         long lastTime = DefaultPrefs.get().getLastFullImportTime(-1);
 
-        if (lastTime == -1) tvLastImportTime.setText(R.string.def_last_full_import_time);
+        if (lastTime == -1) tvLastImportTime.setText(R.string.last_full_import_time_default);
         else tvLastImportTime.setText(DateUtils.getRelativeDateTimeString(this, lastTime, DateUtils.SECOND_IN_MILLIS,
                 DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_SHOW_TIME));
     }
