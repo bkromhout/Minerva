@@ -4,11 +4,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.view.*;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.BookListActivity;
+import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.QueryBuilderActivity;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.adapters.BookListCardAdapter;
@@ -32,7 +35,7 @@ import java.util.ArrayList;
 /**
  * Fragment in charge of showing all of the book lists.
  */
-public class AllListsFragment extends Fragment {
+public class AllListsFragment extends Fragment implements ActionMode.Callback {
     // Views.
     @Bind(R.id.fab)
     FloatingActionButton fabViewOpts;
@@ -94,6 +97,13 @@ public class AllListsFragment extends Fragment {
         realm = Realm.getDefaultInstance();
 
         initUi();
+
+        // If we have a saved instance state, check to see if we were in action mode.
+        if (savedInstanceState != null && savedInstanceState.getBoolean(C.IS_IN_ACTION_MODE)) {
+            // If we were in action mode, restore the adapter's state and start action mode.
+            adapter.restoreInstanceState(savedInstanceState);
+            startActionMode();
+        }
     }
 
     /**
@@ -126,9 +136,20 @@ public class AllListsFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Save adapter state if we're in action mode.
+        if (actionMode != null) {
+            adapter.saveInstanceState(outState);
+            outState.putBoolean(C.IS_IN_ACTION_MODE, true);
+        }
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
+        if (actionMode != null) actionMode.finish();
     }
 
     @Override
@@ -141,6 +162,25 @@ public class AllListsFragment extends Fragment {
             realm.close();
             realm = null;
         }
+        if (actionMode != null) actionMode.finish();
+    }
+
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        mode.getMenuInflater().inflate(R.menu.library_action_mode, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        Util.forceMenuIcons(menu, getContext(), getClass().getSimpleName());
+        return true;
+    }
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+        adapter.clearSelections();
+        actionMode = null;
     }
 
     @Override
@@ -151,20 +191,56 @@ public class AllListsFragment extends Fragment {
         }
     }
 
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        // Handle select all/none first, and if it isn't those then don't do anything if we haven't selected any items.
+        if (item.getItemId() == R.id.action_select_all) {
+            adapter.selectAll();
+            return true;
+        } else if (item.getItemId() == R.id.action_select_none) {
+            adapter.clearSelections();
+            return true;
+        } else if (adapter.getSelectedItemCount() == 0) return true;
+
+        // Handle actions.
+        switch (item.getItemId()) {
+            case R.id.action_delete:
+                Dialogs.simpleYesNoDialog(getContext(), R.string.title_delete_lists, R.string.prompt_delete_lists,
+                        R.id.action_delete_lists);
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Starts action mode (if it hasn't been already).
+     */
+    private void startActionMode() {
+        if (actionMode == null) actionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(this);
+    }
+
     /**
      * Called when one of the cards is clicked.
      * @param event {@link BookListCardClickEvent}.
      */
     @Subscribe
     public void onCardClicked(BookListCardClickEvent event) {
+        if (actionMode != null) {
+            if (event.getType() == BookListCardClickEvent.Type.LONG) adapter.extendSelectionTo(event.getPosition());
+            else adapter.toggleSelected(event.getPosition());
+            return;
+        }
         // Do something based on the click type.
         switch (event.getType()) {
             case NORMAL:
+                // Start BookListActivity.
                 BookListActivity.start(getActivity(), event.getListName(), event.getPosition());
                 break;
             case LONG:
-                // TODO Start multi-select.
-
+                // Start multi-select.
+                adapter.toggleSelected(event.getPosition());
+                startActionMode();
                 break;
             case ACTIONS:
                 // Handle action.
@@ -226,8 +302,6 @@ public class AllListsFragment extends Fragment {
 
     /**
      * Called when we wish to take some action.
-     * <p>
-     * TODO handle multi-select correctly.
      * @param event {@link ActionEvent}.
      */
     @Subscribe
@@ -263,6 +337,11 @@ public class AllListsFragment extends Fragment {
             case R.id.action_delete_smart_list: {
                 // Delete the list currently being shown, then finish the activity.
                 ActionHelper.deleteList(realm, tempList);
+                break;
+            }
+            case R.id.action_delete_lists: {
+                //noinspection unchecked
+                ActionHelper.deleteLists(realm, adapter.getSelectedRealmObjects());
                 break;
             }
         }
