@@ -467,6 +467,6 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
 
     @Override
     public void onReImportFinished(boolean wasSuccess) {
-        // Nothing, realm's change listener takes care of us.
+        // Nothing, realm's change listener takes care of updating the UI for us.
     }
 }
