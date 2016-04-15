@@ -1,6 +1,8 @@
 package com.bkromhout.minerva.adapters;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.events.BookListCardClickEvent;
 import com.bkromhout.minerva.realm.RBookList;
@@ -47,6 +50,9 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
     @Override
     public void onBindViewHolder(BookListCardVH viewHolder, int position) {
         final RBookList rBookList = realmResults.get(position);
+
+        // Visually distinguish selected cards during multi-select mode.
+        viewHolder.cardView.setActivated(selectedPositions.contains(position));
 
         // Make the card ripple when touched.
         viewHolder.content.setOnTouchListener(rippleFgListener);
@@ -92,6 +98,8 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
      * BookListCardVH class.
      */
     public class BookListCardVH extends RecyclerView.ViewHolder {
+        @Bind(R.id.card)
+        public CardView cardView;
         @Bind(R.id.content)
         public RelativeLayout content;
         @Bind(R.id.list_name)
@@ -104,6 +112,10 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
         public BookListCardVH(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            // Make sure background responds to changes in "activated" state.
+            cardView.getBackground().setTintMode(PorterDuff.Mode.SRC);
+            cardView.getBackground().setTintList(C.CARD_BG_COLORS);
         }
     }
 }
