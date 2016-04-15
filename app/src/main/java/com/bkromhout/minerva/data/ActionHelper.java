@@ -1,5 +1,13 @@
 package com.bkromhout.minerva.data;
 
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
+import android.support.v4.content.FileProvider;
+import android.webkit.MimeTypeMap;
+import android.widget.Toast;
+import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
@@ -10,6 +18,7 @@ import io.realm.Realm;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -20,10 +29,22 @@ public class ActionHelper {
     Book Actions.
      */
 
+    /**
+     * Add {@code book} to the list named {@code listName}.
+     * @param realm    Instance of Realm to use.
+     * @param book     Book to add to list called {@code listName}.
+     * @param listName Name of list to add {@code book} to.
+     */
     public static void addBookToList(Realm realm, RBook book, String listName) {
         addBooksToList(realm, Lists.newArrayList(book), listName);
     }
 
+    /**
+     * Add {@code books} to the list named {@code listName}.
+     * @param realm    Instance of Realm to use.
+     * @param books    Books to add to list called {@code listName}.
+     * @param listName Name of list to add {@code books} to.
+     */
     public static void addBooksToList(Realm realm, List<RBook> books, String listName) {
         realm.where(RBookList.class)
              .equalTo("name", listName)
@@ -31,20 +52,74 @@ public class ActionHelper {
              .addBooks(books);
     }
 
+    /**
+     * Apply {@code rating} to the given {@code book}.
+     * @param realm  Instance of Realm to use.
+     * @param book   Book to apply {@code rating} to.
+     * @param rating Rating to apply to {@code book}.
+     */
     public static void rateBook(Realm realm, RBook book, int rating) {
         rateBooks(realm, Lists.newArrayList(book), rating);
     }
 
+    /**
+     * Apply {@code rating} to the given {@code books}.
+     * @param realm  Instance of Realm to use.
+     * @param books  Books to apply {@code rating} to.
+     * @param rating Rating to apply to {@code books}.
+     */
     public static void rateBooks(Realm realm, List<RBook> books, int rating) {
         realm.executeTransaction(tRealm -> {
             for (RBook book : books) book.setRating(rating);
         });
     }
 
+    /**
+     * Open the book's real file in an application which will allow the user to read it. This will also put the book at
+     * the top of the recents list.
+     * @param book    Book to open.
+     * @param context The context to use to open the file.
+     */
+    public static void openBookUsingIntent(RBook book, Context context) {
+        File file = Util.getFileFromRelPath(book.getRelPath());
+        // TODO Make the user aware if the underlying file doesn't exist!
+        if (file == null) return;
+
+        // Construct intent to use to open the file.
+        Intent newIntent = new Intent(Intent.ACTION_VIEW);
+        newIntent.setDataAndType(FileProvider.getUriForFile(context, "com.bkromhout.minerva.Minerva.files", file),
+                MimeTypeMap.getSingleton().getMimeTypeFromExtension(Util.getExtFromFName(file.getName())));
+        newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION |
+                Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+        try (Realm realm = Realm.getDefaultInstance()) {
+            // Try to open the book file in the app of the user's choice.
+            context.startActivity(newIntent);
+            // Put book at the top of the recents list.
+            realm.executeTransaction(tRealm -> {
+                book.setLastReadDate(Calendar.getInstance().getTime());
+                book.setInRecents(true);
+            });
+        } catch (ActivityNotFoundException e) {
+            // Tell the user there aren't any apps which advertise the ability to handle the book's file type.
+            Toast.makeText(context, C.getStr(R.string.toast_err_no_apps), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * Begin re-import process for the given {@code book}.
+     * @param book     Book to re-import.
+     * @param listener Object to provide a context for drawing a dialog and to call back to when re-import is finished.
+     */
     public static void reImportBook(RBook book, ReImporter.IReImportListener listener) {
         reImportBooks(Lists.newArrayList(book), listener);
     }
 
+    /**
+     * Begin re-import process for the given {@code books}.
+     * @param books    Books to re-import.
+     * @param listener Object to provide a context for drawing a dialog and to call back to when re-import is finished.
+     */
     public static void reImportBooks(List<RBook> books, ReImporter.IReImportListener listener) {
         ReImporter.reImportBooks(books, listener);
     }

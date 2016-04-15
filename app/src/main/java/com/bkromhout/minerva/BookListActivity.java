@@ -616,7 +616,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         switch (event.getType()) {
             case NORMAL:
                 // Open the book file.
-                book.openFileUsingIntent(this);
+                ActionHelper.openBookUsingIntent(book, this);
                 break;
             case LONG:
                 // Start multi-select.

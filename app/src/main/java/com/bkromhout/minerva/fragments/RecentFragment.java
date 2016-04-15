@@ -366,7 +366,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
         switch (event.getType()) {
             case NORMAL:
                 // Open the book file.
-                book.openFileUsingIntent(getContext());
+                ActionHelper.openBookUsingIntent(book, getContext());
                 break;
             case LONG:
                 // Start multi-select.
@@ -388,7 +388,8 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
      */
     @OnClick(R.id.fab)
     void onFabClick() {
-        if (books != null && books.isValid() && !books.isEmpty()) books.first().openFileUsingIntent(getContext());
+        if (books != null && books.isValid() && !books.isEmpty())
+            ActionHelper.openBookUsingIntent(books.first(), getContext());
     }
 
     /**

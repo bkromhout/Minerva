@@ -238,7 +238,7 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
         switch (item.getItemId()) {
             case R.id.action_read:
                 // Open the book file.
-                book.openFileUsingIntent(this);
+                ActionHelper.openBookUsingIntent(book, this);
                 return true;
             case R.id.action_add_to_list:
                 Dialogs.addToListDialogOrToast(this, realm);
@@ -304,7 +304,7 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
     @OnClick(R.id.fab)
     void onReadFabClicked() {
         // Open the book file.
-        book.openFileUsingIntent(this);
+        ActionHelper.openBookUsingIntent(book, this);
     }
 
     /**

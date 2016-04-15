@@ -1,13 +1,5 @@
 package com.bkromhout.minerva.realm;
 
-import android.content.ActivityNotFoundException;
-import android.content.Context;
-import android.content.Intent;
-import android.support.v4.content.FileProvider;
-import android.webkit.MimeTypeMap;
-import android.widget.Toast;
-import com.bkromhout.minerva.C;
-import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.CoverHelper;
 import com.bkromhout.minerva.data.SuperBook;
 import com.bkromhout.minerva.enums.AdapterType;
@@ -28,7 +20,6 @@ import io.realm.annotations.Required;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Identifier;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -255,32 +246,6 @@ public class RBook extends RealmObject {
 
         setLastImportDate(otherBook.getLastImportDate());
         setLastModifiedDate(otherBook.getLastModifiedDate());
-    }
-
-    /**
-     * Open the underlying file in some application. This will also put the book at the top of the recents list.
-     * @param context The context to use to open the file.
-     */
-    public void openFileUsingIntent(Context context) {
-        File file = Util.getFileFromRelPath(getRelPath());
-        // TODO make the user aware that the underlying file doesn't exist!
-        if (file == null) return;
-
-        Intent newIntent = new Intent(Intent.ACTION_VIEW);
-        newIntent.setDataAndType(FileProvider.getUriForFile(context, "com.bkromhout.minerva.Minerva.files", file),
-                MimeTypeMap.getSingleton().getMimeTypeFromExtension(Util.getExtFromFName(file.getName())));
-        newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION |
-                Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-
-        try (Realm realm = Realm.getDefaultInstance()) {
-            context.startActivity(newIntent);
-            realm.executeTransaction(tRealm -> {
-                this.setLastReadDate(Calendar.getInstance().getTime());
-                this.setInRecents(true);
-            });
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(context, C.getStr(R.string.toast_err_no_apps), Toast.LENGTH_LONG).show();
-        }
     }
 
     /**
