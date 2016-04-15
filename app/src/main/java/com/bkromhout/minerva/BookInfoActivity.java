@@ -1,6 +1,7 @@
 package com.bkromhout.minerva;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.CoverHelper;
 import com.bkromhout.minerva.data.ReImporter;
 import com.bkromhout.minerva.events.ActionEvent;
@@ -30,20 +32,18 @@ import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bumptech.glide.Glide;
-import com.google.common.collect.Lists;
 import com.greenfrvr.hashtagview.HashtagView;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.io.File;
 import java.util.List;
 
 /**
  * Displays information for some {@link com.bkromhout.minerva.realm.RBook}.
  */
-public class BookInfoActivity extends AppCompatActivity {
+public class BookInfoActivity extends AppCompatActivity implements ReImporter.IReImportListener {
     // Key strings for the bundle passed when this activity is started.
     private static final String REL_PATH = "REL_PATH";
     private static final String UPDATE_POS = "UPDATE_POS";
@@ -251,11 +251,12 @@ public class BookInfoActivity extends AppCompatActivity {
                 Dialogs.ratingDialog(this, book.getRating());
                 return true;
             case R.id.action_re_import:
-                Dialogs.simpleYesNoDialog(this, R.string.title_re_import_books, R.string.prompt_re_import_books,
+                Dialogs.simpleYesNoDialog(this, R.string.title_re_import_book, R.string.prompt_re_import_book,
                         R.id.action_re_import);
                 return true;
             case R.id.action_delete:
-
+                Dialogs.yesNoCheckBoxDialog(this, R.string.title_delete_book, R.string.prompt_delete_book,
+                        R.string.prompt_delete_from_device_too, R.id.action_delete);
                 return true;
             case android.R.id.home:
                 onBackPressed();
@@ -273,29 +274,20 @@ public class BookInfoActivity extends AppCompatActivity {
     public void onActionEvent(ActionEvent event) {
         switch (event.getActionId()) {
             case R.id.action_rate: {
-                // Save rating and update UI.
-                realm.executeTransaction(tRealm -> book.setRating((Integer) event.getData()));
+                ActionHelper.rateBook(realm, book, (Integer) event.getData());
                 break;
             }
             case R.id.action_add_to_list: {
-                //RBookList list = realm.where(RBookList.class).equalTo("name", (String) event.getData()).findFirst();
-                //RBookList.addBooks(list, selectedItems);
+                ActionHelper.addBookToList(realm, book, (String) event.getData());
                 break;
             }
             case R.id.action_re_import: {
-                ReImporter.reImportBooks(Lists.newArrayList(book), this);
+                ActionHelper.reImportBook(book, this);
                 return;
             }
             case R.id.action_delete: {
-                // Delete the RBooks from Realm.
-                List<String> relPaths = RBook.deleteBooks(selectedItems);
-                // If the user wants us to, also try to delete the corresponding files from the device.
-                if ((boolean) event.getData()) {
-                    for (String relPath : relPaths) {
-                        File file = Util.getFileFromRelPath(relPath);
-                        if (file != null) file.delete();
-                    }
-                }
+                ActionHelper.deleteBook(book, (boolean) event.getData());
+                finish();
                 break;
             }
         }
@@ -466,5 +458,15 @@ public class BookInfoActivity extends AppCompatActivity {
                 modDate.setVisibility(show ? View.VISIBLE : View.GONE);
                 break;
         }
+    }
+
+    @Override
+    public Activity getCtx() {
+        return this;
+    }
+
+    @Override
+    public void onReImportFinished(boolean wasSuccess) {
+        // Nothing, realm's change listener takes care of us.
     }
 }

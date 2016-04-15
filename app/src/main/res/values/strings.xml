@@ -56,8 +56,8 @@
     <string name="title_delete_books">Delete Books</string>
     <string name="title_delete_list">Delete List</string>
     <string name="title_delete_lists">Delete Lists</string>
-    <string name="prompt_delete_book">Are you sure you want to delete the selected books from your library?</string>
-    <string name="prompt_delete_books">Are you sure you want to delete this book from your library?</string>
+    <string name="prompt_delete_book">Are you sure you want to delete this book from your library?</string>
+    <string name="prompt_delete_books">Are you sure you want to delete the selected books from your library?</string>
     <string name="prompt_delete_from_device_too">Delete from device too</string>
     <string name="prompt_delete_list">Are you sure you want to delete this list?</string>
     <string name="prompt_delete_lists">Are you sure you want to delete the selected lists?</string>
@@ -77,8 +77,8 @@
     <string name="action_remove">Remove</string>
     <string name="title_remove_book">Remove Book</string>
     <string name="title_remove_books">Remove Books</string>
-    <string name="prompt_remove_from_list">Are you sure you want to remove the selected items from this list?</string>
-    <string name="prompt_remove_from_recents">Are you sure you wish to remove the selected items from the recents list?</string>
+    <string name="prompt_remove_from_list">Are you sure you want to remove the selected books from this list?</string>
+    <string name="prompt_remove_from_recents">Are you sure you wish to remove the selected books from the recents list?</string>
 
     <!-- Actions name strings for actions without many associated strings (i.e., they're more "standalone"), or whose
          associated strings are contained to one area of the app and thus are in another part of this file. -->

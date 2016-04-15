@@ -403,7 +403,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                         R.id.action_remove);
                 return true;
             case R.id.action_delete:
-                Dialogs.yesNoCheckBoxDialog(this, R.string.title_delete_books, R.string.prompt_delete_book,
+                Dialogs.yesNoCheckBoxDialog(this, R.string.title_delete_books, R.string.prompt_delete_books,
                         R.string.prompt_delete_from_device_too, R.id.action_delete);
             default:
                 return false;
