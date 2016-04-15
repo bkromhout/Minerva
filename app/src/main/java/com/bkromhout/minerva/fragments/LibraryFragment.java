@@ -482,8 +482,6 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
         recyclerView.setAdapter(adapter);
 
         // Scroll back to the same position.
-        // TODO this probably won't show the expected item it both the card and sort type/dir are changed, because while
-        // TODO the position will be correct, the item at that position will be different... we'll figure it out.
         if (currLastVisPos != RecyclerView.NO_POSITION) recyclerView.scrollToPosition(currLastVisPos);
     }
 

@@ -10,8 +10,6 @@ import java.util.List;
 /**
  * Recursively walks down from a given starting directory and emits File objects for any files whose extensions match
  * the given extensions.
- * <p>
- * TODO make this recurse using actual RxJava code.
  */
 public class RxFileWalker implements Observable.OnSubscribe<File> {
     /**
