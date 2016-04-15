@@ -459,5 +459,5 @@ public class ReImporter {
         void onReImportFinished(boolean wasSuccess);
     }
 
-    private static class StartImportEvent {}
+    public static class StartImportEvent {}
 }
