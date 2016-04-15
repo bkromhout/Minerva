@@ -124,19 +124,6 @@ public class RBookListItem extends RealmObject {
         return books;
     }
 
-    /**
-     * Deletes any {@link RBookListItem}s which exist for any of the given {@code books}.
-     * @param books List of {@link RBook}s.
-     */
-    public static void deleteAnyForBooks(List<RBook> books) {
-        try (Realm realm = Realm.getDefaultInstance()) {
-            realm.executeTransaction(tRealm -> {
-                for (RBook book : books)
-                    tRealm.where(RBookListItem.class).contains("book.relPath", book.getRelPath()).findAll().clear();
-            });
-        }
-    }
-
     public String getKey() {
         return key;
     }

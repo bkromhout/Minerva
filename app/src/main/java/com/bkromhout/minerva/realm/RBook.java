@@ -284,33 +284,6 @@ public class RBook extends RealmObject {
     }
 
     /**
-     * Removes the {@link RBook}s from Realm, and returns the relative paths from each one.
-     * @param books List of {@link RBook}s to delete.
-     * @return List of relative paths.
-     */
-    public static List<String> deleteBooks(List<RBook> books) {
-        if (books == null) return null;
-        if (books.isEmpty()) return new ArrayList<>();
-
-        // Delete any RBookListItems which may exist for these books.
-        RBookListItem.deleteAnyForBooks(books);
-
-        List<String> relPaths = new ArrayList<>(books.size());
-        try (Realm realm = Realm.getDefaultInstance()) {
-            realm.executeTransaction(tRealm -> {
-                for (RBook book : books) {
-                    String relPath = book.getRelPath();
-                    // Be sure to delete the cover file, if we have one.
-                    if (book.hasCoverImage()) CoverHelper.get().deleteCoverImage(relPath);
-                    relPaths.add(relPath);
-                    book.removeFromRealm();
-                }
-            });
-        }
-        return relPaths;
-    }
-
-    /**
      * Get names of {@link RBookList}s which {@code book} is in.
      * @param book  Book to search for.
      * @param realm Instance of Realm to use.
