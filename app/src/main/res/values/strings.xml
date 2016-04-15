@@ -248,7 +248,7 @@
     <string name="lbl_publish_date">Published</string>
     <string name="lbl_mod_date">Modified</string>
 
-    <string name="acc_book_cover">Book cover image</string>
+    <string name="acc_book_cover">Book Cover</string>
     <string name="acc_book_info">View book info</string>
     <string name="acc_quick_tag">Quick tag</string>
     <string name="acc_actions">Actions</string>

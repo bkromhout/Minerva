@@ -48,6 +48,15 @@
                 android:theme="@style/AppTheme.TransparentStatus">
         </activity>
         <activity
+                android:name=".CoverActivity"
+                android:label="@string/acc_book_cover"
+                android:parentActivityName=".BookInfoActivity"
+                android:theme="@style/AppTheme.TransparentStatus">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="com.bkromhout.minerva.BookInfoActivity"/>
+        </activity>
+        <activity
                 android:name=".QueryBuilderActivity"
                 android:label="@string/title_activity_query_builder"
                 android:theme="@style/AppTheme">
@@ -84,6 +93,7 @@
         <meta-data
                 android:name="com.bkromhout.minerva.util.GlideConfig"
                 android:value="GlideModule"/>
+
     </application>
 
 </manifest>

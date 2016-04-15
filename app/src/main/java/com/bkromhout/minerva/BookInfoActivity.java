@@ -45,7 +45,6 @@ import java.util.List;
  */
 public class BookInfoActivity extends AppCompatActivity implements ReImporter.IReImportListener {
     // Key strings for the bundle passed when this activity is started.
-    private static final String REL_PATH = "REL_PATH";
     private static final String UPDATE_POS = "UPDATE_POS";
 
     /**
@@ -154,7 +153,7 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
             throw new IllegalArgumentException("Must supply non-null, non-empty relative path.");
         if (updatePos < 0)
             throw new IllegalArgumentException("Must supply a position >= 0.");
-        context.startActivity(new Intent(context, BookInfoActivity.class).putExtra(REL_PATH, relPath)
+        context.startActivity(new Intent(context, BookInfoActivity.class).putExtra(C.REL_PATH, relPath)
                                                                          .putExtra(UPDATE_POS, updatePos));
     }
 
@@ -173,7 +172,7 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
         getSupportActionBar().setHomeButtonEnabled(true);
 
         // Get Realm and read extras bundle.
-        String relPath = getIntent().getStringExtra(REL_PATH);
+        String relPath = getIntent().getStringExtra(C.REL_PATH);
         updatePos = getIntent().getIntExtra(UPDATE_POS, -1);
         realm = Realm.getDefaultInstance();
 
@@ -295,7 +294,8 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
 
     @OnClick(R.id.cover_image)
     void onHeaderImageClicked(View v) {
-        // TODO Show cover image in full screen if book actually has a cover image.
+        // If this book actually has a cover, start the CoverActivity.
+        if (book.hasCoverImage()) CoverActivity.start(this, book.getRelPath());
     }
 
     /**
