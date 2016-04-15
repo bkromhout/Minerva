@@ -27,7 +27,7 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
     /**
      * Help our cards ripple.
      */
-    private RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.card);
+    private static RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.card);
     /**
      * List of items which are checked. The strings in this list should correspond to names of {@link RTag}s.
      */
@@ -55,9 +55,6 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
     @Override
     public void onBindViewHolder(TagCardVH viewHolder, int position) {
         RTag tag = realmResults.get(position);
-
-        // Make the card ripple when touched.
-        viewHolder.tag.setOnTouchListener(rippleFgListener);
 
         // Set card click listener.
         viewHolder.card.setOnClickListener(v -> {
@@ -115,6 +112,9 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
         public TagCardVH(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            // Make the card ripple when touched.
+            tag.setOnTouchListener(rippleFgListener);
         }
     }
 }

@@ -28,7 +28,7 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
     /**
      * Help our cards ripple.
      */
-    private RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.card);
+    private static RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.card);
 
     /**
      * Create a new {@link BookListCardAdapter}.
@@ -53,9 +53,6 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
 
         // Visually distinguish selected cards during multi-select mode.
         viewHolder.cardView.setActivated(selectedPositions.contains(position));
-
-        // Make the card ripple when touched.
-        viewHolder.content.setOnTouchListener(rippleFgListener);
 
         // Set card click handler.
         viewHolder.content.setOnClickListener(view ->
@@ -116,6 +113,9 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
             // Make sure background responds to changes in "activated" state.
             cardView.getBackground().setTintMode(PorterDuff.Mode.SRC);
             cardView.getBackground().setTintList(C.CARD_BG_COLORS);
+
+            // Make the card ripple when touched.
+            content.setOnTouchListener(rippleFgListener);
         }
     }
 }

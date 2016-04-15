@@ -31,11 +31,10 @@ import org.greenrobot.eventbus.EventBus;
  */
 public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends BaseBookCardAdapter.BaseCardVH> extends
         RealmBasedRecyclerViewAdapter<T, VH> {
-
     /**
      * Help our cards ripple.
      */
-    RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.card);
+    private static RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.card);
     /**
      * Activity to pass to Glide so that it will automatically get lifecycle events.
      */
@@ -65,16 +64,9 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Base
         RBookListItem bookListItem = getBookListItemFromT(realmResults.get(position));
         RBook book = bookListItem != null ? bookListItem.getBook() : getBookFromT(realmResults.get(position));
         if (book == null || rippleFgListener == null) throw new IllegalArgumentException();
-        boolean selected = selectedPositions.contains(position);
 
-        // Do common bindings. First, make sure the card's background color changes based on whether or not the item is
-        // selected.
-        viewHolder.cardView.getBackground().setTintMode(PorterDuff.Mode.SRC);
-        viewHolder.cardView.getBackground().setTintList(C.CARD_BG_COLORS);
-        viewHolder.cardView.setActivated(selected);
-
-        // Make the card ripple when touched.
-        viewHolder.content.setOnTouchListener(rippleFgListener);
+        // Visually distinguish selected cards during multi-select mode.
+        viewHolder.cardView.setActivated(selectedPositions.contains(position));
 
         // Set card click handler.
         viewHolder.content.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
@@ -143,8 +135,8 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Base
                                        .load(CoverHelper.get().getCoverImageFile(book.getRelPath()))
                                        .centerCrop()
                                        .into(resolvedVH.ivCoverImage);
-        else resolvedVH.ivCoverImage
-                .setImageDrawable(ContextCompat.getDrawable(Minerva.getAppCtx(), R.drawable.epub_logo_color));
+        else resolvedVH.ivCoverImage.setImageDrawable(ContextCompat.getDrawable(Minerva.getAppCtx(),
+                R.drawable.epub_logo_color));
     }
 
     /**
@@ -211,6 +203,13 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Base
         public BaseCardVH(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            // Make sure background responds to changes in "activated" state.
+            cardView.getBackground().setTintMode(PorterDuff.Mode.SRC);
+            cardView.getBackground().setTintList(C.CARD_BG_COLORS);
+
+            // Make the card ripple when touched.
+            content.setOnTouchListener(rippleFgListener);
         }
     }
 
