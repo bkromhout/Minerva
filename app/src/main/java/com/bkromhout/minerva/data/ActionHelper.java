@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class ActionHelper {
     /*
-    Book Actions.
+     * Book Actions.
      */
 
     /**
@@ -173,7 +173,7 @@ public class ActionHelper {
     }
 
     /*
-    List Actions.
+     * List Actions.
      */
 
     /**
