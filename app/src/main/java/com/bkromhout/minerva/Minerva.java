@@ -6,6 +6,7 @@ import com.bkromhout.ruqus.Ruqus;
 import com.karumi.dexter.Dexter;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * Custom Application class.
@@ -21,6 +22,8 @@ public class Minerva extends Application {
         super.onCreate();
         // Stash application context.
         instance = this;
+        // Set up EventBus to use the generated index.
+        EventBus.builder().addIndex(new EventBusIndex()).installDefaultEventBus();
         // Init Dexter.
         Dexter.initialize(this);
         // Set up Realm.
