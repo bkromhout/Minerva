@@ -101,18 +101,43 @@ public class ActionHelper {
     List Actions.
      */
 
+    /**
+     * Create a new {@link RBookList}.
+     * @param realm    Instance of Realm to use.
+     * @param listName Name to use for new list. Assumed to not already be in use.
+     */
     public static void createNewList(Realm realm, String listName) {
+        if (listName == null || listName.isEmpty())
+            throw new IllegalArgumentException("listName must be non-null and non-empty.");
         realm.executeTransaction(tRealm -> tRealm.copyToRealm(new RBookList(listName)));
     }
 
+    /**
+     * Create a new {@link RBookList} as a smart list.
+     * @param realm          Instance of Realm to use.
+     * @param listName       Name to use for new smart list. Assumed to not already be in use.
+     * @param realmUserQuery RealmUserQuery to use to get a RealmUserQuery string to store in the list. Can be null.
+     * @return The newly created and persisted smart list.
+     */
     public static RBookList createNewSmartList(Realm realm, String listName, RealmUserQuery realmUserQuery) {
+        if (listName == null || listName.isEmpty())
+            throw new IllegalArgumentException("listName must be non-null and non-empty.");
         realm.beginTransaction();
         RBookList newSmartList = realm.copyToRealm(new RBookList(listName, realmUserQuery));
         realm.commitTransaction();
         return newSmartList;
     }
 
+    /**
+     * Update the RealmUserQuery string in a smart list.
+     * @param realm     Instance of Realm to use.
+     * @param list      List to update {@link RBookList#smartListRuqString} for. Must be configured as a smart list.
+     * @param ruqString RealmUserQuery string to put into {@code list}. Can be empty or null.
+     * @throws IllegalStateException if {@code list} isn't a smart list.
+     */
     public static void updateSmartList(Realm realm, RBookList list, String ruqString) {
+        if (list == null) return;
+        if (!list.isSmartList()) throw new IllegalStateException("list is not a smart list.");
         realm.executeTransaction(tRealm -> list.setSmartListRuqString(ruqString));
     }
 
@@ -123,16 +148,45 @@ public class ActionHelper {
      */
     public static void deleteList(Realm realm, RBookList list) {
         if (list != null) {
+            realm.executeTransaction(tRealm -> _deleteList(list));
+        }
+    }
+
+    /**
+     * Deletes the {@code lists}, and all of their {@link RBookListItem}s, from Realm.
+     * @param realm Instance of Realm to use.
+     * @param lists Lists to delete.
+     */
+    public static void deleteLists(Realm realm, List<RBookList> lists) {
+        if (lists != null && !lists.isEmpty()) {
             realm.executeTransaction(tRealm -> {
-                // First, delete the list items (unless this is a smart list).
-                if (!list.isSmartList()) list.getListItems().deleteAllFromRealm();
-                // Then, delete the book list.
-                list.removeFromRealm();
+                for (RBookList list : lists) _deleteList(list);
             });
         }
     }
 
+    /**
+     * Deletes all {@link RBookListItem}s owned by {@code list} from Realm, then deletes {@code list} from Realm.
+     * <p>
+     * This MUST be called while inside of a Realm transaction!
+     * @param list List to delete.
+     */
+    private static void _deleteList(RBookList list) {
+        // First, delete the list items (unless this is a smart list).
+        if (!list.isSmartList()) list.getListItems().deleteAllFromRealm();
+        // Then, delete the book list.
+        list.removeFromRealm();
+    }
+
+    /**
+     * Rename the {@code list} to {@code newName}, which is assumed to not already be in use.
+     * @param realm   Instance of Realm to use.
+     * @param list    List to rename.
+     * @param newName New name for {@code list}.
+     */
     public static void renameList(Realm realm, RBookList list, String newName) {
+        if (newName == null || newName.isEmpty())
+            throw new IllegalArgumentException("newName must be non-null and non-empty.");
         realm.executeTransaction(tRealm -> {
             list.setName(newName);
             list.setSortName(newName.toLowerCase()); // TODO Work-around
