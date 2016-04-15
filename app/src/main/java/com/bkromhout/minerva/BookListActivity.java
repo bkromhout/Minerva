@@ -418,7 +418,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     public void onActionEvent(ActionEvent event) {
         switch (event.getActionId()) {
             case R.id.action_clear: {
-                realm.executeTransaction(tRealm -> srcList.getListItems().clear());
+                realm.executeTransaction(tRealm -> srcList.getListItems().deleteAllFromRealm());
                 break;
             }
             case R.id.action_open_query_builder: {

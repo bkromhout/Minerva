@@ -93,7 +93,7 @@ public class ActionHelper {
         if (list != null) {
             realm.executeTransaction(tRealm -> {
                 // First, delete the list items (unless this is a smart list).
-                if (!list.isSmartList()) list.getListItems().clear();
+                if (!list.isSmartList()) list.getListItems().deleteAllFromRealm();
                 // Then, delete the book list.
                 list.removeFromRealm();
             });
