@@ -167,7 +167,7 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback {
 
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-        mode.getMenuInflater().inflate(R.menu.library_action_mode, menu);
+        mode.getMenuInflater().inflate(R.menu.all_lists_action_mode, menu);
         return true;
     }
 
