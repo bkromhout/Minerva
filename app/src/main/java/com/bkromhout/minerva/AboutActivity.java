@@ -13,7 +13,6 @@ import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.aboutlibraries.ui.LibsSupportFragment;
 
@@ -55,9 +54,7 @@ public class AboutActivity extends AppCompatActivity {
         }
 
         // Fill in libraries.
-        LibsSupportFragment libsFrag = new LibsBuilder()
-                .withActivityStyle(Libs.ActivityStyle.DARK)
-                .supportFragment();
+        LibsSupportFragment libsFrag = new LibsBuilder().supportFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.about_libs, libsFrag).commit();
     }
 
