@@ -32,6 +32,7 @@ import com.bkromhout.minerva.prefs.RecentPrefs;
 import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.util.Dialogs;
+import com.bkromhout.minerva.util.EndPaddingDecorator;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.RealmRecyclerView;
 import io.realm.Realm;
@@ -115,6 +116,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
         // Get Realm.
         realm = Realm.getDefaultInstance();
 
+        recyclerView.getRecyclerView().addItemDecoration(new EndPaddingDecorator());
         initUi();
 
         // If we have a saved instance state, check to see if we were in action mode.

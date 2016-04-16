@@ -29,6 +29,7 @@ import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookListItem;
 import com.bkromhout.minerva.util.Dialogs;
+import com.bkromhout.minerva.util.EndPaddingDecorator;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.RealmRecyclerView;
 import com.bkromhout.ruqus.RealmUserQuery;
@@ -129,6 +130,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
             queryType = AdapterType.values()[savedInstanceState.getInt(QUERY_TYPE)];
         }
 
+        recyclerView.getRecyclerView().addItemDecoration(new EndPaddingDecorator());
         updateUi();
 
         // If we were in action mode, restore the adapter's state and start action mode.

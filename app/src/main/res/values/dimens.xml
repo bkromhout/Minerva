@@ -29,4 +29,7 @@
 
     <dimen name="list_card_height">56dp</dimen>
     <dimen name="tag_card_height">48dp</dimen>
+
+    <!-- Padding for end of recycler views to avoid FAB overlap -->
+    <dimen name="rv_end_padding">80dp</dimen>
 </resources>
