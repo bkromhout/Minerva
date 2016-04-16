@@ -44,9 +44,6 @@ import java.util.List;
  * Displays information for some {@link com.bkromhout.minerva.realm.RBook}.
  */
 public class BookInfoActivity extends AppCompatActivity implements ReImporter.IReImportListener {
-    // Key strings for the bundle passed when this activity is started.
-    private static final String UPDATE_POS = "UPDATE_POS";
-
     /**
      * Part of the information for which views are conditionally shown.
      * @see #togglePart(Part, boolean)
@@ -126,9 +123,14 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
     TextView modDate;
 
     /**
-     * Position of the book card
+     * Position to use in any {@link UpdatePosEvent}s which might be sent.
      */
-    private int updatePos;
+    private int posToUpdate;
+    /**
+     * If true, send a {@link UpdatePosEvent} to the {@link com.bkromhout.minerva.fragments.AllListsFragment} when we
+     * exit this activity.
+     */
+    private boolean needsPosUpdate = false;
     /**
      * Realm instance.
      */
@@ -154,7 +156,7 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
         if (updatePos < 0)
             throw new IllegalArgumentException("Must supply a position >= 0.");
         context.startActivity(new Intent(context, BookInfoActivity.class).putExtra(C.REL_PATH, relPath)
-                                                                         .putExtra(UPDATE_POS, updatePos));
+                                                                         .putExtra(C.POS_TO_UPDATE, updatePos));
     }
 
     @Override
@@ -173,7 +175,7 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
 
         // Get Realm and read extras bundle.
         String relPath = getIntent().getStringExtra(C.REL_PATH);
-        updatePos = getIntent().getIntExtra(UPDATE_POS, -1);
+        posToUpdate = getIntent().getIntExtra(C.POS_TO_UPDATE, -1);
         realm = Realm.getDefaultInstance();
 
         // Get RBook.
@@ -192,6 +194,9 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
 
         // Add the change listener to the RBook.
         book.addChangeListener(bookListener);
+
+        // If we have a saved instance state, check whether we will still need to send a position update upon finishing.
+        if (savedInstanceState != null && savedInstanceState.getBoolean(C.NEEDS_POS_UPDATE)) needsPosUpdate = true;
     }
 
     @Override
@@ -214,9 +219,15 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(C.NEEDS_POS_UPDATE, needsPosUpdate);
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
-        EventBus.getDefault().postSticky(new UpdatePosEvent(updatePos));
+        EventBus.getDefault().postSticky(new UpdatePosEvent(posToUpdate));
         EventBus.getDefault().unregister(this);
     }
 
@@ -230,6 +241,8 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
             realm.close();
             realm = null;
         }
+        // If we need to update the book's card, send the sticky event now.
+        if (needsPosUpdate) EventBus.getDefault().postSticky(new UpdatePosEvent(posToUpdate));
     }
 
     @Override
@@ -274,6 +287,8 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
         switch (event.getActionId()) {
             case R.id.action_rate: {
                 ActionHelper.rateBook(realm, book, (Integer) event.getData());
+                // The rating changed, so we'll need to update the book's card.
+                needsPosUpdate = true;
                 break;
             }
             case R.id.action_add_to_list: {
@@ -282,6 +297,8 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
             }
             case R.id.action_re_import: {
                 ActionHelper.reImportBook(book, this);
+                // We may have changed things, so we'll need to update the book's card.
+                needsPosUpdate = true;
                 return;
             }
             case R.id.action_delete: {
@@ -290,6 +307,12 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
                 break;
             }
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // If we came back from TaggingActivity and we changed the tags on the book, we'll need to update its card.
+        if (requestCode == C.RC_TAG_ACTIVITY && resultCode == RESULT_OK) needsPosUpdate = true;
     }
 
     @OnClick(R.id.cover_image)

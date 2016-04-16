@@ -48,9 +48,7 @@ import java.util.List;
 public class BookListActivity extends AppCompatActivity implements ActionMode.Callback, ReImporter.IReImportListener {
     // Key strings for the bundle passed when this activity is started.
     public static final String LIST_NAME = "LIST_NAME";
-    private static final String POS_TO_UPDATE = "POS_TO_UPDATE";
     private static final String KEY_IS_REORDER_MODE = "IS_REORDER_MODE";
-    private static final String NEEDS_POS_UPDATE = "NEEDS_POS_UPDATE";
 
     // Views.
     @Bind(R.id.toolbar)
@@ -119,7 +117,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         if (listName == null) throw new IllegalArgumentException("Cannot start this activity without a list name.");
         context.startActivity(new Intent(context, BookListActivity.class)
                 .putExtra(LIST_NAME, listName)
-                .putExtra(POS_TO_UPDATE, posToUpdate));
+                .putExtra(C.POS_TO_UPDATE, posToUpdate));
     }
 
     @Override
@@ -164,8 +162,8 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 adapter.restoreInstanceState(savedInstanceState);
                 startActionMode();
             }
-            // ...And whether we will still need to send a position update.
-            if (savedInstanceState.getBoolean(NEEDS_POS_UPDATE)) needsPosUpdate = true;
+            // ...And whether we will still need to send a position update upon finishing.
+            if (savedInstanceState.getBoolean(C.NEEDS_POS_UPDATE)) needsPosUpdate = true;
         }
     }
 
@@ -176,7 +174,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     private void readExtras(Bundle b) {
         if (b == null) return;
         selStr = b.getString(LIST_NAME, null);
-        posToUpdate = b.getInt(POS_TO_UPDATE, -1);
+        posToUpdate = b.getInt(C.POS_TO_UPDATE, -1);
     }
 
     /**
@@ -247,13 +245,13 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        if (smartListRuq != null) outState.putParcelable(C.RUQ, smartListRuq);
+        outState.putBoolean(C.NEEDS_POS_UPDATE, needsPosUpdate);
         // Save adapter state if we're in action mode.
         if (actionMode != null) {
-            if (smartListRuq != null) outState.putParcelable(C.RUQ, smartListRuq);
             adapter.saveInstanceState(outState);
             outState.putBoolean(C.IS_IN_ACTION_MODE, true);
             outState.putBoolean(KEY_IS_REORDER_MODE, isReorderMode);
-            outState.putBoolean(NEEDS_POS_UPDATE, needsPosUpdate);
         }
     }
 
