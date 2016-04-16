@@ -32,7 +32,7 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            shrinkResources true
+            //shrinkResources true TODO After initial proguard config
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
@@ -59,12 +59,12 @@ dependencies {
     compile 'com.android.support:design:23.3.0'
     compile 'com.android.support:recyclerview-v7:23.3.0'
     compile 'com.android.support:cardview-v7:23.3.0'
-    compile 'com.google.guava:guava:19.0' // Included manually since it's a java artifact.
-    compile 'com.github.bkromhout:java-diff-utils:2.0.0' // Included manually since it's a java artifact.
+    compile 'com.google.guava:guava:19.0'
+    compile 'com.github.bkromhout:java-diff-utils:2.0.0'
     compile 'org.greenrobot:eventbus:3.0.0'
     apt 'org.greenrobot:eventbus-annotation-processor:3.0.1'
     compile 'com.jakewharton:butterknife:7.0.1'
-    compile 'io.reactivex:rxjava:1.1.2'
+    compile 'io.reactivex:rxjava:1.1.3'
     compile 'io.reactivex:rxandroid:1.1.0'
     compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
     compile 'com.github.bumptech.glide:glide:3.7.0'
@@ -81,14 +81,15 @@ dependencies {
         transitive = true
     }
     compile 'com.karumi:dexter:2.2.2' //AL
-    compile('com.github.afollestad.material-dialogs:core:0.8.5.7@aar') {
+    compile('com.github.afollestad.material-dialogs:core:0.8.5.8@aar') {
         transitive = true
     }
-    compile('com.github.afollestad.material-dialogs:commons:0.8.5.7@aar') {
+    compile('com.github.afollestad.material-dialogs:commons:0.8.5.8@aar') {
         transitive = true
     }
     compile('nl.siegmann.epublib:epublib-core:3.1') { //AL
-        exclude module: 'xmlpull'
+        exclude group: 'xmlpull'
+        exclude group: 'net.sf.kxml'
     }
     debugCompile 'com.facebook.stetho:stetho:1.3.0'
     debugCompile 'com.uphyca:stetho_realm:0.8.0'

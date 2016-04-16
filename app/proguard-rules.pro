@@ -16,12 +16,21 @@
 #   public *;
 #}
 
-# TODO make sure all lib's things are in here!!
+# Really no reason to do this and invite trouble since the source is available on Github.
+-dontobfuscate
 
-# Retrolambda
--dontwarn java.lang.invoke.*
+# Make sure our little menu icons hack works.
+-keepclasseswithmembers class * {
+    void setOptionalIconsVisible(boolean);
+}
 
-# Butter Knife
+# AboutLibraries
+-keep class .R
+-keep class **.R$* {
+    <fields>;
+}
+
+# Butter Knife 7
 -keep class butterknife.** { *; }
 -dontwarn butterknife.internal.**
 -keep class **$$ViewBinder { *; }
@@ -32,10 +41,58 @@
     @butterknife.* <methods>;
 }
 
+# epublib
+-dontwarn org.xmlpull.v1.**
+-dontnote org.xmlpull.v1.**
+-keep class org.xmlpull.** { *; }
+
+# EventBus 3
+-keepattributes *Annotation*
+-keepclassmembers class ** {
+    @org.greenrobot.eventbus.Subscribe <methods>;
+}
+-keep enum org.greenrobot.eventbus.ThreadMode { *; }
+
+# Glide
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
+}
+
+# Guava 19
+-dontwarn javax.annotation.**
+-dontwarn javax.inject.**
+-dontwarn sun.misc.Unsafe
+-keep class com.google.j2objc.annotations.** { *; }
+-dontwarn   com.google.j2objc.annotations.**
+-keep class java.lang.ClassValue { *; }
+-dontwarn   java.lang.ClassValue
+-keep class org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement { *; }
+-dontwarn   org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+
 # Realm
+-keep class com.bkromhout.minerva.realm.** { *; }
 -keep class io.realm.annotations.RealmModule
 -keep @io.realm.annotations.RealmModule class *
 -keep class io.realm.internal.Keep
 -keep @io.realm.internal.Keep class * { *; }
 -dontwarn javax.**
 -dontwarn io.realm.**
+
+# Retrolambda
+-dontwarn java.lang.invoke.*
+
+# RxJava
+-keep class rx.schedulers.Schedulers {
+    public static <methods>;
+}
+-keep class rx.schedulers.ImmediateScheduler {
+    public <methods>;
+}
+-keep class rx.schedulers.TestScheduler {
+    public <methods>;
+}
+-keep class rx.schedulers.Schedulers {
+    public static ** test();
+}
