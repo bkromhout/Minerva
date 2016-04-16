@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.percent.PercentRelativeLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
@@ -38,6 +39,7 @@ import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.RealmRecyclerView;
 import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
+import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -53,6 +55,8 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
     FloatingActionButton fabViewOpts;
     @Bind(R.id.recycler)
     RealmRecyclerView recyclerView;
+    @Bind(R.id.empty_library)
+    PercentRelativeLayout emptyLibraryView;
 
     /**
      * Preferences.
@@ -86,6 +90,19 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
      * Action mode.
      */
     private static ActionMode actionMode;
+    /**
+     * Realm change listener which takes care of toggling view visibility when {@link #books} changes from empty to
+     * non-empty and vice versa.
+     */
+    private RealmChangeListener emptyListener = new RealmChangeListener() {
+        @Override
+        public void onChange() {
+            boolean isEmpty = books.isEmpty();
+            recyclerView.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+            fabViewOpts.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+            emptyLibraryView.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+        }
+    };
 
     public LibraryFragment() {
         // Required empty public constructor
@@ -151,6 +168,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
         // Get results, sort them, then create and bind the adapter.
         books = realm.where(RBook.class)
                      .findAll();
+        books.addChangeListener(emptyListener);
         sortRealmResults();
         adapter = makeAdapter();
         recyclerView.setAdapter(adapter);
@@ -201,6 +219,8 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
         super.onDestroy();
         // Close adapter.
         if (adapter != null) adapter.close();
+        // Remove listener.
+        books.removeChangeListener(emptyListener);
         // Close Realm.
         if (realm != null) {
             realm.close();
@@ -382,6 +402,11 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
         EventBus.getDefault().removeStickyEvent(event);
         // Update the item at the position in the event.
         adapter.notifyItemChanged(event.getPosition());
+    }
+
+    @OnClick(R.id.open_full_importer)
+    void onOpenImporterClick() {
+        // Open full importer.
     }
 
     /**

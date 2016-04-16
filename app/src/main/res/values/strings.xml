@@ -119,6 +119,8 @@
     <string name="card_no_cover">No Cover</string>
     <string name="card_compact">Compact</string>
 
+    <string name="prompt_empty_library">Your library is empty and sad</string>
+    <string name="action_open_importer">Open Importer</string>
     <string name="toast_no_lists">There are no lists</string>
 
 

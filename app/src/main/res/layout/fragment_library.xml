@@ -24,4 +24,39 @@
             app:layout_anchor="@id/recycler"
             app:layout_anchorGravity="bottom|right|end"
             app:layout_behavior="com.bkromhout.minerva.util.ScrollAwareFABBehavior"/>
+
+    <android.support.percent.PercentRelativeLayout
+            android:id="@+id/empty_library"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+        <ImageView
+                android:id="@+id/sad_face"
+                app:layout_widthPercent="50%"
+                app:layout_aspectRatio="100%"
+                android:layout_centerHorizontal="true"
+                android:tint="@color/grey900"
+                android:src="@drawable/ic_sad_face"/>
+
+        <TextView
+                android:id="@+id/empty_library_prompt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/sad_face"
+                android:layout_marginBottom="8dp"
+                android:layout_centerHorizontal="true"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:text="@string/prompt_empty_library"/>
+
+        <Button
+                android:id="@+id/open_full_importer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/empty_library_prompt"
+                android:layout_centerHorizontal="true"
+                android:text="@string/action_open_importer"/>
+    </android.support.percent.PercentRelativeLayout>
 </android.support.design.widget.CoordinatorLayout>
