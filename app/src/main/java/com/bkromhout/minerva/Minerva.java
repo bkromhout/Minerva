@@ -2,6 +2,7 @@ package com.bkromhout.minerva;
 
 import android.app.Application;
 import android.content.Context;
+import com.bkromhout.minerva.realm.UniqueIdFactory;
 import com.bkromhout.ruqus.Ruqus;
 import com.karumi.dexter.Dexter;
 import io.realm.Realm;
@@ -28,6 +29,10 @@ public class Minerva extends Application {
         Dexter.initialize(this);
         // Set up Realm.
         setupRealm();
+        // Initialize UniqueIdFactory.
+        try (Realm realm = Realm.getDefaultInstance()) {
+            UniqueIdFactory.getInstance().initialize(realm);
+        }
         // Init Ruqus.
         Ruqus.init(this);
     }

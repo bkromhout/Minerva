@@ -116,10 +116,10 @@ public class RBookList extends RealmObject {
      * @return True if {@code book} is in this list, otherwise false.
      */
     private boolean _isBookInList(RBook book) {
-        return getListItems()
-                .where()
-                .equalTo("key", RBookListItem.makeBookListItemKey(name, book.getRelPath()))
-                .findFirst() != null;
+        return listItems.where()
+                        .equalTo("owningList.name", name)
+                        .equalTo("book.relPath", book.getRelPath())
+                        .findFirst() != null;
     }
 
     /**
@@ -299,9 +299,9 @@ public class RBookList extends RealmObject {
      * the returned position already being taken.
      * <p>
      * {@code null} can be passed for ONE of {@code item1} or {@code item2}:<br/>If {@code item1} is null, the number
-     * returned will be {@code item1.getPosition() + gap}<br/>If {@code item2} is null, the number returned will be {@code
-     * item2.getPosition() - gap}.<br/>(The current spacing gap can be found at
-     * {@link com.bkromhout.minerva.C#LIST_ITEM_GAP}.)
+     * returned will be {@code item1.getPosition() + gap}<br/>If {@code item2} is null, the number returned will be
+     * {@code item2.getPosition() - gap}.<br/>(The current spacing gap can be found at {@link
+     * com.bkromhout.minerva.C#LIST_ITEM_GAP}.)
      * <p>
      * Please note that passing {@code null} for one of the items assumes that the non-null item is either the first (if
      * it's {@code item2}), or the last (if it's {@code item1}) item in this list. If this isn't the case, the returned
@@ -373,19 +373,19 @@ public class RBookList extends RealmObject {
      */
 
     /**
-     * Swaps the positions of {@code item1} and {@code item2}. Will do nothing if the items are the same.
-     * @param item1Key An item's key.
-     * @param item2Key Another item's key.
+     * Swaps the positions of the items whose unique IDs are {@code item1Id} and {@code item2Id}. Will do nothing if the
+     * items are the same.
+     * @param item1Id An item's unique ID.
+     * @param item2Id Another item's unique ID.
      * @throws IllegalArgumentException if either item is null or items aren't from the same list.
      */
-    public static void swapItemPositions(String item1Key, String item2Key) {
-        if (item1Key == null || item2Key == null) throw new IllegalArgumentException("No nulls allowed.");
-        if (!RBookListItem.areFromSameList(item1Key, item2Key)) throw new IllegalArgumentException(
-                "Items must be part of the same list.");
-
+    public static void swapItemPositions(long item1Id, long item2Id) {
         try (Realm realm = Realm.getDefaultInstance()) {
-            RBookListItem innerItem1 = realm.where(RBookListItem.class).equalTo("key", item1Key).findFirst();
-            RBookListItem innerItem2 = realm.where(RBookListItem.class).equalTo("key", item2Key).findFirst();
+            RBookListItem innerItem1 = realm.where(RBookListItem.class).equalTo("uniqueId", item1Id).findFirst();
+            RBookListItem innerItem2 = realm.where(RBookListItem.class).equalTo("uniqueId", item2Id).findFirst();
+
+            if (!RBookListItem.areFromSameList(innerItem1, innerItem2)) throw new IllegalArgumentException(
+                    "Items must be part of the same list.");
 
             realm.beginTransaction();
             // Swap the positions.
@@ -404,7 +404,7 @@ public class RBookList extends RealmObject {
      */
     public static void swapItemPositions(RBookListItem item1, RBookListItem item2) {
         if (item1 == null || item2 == null) throw new IllegalArgumentException("No nulls allowed.");
-        if (!RBookListItem.areFromSameList(item1.getKey(), item2.getKey())) throw new IllegalArgumentException(
+        if (!RBookListItem.areFromSameList(item1, item2)) throw new IllegalArgumentException(
                 "Items must be part of the same list.");
 
         try (Realm realm = Realm.getDefaultInstance()) {
@@ -418,15 +418,15 @@ public class RBookList extends RealmObject {
     }
 
     /**
-     * Moves the {@link RBookListItem} whose key is {@code itemToMoveKey} to somewhere before the {@link RBookListItem}
-     * whose key is {@code targetItemKey}.
-     * @param itemToMoveKey Key of item to move.
-     * @param targetItemKey Key of item which item whose key is {@code itemToMove} will be moved before.
+     * Moves the {@link RBookListItem} whose unique ID is {@code itemToMoveId} to somewhere before the {@link
+     * RBookListItem} whose unique ID is {@code targetItemId}.
+     * @param itemToMoveId Unique ID of item to move.
+     * @param targetItemId Unique ID of item which item whose unique ID is {@code itemToMoveId} will be moved before.
      */
-    public static void moveItemToBefore(String itemToMoveKey, String targetItemKey) {
+    public static void moveItemToBefore(long itemToMoveId, long targetItemId) {
         try (Realm realm = Realm.getDefaultInstance()) {
-            moveItemToBefore(realm.where(RBookListItem.class).equalTo("key", itemToMoveKey).findFirst(),
-                    realm.where(RBookListItem.class).equalTo("key", targetItemKey).findFirst());
+            moveItemToBefore(realm.where(RBookListItem.class).equalTo("uniqueId", itemToMoveId).findFirst(),
+                    realm.where(RBookListItem.class).equalTo("uniqueId", targetItemId).findFirst());
         }
     }
 
@@ -451,15 +451,15 @@ public class RBookList extends RealmObject {
     }
 
     /**
-     * Moves the {@link RBookListItem} whose key is {@code itemToMoveKey} to somewhere after the {@link RBookListItem}
-     * whose key is {@code targetItemKey}.
-     * @param itemToMoveKey Key of item to move.
-     * @param targetItemKey Key of item which item whose key is {@code itemToMove} will be moved after.
+     * Moves the {@link RBookListItem} whose unique ID is {@code itemToMoveId} to somewhere after the {@link
+     * RBookListItem} whose unique ID is {@code targetItemId}.
+     * @param itemToMoveId Unique ID of item to move.
+     * @param targetItemId Unique ID of item which item whose unique ID is {@code itemToMoveId} will be moved after.
      */
-    public static void moveItemToAfter(String itemToMoveKey, String targetItemKey) {
+    public static void moveItemToAfter(long itemToMoveId, long targetItemId) {
         try (Realm realm = Realm.getDefaultInstance()) {
-            moveItemToAfter(realm.where(RBookListItem.class).equalTo("key", itemToMoveKey).findFirst(),
-                    realm.where(RBookListItem.class).equalTo("key", targetItemKey).findFirst());
+            moveItemToAfter(realm.where(RBookListItem.class).equalTo("uniqueId", itemToMoveId).findFirst(),
+                    realm.where(RBookListItem.class).equalTo("uniqueId", targetItemId).findFirst());
         }
     }
 

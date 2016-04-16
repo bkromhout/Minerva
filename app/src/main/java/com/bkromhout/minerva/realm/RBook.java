@@ -3,7 +3,6 @@ package com.bkromhout.minerva.realm;
 import com.bkromhout.minerva.data.CoverHelper;
 import com.bkromhout.minerva.data.SuperBook;
 import com.bkromhout.minerva.enums.AdapterType;
-import com.bkromhout.minerva.prefs.DBPrefs;
 import com.bkromhout.minerva.util.BookUtils;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.ruqus.Hide;
@@ -161,7 +160,7 @@ public class RBook extends RealmObject {
         this.author = "DEF_AUTHOR";
         this.rating = 0;
         this.lastModifiedDate = Calendar.getInstance().getTime();
-        this.uniqueId = DBPrefs.get().getNextRBookUid();
+        this.uniqueId = UniqueIdFactory.getInstance().nextId(RBook.class);
     }
 
     /**
@@ -208,7 +207,7 @@ public class RBook extends RealmObject {
         this.lastReadDate = null;
         this.isInRecents = false;
         this.rating = 0;
-        this.uniqueId = DBPrefs.get().getNextRBookUid();
+        this.uniqueId = UniqueIdFactory.getInstance().nextId(RBook.class);
     }
 
     /**

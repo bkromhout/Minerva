@@ -94,7 +94,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Base
         if (viewHolder instanceof NormalCardVH) bindNormalBookCard((NormalCardVH) viewHolder, book);
 
         // If we have an RBookListItem, store its key on the CardView.
-        if (bookListItem != null) viewHolder.cardView.setTag(bookListItem.getKey());
+        if (bookListItem != null) viewHolder.cardView.setTag(bookListItem.getUniqueId());
     }
 
     /**
@@ -173,14 +173,13 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Base
     @Override
     public boolean onMove(RecyclerView.ViewHolder dragging, RecyclerView.ViewHolder target) {
         int draggingPos = dragging.getAdapterPosition(), targetPos = target.getAdapterPosition();
-        String draggingKey = (String) ((BaseCardVH) dragging).cardView.getTag();
-        String targetKey = (String) ((BaseCardVH) target).cardView.getTag();
-        if (draggingKey == null || targetKey == null) return false;
+        long draggingId = (long) ((BaseCardVH) dragging).cardView.getTag();
+        long targetId = (long) ((BaseCardVH) target).cardView.getTag();
 
         // Determine if we can swap the items or if we need to actually move the item being dragged.
-        if (Math.abs(draggingPos - targetPos) == 1) RBookList.swapItemPositions(draggingKey, targetKey); // Swapped.
-        else if (draggingPos > targetPos) RBookList.moveItemToBefore(draggingKey, targetKey); // Moved up multiple.
-        else RBookList.moveItemToAfter(draggingKey, targetKey); // Moved down multiple.
+        if (Math.abs(draggingPos - targetPos) == 1) RBookList.swapItemPositions(draggingId, targetId); // Swapped.
+        else if (draggingPos > targetPos) RBookList.moveItemToBefore(draggingId, targetId); // Moved up multiple.
+        else RBookList.moveItemToAfter(draggingId, targetId); // Moved down multiple.
 
         return true;
     }

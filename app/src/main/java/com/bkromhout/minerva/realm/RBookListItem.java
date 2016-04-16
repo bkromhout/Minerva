@@ -1,7 +1,6 @@
 package com.bkromhout.minerva.realm;
 
 import com.bkromhout.minerva.C;
-import com.bkromhout.minerva.prefs.DBPrefs;
 import com.bkromhout.ruqus.Hide;
 import com.bkromhout.ruqus.Queryable;
 import io.realm.Realm;
@@ -17,14 +16,12 @@ import java.util.List;
  */
 @Queryable(name = "Books in normal lists")
 public class RBookListItem extends RealmObject {
-    private static final String KEY_SEP = "##BLI_KEY##";
     /**
-     * Primary key, created by taking the name of the owning list and the relative path of the book file (both of which
-     * are themselves primary keys) and combining them like so: "[owning list's name]$$[book's relative path]".
+     * A unique long value.
      */
     @PrimaryKey
     @Hide
-    private String key;
+    private long uniqueId;
     /**
      * The {@link RBookList} which this item belongs to.
      */
@@ -43,12 +40,6 @@ public class RBookListItem extends RealmObject {
     @Index
     @Hide
     private Long pos;
-    /**
-     * A unique long value.
-     */
-    @Index
-    @Hide
-    private long uniqueId;
 
     /**
      * Create a default {@link RBookListItem}.
@@ -57,11 +48,10 @@ public class RBookListItem extends RealmObject {
      * RBookListItem} is created using this, it isn't being given an {@link RBook} to hold or a valid position.
      */
     public RBookListItem() {
-        this.key = "DEF_BOOK_LIST_ITEM_KEY";
+        this.uniqueId = UniqueIdFactory.getInstance().nextId(RBookListItem.class);
         this.owningList = null;
         this.book = null;
         this.pos = Long.MIN_VALUE;
-        this.uniqueId = DBPrefs.get().getNextRBookListItemUid();
     }
 
     /**
@@ -70,44 +60,28 @@ public class RBookListItem extends RealmObject {
      * @param book       {@link RBook} that this list item refers to.
      */
     public RBookListItem(RBookList owningList, RBook book) {
+        this.uniqueId = UniqueIdFactory.getInstance().nextId(RBookListItem.class);
         this.owningList = owningList;
         this.book = book;
-
-        // Key = "[owningList's name]$$[book's rel path]".
-        this.key = makeBookListItemKey(owningList.getName(), book.getRelPath());
 
         // Position is the next position number from owningList. Then we update the next position number.
         this.pos = owningList.getNextPos();
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.executeTransaction(tRealm -> owningList.setNextPos(this.pos + C.LIST_ITEM_GAP));
         }
-
-        this.uniqueId = DBPrefs.get().getNextRBookListItemUid();
     }
 
     /**
-     * Create a key for the given list name and relative book path.
-     * @param listName    List name.
-     * @param bookRelPath Relative book path.
-     * @return The resultant key.
+     * Checks whether two {@link RBookListItem}s are in the same {@link RBookList}.
+     * @param item1 An item.
+     * @param item2 Another item.
+     * @return True if items are from the same list, otherwise false.
      */
-    static String makeBookListItemKey(String listName, String bookRelPath) {
-        return String.format("%s" + KEY_SEP + "%s", listName, bookRelPath);
-    }
-
-    /**
-     * Checks whether two key strings are for items in the same {@link RBookList}.
-     * @param item1Key An item's key string.
-     * @param item2Key Another item's key string.
-     * @return True if keys are for items from the same list, otherwise false.
-     */
-    static boolean areFromSameList(String item1Key, String item2Key) {
+    static boolean areFromSameList(RBookListItem item1, RBookListItem item2) {
         // Check for nulls.
-        if (item1Key == null || item1Key.isEmpty() || item2Key == null || item2Key.isEmpty()) return false;
-        // Check that these are keys.
-        if (!item1Key.contains(KEY_SEP) || !item2Key.contains(KEY_SEP)) return false;
-        // Check keys.
-        return item1Key.split("\\Q" + KEY_SEP + "\\E")[0].equals(item2Key.split("\\Q" + KEY_SEP + "\\E")[0]);
+        if (item1 == null || item2 == null) return false;
+        // Check if from same list.
+        return item1.getOwningList().getName().equals(item2.getOwningList().getName());
     }
 
     /**
@@ -124,12 +98,12 @@ public class RBookListItem extends RealmObject {
         return books;
     }
 
-    public String getKey() {
-        return key;
+    public long getUniqueId() {
+        return uniqueId;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setUniqueId(long uniqueId) {
+        this.uniqueId = uniqueId;
     }
 
     public RBookList getOwningList() {
@@ -156,29 +130,17 @@ public class RBookListItem extends RealmObject {
         this.pos = pos;
     }
 
-    public long getUniqueId() {
-        return uniqueId;
-    }
-
-    public void setUniqueId(long uniqueId) {
-        this.uniqueId = uniqueId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof RBookListItem)) return false;
 
         RBookListItem that = (RBookListItem) o;
-
-        if (getUniqueId() != that.getUniqueId()) return false;
-        return getKey().equals(that.getKey());
+        return uniqueId == that.uniqueId;
     }
 
     @Override
     public int hashCode() {
-        int result = getKey().hashCode();
-        result = 31 * result + (int) (getUniqueId() ^ (getUniqueId() >>> 32));
-        return result;
+        return (int) (uniqueId ^ (uniqueId >>> 32));
     }
 }
