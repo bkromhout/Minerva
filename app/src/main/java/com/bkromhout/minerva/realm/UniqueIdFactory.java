@@ -1,6 +1,5 @@
 package com.bkromhout.minerva.realm;
 
-import android.util.Log;
 import io.realm.*;
 
 import java.util.HashMap;
@@ -50,22 +49,13 @@ public class UniqueIdFactory {
         for (final Class<? extends RealmObject> c : configuration.getRealmObjectClasses()) {
 
             final RealmObjectSchema objectSchema = realmSchema.get(c.getSimpleName());
-            Log.i(getClass().getSimpleName(), String.format("Schema for class %s : %s", c.getName(), objectSchema));
-
             if (objectSchema != null && objectSchema.hasPrimaryKey()) {
-                Number keyValue = null;
-
                 try {
-                    keyValue = realm.where(c).max(UNIQUE_ID_FIELD);
-                } catch (ArrayIndexOutOfBoundsException ex) {
-                    Log.d(getClass().getSimpleName(), String.format("Error while getting numeric unique ID %s for %s",
-                            UNIQUE_ID_FIELD, c.getName()), ex);
+                    Number keyValue = realm.where(c).max(UNIQUE_ID_FIELD);
+                    if (keyValue != null) ids.put(c, new AtomicLong(keyValue.longValue()));
+                } catch (ArrayIndexOutOfBoundsException ignored) {
+                    // Some classes don't have unique ids.
                 }
-
-                // Some classes don't have primary ids
-                if (keyValue == null) Log.w(getClass().getSimpleName(),
-                        String.format("Can't find numeric unique ID %s for %s.", UNIQUE_ID_FIELD, c.getName()));
-                else ids.put(c, new AtomicLong(keyValue.longValue()));
             }
         }
     }
@@ -78,7 +68,6 @@ public class UniqueIdFactory {
 
         AtomicLong l = ids.get(clazz);
         if (l == null) {
-            Log.i(getClass().getSimpleName(), "There was no unique ID for " + clazz.getName());
             // RealmConfiguration#getRealmObjectClasses() returns only classes with existing instances so we need to
             // store value for the first instance created.
             l = new AtomicLong(0);
