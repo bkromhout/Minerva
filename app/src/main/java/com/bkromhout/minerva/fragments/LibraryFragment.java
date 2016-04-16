@@ -404,7 +404,8 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
 
     @OnClick(R.id.open_full_importer)
     void onOpenImporterClick() {
-        // Open full importer.
+        // Open the full import activity.
+        Util.startAct(getActivity(), FullImportActivity.class, null);
     }
 
     /**
