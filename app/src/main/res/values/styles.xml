@@ -32,6 +32,7 @@
         <item name="cardElevation">@dimen/card_elevation</item>
     </style>
 
+    <!-- Book Info Activity -->
     <style name="BookInfoLabelText" parent="TextAppearance.AppCompat.Button">
         <item name="android:textSize">10sp</item>
         <item name="android:textColor">@color/colorAccent</item>
