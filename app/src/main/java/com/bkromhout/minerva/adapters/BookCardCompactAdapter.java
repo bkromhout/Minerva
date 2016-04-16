@@ -1,7 +1,9 @@
 package com.bkromhout.minerva.adapters;
 
 import android.app.Activity;
+import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
+import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.realm.RBook;
 import io.realm.RealmResults;
@@ -9,7 +11,7 @@ import io.realm.RealmResults;
 /**
  * Realm RecyclerView Adapter for compact book cards.
  */
-public class BookCardCompactAdapter extends BaseBookCardAdapter<RBook, BaseBookCardAdapter.CompactCardVH> {
+public class BookCardCompactAdapter extends BaseBookCardAdapter<RBook, RecyclerView.ViewHolder> {
     /**
      * Create a new {@link BookCardCompactAdapter}.
      * @param activity     Activity.
@@ -20,7 +22,10 @@ public class BookCardCompactAdapter extends BaseBookCardAdapter<RBook, BaseBookC
     }
 
     @Override
-    public CompactCardVH onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        return new CompactCardVH(inflater.inflate(R.layout.book_card_compact, viewGroup, false));
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        if (viewType == C.FOOTER_ITEM_TYPE)
+            return new RecyclerView.ViewHolder(inflater.inflate(R.layout.empty_footer, viewGroup, false)) {};
+        else
+            return new CompactCardVH(inflater.inflate(R.layout.book_card_compact, viewGroup, false));
     }
 }

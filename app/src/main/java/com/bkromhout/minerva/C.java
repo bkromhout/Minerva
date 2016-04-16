@@ -18,6 +18,14 @@ public final class C {
     public static final String IS_IN_ACTION_MODE = "is_in_action_mode";
     public static final String RUQ = "realm_user_query";
 
+    /* Request codes. */
+    public static final int RC_TAG_ACTIVITY = 1;
+    public static final int RC_QUERY_BUILDER_ACTIVITY = 2;
+
+    /**
+     * This is the item type integer we supply to a recycler view for our empty footer item.
+     */
+    public static final int FOOTER_ITEM_TYPE = -1;
     /**
      * The initial number of position numbers between each item in a book list.
      */
@@ -31,10 +39,6 @@ public final class C {
      */
     public static final ColorStateList CARD_BG_COLORS = ContextCompat.getColorStateList(Minerva.getAppCtx(),
             R.color.card_bg_color);
-
-    /* Request codes. */
-    public static final int RC_TAG_ACTIVITY = 1;
-    public static final int RC_QUERY_BUILDER_ACTIVITY = 2;
 
     /**
      * Get a string resource using the application context.

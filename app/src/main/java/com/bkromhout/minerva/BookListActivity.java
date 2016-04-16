@@ -30,7 +30,6 @@ import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
 import com.bkromhout.minerva.util.Dialogs;
-import com.bkromhout.minerva.util.EndPaddingDecorator;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.RealmRecyclerView;
 import com.bkromhout.ruqus.RealmUserQuery;
@@ -152,7 +151,6 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
             smartListRuq = savedInstanceState.getParcelable(C.RUQ);
 
         // Set up the UI.
-        recyclerView.getRecyclerView().addItemDecoration(new EndPaddingDecorator());
         updateUi();
 
         // If we have a saved instance state...

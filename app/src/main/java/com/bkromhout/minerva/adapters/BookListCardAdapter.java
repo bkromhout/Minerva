@@ -23,8 +23,13 @@ import org.greenrobot.eventbus.EventBus;
 
 /**
  * Realm RecyclerView Adapter for book list cards.
+ * <p>
+ * Unless there are no items, automatically adds an empty footer view to ensure that we'll never get into a situation
+ * where a FAB is obscuring the last item and we aren't able to scroll to make it hide itself (which would otherwise
+ * happen if the number/height of the items is just enough to fill the available space, but not enough to allow
+ * scrolling).
  */
-public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList, BookListCardAdapter.BookListCardVH> {
+public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList, RecyclerView.ViewHolder> {
     /**
      * Help our cards ripple.
      */
@@ -43,31 +48,48 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
     }
 
     @Override
-    public BookListCardVH onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        return new BookListCardVH(inflater.inflate(R.layout.book_list_card, viewGroup, false));
+    public int getItemCount() {
+        int superCount = super.getItemCount();
+        return superCount == 0 ? 0 : superCount + 1;
     }
 
     @Override
-    public void onBindViewHolder(BookListCardVH viewHolder, int position) {
+    public int getItemViewType(int position) {
+        if (super.getItemCount() != 0 && position == super.getItemCount()) return C.FOOTER_ITEM_TYPE;
+        else return super.getItemViewType(position);
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        if (viewType == C.FOOTER_ITEM_TYPE)
+            return new RecyclerView.ViewHolder(inflater.inflate(R.layout.empty_footer, viewGroup, false)) {};
+        else
+            return new BookListCardVH(inflater.inflate(R.layout.book_list_card, viewGroup, false));
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+        if (position == getItemCount() || !(viewHolder instanceof BookListCardVH)) return;
+        BookListCardVH vh = (BookListCardVH) viewHolder;
         final RBookList rBookList = realmResults.get(position);
 
         // Visually distinguish selected cards during multi-select mode.
-        viewHolder.cardView.setActivated(selectedPositions.contains(position));
+        vh.cardView.setActivated(selectedPositions.contains(position));
 
         // Set card click handler.
-        viewHolder.content.setOnClickListener(view ->
+        vh.content.setOnClickListener(view ->
                 EventBus.getDefault().post(new BookListCardClickEvent(BookListCardClickEvent.Type.NORMAL,
                         rBookList.getName(), position)));
 
         // Set card long click handler.
-        viewHolder.content.setOnLongClickListener(view -> {
+        vh.content.setOnLongClickListener(view -> {
             EventBus.getDefault().post(
                     new BookListCardClickEvent(BookListCardClickEvent.Type.LONG, rBookList.getName(), position));
             return true;
         });
 
         // Set up btnActions so that it displays a popup menu.
-        viewHolder.btnActions.setOnClickListener(view -> {
+        vh.btnActions.setOnClickListener(view -> {
             PopupMenu menu = new PopupMenu(view.getContext(), view);
             menu.getMenuInflater().inflate(!rBookList.isSmartList() ? R.menu.book_list_card_actions
                     : R.menu.book_list_smart_card_actions, menu.getMenu());
@@ -80,15 +102,15 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
         });
 
         // Set up btnSmartIcon so that it fires an event when pressed.
-        viewHolder.btnSmartIcon.setOnClickListener(view -> EventBus.getDefault().post(
+        vh.btnSmartIcon.setOnClickListener(view -> EventBus.getDefault().post(
                 new BookListCardClickEvent(BookListCardClickEvent.Type.ACTIONS, rBookList.getName(),
                         R.id.action_show_query, position)));
 
         // Set visibility of smart list icon.
-        viewHolder.btnSmartIcon.setVisibility(rBookList.isSmartList() ? View.VISIBLE : View.GONE);
+        vh.btnSmartIcon.setVisibility(rBookList.isSmartList() ? View.VISIBLE : View.GONE);
 
         // Set list name.
-        viewHolder.tvListName.setText(rBookList.getName());
+        vh.tvListName.setText(rBookList.getName());
     }
 
     /**

@@ -1,7 +1,9 @@
 package com.bkromhout.minerva.adapters;
 
 import android.app.Activity;
+import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
+import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookListItem;
@@ -10,7 +12,7 @@ import io.realm.RealmResults;
 /**
  * Essentially {@link BookCardNoCoverAdapter}, but has to unwrap {@link RBook}s from {@link RBookListItem}s.
  */
-public class BookItemCardNoCoverAdapter extends BaseBookCardAdapter<RBookListItem, BaseBookCardAdapter.NoCoverCardVH> {
+public class BookItemCardNoCoverAdapter extends BaseBookCardAdapter<RBookListItem, RecyclerView.ViewHolder> {
     /**
      * Create a new {@link BookItemCardNoCoverAdapter}.
      * @param activity     Activity.
@@ -21,7 +23,10 @@ public class BookItemCardNoCoverAdapter extends BaseBookCardAdapter<RBookListIte
     }
 
     @Override
-    public NoCoverCardVH onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        return new NoCoverCardVH(inflater.inflate(R.layout.book_card_no_cover, viewGroup, false));
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        if (viewType == C.FOOTER_ITEM_TYPE)
+            return new RecyclerView.ViewHolder(inflater.inflate(R.layout.empty_footer, viewGroup, false)) {};
+        else
+            return new NoCoverCardVH(inflater.inflate(R.layout.book_card_no_cover, viewGroup, false));
     }
 }

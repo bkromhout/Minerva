@@ -28,8 +28,13 @@ import org.greenrobot.eventbus.EventBus;
 
 /**
  * Base adapter for book card adapters to extend.
+ * <p>
+ * Unless there are no items, automatically adds an empty footer view to ensure that we'll never get into a situation
+ * where a FAB is obscuring the last item and we aren't able to scroll to make it hide itself (which would otherwise
+ * happen if the number/height of the items is just enough to fill the available space, but not enough to allow
+ * scrolling).
  */
-public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends BaseBookCardAdapter.BaseCardVH> extends
+public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends RecyclerView.ViewHolder> extends
         RealmBasedRecyclerViewAdapter<T, VH> {
     /**
      * Help our cards ripple.
@@ -51,7 +56,20 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Base
     }
 
     @Override
+    public int getItemCount() {
+        int superCount = super.getItemCount();
+        return superCount == 0 ? 0 : superCount + 1;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (super.getItemCount() != 0 && position == super.getItemCount()) return C.FOOTER_ITEM_TYPE;
+        else return super.getItemViewType(position);
+    }
+
+    @Override
     public long getItemId(int position) {
+        if (position == super.getItemCount()) return Long.MIN_VALUE;
         T item = realmResults.get(position);
         if (item instanceof RBook) return ((RBook) item).getUniqueId();
         else if (item instanceof RBookListItem) return ((RBookListItem) item).getUniqueId();
@@ -59,42 +77,44 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Base
     }
 
     @Override
-    public void onBindViewHolder(BaseCardVH viewHolder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+        if (position == getItemCount() || !(viewHolder instanceof BaseCardVH)) return;
+        BaseCardVH vh = (BaseCardVH) viewHolder;
         // Get/check variables needed to help bind.
         RBookListItem bookListItem = getBookListItemFromT(realmResults.get(position));
         RBook book = bookListItem != null ? bookListItem.getBook() : getBookFromT(realmResults.get(position));
         if (book == null || rippleFgListener == null) throw new IllegalArgumentException();
 
         // Visually distinguish selected cards during multi-select mode.
-        viewHolder.cardView.setActivated(selectedPositions.contains(position));
+        vh.cardView.setActivated(selectedPositions.contains(position));
 
         // Set card click handler.
-        viewHolder.content.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
+        vh.content.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
                 BookCardClickEvent.Type.NORMAL, book.getRelPath(), position)));
 
         // Set card long click handler.
-        viewHolder.content.setOnLongClickListener(v -> {
-            if (mayStartDrags) startDragListener.startDragging(viewHolder);
+        vh.content.setOnLongClickListener(v -> {
+            if (mayStartDrags) startDragListener.startDragging(vh);
             else EventBus.getDefault().post(new BookCardClickEvent(BookCardClickEvent.Type.LONG, book.getRelPath(),
                     position));
             return true;
         });
 
         // Set info button handler.
-        viewHolder.btnInfo.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
+        vh.btnInfo.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
                 BookCardClickEvent.Type.INFO, book.getRelPath(), position)));
 
         // Fill in data.
-        viewHolder.tvTitle.setText(book.getTitle());
-        viewHolder.tvAuthor.setText(book.getAuthor());
+        vh.tvTitle.setText(book.getTitle());
+        vh.tvAuthor.setText(book.getAuthor());
 
         // Do bindings for the rest of the view holder based on its real type.
-        if (viewHolder instanceof CompactCardVH) bindCompactBookCard((CompactCardVH) viewHolder, book);
-        if (viewHolder instanceof NoCoverCardVH) bindNoCoverBookCard((NoCoverCardVH) viewHolder, position, book);
-        if (viewHolder instanceof NormalCardVH) bindNormalBookCard((NormalCardVH) viewHolder, book);
+        if (vh instanceof CompactCardVH) bindCompactBookCard((CompactCardVH) vh, book);
+        if (vh instanceof NoCoverCardVH) bindNoCoverBookCard((NoCoverCardVH) vh, position, book);
+        if (vh instanceof NormalCardVH) bindNormalBookCard((NormalCardVH) vh, book);
 
         // If we have an RBookListItem, store its key on the CardView.
-        if (bookListItem != null) viewHolder.cardView.setTag(bookListItem.getUniqueId());
+        if (bookListItem != null) vh.cardView.setTag(bookListItem.getUniqueId());
     }
 
     /**

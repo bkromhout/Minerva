@@ -21,7 +21,6 @@ import com.bkromhout.minerva.events.BookListCardClickEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.util.Dialogs;
-import com.bkromhout.minerva.util.EndPaddingDecorator;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.RealmRecyclerView;
 import com.bkromhout.ruqus.RealmUserQuery;
@@ -97,7 +96,6 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback {
         // Get Realm.
         realm = Realm.getDefaultInstance();
 
-        recyclerView.getRecyclerView().addItemDecoration(new EndPaddingDecorator());
         initUi();
 
         // If we have a saved instance state, check to see if we were in action mode.
