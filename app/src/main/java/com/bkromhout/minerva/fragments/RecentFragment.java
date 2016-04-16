@@ -427,7 +427,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
         recyclerView.setAdapter(adapter);
 
         // Scroll back to the same position.
-        if (currLastVisPos != RecyclerView.NO_POSITION) recyclerView.scrollToPosition(currLastVisPos);
+        if (currLastVisPos != RecyclerView.NO_POSITION) recyclerView.getRecyclerView().scrollToPosition(currLastVisPos);
     }
 
     /**
