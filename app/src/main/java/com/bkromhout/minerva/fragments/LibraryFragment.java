@@ -97,10 +97,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
     private RealmChangeListener emptyListener = new RealmChangeListener() {
         @Override
         public void onChange() {
-            boolean isEmpty = books.isEmpty();
-            recyclerView.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
-            fabViewOpts.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
-            emptyLibraryView.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+            toggleEmptyState(books.isEmpty());
         }
     };
 
@@ -169,6 +166,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
         books = realm.where(RBook.class)
                      .findAll();
         books.addChangeListener(emptyListener);
+        toggleEmptyState(books.isEmpty());
         sortRealmResults();
         adapter = makeAdapter();
         recyclerView.setAdapter(adapter);
@@ -510,6 +508,17 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
 
         // Scroll back to the same position.
         if (currLastVisPos != RecyclerView.NO_POSITION) recyclerView.getRecyclerView().scrollToPosition(currLastVisPos);
+    }
+
+    /**
+     * Change visibility of UI elements so that the empty view is shown if {@code showEmptyView} is true, or the
+     * RecyclerView and FAB are shown if {@code showEmptyView} is false.
+     * @param showEmptyView Whether to show the empty view or not.
+     */
+    private void toggleEmptyState(boolean showEmptyView) {
+        recyclerView.setVisibility(showEmptyView ? View.GONE : View.VISIBLE);
+        fabViewOpts.setVisibility(showEmptyView ? View.GONE : View.VISIBLE);
+        emptyLibraryView.setVisibility(showEmptyView ? View.VISIBLE : View.GONE);
     }
 
     @Override
