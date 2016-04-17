@@ -114,7 +114,7 @@ public class RBook extends RealmObject {
      * Hash of file from the last time it was imported.
      */
     @Hide
-    private String hash;
+    private byte[] hash;
     /**
      * Date that the data for this book was last modified.
      */
@@ -407,11 +407,11 @@ public class RBook extends RealmObject {
         this.hasCoverImage = hasCoverImage;
     }
 
-    public String getHash() {
+    public byte[] getHash() {
         return hash;
     }
 
-    public void setHash(String hash) {
+    public void setHash(byte[] hash) {
         this.hash = hash;
     }
 

@@ -249,7 +249,7 @@ public class ReImporter {
     private SuperBook convertFileToSuperBook(File file) {
         String relPath = file.getAbsolutePath().replace(currDir.getAbsolutePath(), "");
         try {
-            return new SuperBook(Util.readEpubFile(file), relPath);
+            return Util.readEpubFile(file, relPath);
         } catch (IllegalArgumentException e) {
             errors.append(C.getStr(R.string.ril_err_reading_file, file.getAbsolutePath()));
             return null;

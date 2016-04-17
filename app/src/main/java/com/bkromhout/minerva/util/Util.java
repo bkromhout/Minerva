@@ -18,11 +18,16 @@ import android.view.Menu;
 import com.bkromhout.minerva.MainActivity;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
+import com.bkromhout.minerva.data.SuperBook;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
+import com.google.common.hash.Hashing;
+import com.google.common.hash.HashingInputStream;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.epub.EpubReader;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -145,15 +150,16 @@ public class Util {
     }
 
     /**
-     * Get an ePub Book object from a file object.
+     * Get a {@link SuperBook} object from a file object.
      * @param file The file to try and read as an ePub
      * @return Book object, or null if there were issues.
      */
-    public static Book readEpubFile(File file) {
+    public static SuperBook readEpubFile(File file, String relPath) {
         if (file == null || !file.exists() || !file.isFile()) return null;
 
-        try (InputStream in = new BufferedInputStream(new FileInputStream(file))) {
-            return new EpubReader().readEpub(in);
+        try (HashingInputStream in = new HashingInputStream(Hashing.sha256(), new FileInputStream(file))) {
+            Book book = new EpubReader().readEpub(in);
+            return new SuperBook(book, relPath, in.hash().asBytes());
         } catch (IOException e) {
             e.printStackTrace();
             return null;

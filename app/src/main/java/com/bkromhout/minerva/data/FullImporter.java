@@ -262,7 +262,7 @@ public class FullImporter {
     private SuperBook convertFileToSuperBook(File file) {
         String relPath = file.getAbsolutePath().replace(currDir.getAbsolutePath(), "");
         try {
-            return new SuperBook(Util.readEpubFile(file), relPath);
+            return Util.readEpubFile(file, relPath);
         } catch (IllegalArgumentException e) {
             logSubject.onNext(C.getStr(R.string.fil_err_processing_file, e.getMessage()));
             errorSubject.onNext(C.getStr(R.string.fil_err_processing_file, e.getMessage()));
