@@ -57,6 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/empty_library_prompt"
                 android:layout_centerHorizontal="true"
+                android:backgroundTint="@color/colorAccent"
                 android:text="@string/action_open_importer"/>
     </android.support.percent.PercentRelativeLayout>
 </android.support.design.widget.CoordinatorLayout>
