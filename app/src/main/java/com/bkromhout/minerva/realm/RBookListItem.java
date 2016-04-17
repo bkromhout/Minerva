@@ -81,7 +81,7 @@ public class RBookListItem extends RealmObject {
         // Check for nulls.
         if (item1 == null || item2 == null) return false;
         // Check if from same list.
-        return item1.getOwningList().getName().equals(item2.getOwningList().getName());
+        return item1.getOwningList().equals(item2.getOwningList());
     }
 
     /**

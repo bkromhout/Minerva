@@ -596,6 +596,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
      */
     @Subscribe
     public void onCardClicked(BookCardClickEvent event) {
+        if (isReorderMode) return;
         // Get the associated RBook.
         RBook book;
         if (adapterType == AdapterType.BOOK)
