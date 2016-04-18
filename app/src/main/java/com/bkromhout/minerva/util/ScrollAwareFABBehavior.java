@@ -10,6 +10,7 @@ import android.view.View;
 /**
  * Defines a behavior which has a FAB hide itself whilst a view is being scrolled.
  */
+@SuppressWarnings("unused")
 public class ScrollAwareFABBehavior extends FloatingActionButton.Behavior {
     public ScrollAwareFABBehavior(Context context, AttributeSet attrs) {
         super();

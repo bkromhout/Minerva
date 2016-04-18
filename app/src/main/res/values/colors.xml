@@ -7,9 +7,6 @@
 
     <color name="redA200">#FF5252</color>
 
-    <color name="yellow300">#FFF176</color>
-    <color name="yellow500">#FFEB3B</color>
-
     <color name="grey200">#EEEEEE</color>
     <color name="grey300">#E0E0E0</color>
     <color name="grey400">#BDBDBD</color>
@@ -19,11 +16,17 @@
     <color name="grey800">#424242</color>
     <color name="grey900">#212121</color>
 
+    <!-- Other colors -->
+    <color name="greyDE">#DEDEDE</color>
+    <color name="grey66">#666666</color>
+    <color name="grey30">#303030</color>
+
     <!-- Prevalent App Colors -->
     <color name="colorPrimary">@color/green500</color>
     <color name="colorPrimaryDark">@color/green700</color>
     <color name="colorPrimaryLight">@color/green100</color>
     <color name="colorAccent">@color/redA200</color>
+
     <color name="textColorPrimary">@android:color/white</color>
     <color name="textColorSecondary">@color/grey500</color>
     <color name="textColorDialogContent">#C7C7C7</color>
@@ -34,11 +37,11 @@
     <color name="selectedCard">@color/grey600</color>
 
     <!-- Override AboutLibraries to use dark colors. -->
-    <color name="about_libraries_window_background">#303030</color>
-    <color name="about_libraries_card">#666666</color>
-    <color name="about_libraries_title_openSource">#ffffffff</color>
-    <color name="about_libraries_text_openSource">#DEDEDE</color>
-    <color name="about_libraries_special_button_openSource">#ffffffff</color>
-    <color name="about_libraries_dividerDark_openSource">#303030</color>
-    <color name="about_libraries_dividerLight_openSource">#303030</color>
+    <color name="about_libraries_window_background">@color/grey30</color>
+    <color name="about_libraries_card">@color/grey66</color>
+    <color name="about_libraries_title_openSource">@android:color/white</color>
+    <color name="about_libraries_text_openSource">@color/greyDE</color>
+    <color name="about_libraries_special_button_openSource">@android:color/white</color>
+    <color name="about_libraries_dividerDark_openSource">@color/grey30</color>
+    <color name="about_libraries_dividerLight_openSource">@color/grey30</color>
 </resources>
