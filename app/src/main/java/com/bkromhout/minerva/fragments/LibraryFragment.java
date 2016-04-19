@@ -48,6 +48,9 @@ import java.util.List;
 
 /**
  * Fragment in charge of showing the user's whole library.
+ * <p>
+ * TODO find a way to have the FAB hide itself when we're actively touching the fast scroller's handle... might want to
+ * add a callback for that sort of change in the library, or we may be able to do it in the FAB's behavior class.
  */
 public class LibraryFragment extends Fragment implements ActionMode.Callback, ReImporter.IReImportListener,
         BubbleTextDelegate {
@@ -94,8 +97,6 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
     /**
      * Realm change listener which takes care of toggling view visibility when {@link #books} changes from empty to
      * non-empty and vice versa.
-     * <p>
-     * TODO Use RRVL's built-in empty view feature!
      */
     private RealmChangeListener emptyListener = new RealmChangeListener() {
         @Override
