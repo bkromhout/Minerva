@@ -12,13 +12,14 @@ import io.realm.RealmResults;
  * Realm RecyclerView Adapter for book cards with no covers.
  */
 public class BookCardNoCoverAdapter extends BaseBookCardAdapter<RBook, RecyclerView.ViewHolder> {
-    /**
-     * Create a new {@link BookCardNoCoverAdapter}.
-     * @param activity     Activity.
-     * @param realmResults Results of a Realm query to display.
-     */
+
     public BookCardNoCoverAdapter(Activity activity, RealmResults<RBook> realmResults) {
-        super(activity, realmResults);
+        this(activity, realmResults, null);
+    }
+
+    public BookCardNoCoverAdapter(Activity activity, RealmResults<RBook> realmResults,
+                                  BubbleTextDelegate bubbleTextDelegate) {
+        super(activity, realmResults, bubbleTextDelegate);
     }
 
     @Override

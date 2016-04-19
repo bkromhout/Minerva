@@ -12,13 +12,14 @@ import io.realm.RealmResults;
  * Realm RecyclerView Adapter for compact book cards.
  */
 public class BookCardCompactAdapter extends BaseBookCardAdapter<RBook, RecyclerView.ViewHolder> {
-    /**
-     * Create a new {@link BookCardCompactAdapter}.
-     * @param activity     Activity.
-     * @param realmResults Results of a Realm query to display.
-     */
+
     public BookCardCompactAdapter(Activity activity, RealmResults<RBook> realmResults) {
-        super(activity, realmResults);
+        this(activity, realmResults, null);
+    }
+
+    public BookCardCompactAdapter(Activity activity, RealmResults<RBook> realmResults,
+                                  BubbleTextDelegate bubbleTextDelegate) {
+        super(activity, realmResults, bubbleTextDelegate);
     }
 
     @Override

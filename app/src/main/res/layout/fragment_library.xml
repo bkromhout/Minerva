@@ -10,7 +10,8 @@
             android:id="@+id/recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            style="@style/RealmRVFastScrollWithBubble"/>
 
     <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"

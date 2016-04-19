@@ -13,13 +13,14 @@ import io.realm.RealmResults;
  * Essentially {@link BookCardCompactAdapter}, but has to unwrap {@link RBook}s from {@link RBookListItem}s.
  */
 public class BookItemCardCompactAdapter extends BaseBookCardAdapter<RBookListItem, RecyclerView.ViewHolder> {
-    /**
-     * Create a new {@link BookItemCardCompactAdapter}.
-     * @param activity     Activity.
-     * @param realmResults Results of a Realm query to display.
-     */
+
     public BookItemCardCompactAdapter(Activity activity, RealmResults<RBookListItem> realmResults) {
-        super(activity, realmResults);
+        this(activity, realmResults, null);
+    }
+
+    public BookItemCardCompactAdapter(Activity activity, RealmResults<RBookListItem> realmResults,
+                                      BubbleTextDelegate bubbleTextDelegate) {
+        super(activity, realmResults, bubbleTextDelegate);
     }
 
     @Override

@@ -23,6 +23,7 @@ import com.bkromhout.minerva.*;
 import com.bkromhout.minerva.adapters.BookCardAdapter;
 import com.bkromhout.minerva.adapters.BookCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
+import com.bkromhout.minerva.adapters.BubbleTextDelegate;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.ReImporter;
 import com.bkromhout.minerva.enums.BookCardType;
@@ -48,7 +49,8 @@ import java.util.List;
 /**
  * Fragment in charge of showing the user's whole library.
  */
-public class LibraryFragment extends Fragment implements ActionMode.Callback, ReImporter.IReImportListener {
+public class LibraryFragment extends Fragment implements ActionMode.Callback, ReImporter.IReImportListener,
+        BubbleTextDelegate {
     // Views.
     @Bind(R.id.fab)
     FloatingActionButton fabViewOpts;
@@ -469,6 +471,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
      */
     private void sortRealmResults() {
         if (realm == null || realm.isClosed() || books == null || !books.isValid()) return;
+        recyclerView.setUseFastScrollBubble(sortType != SortType.TIME_ADDED);
         books.sort(sortType.getRealmField(), sortDir.getRealmSort());
     }
 
@@ -484,11 +487,11 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
         // Create a new adapter based on the card type.
         switch (cardType) {
             case NORMAL:
-                return new BookCardAdapter(getActivity(), books);
+                return new BookCardAdapter(getActivity(), books, this);
             case NO_COVER:
-                return new BookCardNoCoverAdapter(getActivity(), books);
+                return new BookCardNoCoverAdapter(getActivity(), books, this);
             case COMPACT:
-                return new BookCardCompactAdapter(getActivity(), books);
+                return new BookCardCompactAdapter(getActivity(), books, this);
             default:
                 return null;
         }
@@ -500,7 +503,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
      */
     private void changeCardType() {
         // Store the current last visible item position so that we can scroll back to it after switching adapters.
-        int currLastVisPos = recyclerView.getLayoutManger().findLastCompletelyVisibleItemPosition();
+        int currLastVisPos = recyclerView.getLayoutManager().findLastCompletelyVisibleItemPosition();
 
         // Swap the adapter
         if (adapter != null) adapter.close();
@@ -526,5 +529,20 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
     public Activity getCtx() {
         // Provide our activity context to the ReImporter so that it can draw its progress dialog.
         return getActivity();
+    }
+
+    @Override
+    public String getBubbleText(int position) {
+        if (position < 0 || position >= books.size()) return null;
+        switch (sortType) {
+            case TITLE:
+                return String.valueOf(Character.toUpperCase(books.get(position).getTitle().charAt(0)));
+            case AUTHOR:
+                return String.valueOf(Character.toUpperCase(books.get(position).getAuthor().charAt(0)));
+            case RATING:
+                return String.valueOf(books.get(position).getRating());
+            default:
+                return null;
+        }
     }
 }

@@ -419,7 +419,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
      */
     private void changeCardType() {
         // Store the current last visible item position so that we can scroll back to it after switching adapters.
-        int currLastVisPos = recyclerView.getLayoutManger().findLastCompletelyVisibleItemPosition();
+        int currLastVisPos = recyclerView.getLayoutManager().findLastCompletelyVisibleItemPosition();
 
         // Swap the adapter
         if (adapter != null) adapter.close();

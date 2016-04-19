@@ -35,6 +35,10 @@
     <color name="textColorSecondaryInverse">@color/grey500</color>
 
     <color name="selectedCard">@color/grey600</color>
+    
+    <!-- Override realm-recyclerview-lite colors. -->
+    <color name="rrvl_handle_active_color">@color/colorAccent</color>
+    <color name="rrvl_bubble_color">@color/colorAccent</color>
 
     <!-- Override AboutLibraries to use dark colors. -->
     <color name="about_libraries_window_background">@color/grey30</color>

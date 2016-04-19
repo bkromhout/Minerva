@@ -32,6 +32,17 @@
         <item name="cardElevation">@dimen/card_elevation</item>
     </style>
 
+    <!-- RealmRecyclerView styles -->
+    <style name="RealmRVFastScroll">
+        <item name="rrvlFastScrollEnabled">true</item>
+        <item name="rrvlAutoHideFastScrollHandle">true</item>
+        <item name="rrvlHandleAutoHideDelay">1000</item>
+    </style>
+
+    <style name="RealmRVFastScrollWithBubble" parent="RealmRVFastScroll">
+        <item name="rrvlUseFastScrollBubble">true</item>
+    </style>
+
     <!-- Book Info Activity -->
     <style name="BookInfoLabelText" parent="TextAppearance.AppCompat.Button">
         <item name="android:textSize">10sp</item>
