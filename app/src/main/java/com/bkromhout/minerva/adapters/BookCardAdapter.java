@@ -14,11 +14,7 @@ import io.realm.RealmResults;
 public class BookCardAdapter extends BaseBookCardAdapter<RBook, RecyclerView.ViewHolder> {
 
     public BookCardAdapter(Activity activity, RealmResults<RBook> realmResults) {
-        this(activity, realmResults, null);
-    }
-
-    public BookCardAdapter(Activity activity, RealmResults<RBook> realmResults, BubbleTextDelegate bubbleTextDelegate) {
-        super(activity, realmResults, bubbleTextDelegate);
+        super(activity, realmResults);
     }
 
     @Override

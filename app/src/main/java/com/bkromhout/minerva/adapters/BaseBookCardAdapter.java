@@ -48,15 +48,10 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
      * Whether or not this adapter may allow item drags to start.
      */
     boolean mayStartDrags = false;
-    /**
-     * The delegate which will provide us with bubble text.
-     */
-    BubbleTextDelegate bubbleTextDelegate;
 
-    public BaseBookCardAdapter(Activity activity, RealmResults<T> realmResults, BubbleTextDelegate bubbleTextDelegate) {
+    public BaseBookCardAdapter(Activity activity, RealmResults<T> realmResults) {
         super(activity, realmResults, true, true, null);
         this.activity = activity;
-        this.bubbleTextDelegate = bubbleTextDelegate;
         setHasStableIds(true);
     }
 
@@ -99,7 +94,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
 
         // Set card long click handler.
         vh.content.setOnLongClickListener(v -> {
-            if (mayStartDrags) startDragListener.startDragging(vh);
+            if (mayStartDrags) startDragging(vh);
             else EventBus.getDefault().post(new BookCardClickEvent(BookCardClickEvent.Type.LONG, book.getRelPath(),
                     position));
             return true;
@@ -193,11 +188,6 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
      */
     public void setDragMode(boolean mayStartDrags) {
         this.mayStartDrags = mayStartDrags;
-    }
-
-    @Override
-    public String getFastScrollBubbleText(int position) {
-        return bubbleTextDelegate.getBubbleText(position);
     }
 
     @Override

@@ -14,12 +14,7 @@ import io.realm.RealmResults;
 public class BookCardNoCoverAdapter extends BaseBookCardAdapter<RBook, RecyclerView.ViewHolder> {
 
     public BookCardNoCoverAdapter(Activity activity, RealmResults<RBook> realmResults) {
-        this(activity, realmResults, null);
-    }
-
-    public BookCardNoCoverAdapter(Activity activity, RealmResults<RBook> realmResults,
-                                  BubbleTextDelegate bubbleTextDelegate) {
-        super(activity, realmResults, bubbleTextDelegate);
+        super(activity, realmResults);
     }
 
     @Override

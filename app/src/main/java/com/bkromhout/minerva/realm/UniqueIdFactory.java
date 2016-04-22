@@ -24,7 +24,7 @@ public class UniqueIdFactory {
     /**
      * Maximum unique ID values.
      */
-    private Map<Class<? extends RealmObject>, AtomicLong> ids;
+    private Map<Class<? extends RealmModel>, AtomicLong> ids;
 
     /**
      * Get the singleton instance.
@@ -46,7 +46,7 @@ public class UniqueIdFactory {
 
         // Using RealmConfiguration#getRealmObjectClasses because RealmSchema#getAll() returns RealmObjectSchema with
         // simple class names only.
-        for (final Class<? extends RealmObject> c : configuration.getRealmObjectClasses()) {
+        for (final Class<? extends RealmModel> c : configuration.getRealmObjectClasses()) {
 
             final RealmObjectSchema objectSchema = realmSchema.get(c.getSimpleName());
             if (objectSchema != null && objectSchema.hasPrimaryKey()) {
@@ -63,7 +63,7 @@ public class UniqueIdFactory {
     /**
      * Automatically create next unique ID for a given class.
      */
-    public synchronized long nextId(final Class<? extends RealmObject> clazz) {
+    public synchronized long nextId(final Class<? extends RealmModel> clazz) {
         if (ids == null) throw new IllegalStateException("Not initialized yet");
 
         AtomicLong l = ids.get(clazz);

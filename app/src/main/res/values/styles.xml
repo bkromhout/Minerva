@@ -34,13 +34,13 @@
 
     <!-- RealmRecyclerView styles -->
     <style name="RealmRVFastScroll">
-        <item name="rrvlFastScrollEnabled">true</item>
-        <item name="rrvlAutoHideFastScrollHandle">true</item>
-        <item name="rrvlHandleAutoHideDelay">1000</item>
+        <item name="fastScroll">true</item>
+        <item name="autoHideFastScrollHandle">true</item>
+        <item name="handleAutoHideDelay">1000</item>
     </style>
 
     <style name="RealmRVFastScrollWithBubble" parent="RealmRVFastScroll">
-        <item name="rrvlUseFastScrollBubble">true</item>
+        <item name="useFastScrollBubble">true</item>
     </style>
 
     <!-- Book Info Activity -->

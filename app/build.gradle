@@ -70,7 +70,7 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.commit451:PhotoView:1.2.5'
     compile ('com.github.greenfrvr:hashtag-view:1.2.1@aar') //AL
-    compile ('com.bkromhout:realm-recyclerview-lite:1.8.0@aar') {
+    compile ('com.bkromhout:realm-recyclerview-lite:1.9.2@aar') {
         transitive = true
     }
     apt 'com.bkromhout.ruqus:ruqus-compiler:1.0.6'

@@ -23,7 +23,6 @@ import com.bkromhout.minerva.*;
 import com.bkromhout.minerva.adapters.BookCardAdapter;
 import com.bkromhout.minerva.adapters.BookCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
-import com.bkromhout.minerva.adapters.BubbleTextDelegate;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.ReImporter;
 import com.bkromhout.minerva.enums.BookCardType;
@@ -36,6 +35,7 @@ import com.bkromhout.minerva.prefs.LibraryPrefs;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
+import com.bkromhout.rrvl.BubbleTextProvider;
 import com.bkromhout.rrvl.RealmRecyclerView;
 import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
@@ -53,7 +53,7 @@ import java.util.List;
  * add a callback for that sort of change in the library, or we may be able to do it in the FAB's behavior class.
  */
 public class LibraryFragment extends Fragment implements ActionMode.Callback, ReImporter.IReImportListener,
-        BubbleTextDelegate {
+        BubbleTextProvider {
     // Views.
     @Bind(R.id.fab)
     FloatingActionButton fabViewOpts;
@@ -488,11 +488,11 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
         // Create a new adapter based on the card type.
         switch (cardType) {
             case NORMAL:
-                return new BookCardAdapter(getActivity(), books, this);
+                return new BookCardAdapter(getActivity(), books);
             case NO_COVER:
-                return new BookCardNoCoverAdapter(getActivity(), books, this);
+                return new BookCardNoCoverAdapter(getActivity(), books);
             case COMPACT:
-                return new BookCardCompactAdapter(getActivity(), books, this);
+                return new BookCardCompactAdapter(getActivity(), books);
             default:
                 return null;
         }
@@ -533,7 +533,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
     }
 
     @Override
-    public String getBubbleText(int position) {
+    public String getFastScrollBubbleText(int position) {
         if (position < 0 || position >= books.size()) return null;
         switch (sortType) {
             case TITLE:
