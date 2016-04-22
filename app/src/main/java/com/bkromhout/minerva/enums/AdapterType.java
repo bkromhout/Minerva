@@ -3,6 +3,7 @@ package com.bkromhout.minerva.enums;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
+import io.realm.RealmModel;
 import io.realm.RealmObject;
 
 /**
@@ -19,7 +20,7 @@ public enum AdapterType {
         this.associatedClass = associatedClass.getCanonicalName();
     }
 
-    public static AdapterType fromRealmClass(Class<? extends RealmObject> clazz) {
+    public static AdapterType fromRealmClass(Class<? extends RealmModel> clazz) {
         String clazzName = clazz.getCanonicalName();
         for (AdapterType adapterType : AdapterType.values())
             if (adapterType.associatedClass.equals(clazzName)) return adapterType;

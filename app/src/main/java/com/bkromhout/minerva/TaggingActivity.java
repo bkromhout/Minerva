@@ -424,7 +424,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
                                          .where(RTag.class)
                                          .equalTo("name", event.getName())
                                          .findFirst()
-                                         .removeFromRealm());
+                                         .deleteFromRealm());
 
                             // Remove tag name from the lists (if present).
                             TaggingHelper th = TaggingHelper.get();

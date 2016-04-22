@@ -13,6 +13,9 @@ import org.greenrobot.eventbus.EventBus;
  * Custom Application class.
  */
 public class Minerva extends Application {
+    private static final String REALM_FILE_NAME = "minerva.realm";
+    private static final long REALM_SCHEMA_VERSION = 0;
+
     /**
      * Static instance to (CAREFULLY) allow getting Application Context anywhere.
      */
@@ -41,11 +44,10 @@ public class Minerva extends Application {
      * Set up Realm's default configuration.
      */
     private void setupRealm() {
-        RealmConfiguration config = new RealmConfiguration.Builder(this)
-                .name("minerva.realm")
-                .schemaVersion(0)
-                .build();
-        Realm.setDefaultConfiguration(config);
+        Realm.setDefaultConfiguration(new RealmConfiguration.Builder(this)
+                .name(REALM_FILE_NAME)
+                .schemaVersion(REALM_SCHEMA_VERSION)
+                .build());
     }
 
     /**

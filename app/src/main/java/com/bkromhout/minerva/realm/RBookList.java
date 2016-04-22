@@ -7,6 +7,7 @@ import com.google.common.math.LongMath;
 import io.realm.*;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
 import rx.Observable;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class RBookList extends RealmObject {
      * Book list name. This must be unique!
      */
     @PrimaryKey
+    @Required
     private String name;
     /**
      * TODO This is a work-around until Realm can do case-insensitive sorting.
@@ -174,7 +176,7 @@ public class RBookList extends RealmObject {
             realm.executeTransaction(tRealm -> {
                 // Delete the book list items.
                 for (RBook book : books)
-                    listItems.where().equalTo("book.relPath", book.getRelPath()).findFirst().removeFromRealm();
+                    listItems.where().equalTo("book.relPath", book.getRelPath()).findFirst().deleteFromRealm();
             });
         }
     }

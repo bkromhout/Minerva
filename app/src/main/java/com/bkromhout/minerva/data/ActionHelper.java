@@ -150,14 +150,17 @@ public class ActionHelper {
             realm.executeTransaction(tRealm -> {
                 for (RBook book : books) {
                     // Delete any RBookListItems which may exist for these books.
-                    tRealm.where(RBookListItem.class).contains("book.relPath", book.getRelPath()).findAll().clear();
+                    tRealm.where(RBookListItem.class)
+                          .contains("book.relPath", book.getRelPath())
+                          .findAll()
+                          .deleteAllFromRealm();
                     // Get the relative path of the book, in case we wish to delete the real files too.
                     String relPath = book.getRelPath();
                     relPaths.add(relPath);
                     // Be sure to delete the cover file, if we have one.
                     if (book.hasCoverImage()) CoverHelper.get().deleteCoverImage(relPath);
                     // Delete the actual RBook from Realm.
-                    book.removeFromRealm();
+                    book.deleteFromRealm();
                 }
             });
         }
@@ -250,7 +253,7 @@ public class ActionHelper {
         // First, delete the list items (unless this is a smart list).
         if (!list.isSmartList()) list.getListItems().deleteAllFromRealm();
         // Then, delete the book list.
-        list.removeFromRealm();
+        list.deleteFromRealm();
     }
 
     /**

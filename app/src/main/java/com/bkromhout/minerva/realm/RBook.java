@@ -36,6 +36,7 @@ public class RBook extends RealmObject {
      * Path to book file (relative to library directory).
      */
     @PrimaryKey
+    @Required
     @VisibleAs(string = "Relative Path")
     private String relPath;
     /**
@@ -194,7 +195,7 @@ public class RBook extends RealmObject {
             try {
                 // Get the cover image and store it.
                 CoverHelper.get().saveStreamAsCoverImage(book.getCoverImage().getInputStream(), relPath);
-                this.hasCoverImage = true;
+                hasCoverImage = true;
             } catch (IOException e) {
                 e.printStackTrace();
                 hasCoverImage = false;
