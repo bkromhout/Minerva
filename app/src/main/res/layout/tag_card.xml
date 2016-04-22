@@ -36,6 +36,7 @@
             android:backgroundTint="@android:color/transparent"
             android:tint="@color/textColorPrimary"
             android:src="@drawable/ic_rename"
+            android:contentDescription="@string/title_rename_tag"
             android:visibility="gone"
             tools:visibility="visible"/>
 
@@ -48,6 +49,7 @@
             android:backgroundTint="@android:color/transparent"
             android:tint="@color/textColorPrimary"
             android:src="@drawable/ic_delete"
+            android:contentDescription="@string/title_delete_tag"
             android:visibility="gone"
             tools:visibility="visible"/>
 </RelativeLayout>

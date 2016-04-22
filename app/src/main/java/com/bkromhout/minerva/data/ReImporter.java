@@ -1,5 +1,6 @@
 package com.bkromhout.minerva.data;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -124,6 +125,7 @@ public class ReImporter {
     }
 
     // Private initializer.
+    @SuppressLint("InflateParams")
     private ReImporter(List<RBook> books, IReImportListener listener) {
         EventBus.getDefault().register(this);
         this.books = books;

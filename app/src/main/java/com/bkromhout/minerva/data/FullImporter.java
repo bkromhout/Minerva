@@ -174,7 +174,7 @@ public class FullImporter {
         // Get a list of files in the directory (and its subdirectories) which have certain extensions.
         // This will call through to onGotFileList() once it has the results.
         fileWalkerSubscription = Observable
-                .create(new RxFileWalker(currDir, C.VALID_EXTS))
+                .create(new RxFileWalker(currDir, C.VALID_EXTENSIONS))
                 .subscribeOn(Schedulers.io()) // Everything above runs on the io thread pool.
                 .unsubscribeOn(AndroidSchedulers.mainThread())
                 .doOnUnsubscribe(() -> fileWalkerSubscription = null)

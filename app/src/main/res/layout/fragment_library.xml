@@ -40,7 +40,8 @@
                 app:layout_aspectRatio="100%"
                 android:layout_centerHorizontal="true"
                 android:tint="@color/grey900"
-                android:src="@drawable/ic_sad_face"/>
+                android:src="@drawable/ic_sad_face"
+                tools:ignore="ContentDescription"/>
 
         <TextView
                 android:id="@+id/empty_library_prompt"

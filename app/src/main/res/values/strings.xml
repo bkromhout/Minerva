@@ -264,8 +264,6 @@
     <string name="dummy_desc">This is a fairly sizable dummy portion of text which is useful for showing in textviews
         which would probably hold a fair amount of text. For example, perhaps you have a textview which shows the
         description of a book? This would be a good string to have there!</string>
-    <string name="dummy_rating">3</string>
-    <string name="dummy_tags">0,H/G,Tag1,Tag Two,Tag 3,TAG FOUR,ThisIsTagFive,This is Tag Six,And this is tag 7,Ooh but don\'t forget about tag Eight!</string>
 
     <!-- ******************************** Tagging Activity ******************************** -->
     <string name="title_activity_tagging">Choose Tags</string>

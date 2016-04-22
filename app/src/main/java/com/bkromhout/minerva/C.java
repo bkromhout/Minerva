@@ -33,7 +33,7 @@ public final class C {
     /**
      * Valid file extensions.
      */
-    public static final List<String> VALID_EXTS = ImmutableList.of("epub");
+    public static final List<String> VALID_EXTENSIONS = ImmutableList.of("epub");
     /**
      * Color selector for card view backgrounds.
      */

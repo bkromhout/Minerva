@@ -135,7 +135,7 @@ public class Dialogs {
      * @param realm Realm instance to use.
      */
     public static void addToListDialogOrToast(Context ctx, Realm realm) {
-        // Get list of normal lists (list-ception anyone?)
+        // Get list of normal lists.
         RealmResults<RBookList> lists = realm.where(RBookList.class)
                                              .equalTo("isSmartList", false)
                                              .findAllSorted("sortName");

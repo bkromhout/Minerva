@@ -113,7 +113,7 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback {
         // Get lists, then create and bind the adapter.
         lists = realm.where(RBookList.class)
                      .findAllSorted("sortName");
-        adapter = new BookListCardAdapter(getActivity(), lists, true, true);
+        adapter = new BookListCardAdapter(getActivity(), lists);
         recyclerView.setAdapter(adapter);
     }
 

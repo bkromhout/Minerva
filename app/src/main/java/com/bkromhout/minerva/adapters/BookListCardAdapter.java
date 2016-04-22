@@ -39,12 +39,9 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
      * Create a new {@link BookListCardAdapter}.
      * @param context         Context.
      * @param realmResults    Results of a Realm query to display.
-     * @param automaticUpdate If true, the list will update automatically.
-     * @param animateResults  If true, updates will be animated.
      */
-    public BookListCardAdapter(Context context, RealmResults<RBookList> realmResults, boolean automaticUpdate,
-                               boolean animateResults) {
-        super(context, realmResults, automaticUpdate, animateResults, null);
+    public BookListCardAdapter(Context context, RealmResults<RBookList> realmResults) {
+        super(context, realmResults, true, true, null);
     }
 
     @Override

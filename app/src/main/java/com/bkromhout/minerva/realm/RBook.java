@@ -479,8 +479,7 @@ public class RBook extends RealmObject {
 
         RBook rBook = (RBook) o;
 
-        if (getUniqueId() != rBook.getUniqueId()) return false;
-        return getRelPath().equals(rBook.getRelPath());
+        return getUniqueId() == rBook.getUniqueId() && getRelPath().equals(rBook.getRelPath());
     }
 
     @Override

@@ -61,6 +61,7 @@ public class CoverHelper {
     public void deleteCoverImage(String relPath) {
         File coverFile = Util.getFileFromRelPath(dir, relPath + COVER_EXT);
         if (coverFile == null || !coverFile.exists()) return;
+        //noinspection ResultOfMethodCallIgnored
         coverFile.delete();
     }
 

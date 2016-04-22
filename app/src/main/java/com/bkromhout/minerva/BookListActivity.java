@@ -557,7 +557,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 case COMPACT:
                     return new BookCardCompactAdapter(this, (RealmResults<RBook>) items);
                 default:
-                    return null;
+                    throw new IllegalStateException("Invalid card type.");
             }
         } else if (adapterType == AdapterType.BOOK_LIST_ITEM) {
             switch (cardType) {
@@ -568,9 +568,9 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 case COMPACT:
                     return new BookItemCardCompactAdapter(this, (RealmResults<RBookListItem>) items);
                 default:
-                    return null;
+                    throw new IllegalStateException("Invalid card type.");
             }
-        } else throw new IllegalArgumentException("Invalid adapter type.");
+        } else throw new IllegalStateException("Invalid adapter type.");
     }
 
     /**
