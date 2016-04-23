@@ -196,15 +196,10 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
         long draggingId = (long) ((BaseCardVH) dragging).cardView.getTag();
         long targetId = (long) ((BaseCardVH) target).cardView.getTag();
 
-        // Determine if we can swap the items or if we need to actually move the item being dragged.
-        if (Math.abs(draggingPos - targetPos) == 1)
-            // Swapped.
-            RBookList.swapItemPositions(draggingId, targetId);
-        else if (draggingPos > targetPos)
-            // Moved up multiple.
+        // Determine which way to move the item being dragged.
+        if (draggingPos > targetPos) // Moved up multiple.
             RBookList.moveItemToBefore(draggingId, targetId);
-        else
-            // Moved down multiple.
+        else if (draggingPos < targetPos) // Moved down multiple.
             RBookList.moveItemToAfter(draggingId, targetId);
 
         return true;

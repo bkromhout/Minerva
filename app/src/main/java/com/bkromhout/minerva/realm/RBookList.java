@@ -375,51 +375,6 @@ public class RBookList extends RealmObject {
      */
 
     /**
-     * Swaps the positions of the items whose unique IDs are {@code item1Id} and {@code item2Id}. Will do nothing if the
-     * items are the same.
-     * @param item1Id An item's unique ID.
-     * @param item2Id Another item's unique ID.
-     * @throws IllegalArgumentException if either item is null or items aren't from the same list.
-     */
-    public static void swapItemPositions(long item1Id, long item2Id) {
-        try (Realm realm = Realm.getDefaultInstance()) {
-            RBookListItem innerItem1 = realm.where(RBookListItem.class).equalTo("uniqueId", item1Id).findFirst();
-            RBookListItem innerItem2 = realm.where(RBookListItem.class).equalTo("uniqueId", item2Id).findFirst();
-
-            if (!RBookListItem.areFromSameList(innerItem1, innerItem2)) throw new IllegalArgumentException(
-                    "Items must be part of the same list.");
-
-            realm.beginTransaction();
-            // Swap the positions.
-            Long temp = innerItem1.getPos();
-            innerItem1.setPos(innerItem2.getPos());
-            innerItem2.setPos(temp);
-            realm.commitTransaction();
-        }
-    }
-
-    /**
-     * Swaps the positions of {@code item1} and {@code item2}. Will do nothing if the items are the same.
-     * @param item1 An item.
-     * @param item2 Another item.
-     * @throws IllegalArgumentException if either item is null or items aren't from the same list.
-     */
-    public static void swapItemPositions(RBookListItem item1, RBookListItem item2) {
-        if (item1 == null || item2 == null) throw new IllegalArgumentException("No nulls allowed.");
-        if (!RBookListItem.areFromSameList(item1, item2)) throw new IllegalArgumentException(
-                "Items must be part of the same list.");
-
-        try (Realm realm = Realm.getDefaultInstance()) {
-            realm.beginTransaction();
-            // Swap the positions.
-            Long temp = item1.getPos();
-            item1.setPos(item2.getPos());
-            item2.setPos(temp);
-            realm.commitTransaction();
-        }
-    }
-
-    /**
      * Moves the {@link RBookListItem} whose unique ID is {@code itemToMoveId} to somewhere before the {@link
      * RBookListItem} whose unique ID is {@code targetItemId}.
      * @param itemToMoveId Unique ID of item to move.
