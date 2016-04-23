@@ -99,7 +99,7 @@ public class RBookList extends RealmObject {
     /**
      * Very simply throws an UnsupportedOperationException if {@link #isSmartList} is true.
      */
-    void throwIfSmartList() {
+    public final void throwIfSmartList() {
         if (isSmartList) throw new UnsupportedOperationException("Not supported by smart lists.");
     }
 
@@ -135,7 +135,7 @@ public class RBookList extends RealmObject {
         if (isBookInList(book)) return;
 
         try (Realm realm = Realm.getDefaultInstance()) {
-            realm.executeTransaction(tRealm -> getListItems().add(new RBookListItem(this, book)));
+            realm.executeTransaction(tRealm -> listItems.add(new RBookListItem(this, book)));
         }
     }
 
@@ -243,46 +243,6 @@ public class RBookList extends RealmObject {
                 for (RBookListItem listItem : orderedItems) {
                     listItem.setPos(nextPos);
                     nextPos += C.LIST_ITEM_GAP;
-                }
-            });
-        }
-    }
-
-    /**
-     * Moves the given {@link RBookListItem}s to the start of this list.
-     * @param itemsToMove Items to move. Items must already exist in Realm and be from this list.
-     */
-    public void moveItemsToStart(List<RBookListItem> itemsToMove) {
-        throwIfSmartList();
-        if (itemsToMove == null || itemsToMove.isEmpty()) return;
-        try (Realm realm = Realm.getDefaultInstance()) {
-            realm.executeTransaction(tRealm -> {
-                // Get the next first open position.
-                Long nextFirstPos = getListItems().where().findAllSorted("pos").first().getPos() - C.LIST_ITEM_GAP;
-                // Loop through itemsToMove backwards and move those items to the start of this list.
-                for (int i = itemsToMove.size() - 1; i >= 0; i--) {
-                    itemsToMove.get(i).setPos(nextFirstPos);
-                    nextFirstPos -= C.LIST_ITEM_GAP;
-                }
-            });
-        }
-    }
-
-    /**
-     * Moves the given {@link RBookListItem}s to the end of this list.
-     * @param itemsToMove Items to move. Items must already exist in Realm and be from this list.
-     */
-    public void moveItemsToEnd(List<RBookListItem> itemsToMove) {
-        throwIfSmartList();
-        if (itemsToMove == null || itemsToMove.isEmpty()) return;
-        try (Realm realm = Realm.getDefaultInstance()) {
-            realm.executeTransaction(tRealm -> {
-                // Get the next last open position.
-                Long nextLastPos = getNextPos();
-                // Loop through itemsToMove and move those items to the end of this list.
-                for (RBookListItem item : itemsToMove) {
-                    item.setPos(nextLastPos);
-                    nextLastPos += C.LIST_ITEM_GAP;
                 }
             });
         }

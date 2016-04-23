@@ -384,12 +384,12 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 return true;
             case R.id.action_move_to_top:
                 //noinspection unchecked
-                srcList.moveItemsToStart(adapter.getSelectedRealmObjects());
+                ActionHelper.moveItemsToStart(srcList, adapter.getSelectedRealmObjects());
                 actionMode.finish();
                 return true;
             case R.id.action_move_to_bottom:
                 //noinspection unchecked
-                srcList.moveItemsToEnd(adapter.getSelectedRealmObjects());
+                ActionHelper.moveItemsToEnd(srcList, adapter.getSelectedRealmObjects());
                 actionMode.finish();
                 return true;
             case R.id.action_re_import:

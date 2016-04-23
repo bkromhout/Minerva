@@ -36,7 +36,10 @@ public class ActionHelper {
      * @param listName Name of list to add {@code book} to.
      */
     public static void addBookToList(Realm realm, RBook book, String listName) {
-        addBooksToList(realm, Lists.newArrayList(book), listName);
+        realm.where(RBookList.class)
+                .equalTo("name", listName)
+                .findFirst()
+                .addBook(book);
     }
 
     /**
@@ -269,5 +272,49 @@ public class ActionHelper {
             list.setName(newName);
             list.setSortName(newName.toLowerCase()); // TODO Work-around
         });
+    }
+
+    /**
+     * Moves the given {@link RBookListItem}s to the start of {@code bookList}.
+     * @param bookList    Book list which owns {@code itemsToMove}.
+     * @param itemsToMove Items to move. Items must already exist in Realm and be owned by {@code bookList}.
+     */
+    public static void moveItemsToStart(RBookList bookList, List<RBookListItem> itemsToMove) {
+        bookList.throwIfSmartList();
+        if (itemsToMove == null || itemsToMove.isEmpty()) return;
+        try (Realm realm = Realm.getDefaultInstance()) {
+            realm.executeTransaction(tRealm -> {
+                // Get the next first open position.
+                Long nextFirstPos = bookList.getListItems().where().min("pos").longValue() - C.LIST_ITEM_GAP;
+                // Loop through itemsToMove backwards and move those items to the start of this list.
+                for (int i = itemsToMove.size() - 1; i >= 0; i--) {
+                    itemsToMove.get(i).setPos(nextFirstPos);
+                    nextFirstPos -= C.LIST_ITEM_GAP;
+                }
+            });
+        }
+    }
+
+    /**
+     * Moves the given {@link RBookListItem}s to the end of {@code bookList}.
+     * @param bookList    Book list which owns {@code itemsToMove}.
+     * @param itemsToMove Items to move. Items must already exist in Realm and be owned by {@code bookList}.
+     */
+    public static void moveItemsToEnd(RBookList bookList, List<RBookListItem> itemsToMove) {
+        bookList.throwIfSmartList();
+        if (itemsToMove == null || itemsToMove.isEmpty()) return;
+        try (Realm realm = Realm.getDefaultInstance()) {
+            realm.executeTransaction(tRealm -> {
+                // Get the next last open position.
+                Long nextLastPos = bookList.getNextPos();
+                // Loop through itemsToMove and move those items to the end of this list.
+                for (RBookListItem item : itemsToMove) {
+                    item.setPos(nextLastPos);
+                    nextLastPos += C.LIST_ITEM_GAP;
+                }
+                // Set bookList's nextPos.
+                bookList.setNextPos(nextLastPos);
+            });
+        }
     }
 }
