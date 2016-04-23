@@ -13,9 +13,9 @@ import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.CoverHelper;
+import com.bkromhout.minerva.realm.ListItemPositionHelper;
 import com.bkromhout.minerva.events.BookCardClickEvent;
 import com.bkromhout.minerva.realm.RBook;
-import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.util.RippleForegroundListener;
@@ -198,9 +198,9 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
 
         // Determine which way to move the item being dragged.
         if (draggingPos > targetPos) // Moved up multiple.
-            RBookList.moveItemToBefore(draggingId, targetId);
+            ListItemPositionHelper.moveItemToBefore(draggingId, targetId);
         else if (draggingPos < targetPos) // Moved down multiple.
-            RBookList.moveItemToAfter(draggingId, targetId);
+            ListItemPositionHelper.moveItemToAfter(draggingId, targetId);
 
         return true;
     }
