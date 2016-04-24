@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+                 android:drawable="@drawable/ic_list">
+
+    <target
+            android:animation="@animator/rotate_anticlockwise"
+            android:name="plus_list_group"/>
+
+    <target
+            android:animation="@animator/list_to_plus"
+            android:name="plus_list_path"/>
+</animated-vector>

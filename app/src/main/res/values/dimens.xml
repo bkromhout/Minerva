@@ -3,8 +3,15 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
+    <!-- FABs -->
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="mini_fab_margin">24dp</dimen>
+    <dimen name="mini_fab_translate">64dp</dimen>
+
+    <!-- RecyclerView Padding -->
     <dimen name="recycler_view_padding">8dp</dimen>
+    <!-- Padding for end of recycler views to avoid FAB overlap -->
+    <dimen name="rv_end_padding">80dp</dimen>
 
     <!-- Nav Drawer Header -->
     <dimen name="nav_header_vertical_spacing">16dp</dimen>
@@ -29,7 +36,4 @@
 
     <dimen name="list_card_height">56dp</dimen>
     <dimen name="tag_card_height">48dp</dimen>
-
-    <!-- Padding for end of recycler views to avoid FAB overlap -->
-    <dimen name="rv_end_padding">80dp</dimen>
 </resources>
