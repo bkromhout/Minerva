@@ -30,6 +30,8 @@ import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookListItem;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
+import com.bkromhout.rrvl.FastScrollHandleStateListener;
+import com.bkromhout.rrvl.FastScrollerHandleState;
 import com.bkromhout.rrvl.RealmRecyclerView;
 import com.bkromhout.ruqus.RealmUserQuery;
 import io.realm.Realm;
@@ -44,7 +46,8 @@ import java.util.List;
 /**
  * Fragment in charge of letting the user power search.
  */
-public class PowerSearchFragment extends Fragment implements ActionMode.Callback, ReImporter.IReImportListener {
+public class PowerSearchFragment extends Fragment implements ActionMode.Callback, ReImporter.IReImportListener,
+        FastScrollHandleStateListener{
     private static final String QUERY_TYPE = "QUERY_TYPE";
 
     // Views.
@@ -129,6 +132,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
             queryType = AdapterType.values()[savedInstanceState.getInt(QUERY_TYPE)];
         }
 
+        recyclerView.setFastScrollHandleStateListener(this);
         updateUi();
 
         // If we were in action mode, restore the adapter's state and start action mode.
@@ -500,5 +504,10 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     public Activity getCtx() {
         // Provide our activity context to the ReImporter so that it can draw its progress dialog.
         return getActivity();
+    }
+
+    @Override
+    public void onHandleStateChanged(FastScrollerHandleState newState) {
+        if (newState == FastScrollerHandleState.PRESSED) fabQuery.hide();
     }
 }

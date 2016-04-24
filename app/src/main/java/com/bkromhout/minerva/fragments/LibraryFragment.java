@@ -36,6 +36,8 @@ import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.BubbleTextProvider;
+import com.bkromhout.rrvl.FastScrollHandleStateListener;
+import com.bkromhout.rrvl.FastScrollerHandleState;
 import com.bkromhout.rrvl.RealmRecyclerView;
 import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
@@ -48,12 +50,9 @@ import java.util.List;
 
 /**
  * Fragment in charge of showing the user's whole library.
- * <p>
- * TODO find a way to have the FAB hide itself when we're actively touching the fast scroller's handle... might want to
- * add a callback for that sort of change in the library, or we may be able to do it in the FAB's behavior class.
  */
 public class LibraryFragment extends Fragment implements ActionMode.Callback, ReImporter.IReImportListener,
-        BubbleTextProvider {
+        BubbleTextProvider, FastScrollHandleStateListener {
     // Views.
     @Bind(R.id.fab)
     FloatingActionButton fabViewOpts;
@@ -172,6 +171,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
         toggleEmptyState(books.isEmpty());
         sortRealmResults();
         adapter = makeAdapter();
+        recyclerView.setFastScrollHandleStateListener(this);
         recyclerView.setAdapter(adapter);
     }
 
@@ -545,5 +545,10 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
             default:
                 return null;
         }
+    }
+
+    @Override
+    public void onHandleStateChanged(FastScrollerHandleState newState) {
+        if (newState == FastScrollerHandleState.PRESSED) fabViewOpts.hide();
     }
 }

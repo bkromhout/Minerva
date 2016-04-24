@@ -22,6 +22,8 @@ import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
+import com.bkromhout.rrvl.FastScrollHandleStateListener;
+import com.bkromhout.rrvl.FastScrollerHandleState;
 import com.bkromhout.rrvl.RealmRecyclerView;
 import com.bkromhout.ruqus.RealmUserQuery;
 import io.realm.Realm;
@@ -35,10 +37,10 @@ import java.util.ArrayList;
 /**
  * Fragment in charge of showing all of the book lists.
  */
-public class AllListsFragment extends Fragment implements ActionMode.Callback {
+public class AllListsFragment extends Fragment implements ActionMode.Callback, FastScrollHandleStateListener {
     // Views.
     @Bind(R.id.fab)
-    FloatingActionButton fabViewOpts;
+    FloatingActionButton fabNewList;
     @Bind(R.id.recycler)
     RealmRecyclerView recyclerView;
 
@@ -114,6 +116,7 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback {
         lists = realm.where(RBookList.class)
                      .findAllSorted("sortName");
         adapter = new BookListCardAdapter(getActivity(), lists);
+        recyclerView.setFastScrollHandleStateListener(this);
         recyclerView.setAdapter(adapter);
     }
 
@@ -367,5 +370,10 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback {
     void onFabClick() {
         Dialogs.listNameDialog(getActivity(), R.string.action_new_list, R.string.prompt_new_list, null,
                 R.id.action_new_list, -1);
+    }
+
+    @Override
+    public void onHandleStateChanged(FastScrollerHandleState newState) {
+        if (newState == FastScrollerHandleState.PRESSED) fabNewList.hide();
     }
 }

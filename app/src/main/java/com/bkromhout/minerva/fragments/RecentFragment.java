@@ -33,6 +33,8 @@ import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
+import com.bkromhout.rrvl.FastScrollHandleStateListener;
+import com.bkromhout.rrvl.FastScrollerHandleState;
 import com.bkromhout.rrvl.RealmRecyclerView;
 import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
@@ -46,10 +48,11 @@ import java.util.List;
 /**
  * Fragment in charge of showing recently opened books.
  */
-public class RecentFragment extends Fragment implements ActionMode.Callback, ReImporter.IReImportListener {
+public class RecentFragment extends Fragment implements ActionMode.Callback, ReImporter.IReImportListener,
+        FastScrollHandleStateListener{
     // Views.
     @Bind(R.id.fab)
-    FloatingActionButton fabViewOpts;
+    FloatingActionButton fabOpenRecent;
     @Bind(R.id.recycler)
     RealmRecyclerView recyclerView;
 
@@ -141,6 +144,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
                      .equalTo("isInRecents", true)
                      .findAllSorted("lastReadDate", Sort.DESCENDING);
         adapter = makeAdapter();
+        recyclerView.setFastScrollHandleStateListener(this);
         recyclerView.setAdapter(adapter);
     }
 
@@ -461,5 +465,10 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
     public Activity getCtx() {
         // Provide our activity context to the ReImporter so that it can draw its progress dialog.
         return getActivity();
+    }
+
+    @Override
+    public void onHandleStateChanged(FastScrollerHandleState newState) {
+        if (newState == FastScrollerHandleState.PRESSED) fabOpenRecent.hide();
     }
 }
