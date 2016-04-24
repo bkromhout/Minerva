@@ -23,8 +23,7 @@
             android:contentDescription="@string/action_new_smart_list"
             app:fabSize="mini"
             app:layout_anchor="@id/recycler"
-            app:layout_anchorGravity="bottom|right|end"
-            app:layout_behavior="com.bkromhout.minerva.util.ScrollAwareFABBehavior"/>
+            app:layout_anchorGravity="bottom|right|end"/>
 
     <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
@@ -36,6 +35,5 @@
             android:clickable="true"
             android:contentDescription="@string/action_new_list"
             app:layout_anchor="@id/recycler"
-            app:layout_anchorGravity="bottom|right|end"
-            app:layout_behavior="com.bkromhout.minerva.util.ScrollAwareFABBehavior"/>
+            app:layout_anchorGravity="bottom|right|end"/>
 </android.support.design.widget.CoordinatorLayout>
