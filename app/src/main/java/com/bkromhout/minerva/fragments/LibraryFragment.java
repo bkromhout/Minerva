@@ -473,7 +473,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
     private void sortRealmResults() {
         if (realm == null || realm.isClosed() || books == null || !books.isValid()) return;
         recyclerView.setUseFastScrollBubble(sortType != SortType.TIME_ADDED);
-        books.sort(sortType.getRealmField(), sortDir.getRealmSort());
+        books = books.sort(sortType.getRealmField(), sortDir.getRealmSort());
     }
 
     /**
