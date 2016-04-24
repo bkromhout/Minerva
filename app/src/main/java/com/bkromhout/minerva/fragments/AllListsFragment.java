@@ -432,7 +432,11 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
 
     @Override
     public void onHandleStateChanged(FastScrollerHandleState newState) {
-        if (newState == FastScrollerHandleState.PRESSED) fabNewList.hide();
+        if (newState == FastScrollerHandleState.PRESSED) {
+            if (fabNewList.isSelected()) animateFabs();
+            fabNewSmartList.hide();
+            fabNewList.hide();
+        }
     }
 
     /**
