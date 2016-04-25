@@ -91,6 +91,7 @@ dependencies {
         exclude group: 'xmlpull'
         exclude group: 'net.sf.kxml'
     }
+    compile 'com.jakewharton.timber:timber:4.1.2'
     debugCompile 'com.facebook.stetho:stetho:1.3.0'
     debugCompile 'com.uphyca:stetho_realm:0.8.0'
 }

@@ -2,6 +2,7 @@ package com.bkromhout.minerva;
 
 import com.facebook.stetho.Stetho;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
+import timber.log.Timber;
 
 /**
  * Debug version of custom Application class.
@@ -11,6 +12,7 @@ public class MinervaDebug extends Minerva {
 
     @Override
     public void onCreate() {
+        Timber.plant(new Timber.DebugTree());
         super.onCreate();
         initStetho();
     }

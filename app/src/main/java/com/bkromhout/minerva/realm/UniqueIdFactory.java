@@ -1,6 +1,7 @@
 package com.bkromhout.minerva.realm;
 
 import io.realm.*;
+import timber.log.Timber;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +39,7 @@ public class UniqueIdFactory {
      * Initialize the factory. Must be called before any unique IDs are generated - preferably from application class.
      */
     public synchronized void initialize(final Realm realm) {
-        if (ids != null) throw new IllegalStateException("Already initialized");
+        if (ids != null) throw new IllegalStateException("Already initialized.");
         // ids field is used as an initialization flag at the same time.
         ids = new HashMap<>();
         final RealmConfiguration configuration = realm.getConfiguration();
@@ -50,11 +51,16 @@ public class UniqueIdFactory {
 
             final RealmObjectSchema objectSchema = realmSchema.get(c.getSimpleName());
             if (objectSchema != null && objectSchema.hasPrimaryKey()) {
+                Timber.d("Attempting to initialize unique ID factory for %s.", objectSchema.getClassName());
                 try {
                     Number keyValue = realm.where(c).max(UNIQUE_ID_FIELD);
                     if (keyValue != null) ids.put(c, new AtomicLong(keyValue.longValue()));
                 } catch (ArrayIndexOutOfBoundsException ignored) {
-                    // Some classes don't have unique ids.
+                    // Some classes don't have uniqueId fields.
+                    Timber.d("%s doesn't have a uniqueId field.", objectSchema.getClassName());
+                } catch (IllegalArgumentException ignored) {
+                    // If we don't have any data yet, then Realm will think the field doesn't exist, and throws this.
+                    Timber.e(ignored, "Couldn't initialize unique ID factory for %s.", objectSchema.getClassName());
                 }
             }
         }
@@ -64,7 +70,7 @@ public class UniqueIdFactory {
      * Automatically create next unique ID for a given class.
      */
     public synchronized long nextId(final Class<? extends RealmModel> clazz) {
-        if (ids == null) throw new IllegalStateException("Not initialized yet");
+        if (ids == null) throw new IllegalStateException("Not initialized yet.");
 
         AtomicLong l = ids.get(clazz);
         if (l == null) {
