@@ -97,25 +97,13 @@
                     android:contentDescription="@string/acc_quick_tag"/>
         </android.support.v7.widget.ButtonBarLayout>
 
-        <com.greenfrvr.hashtagview.HashtagView
+        <TextView
                 android:id="@+id/tags"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginTop="2dp"
                 android:layout_below="@id/details"
-                app:tagTextColor="@color/grey200"
-                app:tagTextSize="10sp"
-                app:tagEllipsize="end"
-                app:tagBackground="@color/grey700"
-                app:tagMargin="1dp"
-                app:tagMaxWidth="100dp"
-                app:tagPaddingTop="0dp"
-                app:tagPaddingRight="2dp"
-                app:tagPaddingBottom="1dp"
-                app:tagPaddingLeft="2dp"
-                app:rowMargin="0dp"
-                app:rowGravity="left"
-                app:rowDistribution="random"
-                app:rowMode="wrap"
-                app:rowsQuantity="1"/>
+                android:textSize="10sp"
+                android:maxLines="1"/>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

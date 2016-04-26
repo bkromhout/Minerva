@@ -9,18 +9,19 @@ import android.view.View;
 import android.widget.*;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import com.binaryfork.spanny.Spanny;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.CoverHelper;
-import com.bkromhout.minerva.realm.ListItemPositionHelper;
 import com.bkromhout.minerva.events.BookCardClickEvent;
+import com.bkromhout.minerva.realm.ListItemPositionHelper;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookListItem;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.util.RippleForegroundListener;
+import com.bkromhout.minerva.util.TagSpan;
 import com.bumptech.glide.Glide;
-import com.greenfrvr.hashtagview.HashtagView;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
@@ -141,7 +142,14 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
         // Fill in data.
         resolvedVH.tvDesc.setText(book.getDesc());
         resolvedVH.rbRating.setRating(book.getRating());
-        resolvedVH.htvTags.setData(RTag.tagListToStringList(book.getTags()));
+        // If we don't have a non-span character in here somewhere then our spans can be positioned incorrectly the
+        // first time the view holders are created. To prevent this, we start our spans off with a zero-width space
+        // character, fixing the "bug" while preventing actual extra space from appearing.
+        Spanny spanny = new Spanny("\u200B");
+        for (RTag tag : book.getTags()) {
+            spanny.append(tag.getName(), new TagSpan(R.color.grey700, R.color.grey200)).append("");
+        }
+        resolvedVH.tvTags.setText(spanny, TextView.BufferType.SPANNABLE);
     }
 
     /**
@@ -257,7 +265,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
         @Bind(R.id.rating)
         public RatingBar rbRating;
         @Bind(R.id.tags)
-        public HashtagView htvTags;
+        public TextView tvTags;
 
         public NoCoverCardVH(View itemView) {
             super(itemView);

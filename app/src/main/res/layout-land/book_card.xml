@@ -116,27 +116,15 @@
                     android:rating="3"
                     style="@style/Widget.AppCompat.RatingBar.Small"/>
 
-            <com.greenfrvr.hashtagview.HashtagView
+            <TextView
                     android:id="@+id/tags"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="6dp"
+                    android:paddingTop="2dp"
                     android:layout_below="@id/lbl_rating"
-                    app:tagTextColor="@color/grey200"
-                    app:tagTextSize="12sp"
-                    app:tagEllipsize="end"
-                    app:tagBackground="@color/grey700"
-                    app:tagMargin="1dp"
-                    app:tagMaxWidth="100sp"
-                    app:tagPaddingTop="0dp"
-                    app:tagPaddingRight="2dp"
-                    app:tagPaddingBottom="1dp"
-                    app:tagPaddingLeft="2dp"
-                    app:rowMargin="1dp"
-                    app:rowGravity="left"
-                    app:rowDistribution="random"
-                    app:rowMode="wrap"
-                    app:rowsQuantity="2"/>
+                    android:textSize="12sp"
+                    android:lineSpacingExtra="@dimen/tag_line_spacing_extra"
+                    android:maxLines="2"/>
         </RelativeLayout>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

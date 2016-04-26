@@ -20,6 +20,12 @@
     <!-- Book Info -->
     <dimen name="collapsible_header_height">256dp</dimen>
 
+    <!-- Tags -->
+    <dimen name="tag_corner_radius">2dp</dimen>
+    <dimen name="tag_side_padding">3dp</dimen>
+    <dimen name="tag_bottom_padding">1dp</dimen>
+    <dimen name="tag_line_spacing_extra">4dp</dimen>
+
     <!-- Cards -->
     <dimen name="card_elevation">6dp</dimen>
     <dimen name="card_margin_top">3dp</dimen>
