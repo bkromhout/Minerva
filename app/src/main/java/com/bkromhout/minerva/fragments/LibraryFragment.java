@@ -172,6 +172,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
         sortRealmResults();
         adapter = makeAdapter();
         recyclerView.setFastScrollHandleStateListener(this);
+        recyclerView.setBubbleTextProvider(this);
         recyclerView.setAdapter(adapter);
     }
 
