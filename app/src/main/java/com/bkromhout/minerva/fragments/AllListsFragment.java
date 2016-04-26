@@ -3,10 +3,8 @@ package com.bkromhout.minerva.fragments;
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.view.*;
@@ -132,8 +130,6 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
      * Initialize the UI.
      */
     private void initUi() {
-        // Apply our custom scroll behavior to the main FAB.
-        ((CoordinatorLayout.LayoutParams) fabNewList.getLayoutParams()).setBehavior(new ScrollAwareMultiFABBehavior());
         // Get lists, then create and bind the adapter.
         lists = realm.where(RBookList.class)
                      .findAllSorted("sortName");
@@ -406,54 +402,29 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
         activateFabs(false);
     }
 
+    /**
+     * Deactivate FABs when mask is clicked.
+     */
+    @OnClick(R.id.mask_view)
+    void onMaskViewClick() {
+        activateFabs(false);
+    }
+
     private void activateFabs(boolean activate) {
         maskView.setVisibility(activate ? View.VISIBLE : View.GONE);
+        ObjectAnimator.ofFloat(maskView, "alpha", activate ? 0f : 1f, activate ? 1f : 0f)
+                      .setDuration(miniFabAnimDuration).start();
         fabNewList.setActivated(activate);
         // Get the animation which will be used to expand/collapse the mini FAB, then start it.
-        ObjectAnimator.ofFloat(fabNewSmartList, "translationY", activate ? 0 : miniFabOffset,
-                activate ? miniFabOffset : 0).setDuration(miniFabAnimDuration).start();
+        ObjectAnimator.ofFloat(fabNewSmartList, "translationY", activate ? 0f : miniFabOffset,
+                activate ? miniFabOffset : 0f).setDuration(miniFabAnimDuration).start();
     }
 
     @Override
     public void onHandleStateChanged(FastScrollerHandleState newState) {
         if (newState == FastScrollerHandleState.PRESSED) {
-            if (fabNewList.isActivated()) activateFabs(false);
             fabNewSmartList.hide();
             fabNewList.hide();
-        }
-    }
-
-    /**
-     * Custom behavior which handles both our main and mini FAB at the same time when nested scrolling occurs. Only
-     * needs to be applied to the main FAB.
-     */
-    private class ScrollAwareMultiFABBehavior extends FloatingActionButton.Behavior {
-        public ScrollAwareMultiFABBehavior() {
-            super();
-        }
-
-        @Override
-        public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child,
-                                           View directTargetChild, View target, int nestedScrollAxes) {
-            // Ensure we react to vertical scrolling
-            return nestedScrollAxes == ViewCompat.SCROLL_AXIS_VERTICAL
-                    || super.onStartNestedScroll(coordinatorLayout, child, directTargetChild, target, nestedScrollAxes);
-        }
-
-        @Override
-        public void onNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target,
-                                   int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
-            super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
-            // Hide the mini FAB upon scrolling if it's currently shown (which it would be if the main FAB is selected).
-            if (dyConsumed != 0 && child.isActivated()) activateFabs(false);
-            // Hide the FABs when user scrolls down; show them when user scrolls up.
-            if (dyConsumed > 0 && child.getVisibility() == View.VISIBLE) {
-                fabNewSmartList.hide();
-                child.hide();
-            } else if (dyConsumed < 0 && child.getVisibility() != View.VISIBLE) {
-                child.show();
-                fabNewSmartList.show();
-            }
         }
     }
 }
