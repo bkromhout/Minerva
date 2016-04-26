@@ -8,6 +8,7 @@
 
     <item
             android:drawable="@drawable/ic_add2"
+            android:state_activated="false"
             android:id="@+id/state_plus"/>
 
     <transition
