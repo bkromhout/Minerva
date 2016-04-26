@@ -6,6 +6,7 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
 import rx.Observable;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class RTag extends RealmObject {
      * Tag name.
      */
     @PrimaryKey
+    @Required
     private String name;
     /**
      * TODO This is a work-around until Realm can do case-insensitive sorting.
