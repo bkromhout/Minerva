@@ -6,7 +6,7 @@
     <!-- FABs -->
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="mini_fab_margin">24dp</dimen>
-    <dimen name="mini_fab_translate">64dp</dimen>
+    <dimen name="mini_fab_translate">-64dp</dimen>
 
     <!-- RecyclerView Padding -->
     <dimen name="recycler_view_padding">8dp</dimen>

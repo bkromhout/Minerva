@@ -1,8 +1,6 @@
 package com.bkromhout.minerva.fragments;
 
 import android.animation.ObjectAnimator;
-import android.graphics.drawable.Animatable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
@@ -390,10 +388,12 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
      */
     @OnClick(R.id.fab)
     void onFabNewListClick() {
-        // Animate the FABs, and if our main FAB is now selected then we know that we simply did the animations and
-        // we're done. If it's not selected now then we should open the new list dialog.
-        if (!animateFabs()) Dialogs.listNameDialog(getActivity(), R.string.action_new_list, R.string.prompt_new_list,
-                null, R.id.action_new_list, -1);
+        if (fabNewList.isActivated()) {
+            Dialogs.listNameDialog(getActivity(), R.string.action_new_list, R.string.prompt_new_list,
+                    null, R.id.action_new_list, -1);
+        }
+        fabNewList.setActivated(!fabNewList.isActivated());
+        animateMiniFab(fabNewList.isActivated());
     }
 
     /**
@@ -402,38 +402,25 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
     @OnClick(R.id.fab2)
     void onFabNewSmartListClick() {
         // Collapse the mini FAB and change the main FAB's icon back to a plus, then show the new smart list dialog.
-        animateFabs();
         Dialogs.listNameDialog(getActivity(), R.string.action_new_smart_list, R.string.prompt_new_smart_list, null,
                 R.id.action_new_smart_list, -1);
+        fabNewList.setActivated(false);
+        animateMiniFab(false);
     }
 
-    /**
-     * Toggles the selection state of the main FAB, then:<br> <ul> <li>If the main FAB is now selected, animates its
-     * plus icon to a list icon and expands the mini FAB.</li> <li>If the main FAB is now not selected, animates its
-     * list icon to a plus icon and collapses the mini FAB.</li> </ul>
-     * @return The new selection state of the main FAB.
-     */
-    private boolean animateFabs() {
-        // Figure out the new selection state for our main FAB.
-        boolean isSelected = !fabNewList.isSelected();
-        // Change selection state of main FAB.
-        fabNewList.setSelected(isSelected);
-        // Change the drawable on our main FAB.
-        fabNewList.setImageResource(isSelected ? R.drawable.anim_plus_to_list : R.drawable.anim_list_to_plus);
+    private void animateMiniFab(boolean showMiniFab) {
         // Get the animation which will be used to expand/collapse the mini FAB, then start it.
-        ObjectAnimator.ofInt(fabNewSmartList, "translationY", isSelected ? miniFabOffset : 0,
-                isSelected ? 0 : miniFabOffset).setDuration(miniFabAnimDuration).start();
-        // Animate the main FAB's icon switching.
-        Drawable drawable = fabNewList.getDrawable();
-        if (drawable instanceof Animatable) ((Animatable) drawable).start();
-        // Return the new selection state ourselves so that callers don't have to ask the views for it again.
-        return isSelected;
+        ObjectAnimator.ofFloat(fabNewSmartList, "translationY", showMiniFab ? 0 : miniFabOffset,
+                showMiniFab ? miniFabOffset : 0).setDuration(miniFabAnimDuration).start();
     }
 
     @Override
     public void onHandleStateChanged(FastScrollerHandleState newState) {
         if (newState == FastScrollerHandleState.PRESSED) {
-            if (fabNewList.isSelected()) animateFabs();
+            if (fabNewList.isActivated()) {
+                fabNewList.setActivated(false);
+                animateMiniFab(false);
+            }
             fabNewSmartList.hide();
             fabNewList.hide();
         }
@@ -461,7 +448,10 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
                                    int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
             super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
             // Hide the mini FAB upon scrolling if it's currently shown (which it would be if the main FAB is selected).
-            if (dyConsumed != 0 && child.isSelected()) animateFabs();
+            if (dyConsumed != 0 && child.isActivated()) {
+                child.setActivated(false);
+                animateMiniFab(false);
+            }
             // Hide the FABs when user scrolls down; show them when user scrolls up.
             if (dyConsumed > 0 && child.getVisibility() == View.VISIBLE) {
                 fabNewSmartList.hide();
