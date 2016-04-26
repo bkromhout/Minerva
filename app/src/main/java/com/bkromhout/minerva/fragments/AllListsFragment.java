@@ -46,6 +46,8 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
     FloatingActionButton fabNewList;
     @Bind(R.id.fab2)
     FloatingActionButton fabNewSmartList;
+    @Bind(R.id.mask_view)
+    View maskView;
     @Bind(R.id.recycler)
     RealmRecyclerView recyclerView;
 
@@ -227,7 +229,7 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
 
         // Handle actions.
         switch (item.getItemId()) {
-            case R.id.action_delete:
+            case R.id.action_delete_lists:
                 Dialogs.simpleYesNoDialog(getContext(), R.string.title_delete_lists, R.string.prompt_delete_lists,
                         R.id.action_delete_lists);
                 return true;
@@ -388,12 +390,9 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
      */
     @OnClick(R.id.fab)
     void onFabNewListClick() {
-        if (fabNewList.isActivated()) {
-            Dialogs.listNameDialog(getActivity(), R.string.action_new_list, R.string.prompt_new_list,
-                    null, R.id.action_new_list, -1);
-        }
-        fabNewList.setActivated(!fabNewList.isActivated());
-        animateMiniFab(fabNewList.isActivated());
+        if (fabNewList.isActivated()) Dialogs.listNameDialog(getActivity(), R.string.action_new_list,
+                R.string.prompt_new_list, null, R.id.action_new_list, -1);
+        activateFabs(!fabNewList.isActivated());
     }
 
     /**
@@ -404,23 +403,21 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
         // Collapse the mini FAB and change the main FAB's icon back to a plus, then show the new smart list dialog.
         Dialogs.listNameDialog(getActivity(), R.string.action_new_smart_list, R.string.prompt_new_smart_list, null,
                 R.id.action_new_smart_list, -1);
-        fabNewList.setActivated(false);
-        animateMiniFab(false);
+        activateFabs(false);
     }
 
-    private void animateMiniFab(boolean showMiniFab) {
+    private void activateFabs(boolean activate) {
+        maskView.setVisibility(activate ? View.VISIBLE : View.GONE);
+        fabNewList.setActivated(activate);
         // Get the animation which will be used to expand/collapse the mini FAB, then start it.
-        ObjectAnimator.ofFloat(fabNewSmartList, "translationY", showMiniFab ? 0 : miniFabOffset,
-                showMiniFab ? miniFabOffset : 0).setDuration(miniFabAnimDuration).start();
+        ObjectAnimator.ofFloat(fabNewSmartList, "translationY", activate ? 0 : miniFabOffset,
+                activate ? miniFabOffset : 0).setDuration(miniFabAnimDuration).start();
     }
 
     @Override
     public void onHandleStateChanged(FastScrollerHandleState newState) {
         if (newState == FastScrollerHandleState.PRESSED) {
-            if (fabNewList.isActivated()) {
-                fabNewList.setActivated(false);
-                animateMiniFab(false);
-            }
+            if (fabNewList.isActivated()) activateFabs(false);
             fabNewSmartList.hide();
             fabNewList.hide();
         }
@@ -448,10 +445,7 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
                                    int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
             super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
             // Hide the mini FAB upon scrolling if it's currently shown (which it would be if the main FAB is selected).
-            if (dyConsumed != 0 && child.isActivated()) {
-                child.setActivated(false);
-                animateMiniFab(false);
-            }
+            if (dyConsumed != 0 && child.isActivated()) activateFabs(false);
             // Hide the FABs when user scrolls down; show them when user scrolls up.
             if (dyConsumed > 0 && child.getVisibility() == View.VISIBLE) {
                 fabNewSmartList.hide();
