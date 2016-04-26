@@ -37,8 +37,8 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
 
     /**
      * Create a new {@link BookListCardAdapter}.
-     * @param context         Context.
-     * @param realmResults    Results of a Realm query to display.
+     * @param context      Context.
+     * @param realmResults Results of a Realm query to display.
      */
     public BookListCardAdapter(Context context, RealmResults<RBookList> realmResults) {
         super(context, realmResults, true, true, null);
@@ -69,6 +69,7 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
         if (position == getItemCount() || !(viewHolder instanceof BookListCardVH)) return;
         BookListCardVH vh = (BookListCardVH) viewHolder;
         final RBookList rBookList = realmResults.get(position);
+        if (!rBookList.isValid()) return;
 
         // Visually distinguish selected cards during multi-select mode.
         vh.cardView.setActivated(selectedPositions.contains(position));
@@ -76,12 +77,13 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
         // Set card click handler.
         vh.content.setOnClickListener(view ->
                 EventBus.getDefault().post(new BookListCardClickEvent(BookListCardClickEvent.Type.NORMAL,
-                        rBookList.getName(), position)));
+                        rBookList.getName(), viewHolder.getAdapterPosition())));
 
         // Set card long click handler.
         vh.content.setOnLongClickListener(view -> {
             EventBus.getDefault().post(
-                    new BookListCardClickEvent(BookListCardClickEvent.Type.LONG, rBookList.getName(), position));
+                    new BookListCardClickEvent(BookListCardClickEvent.Type.LONG, rBookList.getName(),
+                            viewHolder.getAdapterPosition()));
             return true;
         });
 
@@ -92,7 +94,7 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
                     : R.menu.book_list_smart_card_actions, menu.getMenu());
             menu.setOnMenuItemClickListener(item -> {
                 EventBus.getDefault().post(new BookListCardClickEvent(BookListCardClickEvent.Type.ACTIONS,
-                        rBookList.getName(), item.getItemId(), position));
+                        rBookList.getName(), item.getItemId(), viewHolder.getAdapterPosition()));
                 return true;
             });
             menu.show();
@@ -101,7 +103,7 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
         // Set up btnSmartIcon so that it fires an event when pressed.
         vh.btnSmartIcon.setOnClickListener(view -> EventBus.getDefault().post(
                 new BookListCardClickEvent(BookListCardClickEvent.Type.ACTIONS, rBookList.getName(),
-                        R.id.action_show_query, position)));
+                        R.id.action_show_query, viewHolder.getAdapterPosition())));
 
         // Set visibility of smart list icon.
         vh.btnSmartIcon.setVisibility(rBookList.isSmartList() ? View.VISIBLE : View.GONE);
