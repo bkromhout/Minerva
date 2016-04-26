@@ -459,7 +459,8 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
                     // We only need to explicitly tell the recycler view to redraw its items if we changed our sort
                     // options and didn't change our card type (swapping adapters to change card types would force a
                     // redraw anyway).
-                    if ((sortTypeChanged || sortDirChanged) && !cardTypeChanged) adapter.notifyDataSetChanged();
+                    if ((sortTypeChanged || sortDirChanged) && !cardTypeChanged) //noinspection unchecked
+                        adapter.updateRealmResults(books);
                 })
                 .show();
     }
@@ -510,6 +511,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
         // Swap the adapter
         if (adapter != null) adapter.close();
         adapter = makeAdapter();
+        //noinspection ConstantConditions
         recyclerView.setAdapter(adapter);
 
         // Scroll back to the same position.
