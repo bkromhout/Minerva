@@ -22,6 +22,8 @@ public final class C {
     public static final int RC_TAG_ACTIVITY = 1;
     public static final int RC_QUERY_BUILDER_ACTIVITY = 2;
 
+
+    public static final String TAG_SEP = "\u200B\u2002\u200B";
     /**
      * This is the item type integer we supply to a recycler view for our empty footer item.
      */

@@ -20,12 +20,14 @@ import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookListItem;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.util.RippleForegroundListener;
-import com.bkromhout.minerva.util.TagSpan;
+import com.bkromhout.minerva.util.TagBackgroundSpan;
 import com.bumptech.glide.Glide;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
+
+import java.util.HashMap;
 
 /**
  * Base adapter for book card adapters to extend.
@@ -145,11 +147,15 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
         // If we don't have a non-span character in here somewhere then our spans can be positioned incorrectly the
         // first time the view holders are created. To prevent this, we start our spans off with a zero-width space
         // character, fixing the "bug" while preventing actual extra space from appearing.
-        Spanny spanny = new Spanny("\u200B");
+        StringBuilder tagStr = new StringBuilder();
+        HashMap<String, Integer> colorMap = new HashMap<>(book.getTags().size());
+        int color = ContextCompat.getColor(Minerva.getAppCtx(), R.color.grey700);
         for (RTag tag : book.getTags()) {
-            spanny.append(tag.getName(), new TagSpan(R.color.grey700, R.color.grey200)).append("");
+            tagStr.append(tag.getName()).append(C.TAG_SEP);
+            colorMap.put(tag.getName(), color);
         }
-        resolvedVH.tvTags.setText(spanny, TextView.BufferType.SPANNABLE);
+        resolvedVH.tvTags.setText(Spanny.spanText(tagStr, new TagBackgroundSpan(colorMap)),
+                TextView.BufferType.SPANNABLE);
     }
 
     /**

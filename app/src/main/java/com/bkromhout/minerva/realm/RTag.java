@@ -16,7 +16,6 @@ import java.util.List;
  * Represents a tag in Realm.
  */
 public class RTag extends RealmObject {
-    static final String TAG_STR_SEP = ";TAG_SEP;";
     /**
      * Tag name.
      */
