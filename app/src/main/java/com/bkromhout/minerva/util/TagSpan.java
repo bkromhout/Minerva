@@ -50,6 +50,11 @@ public class TagSpan extends ReplacementSpan {
      * RectF to use as background.
      */
     private RectF rect;
+    /**
+     * Full width of the text, cached during {@link #getSize(Paint, CharSequence, int, int, Paint.FontMetricsInt)} to
+     * prevent additional measure calls.
+     */
+    private float fullTextWidth;
 
     /**
      * Create a new {@link TagSpan}.
@@ -65,7 +70,8 @@ public class TagSpan extends ReplacementSpan {
 
     @Override
     public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
-        return Math.round(paint.measureText(text, start, end) + sidePadding * 2);
+        fullTextWidth = paint.measureText(text, start, end);
+        return Math.round(fullTextWidth + sidePadding * 2);
     }
 
     @Override
@@ -73,7 +79,7 @@ public class TagSpan extends ReplacementSpan {
                      Paint paint) {
         paint.setColor(bgColor);
         rect.set(x - cornerRadius + sidePadding, top,
-                x + paint.measureText(text, start, end) + cornerRadius + sidePadding,
+                x + fullTextWidth + cornerRadius + sidePadding,
                 y + paint.descent() + bottomPadding);
         canvas.drawRoundRect(rect, cornerRadius, cornerRadius, paint);
         paint.setColor(textColor);
