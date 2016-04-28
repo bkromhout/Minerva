@@ -1,6 +1,7 @@
 package com.bkromhout.minerva;
 
 import android.content.res.ColorStateList;
+import android.support.annotation.DimenRes;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import com.google.common.collect.ImmutableList;
@@ -59,5 +60,14 @@ public final class C {
      */
     public static String getStr(@StringRes int resId, Object... formatArgs) {
         return Minerva.getAppCtx().getString(resId, formatArgs);
+    }
+
+    /**
+     * Get a dimension resource using the application context.
+     * @param resId Dimension resource ID.
+     * @return Dimension value from {@link android.content.res.Resources#getDimension(int)}.
+     */
+    public static float getDimen(@DimenRes int resId) {
+        return Minerva.getAppCtx().getResources().getDimension(resId);
     }
 }

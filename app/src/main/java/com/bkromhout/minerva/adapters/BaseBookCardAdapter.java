@@ -5,6 +5,8 @@ import android.graphics.PorterDuff;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.LeadingMarginSpan;
 import android.view.View;
 import android.widget.*;
 import butterknife.Bind;
@@ -147,15 +149,17 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
         // If we don't have a non-span character in here somewhere then our spans can be positioned incorrectly the
         // first time the view holders are created. To prevent this, we start our spans off with a zero-width space
         // character, fixing the "bug" while preventing actual extra space from appearing.
-        StringBuilder tagStr = new StringBuilder();
+        Spanny spanny = new Spanny();
         HashMap<String, Integer> colorMap = new HashMap<>(book.getTags().size());
-        int color = ContextCompat.getColor(Minerva.getAppCtx(), R.color.grey700);
+        int bgColor = ContextCompat.getColor(Minerva.getAppCtx(), R.color.grey700);
+        int fgColor = ContextCompat.getColor(Minerva.getAppCtx(), R.color.grey200);
         for (RTag tag : book.getTags()) {
-            tagStr.append(tag.getName()).append(C.TAG_SEP);
-            colorMap.put(tag.getName(), color);
+            spanny.append(tag.getName(), new ForegroundColorSpan(fgColor)).append(C.TAG_SEP);
+            colorMap.put(tag.getName(), bgColor);
         }
-        resolvedVH.tvTags.setText(Spanny.spanText(tagStr, new TagBackgroundSpan(colorMap)),
-                TextView.BufferType.SPANNABLE);
+        resolvedVH.tvTags.setText(Spanny.spanText(spanny,
+                new LeadingMarginSpan.Standard((int) C.getDimen(R.dimen.tag_corner_radius), 0),
+                new TagBackgroundSpan(colorMap)), TextView.BufferType.SPANNABLE);
     }
 
     /**
