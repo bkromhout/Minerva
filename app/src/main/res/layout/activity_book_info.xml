@@ -195,44 +195,21 @@
                     android:text="@string/lbl_tags"
                     style="@style/BookInfoLabelText"/>
 
-            <FrameLayout
-                    android:id="@+id/tags_cont"
+            <TextView
+                    android:id="@+id/tags"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/lbl_tags">
-
-                <com.greenfrvr.hashtagview.HashtagView
-                        android:id="@+id/tags"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:tagTextColor="@color/grey200"
-                        app:tagBackground="@color/grey700"
-                        app:tagMargin="1dp"
-                        app:tagMaxWidth="100sp"
-                        app:tagPaddingTop="0dp"
-                        app:tagPaddingRight="2dp"
-                        app:tagPaddingBottom="1dp"
-                        app:tagPaddingLeft="2dp"
-                        app:rowMargin="1dp"
-                        app:rowGravity="left"
-                        app:rowDistribution="left"
-                        app:rowMode="wrap"
-                        android:visibility="gone"/>
-
-                <TextView
-                        android:id="@+id/no_tags"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/grey600"
-                        android:text="@string/no_tags"
-                        style="@style/BookInfoTextSmall"/>
-            </FrameLayout>
+                    android:layout_below="@id/lbl_tags"
+                    android:lineSpacingExtra="@dimen/tag_line_spacing_extra"
+                    android:textColor="@color/grey600"
+                    android:text="@string/no_tags"
+                    style="@style/BookInfoTextSmall"/>
 
             <TextView
                     android:id="@+id/lbl_in_lists"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/tags_cont"
+                    android:layout_below="@id/tags"
                     android:text="@string/lbl_in_lists"
                     style="@style/BookInfoLabelText"/>
 

@@ -28,11 +28,10 @@ import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.realm.RBook;
-import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.util.Dialogs;
+import com.bkromhout.minerva.util.TagBackgroundSpan;
 import com.bkromhout.minerva.util.Util;
 import com.bumptech.glide.Glide;
-import com.greenfrvr.hashtagview.HashtagView;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import org.greenrobot.eventbus.EventBus;
@@ -49,7 +48,7 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
      * @see #togglePart(Part, boolean)
      */
     private enum Part {
-        TAGS, LISTS, SUBJECTS, TYPES, FORMAT, LANGUAGE, PUBLISHER, PUBLISH_DATE, MOD_DATE
+        LISTS, SUBJECTS, TYPES, FORMAT, LANGUAGE, PUBLISHER, PUBLISH_DATE, MOD_DATE
     }
 
     // AppBarLayout views.
@@ -77,6 +76,8 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
     ImageButton editRating;
     @Bind(R.id.edit_tags)
     ImageButton editTags;
+    @Bind(R.id.tags)
+    TextView tags;
     @Bind(R.id.path)
     TextView path;
     @Bind(R.id.last_read_date)
@@ -85,10 +86,6 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
     TextView lastImportDate;
 
     // Views which are conditionally shown.
-    @Bind(R.id.tags)
-    HashtagView tags;
-    @Bind(R.id.no_tags)
-    TextView noTags;
     @Bind(R.id.lists)
     TextView lists;
     @Bind(R.id.no_lists)
@@ -371,12 +368,10 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
         lastImportDate.setText(DateUtils.getRelativeDateTimeString(this, book.getLastImportDate().getTime(),
                 DateUtils.SECOND_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_SHOW_TIME));
 
-        // Fill in tags or show empty view.
-        if (book.getTags().isEmpty()) togglePart(Part.TAGS, false);
-        else {
-            togglePart(Part.TAGS, true);
-            tags.setData(RTag.tagListToStringList(book.getTags()));
-        }
+        // Fill in tags or show empty text.
+        if (book.getTags().isEmpty()) tags.setText(R.string.no_tags);
+        else tags.setText(TagBackgroundSpan.getSpannedTagString(book, new TagBackgroundSpan.TagBGDrawingInfo(),
+                tags.getMaxLines()), TextView.BufferType.SPANNABLE);
 
         // Fill in lists or show empty view.
         List<String> listNames = RBook.listsBookIsIn(book, realm);
@@ -444,10 +439,6 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
      */
     private void togglePart(Part part, boolean show) {
         switch (part) {
-            case TAGS:
-                tags.setVisibility(show ? View.VISIBLE : View.GONE);
-                noTags.setVisibility(show ? View.GONE : View.VISIBLE);
-                break;
             case LISTS:
                 lists.setVisibility(show ? View.VISIBLE : View.GONE);
                 noLists.setVisibility(show ? View.GONE : View.VISIBLE);

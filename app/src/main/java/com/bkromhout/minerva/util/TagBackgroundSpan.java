@@ -5,11 +5,18 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.support.annotation.ColorInt;
+import android.support.v4.content.ContextCompat;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.LeadingMarginSpan;
 import android.text.style.LineBackgroundSpan;
 import android.view.View;
+import com.binaryfork.spanny.Spanny;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
+import com.bkromhout.minerva.realm.RBook;
+import com.bkromhout.minerva.realm.RTag;
 
 import java.util.HashMap;
 import java.util.regex.Pattern;
@@ -48,6 +55,29 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
      */
     private float sepTextWidth;
 
+    /**
+     * Get a SpannableString suitable for displaying in a TextView using the given {@code book}'s {@link RTag}s.
+     * @param book     Book whose tags to use.
+     * @param di       {@link TagBGDrawingInfo}.
+     * @param maxLines Maximum number of lines to draw backgrounds for.
+     * @return A SpannedString.
+     */
+    public static SpannableString getSpannedTagString(RBook book, TagBGDrawingInfo di, int maxLines) {
+        Spanny spanny = new Spanny();
+        HashMap<String, Integer> colorMap = new HashMap<>(book.getTags().size());
+        // TODO Remove these hardcoded values once we implement tag colors.
+        int bgColor = ContextCompat.getColor(Minerva.getAppCtx(), R.color.grey700);
+        int fgColor = ContextCompat.getColor(Minerva.getAppCtx(), R.color.grey200);
+        for (RTag tag : book.getTags()) {
+            String tagName = tag.getName();
+            spanny.append(tagName, new ForegroundColorSpan(fgColor)).append(C.TAG_SEP);
+            colorMap.put(tagName, bgColor);
+        }
+        return Spanny.spanText(spanny,
+                new LeadingMarginSpan.Standard((int) C.getDimen(R.dimen.tag_corner_radius)),
+                new TagBackgroundSpan(colorMap, di, maxLines));
+    }
+
     public TagBackgroundSpan(HashMap<String, Integer> colorMap, TagBGDrawingInfo di, int maxLines) {
         this.colorMap = colorMap;
         this.di = di;
@@ -64,7 +94,7 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
         sepTextWidth = p.measureText(C.TAG_SEP);
         int tempColor = p.getColor();
         // Draw the tag backgrounds for this line of text. Offset things a bit for the first line.
-        drawTagBgs(c, p, lnum != 0 ? left : left + (int) di.cornerRadius, top, baseline, text.toString(), start, end);
+        drawTagBgs(c, p, left + (int) di.cornerRadius, top, baseline, text.toString(), start, end);
         p.setColor(tempColor);
     }
 

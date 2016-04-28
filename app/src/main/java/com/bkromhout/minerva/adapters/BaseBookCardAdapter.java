@@ -5,13 +5,10 @@ import android.graphics.PorterDuff;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.LeadingMarginSpan;
 import android.view.View;
 import android.widget.*;
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import com.binaryfork.spanny.Spanny;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
@@ -20,7 +17,6 @@ import com.bkromhout.minerva.events.BookCardClickEvent;
 import com.bkromhout.minerva.realm.ListItemPositionHelper;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookListItem;
-import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.util.RippleForegroundListener;
 import com.bkromhout.minerva.util.TagBackgroundSpan;
 import com.bumptech.glide.Glide;
@@ -28,8 +24,6 @@ import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
-
-import java.util.HashMap;
 
 /**
  * Base adapter for book card adapters to extend.
@@ -148,20 +142,8 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
         resolvedVH.tvDesc.setText(book.getDesc());
         resolvedVH.rbRating.setRating(book.getRating());
         // Create a spannable string for the tag textview.
-        Spanny spanny = new Spanny();
-        HashMap<String, Integer> colorMap = new HashMap<>(book.getTags().size());
-        // TODO Remove these hardcoded values once we implement tag colors.
-        int bgColor = ContextCompat.getColor(Minerva.getAppCtx(), R.color.grey700);
-        int fgColor = ContextCompat.getColor(Minerva.getAppCtx(), R.color.grey200);
-        for (RTag tag : book.getTags()) {
-            String tagName = tag.getName();
-            spanny.append(tagName, new ForegroundColorSpan(fgColor)).append(C.TAG_SEP);
-            colorMap.put(tagName, bgColor);
-        }
-        resolvedVH.tvTags.setText(Spanny.spanText(spanny,
-                new LeadingMarginSpan.Standard((int) C.getDimen(R.dimen.tag_corner_radius), 0),
-                new TagBackgroundSpan(colorMap, tagBGDrawingInfo, resolvedVH.tvTags.getMaxLines())),
-                TextView.BufferType.SPANNABLE);
+        resolvedVH.tvTags.setText(TagBackgroundSpan.getSpannedTagString(book, tagBGDrawingInfo,
+                resolvedVH.tvTags.getMaxLines()), TextView.BufferType.SPANNABLE);
     }
 
     /**
