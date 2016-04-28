@@ -41,6 +41,7 @@ import java.util.HashMap;
  */
 public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends RecyclerView.ViewHolder> extends
         RealmBasedRecyclerViewAdapter<T, VH> {
+    private static TagBackgroundSpan.TagBGDrawingInfo tagBGDrawingInfo = new TagBackgroundSpan.TagBGDrawingInfo();
     /**
      * Help our cards ripple.
      */
@@ -146,20 +147,21 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
         // Fill in data.
         resolvedVH.tvDesc.setText(book.getDesc());
         resolvedVH.rbRating.setRating(book.getRating());
-        // If we don't have a non-span character in here somewhere then our spans can be positioned incorrectly the
-        // first time the view holders are created. To prevent this, we start our spans off with a zero-width space
-        // character, fixing the "bug" while preventing actual extra space from appearing.
+        // Create a spannable string for the tag textview.
         Spanny spanny = new Spanny();
         HashMap<String, Integer> colorMap = new HashMap<>(book.getTags().size());
+        // TODO Remove these hardcoded values once we implement tag colors.
         int bgColor = ContextCompat.getColor(Minerva.getAppCtx(), R.color.grey700);
         int fgColor = ContextCompat.getColor(Minerva.getAppCtx(), R.color.grey200);
         for (RTag tag : book.getTags()) {
-            spanny.append(tag.getName(), new ForegroundColorSpan(fgColor)).append(C.TAG_SEP);
-            colorMap.put(tag.getName(), bgColor);
+            String tagName = tag.getName();
+            spanny.append(tagName, new ForegroundColorSpan(fgColor)).append(C.TAG_SEP);
+            colorMap.put(tagName, bgColor);
         }
         resolvedVH.tvTags.setText(Spanny.spanText(spanny,
                 new LeadingMarginSpan.Standard((int) C.getDimen(R.dimen.tag_corner_radius), 0),
-                new TagBackgroundSpan(colorMap)), TextView.BufferType.SPANNABLE);
+                new TagBackgroundSpan(colorMap, tagBGDrawingInfo, resolvedVH.tvTags.getMaxLines())),
+                TextView.BufferType.SPANNABLE);
     }
 
     /**

@@ -1,11 +1,14 @@
 package com.bkromhout.minerva.util;
 
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.RectF;
+import android.graphics.Path;
 import android.support.annotation.ColorInt;
 import android.text.style.LineBackgroundSpan;
+import android.view.View;
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 
 import java.util.HashMap;
@@ -21,55 +24,47 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
      */
     private static final Pattern TAG_SEP_PATTERN = Pattern.compile("\\Q" + C.TAG_SEP + "\\E");
     /**
-     * How much padding to use on either side of the tags.
+     * Corner radii values for no corners.
      */
-    private static float sidePadding = -1f;
+    private static final float[] noCorners = new float[] {0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f};
     /**
-     * How much padding to use on the bottom of the tag.
+     * Information to use while drawing tag backgrounds.
      */
-    private static float bottomPadding = -1f;
-    /**
-     * Radius to use for rounded tag corners.
-     */
-    private static float cornerRadius = -1f;
-    /**
-     * Extra space between lines.
-     */
-    private static float lineSpacingExtra = -1f;
-
-    static {
-        if (sidePadding == -1f) sidePadding = C.getDimen(R.dimen.tag_side_padding);
-        if (bottomPadding == -1f) bottomPadding = C.getDimen(R.dimen.tag_bottom_padding);
-        if (cornerRadius == -1f) cornerRadius = C.getDimen(R.dimen.tag_corner_radius);
-        if (lineSpacingExtra == -1f) lineSpacingExtra = C.getDimen(R.dimen.tag_line_spacing_extra);
-    }
-
+    private TagBGDrawingInfo di;
     /**
      * Colors to use for tag backgrounds.
      */
     private HashMap<String, Integer> colorMap;
     /**
-     * RectF to use as background.
+     * Number of lines to actually draw for. This was we won't waste time drawing on lines that we don't use.
      */
-    private RectF rect;
+    private int maxLines;
+    /**
+     * Path to reuse each time we draw a tag's background.
+     */
+    private Path path;
     /**
      * Width of tag separator text.
      */
     private float sepTextWidth;
 
-    public TagBackgroundSpan(HashMap<String, Integer> colorMap) {
+    public TagBackgroundSpan(HashMap<String, Integer> colorMap, TagBGDrawingInfo di, int maxLines) {
         this.colorMap = colorMap;
-        this.rect = new RectF();
+        this.di = di;
+        this.maxLines = maxLines;
+        this.path = new Path();
     }
 
     @Override
     public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline, int bottom,
                                CharSequence text, int start, int end, int lnum) {
+        // Don't bother drawing anything if this line is past our maximum number of lines.
+        if (lnum >= maxLines) return;
         // Measure our tag separator text's width.
         sepTextWidth = p.measureText(C.TAG_SEP);
         int tempColor = p.getColor();
         // Draw the tag backgrounds for this line of text. Offset things a bit for the first line.
-        drawTagBgs(c, p, lnum != 0 ? left : left + (int) cornerRadius, top, baseline, text.toString(), start, end);
+        drawTagBgs(c, p, lnum != 0 ? left : left + (int) di.cornerRadius, top, baseline, text.toString(), start, end);
         p.setColor(tempColor);
     }
 
@@ -92,28 +87,45 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
 
         float xOffset = 0f;
         for (int i = 0; i < parts.length; i++) {
-            p.setColor(getColorForPart(parts[i], text, start));
+            String part = parts[i];
+            p.setColor(getColorForPart(part, text, start));
             float partWidth = partWidths[i];
-            drawTagBg(c, p, x + xOffset, y, baseline, partWidth);
+            // Figure out if we should draw rounded corners on the start and end of this tag's background.
+            boolean hasStartCorners = i > 0 || beginsOnLine(part, text, start);
+            boolean hasEndCorners = i < parts.length - 1 || endsOnLine(part, text, end - 1);
+            // Draw this tag's background.
+            drawTagBg(c, p, x + xOffset, y, baseline, partWidth, hasStartCorners, hasEndCorners);
+            // Increment the x-offset so that we don't draw on top of the background we just drew next time.
             xOffset += sepTextWidth + partWidth;
         }
     }
 
     /**
      * Draw the background for one of our tags' text.
-     * @param c         Canvas to draw on.
-     * @param p         Paint to draw with.
-     * @param x         X position to draw at.
-     * @param y         Y position to draw at.
-     * @param baseline  Text baseline Y-position.
-     * @param textWidth Width of the text which will be drawn.
+     * @param c            Canvas to draw on.
+     * @param p            Paint to draw with.
+     * @param x            X position to draw at.
+     * @param y            Y position to draw at.
+     * @param baseline     Text baseline Y-position.
+     * @param textWidth    Width of the text which will be drawn.
+     * @param startCorners Whether to have rounded start corners. This is true if this tag starts on this line.
+     * @param endCorners   Whether to have rounded end corners. This is true if this tag ends on this line.
      */
-    private void drawTagBg(Canvas c, Paint p, float x, float y, int baseline, float textWidth) {
-        rect.set(x - cornerRadius,
+    private void drawTagBg(Canvas c, Paint p, float x, float y, int baseline, float textWidth, boolean startCorners,
+                           boolean endCorners) {
+        // Add a rounded rectangle to the path.
+        path.addRoundRect(
+                // Only leave space for round corners at the start if startCorners is true.
+                startCorners ? x - di.cornerRadius : x,
                 y,
-                x + textWidth + cornerRadius,
-                baseline + p.descent() + bottomPadding);
-        c.drawRoundRect(rect, cornerRadius, cornerRadius, p);
+                // Only leave space for round corners at the end if endCorners is true.
+                endCorners ? x + textWidth + di.cornerRadius : x + textWidth,
+                baseline + p.descent() + di.bottomPadding,
+                // Use rounded corners based on the values of startCorners and endCorners.
+                getCornerRadii(startCorners, endCorners),
+                Path.Direction.CW);
+        c.drawPath(path, p);
+        path.reset();
     }
 
     /**
@@ -126,6 +138,72 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
         float[] partWidths = new float[lineParts.length];
         for (int i = 0; i < lineParts.length; i++) partWidths[i] = p.measureText(lineParts[i]);
         return partWidths;
+    }
+
+    /**
+     * Check whether {@code part} begins within the current line, whose start index in {@code whole} is {@code
+     * lineStart} (inclusive). (It is assumed that some substring of {@code part} is on the line, so this method doesn't
+     * check anything based on the line's end index.).
+     * @param part      String part to check.
+     * @param whole     Whole paragraph string.
+     * @param lineStart Inclusive position where the current line starts at in {@code whole}.
+     * @return True if {@code part} begins on the current line.
+     */
+    private boolean beginsOnLine(String part, String whole, int lineStart) {
+        // Figure out where the part's start index is, starting from the line's start index.
+        int partSIdx = whole.indexOf(part, lineStart);
+        // If this part is the first part of the whole string, clearly it starts on this line.
+        if (partSIdx == 0) return true;
+        // If the part's start index follows the line's start index, then it starts on this line. (We assume we won't
+        // be asked about a part whose start index >= the line's end index.)
+        if (partSIdx > lineStart) return true;
+        // Figure out the index of the closest preceding tag separator string relative to the part.
+        int firstPrecedingSepIdx = whole.lastIndexOf(C.TAG_SEP, partSIdx);
+        // If the start index for this part is the same as the line start index, and it is immediately preceded by a
+        // tag separator, then the part starts on this line.
+        if (partSIdx == lineStart && firstPrecedingSepIdx == lineStart - C.TAG_SEP_LEN) return true;
+        // Otherwise, this part doesn't start on this line.
+        return false;
+    }
+
+    /**
+     * Check whether {@code part} ends within the current line, whose end index in {@code whole} is {@code lineEnd}
+     * (inclusive). (It is assumed that some substring of {@code part} is on the line, so this method doesn't check
+     * anything based on the line's start index.).
+     * @param part    String part to check.
+     * @param whole   Whole paragraph string.
+     * @param lineEnd Inclusive position where the current line ends at in {@code whole}.
+     * @return True if {@code part} ends on the current line.
+     */
+    private boolean endsOnLine(String part, String whole, int lineEnd) {
+        // Figure out where the part's end index is, starting from the line's end index.
+        int partEIdx = whole.lastIndexOf(part, lineEnd) + part.length() - 1;
+        // If this part is the last part of the whole string, clearly it ends on this line. (We assume all whole
+        // strings end with a tag separator string.)
+        if (partEIdx == whole.length() - 1 - C.TAG_SEP_LEN) return true;
+        // If the part's end index precedes the line's end index, then it ends on this line. (We assume we won't
+        // be asked about a part whose end index <= the line's start index.)
+        if (partEIdx < lineEnd) return true;
+        // Figure out the index of the closest following tag separator string relative to the part.
+        int firstFollowingSepIdx = whole.indexOf(C.TAG_SEP, partEIdx);
+        // If the end index for this part is the same as the line end index, and it is immediately followed by a
+        // tag separator, then the part ends on this line.
+        if (partEIdx == lineEnd && firstFollowingSepIdx == lineEnd + 1) return true;
+        // Otherwise, this part doesn't end on this line.
+        return false;
+    }
+
+    /**
+     * Return the correct corner radii array depending based on {@code startCorners} and {@code endCorners}.
+     * @param startCorners Whether to have rounded start corners.
+     * @param endCorners   Whether to have rounded end corners.
+     * @return Corner radii array.
+     */
+    private float[] getCornerRadii(boolean startCorners, boolean endCorners) {
+        if (startCorners && endCorners) return di.allCorners;
+        else if (startCorners) return di.startCornersOnly;
+        else if (endCorners) return di.endCornersOnly;
+        else return noCorners;
     }
 
     /**
@@ -145,7 +223,57 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
         int partIdx = whole.indexOf(part, start);
         int precedingSepIdx = whole.lastIndexOf(C.TAG_SEP, partIdx);
         int followingSepIdx = whole.indexOf(C.TAG_SEP, partIdx);
-        String fullPart = whole.substring(precedingSepIdx != -1 ? precedingSepIdx + 3 : 0, followingSepIdx);
+        String fullPart = whole.substring(precedingSepIdx != -1 ? precedingSepIdx + C.TAG_SEP_LEN : 0, followingSepIdx);
         return colorMap.get(fullPart);
+    }
+
+    /**
+     * Provides information which is used repeatedly while drawing tags. This is measurement information which is
+     * constant, but since we need to load it from resources it's better to create an instance of this class once and
+     * pass it around rather than to grab it every time we need to use it.
+     */
+    public static class TagBGDrawingInfo {
+        /**
+         * How much padding to use on the bottom of the tag.
+         */
+        private final float bottomPadding;
+        /**
+         * Radius to use for rounded tag corners.
+         */
+        private final float cornerRadius;
+        /**
+         * Corner radii values for all corners.
+         */
+        private final float[] allCorners;
+        /**
+         * Corner radii values for start corners only.
+         */
+        private final float[] startCornersOnly;
+        /**
+         * Corner radii values for end corners only.
+         */
+        private final float[] endCornersOnly;
+
+        public TagBGDrawingInfo() {
+            Resources resources = Minerva.getAppCtx().getResources();
+            bottomPadding = resources.getDimension(R.dimen.tag_bottom_padding);
+            cornerRadius = resources.getDimension(R.dimen.tag_corner_radius);
+            allCorners = new float[] {cornerRadius, cornerRadius,  // Top left.
+                                      cornerRadius, cornerRadius,  // Top right.
+                                      cornerRadius, cornerRadius,  // Bottom right.
+                                      cornerRadius, cornerRadius}; // Bottom left.
+            boolean isLtr = resources.getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_LTR;
+            float[] leftCornersOnly = new float[] {cornerRadius, cornerRadius,
+                                                   -1f, -1f,
+                                                   -1f, -1f,
+                                                   cornerRadius, cornerRadius};
+            float[] rightCornersOnly = new float[] {0f, 0f,
+                                                    cornerRadius, cornerRadius,
+                                                    cornerRadius, cornerRadius,
+                                                    0f, 0f};
+
+            startCornersOnly = isLtr ? leftCornersOnly : rightCornersOnly;
+            endCornersOnly = isLtr ? rightCornersOnly : leftCornersOnly;
+        }
     }
 }

@@ -25,6 +25,7 @@ public final class C {
 
 
     public static final String TAG_SEP = "\u200B\u2002\u200B";
+    public static final int TAG_SEP_LEN = TAG_SEP.length();
     /**
      * This is the item type integer we supply to a recycler view for our empty footer item.
      */
