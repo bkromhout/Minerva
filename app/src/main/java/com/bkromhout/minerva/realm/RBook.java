@@ -33,6 +33,12 @@ public class RBook extends RealmObject {
     public static final String SUBJECT_STR_SEP = ";SUBJECT_STR_SEP;";
     public static final String TYPE_STR_SEP = ";TYPE_STR_SEP;";
     /**
+     * A unique long value.
+     */
+    @Index
+    @Hide
+    private long uniqueId;
+    /**
      * Path to book file (relative to library directory).
      */
     @PrimaryKey
@@ -141,12 +147,6 @@ public class RBook extends RealmObject {
      */
     @Index
     private int rating;
-    /**
-     * A unique long value.
-     */
-    @Index
-    @Hide
-    private long uniqueId;
 
     /**
      * Create a default {@link RBook}.
@@ -225,6 +225,7 @@ public class RBook extends RealmObject {
         if (!realm.isInTransaction())
             throw new IllegalStateException("You must call this method from within a Realm transaction.");
 
+        // TODO Check if the hashes are different here, and if they aren't then we're done.
         setHash(otherBook.getHash());
 
         setTitle(otherBook.getTitle());
