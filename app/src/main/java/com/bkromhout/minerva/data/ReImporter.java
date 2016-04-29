@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -50,11 +50,11 @@ public class ReImporter {
      * for simplicity.
      */
     private View dialogContent;
-    @Bind(R.id.message)
+    @BindView(R.id.message)
     TextView message;
-    @Bind(R.id.progress_bar)
+    @BindView(R.id.progress_bar)
     ProgressBar progressBar;
-    @Bind(R.id.error_messages)
+    @BindView(R.id.error_messages)
     TextView errors;
 
     /**

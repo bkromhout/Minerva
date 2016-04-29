@@ -37,9 +37,9 @@ public class ActionHelper {
      */
     public static void addBookToList(Realm realm, RBook book, String listName) {
         realm.where(RBookList.class)
-                .equalTo("name", listName)
-                .findFirst()
-                .addBook(book);
+             .equalTo("name", listName)
+             .findFirst()
+             .addBook(book);
     }
 
     /**

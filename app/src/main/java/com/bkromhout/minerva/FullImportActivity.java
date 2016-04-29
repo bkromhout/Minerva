@@ -8,7 +8,7 @@ import android.text.format.DateUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
@@ -52,29 +52,29 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
     }
 
     // Views
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @Bind(R.id.header)
+    @BindView(R.id.header)
     TextView tvHeader;
-    @Bind(R.id.import_folder)
+    @BindView(R.id.import_folder)
     TextView tvFolder;
-    @Bind(R.id.last_import_time)
+    @BindView(R.id.last_import_time)
     TextView tvLastImportTime;
-    @Bind(R.id.import_progress)
+    @BindView(R.id.import_progress)
     ProgressBar progressBar;
-    @Bind(R.id.import_log_cont)
+    @BindView(R.id.import_log_cont)
     ScrollView svLogCont;
-    @Bind(R.id.import_log)
+    @BindView(R.id.import_log)
     TextView tvLog;
-    @Bind(R.id.import_elog_cont)
+    @BindView(R.id.import_elog_cont)
     ScrollView svELogCont;
-    @Bind(R.id.import_elog)
+    @BindView(R.id.import_elog)
     TextView tvELog;
-    @Bind(R.id.import_log_type)
+    @BindView(R.id.import_log_type)
     RadioGroup rgLogType;
-    @Bind(R.id.import_red_text)
+    @BindView(R.id.import_red_text)
     TextView tvRedText;
-    @Bind(R.id.import_button)
+    @BindView(R.id.import_button)
     Button button;
 
     /**

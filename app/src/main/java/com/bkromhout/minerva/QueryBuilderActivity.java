@@ -9,7 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.ruqus.RealmQueryView;
@@ -20,9 +20,9 @@ import com.bkromhout.ruqus.RealmUserQuery;
  */
 public class QueryBuilderActivity extends AppCompatActivity implements RealmQueryView.ModeListener {
     // Views.
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @Bind(R.id.rqv)
+    @BindView(R.id.rqv)
     RealmQueryView rqv;
 
     /**

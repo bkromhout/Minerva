@@ -14,7 +14,7 @@ import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.view.*;
 import android.widget.RadioGroup;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.afollestad.materialdialogs.GravityEnum;
@@ -54,11 +54,11 @@ import java.util.List;
 public class LibraryFragment extends Fragment implements ActionMode.Callback, ReImporter.IReImportListener,
         BubbleTextProvider, FastScrollHandleStateListener {
     // Views.
-    @Bind(R.id.fab)
+    @BindView(R.id.fab)
     FloatingActionButton fabViewOpts;
-    @Bind(R.id.recycler)
+    @BindView(R.id.recycler)
     RealmRecyclerView recyclerView;
-    @Bind(R.id.empty_library)
+    @BindView(R.id.empty_library)
     PercentRelativeLayout emptyLibraryView;
 
     /**

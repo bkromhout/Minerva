@@ -11,7 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.view.*;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.*;
@@ -47,13 +47,13 @@ import java.util.List;
  * Fragment in charge of letting the user power search.
  */
 public class PowerSearchFragment extends Fragment implements ActionMode.Callback, ReImporter.IReImportListener,
-        FastScrollHandleStateListener{
+        FastScrollHandleStateListener {
     private static final String QUERY_TYPE = "QUERY_TYPE";
 
     // Views.
-    @Bind(R.id.fab)
+    @BindView(R.id.fab)
     FloatingActionButton fabQuery;
-    @Bind(R.id.recycler)
+    @BindView(R.id.recycler)
     RealmRecyclerView recyclerView;
 
     /**

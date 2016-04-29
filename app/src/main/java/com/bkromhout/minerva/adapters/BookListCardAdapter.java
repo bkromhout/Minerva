@@ -10,7 +10,7 @@ import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
@@ -116,15 +116,15 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
      * BookListCardVH class.
      */
     public class BookListCardVH extends RecyclerView.ViewHolder {
-        @Bind(R.id.card)
+        @BindView(R.id.card)
         public CardView cardView;
-        @Bind(R.id.content)
+        @BindView(R.id.content)
         public RelativeLayout content;
-        @Bind(R.id.list_name)
+        @BindView(R.id.list_name)
         public TextView tvListName;
-        @Bind(R.id.smart_list_icon)
+        @BindView(R.id.smart_list_icon)
         public ImageButton btnSmartIcon;
-        @Bind(R.id.btn_actions)
+        @BindView(R.id.btn_actions)
         public ImageButton btnActions;
 
         public BookListCardVH(View itemView) {

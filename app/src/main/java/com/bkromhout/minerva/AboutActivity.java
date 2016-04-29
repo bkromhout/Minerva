@@ -10,7 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.mikepenz.aboutlibraries.LibsBuilder;
@@ -20,9 +20,9 @@ import com.mikepenz.aboutlibraries.ui.LibsSupportFragment;
  * Shows information about the Application.
  */
 public class AboutActivity extends AppCompatActivity {
-    @Bind(R.id.about_app_version)
+    @BindView(R.id.about_app_version)
     TextView version;
-    @Bind(R.id.github)
+    @BindView(R.id.github)
     ImageButton github;
 
     @Override

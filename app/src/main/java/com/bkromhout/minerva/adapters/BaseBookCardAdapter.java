@@ -7,7 +7,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.*;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.Minerva;
@@ -211,15 +211,15 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
      * A base ViewHolder class for all book cards.
      */
     static class BaseCardVH extends RecyclerView.ViewHolder {
-        @Bind(R.id.card)
+        @BindView(R.id.card)
         public CardView cardView;
-        @Bind(R.id.content)
+        @BindView(R.id.content)
         public RelativeLayout content;
-        @Bind(R.id.btn_info)
+        @BindView(R.id.btn_info)
         public ImageButton btnInfo;
-        @Bind(R.id.title)
+        @BindView(R.id.title)
         public TextView tvTitle;
-        @Bind(R.id.author)
+        @BindView(R.id.author)
         public TextView tvAuthor;
 
         public BaseCardVH(View itemView) {
@@ -239,7 +239,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
      * ViewHolder class for compact book cards. Adds a rating text view on top of {@link BaseCardVH}.
      */
     static class CompactCardVH extends BaseCardVH {
-        @Bind(R.id.rating_txt)
+        @BindView(R.id.rating_txt)
         public TextView tvRating;
 
         public CompactCardVH(View itemView) {
@@ -252,13 +252,13 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
      * and a custom view for tags on top of {@link BaseCardVH}.
      */
     static class NoCoverCardVH extends BaseCardVH {
-        @Bind(R.id.btn_quick_tag)
+        @BindView(R.id.btn_quick_tag)
         public ImageButton btnQuickTag;
-        @Bind(R.id.description)
+        @BindView(R.id.description)
         public TextView tvDesc;
-        @Bind(R.id.rating)
+        @BindView(R.id.rating)
         public RatingBar rbRating;
-        @Bind(R.id.tags)
+        @BindView(R.id.tags)
         public TextView tvTags;
 
         public NoCoverCardVH(View itemView) {
@@ -270,7 +270,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
      * ViewHolder class for normal book cards. Adds an ImageView for the cover on top of {@link NoCoverCardVH}
      */
     static class NormalCardVH extends NoCoverCardVH {
-        @Bind(R.id.cover_image)
+        @BindView(R.id.cover_image)
         public ImageView ivCoverImage;
 
         public NormalCardVH(View itemView) {

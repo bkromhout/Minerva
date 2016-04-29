@@ -18,7 +18,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.data.ActionHelper;
@@ -52,71 +52,71 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
     }
 
     // AppBarLayout views.
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @Bind(R.id.collapsing_toolbar)
+    @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsibleToolbar;
-    @Bind(R.id.cover_image)
+    @BindView(R.id.cover_image)
     ImageView coverImage;
-    @Bind(R.id.fab)
+    @BindView(R.id.fab)
     FloatingActionButton fab;
 
     // Views which always are shown.
-    @Bind(R.id.title)
+    @BindView(R.id.title)
     TextView title;
-    @Bind(R.id.author)
+    @BindView(R.id.author)
     TextView author;
-    @Bind(R.id.desc)
+    @BindView(R.id.desc)
     TextView desc;
-    @Bind(R.id.chap_count)
+    @BindView(R.id.chap_count)
     TextView chapCount;
-    @Bind(R.id.rating)
+    @BindView(R.id.rating)
     RatingBar rating;
-    @Bind(R.id.edit_rating)
+    @BindView(R.id.edit_rating)
     ImageButton editRating;
-    @Bind(R.id.edit_tags)
+    @BindView(R.id.edit_tags)
     ImageButton editTags;
-    @Bind(R.id.tags)
+    @BindView(R.id.tags)
     TextView tags;
-    @Bind(R.id.path)
+    @BindView(R.id.path)
     TextView path;
-    @Bind(R.id.last_read_date)
+    @BindView(R.id.last_read_date)
     TextView lastReadDate;
-    @Bind(R.id.last_import_date)
+    @BindView(R.id.last_import_date)
     TextView lastImportDate;
 
     // Views which are conditionally shown.
-    @Bind(R.id.lists)
+    @BindView(R.id.lists)
     TextView lists;
-    @Bind(R.id.no_lists)
+    @BindView(R.id.no_lists)
     TextView noLists;
-    @Bind(R.id.lbl_subjects)
+    @BindView(R.id.lbl_subjects)
     TextView lblSubjects;
-    @Bind(R.id.subjects)
+    @BindView(R.id.subjects)
     TextView subjects;
-    @Bind(R.id.lbl_types)
+    @BindView(R.id.lbl_types)
     TextView lblTypes;
-    @Bind(R.id.types)
+    @BindView(R.id.types)
     TextView types;
-    @Bind(R.id.lbl_format)
+    @BindView(R.id.lbl_format)
     TextView lblFormat;
-    @Bind(R.id.format)
+    @BindView(R.id.format)
     TextView format;
-    @Bind(R.id.lbl_language)
+    @BindView(R.id.lbl_language)
     TextView lblLanguage;
-    @Bind(R.id.language)
+    @BindView(R.id.language)
     TextView language;
-    @Bind(R.id.lbl_publisher)
+    @BindView(R.id.lbl_publisher)
     TextView lblPublisher;
-    @Bind(R.id.publisher)
+    @BindView(R.id.publisher)
     TextView publisher;
-    @Bind(R.id.lbl_publish_date)
+    @BindView(R.id.lbl_publish_date)
     TextView lblPublishDate;
-    @Bind(R.id.publish_date)
+    @BindView(R.id.publish_date)
     TextView publishDate;
-    @Bind(R.id.lbl_mod_date)
+    @BindView(R.id.lbl_mod_date)
     TextView lblModDate;
-    @Bind(R.id.mod_date)
+    @BindView(R.id.mod_date)
     TextView modDate;
 
     /**

@@ -14,7 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -49,17 +49,17 @@ import java.util.concurrent.TimeUnit;
  */
 public class TaggingActivity extends AppCompatActivity implements ActionMode.Callback {
     // Views.
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @Bind(R.id.recycler)
+    @BindView(R.id.recycler)
     RealmRecyclerView recyclerView;
-    @Bind(R.id.tag_filter)
+    @BindView(R.id.tag_filter)
     EditText filter;
-    @Bind(R.id.buttons)
+    @BindView(R.id.buttons)
     ButtonBarLayout buttons;
-    @Bind(R.id.cancel)
+    @BindView(R.id.cancel)
     Button btnCancel;
-    @Bind(R.id.save)
+    @BindView(R.id.save)
     Button btnSave;
 
     /**

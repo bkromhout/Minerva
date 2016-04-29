@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckedTextView;
 import android.widget.ImageButton;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.TaggingActivity;
@@ -100,13 +100,13 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
      * TagCardVH class.
      */
     public class TagCardVH extends RecyclerView.ViewHolder {
-        @Bind(R.id.card)
+        @BindView(R.id.card)
         CardView card;
-        @Bind(R.id.tag_name)
+        @BindView(R.id.tag_name)
         CheckedTextView tag;
-        @Bind(R.id.rename_tag)
+        @BindView(R.id.rename_tag)
         ImageButton rename;
-        @Bind(R.id.delete_tag)
+        @BindView(R.id.delete_tag)
         ImageButton delete;
 
         public TagCardVH(View itemView) {

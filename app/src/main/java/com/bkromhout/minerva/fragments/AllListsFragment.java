@@ -8,7 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.view.*;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.BookListActivity;
@@ -40,13 +40,13 @@ import java.util.ArrayList;
  */
 public class AllListsFragment extends Fragment implements ActionMode.Callback, FastScrollHandleStateListener {
     // Views.
-    @Bind(R.id.fab)
+    @BindView(R.id.fab)
     FloatingActionButton fabNewList;
-    @Bind(R.id.fab2)
+    @BindView(R.id.fab2)
     FloatingActionButton fabNewSmartList;
-    @Bind(R.id.mask_view)
+    @BindView(R.id.mask_view)
     View maskView;
-    @Bind(R.id.recycler)
+    @BindView(R.id.recycler)
     RealmRecyclerView recyclerView;
 
     /**

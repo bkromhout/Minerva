@@ -10,7 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.view.*;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.BookInfoActivity;
@@ -49,11 +49,11 @@ import java.util.List;
  * Fragment in charge of showing recently opened books.
  */
 public class RecentFragment extends Fragment implements ActionMode.Callback, ReImporter.IReImportListener,
-        FastScrollHandleStateListener{
+        FastScrollHandleStateListener {
     // Views.
-    @Bind(R.id.fab)
+    @BindView(R.id.fab)
     FloatingActionButton fabOpenRecent;
-    @Bind(R.id.recycler)
+    @BindView(R.id.recycler)
     RealmRecyclerView recyclerView;
 
     /**

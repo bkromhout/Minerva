@@ -12,7 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.adapters.*;
@@ -51,11 +51,11 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     private static final String KEY_IS_REORDER_MODE = "IS_REORDER_MODE";
 
     // Views.
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @Bind(R.id.recycler)
+    @BindView(R.id.recycler)
     RealmRecyclerView recyclerView;
-    @Bind(R.id.smart_list_empty)
+    @BindView(R.id.smart_list_empty)
     LinearLayout emptySmartList;
 
     /**

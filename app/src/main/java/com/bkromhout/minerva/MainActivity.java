@@ -18,7 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkromhout.minerva.events.MissingPermEvent;
@@ -50,13 +50,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final int FRAG_POWER_SEARCH = 3;
 
     // Views.
-    @Bind(R.id.drawer_layout)
+    @BindView(R.id.drawer_layout)
     DrawerLayout drawer;
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @Bind(R.id.nav_view)
+    @BindView(R.id.nav_view)
     NavigationView navigationView;
-    @Bind(R.id.main_frag_cont)
+    @BindView(R.id.main_frag_cont)
     FrameLayout fragCont;
 
     /**
