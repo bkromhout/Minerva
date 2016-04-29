@@ -12,7 +12,6 @@ import android.text.style.LeadingMarginSpan;
 import android.text.style.LineBackgroundSpan;
 import android.view.View;
 import com.binaryfork.spanny.Spanny;
-import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.realm.RBook;
@@ -27,13 +26,22 @@ import java.util.regex.Pattern;
  */
 public class TagBackgroundSpan implements LineBackgroundSpan {
     /**
+     * String used to separate tag names in the tag string used as a spannable string.
+     */
+    private static final String TAG_SEP = "\u200B\u2002\u200B";
+    /**
+     * Length of the tag separator string.
+     */
+    private static final int TAG_SEP_LEN = TAG_SEP.length();
+    /**
      * Pattern to use to split tag strings.
      */
-    private static final Pattern TAG_SEP_PATTERN = Pattern.compile("\\Q" + C.TAG_SEP + "\\E");
+    private static final Pattern TAG_SEP_PATTERN = Pattern.compile("\\Q" + TAG_SEP + "\\E");
     /**
      * Corner radii values for no corners.
      */
     private static final float[] noCorners = new float[] {0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f};
+
     /**
      * Information to use while drawing tag backgrounds.
      */
@@ -69,12 +77,11 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
         int bgColor = ContextCompat.getColor(Minerva.getAppCtx(), R.color.grey700);
         int fgColor = ContextCompat.getColor(Minerva.getAppCtx(), R.color.grey200);
         for (RTag tag : book.getTags()) {
-            String tagName = tag.getName();
-            spanny.append(tagName, new ForegroundColorSpan(fgColor)).append(C.TAG_SEP);
-            colorMap.put(tagName, bgColor);
+            spanny.append(tag.getName(), new ForegroundColorSpan(fgColor)).append(TAG_SEP);
+            colorMap.put(tag.getName(), bgColor);
         }
         return Spanny.spanText(spanny,
-                new LeadingMarginSpan.Standard((int) C.getDimen(R.dimen.tag_corner_radius)),
+                new LeadingMarginSpan.Standard((int) di.cornerRadius),
                 new TagBackgroundSpan(colorMap, di, maxLines));
     }
 
@@ -91,7 +98,7 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
         // Don't bother drawing anything if this line is past our maximum number of lines.
         if (lnum >= maxLines) return;
         // Measure our tag separator text's width.
-        sepTextWidth = p.measureText(C.TAG_SEP);
+        sepTextWidth = p.measureText(TAG_SEP);
         int tempColor = p.getColor();
         // Draw the tag backgrounds for this line of text. Offset things a bit for the first line.
         drawTagBgs(c, p, left + (int) di.cornerRadius, top, baseline, text.toString(), start, end);
@@ -188,10 +195,10 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
         // be asked about a part whose start index >= the line's end index.)
         if (partSIdx > lineStart) return true;
         // Figure out the index of the closest preceding tag separator string relative to the part.
-        int firstPrecedingSepIdx = whole.lastIndexOf(C.TAG_SEP, partSIdx);
+        int firstPrecedingSepIdx = whole.lastIndexOf(TAG_SEP, partSIdx);
         // If the start index for this part is the same as the line start index, and it is immediately preceded by a
         // tag separator, then the part starts on this line.
-        if (partSIdx == lineStart && firstPrecedingSepIdx == lineStart - C.TAG_SEP_LEN) return true;
+        if (partSIdx == lineStart && firstPrecedingSepIdx == lineStart - TAG_SEP_LEN) return true;
         // Otherwise, this part doesn't start on this line.
         return false;
     }
@@ -210,12 +217,12 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
         int partEIdx = whole.lastIndexOf(part, lineEnd) + part.length() - 1;
         // If this part is the last part of the whole string, clearly it ends on this line. (We assume all whole
         // strings end with a tag separator string.)
-        if (partEIdx == whole.length() - 1 - C.TAG_SEP_LEN) return true;
+        if (partEIdx == whole.length() - 1 - TAG_SEP_LEN) return true;
         // If the part's end index precedes the line's end index, then it ends on this line. (We assume we won't
         // be asked about a part whose end index <= the line's start index.)
         if (partEIdx < lineEnd) return true;
         // Figure out the index of the closest following tag separator string relative to the part.
-        int firstFollowingSepIdx = whole.indexOf(C.TAG_SEP, partEIdx);
+        int firstFollowingSepIdx = whole.indexOf(TAG_SEP, partEIdx);
         // If the end index for this part is the same as the line end index, and it is immediately followed by a
         // tag separator, then the part ends on this line.
         if (partEIdx == lineEnd && firstFollowingSepIdx == lineEnd + 1) return true;
@@ -251,9 +258,9 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
         if (color != null) return color;
         // If that fails, we clearly have a partial string, and we'll need to get the whole one.
         int partIdx = whole.indexOf(part, start);
-        int precedingSepIdx = whole.lastIndexOf(C.TAG_SEP, partIdx);
-        int followingSepIdx = whole.indexOf(C.TAG_SEP, partIdx);
-        String fullPart = whole.substring(precedingSepIdx != -1 ? precedingSepIdx + C.TAG_SEP_LEN : 0, followingSepIdx);
+        int precedingSepIdx = whole.lastIndexOf(TAG_SEP, partIdx);
+        int followingSepIdx = whole.indexOf(TAG_SEP, partIdx);
+        String fullPart = whole.substring(precedingSepIdx != -1 ? precedingSepIdx + TAG_SEP_LEN : 0, followingSepIdx);
         return colorMap.get(fullPart);
     }
 
@@ -262,7 +269,7 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
      * constant, but since we need to load it from resources it's better to create an instance of this class once and
      * pass it around rather than to grab it every time we need to use it.
      */
-    public static class TagBGDrawingInfo {
+    public static final class TagBGDrawingInfo {
         /**
          * How much padding to use on the bottom of the tag.
          */

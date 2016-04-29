@@ -1,7 +1,6 @@
 package com.bkromhout.minerva;
 
 import android.content.res.ColorStateList;
-import android.support.annotation.DimenRes;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import com.google.common.collect.ImmutableList;
@@ -23,9 +22,6 @@ public final class C {
     public static final int RC_TAG_ACTIVITY = 1;
     public static final int RC_QUERY_BUILDER_ACTIVITY = 2;
 
-
-    public static final String TAG_SEP = "\u200B\u2002\u200B";
-    public static final int TAG_SEP_LEN = TAG_SEP.length();
     /**
      * This is the item type integer we supply to a recycler view for our empty footer item.
      */
@@ -61,14 +57,5 @@ public final class C {
      */
     public static String getStr(@StringRes int resId, Object... formatArgs) {
         return Minerva.getAppCtx().getString(resId, formatArgs);
-    }
-
-    /**
-     * Get a dimension resource using the application context.
-     * @param resId Dimension resource ID.
-     * @return Dimension value from {@link android.content.res.Resources#getDimension(int)}.
-     */
-    public static float getDimen(@DimenRes int resId) {
-        return Minerva.getAppCtx().getResources().getDimension(resId);
     }
 }

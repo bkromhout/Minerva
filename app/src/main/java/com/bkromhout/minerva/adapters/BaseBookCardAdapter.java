@@ -30,11 +30,16 @@ import org.greenrobot.eventbus.EventBus;
  * <p>
  * Unless there are no items, automatically adds an empty footer view to ensure that we'll never get into a situation
  * where a FAB is obscuring the last item and we aren't able to scroll to make it hide itself (which would otherwise
- * happen if the number/height of the items is just enough to fill the available space, but not enough to allow
+ * happen if the number/height of the items is <i>just</i> enough to fill the viewport, but not enough to allow
  * scrolling).
  */
 public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends RecyclerView.ViewHolder> extends
         RealmBasedRecyclerViewAdapter<T, VH> {
+    /**
+     * Information to use when drawing tags. The values in this class are retrieved from resources, so while they cannot
+     * be put into static final variables, we definitely only want to have to get them once. More importantly, we don't
+     * want to have to retrieve them at draw-time.
+     */
     private static TagBackgroundSpan.TagBGDrawingInfo tagBGDrawingInfo = new TagBackgroundSpan.TagBGDrawingInfo();
     /**
      * Help our cards ripple.
@@ -45,7 +50,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
      */
     private Activity activity;
     /**
-     * Whether or not this adapter may allow item drags to start.
+     * Whether or not this adapter may allow item dragging to start.
      */
     boolean mayStartDrags = false;
 

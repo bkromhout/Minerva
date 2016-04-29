@@ -13,11 +13,17 @@ import org.greenrobot.eventbus.EventBus;
  * Custom Application class.
  */
 public class Minerva extends Application {
+    /**
+     * Realm filename.
+     */
     private static final String REALM_FILE_NAME = "minerva.realm";
+    /**
+     * Realm schema version.
+     */
     private static final long REALM_SCHEMA_VERSION = 0;
 
     /**
-     * Static instance to (CAREFULLY) allow getting Application Context anywhere.
+     * Static instance of application context. Beware, this isn't available before the application starts.
      */
     private static Minerva instance;
 
@@ -56,6 +62,7 @@ public class Minerva extends Application {
      * @return Application context.
      */
     public static Context getAppCtx() {
+        if (instance == null) throw new IllegalStateException("The application context isn't available yet.");
         return instance.getApplicationContext();
     }
 }
