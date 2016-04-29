@@ -11,17 +11,10 @@ import java.util.List;
  * Constants.
  */
 public final class C {
-    /* Keys */
-    public static final String POS_TO_UPDATE = "position_to_update";
-    public static final String NEEDS_POS_UPDATE = "needs_position_update";
-    public static final String REL_PATH = "relative_path";
-    public static final String IS_IN_ACTION_MODE = "is_in_action_mode";
-    public static final String RUQ = "realm_user_query";
-
-    /* Request codes. */
-    public static final int RC_TAG_ACTIVITY = 1;
-    public static final int RC_QUERY_BUILDER_ACTIVITY = 2;
-
+    /**
+     * URL of Minerva's GitHub repository.
+     */
+    public static final String GITHUB_REPO = "https://github.com/bkromhout/Minerva";
     /**
      * This is the item type integer we supply to a recycler view for our empty footer item.
      */
@@ -39,6 +32,17 @@ public final class C {
      */
     public static final ColorStateList CARD_BG_COLORS = ContextCompat.getColorStateList(Minerva.getAppCtx(),
             R.color.card_bg_color);
+
+    /* Keys */
+    public static final String POS_TO_UPDATE = "position_to_update";
+    public static final String NEEDS_POS_UPDATE = "needs_position_update";
+    public static final String REL_PATH = "relative_path";
+    public static final String IS_IN_ACTION_MODE = "is_in_action_mode";
+    public static final String RUQ = "realm_user_query";
+
+    /* Request codes. */
+    public static final int RC_TAG_ACTIVITY = 1;
+    public static final int RC_QUERY_BUILDER_ACTIVITY = 2;
 
     /**
      * Get a string resource using the application context.
