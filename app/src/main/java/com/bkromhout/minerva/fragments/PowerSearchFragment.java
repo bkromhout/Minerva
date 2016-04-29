@@ -27,6 +27,7 @@ import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.prefs.PowerSearchPrefs;
 import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 import com.bkromhout.minerva.realm.RBook;
+import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
@@ -234,8 +235,9 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
                 return true;
             case R.id.action_save_as_smart_list:
                 if (ruq == null) return true;
-                Dialogs.listNameDialog(getActivity(), R.string.action_new_smart_list, R.string.prompt_new_smart_list,
-                        null, R.id.action_new_smart_list, -1);
+                Dialogs.uniqueNameDialog(getActivity(), RBookList.class, R.string.action_new_smart_list, R.string.prompt_new_smart_list,
+
+                        R.string.list_name_hint, null, R.id.action_new_smart_list, -1);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

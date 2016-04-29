@@ -3,4 +3,7 @@
     <item type="id" name="action_new_list"/>
     <item type="id" name="action_new_smart_list"/>
     <item type="id" name="action_open_query_builder"/>
+
+    <item type="id" name="action_rename_tag"/>
+    <item type="id" name="action_delete_tag"/>
 </resources>

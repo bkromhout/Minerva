@@ -8,9 +8,11 @@ import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
+import com.bkromhout.minerva.TaggingActivity.TaggingHelper;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
+import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.ruqus.RealmUserQuery;
 import com.google.common.collect.Lists;
@@ -316,5 +318,53 @@ public class ActionHelper {
                 bookList.setNextPos(nextLastPos);
             });
         }
+    }
+
+    /*
+     * Tag Actions.
+     */
+
+    /**
+     * Create a new {@link RTag}.
+     * @param realm   Instance of Realm to use.
+     * @param tagName Name of new tag.
+     */
+    public static void createNewTag(Realm realm, String tagName) {
+        realm.executeTransaction(tRealm -> tRealm.copyToRealm(new RTag(tagName)));
+    }
+
+    /**
+     * Rename the given {@code tag}.
+     * @param realm   Instance of Realm to use.
+     * @param tag     {@link RTag} to rename.
+     * @param newName New tag name.
+     */
+    public static void renameTag(Realm realm, RTag tag, String newName) {
+        String oldName = tag.getName();
+        // Name is available; rename the RTag.
+        realm.executeTransaction(tRealm -> {
+            tag.setName(newName);
+            tag.setSortName(newName.toLowerCase());
+        });
+
+        // Now make sure that we swap the old name for the new one in the old/new lists.
+        TaggingHelper th = TaggingHelper.get();
+        if (th.oldCheckedItems.remove(oldName)) th.oldCheckedItems.add(newName);
+        if (th.newCheckedItems.remove(oldName)) th.newCheckedItems.add(newName);
+    }
+
+    /**
+     * Delete the given {@code tag}.
+     * @param realm Instance of Realm to use.
+     * @param tag   {@link RTag} to delete.
+     */
+    public static void deleteTag(Realm realm, RTag tag) {
+        String tagName = tag.getName();
+        realm.executeTransaction(tRealm -> tag.deleteFromRealm());
+
+        // Remove tag name from the lists (if present).
+        TaggingHelper th = TaggingHelper.get();
+        th.oldCheckedItems.remove(tagName);
+        th.newCheckedItems.remove(tagName);
     }
 }

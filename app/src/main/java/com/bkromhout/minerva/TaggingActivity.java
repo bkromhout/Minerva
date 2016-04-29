@@ -17,11 +17,13 @@ import android.widget.EditText;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkromhout.minerva.adapters.TagCardAdapter;
+import com.bkromhout.minerva.data.ActionHelper;
+import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.TagCardClickEvent;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RTag;
+import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.RealmRecyclerView;
 import com.google.common.collect.Lists;
@@ -82,6 +84,10 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
      * Filter edit text change subscription.
      */
     private Subscription filterChangeSub;
+    /**
+     * Temporary storage for a tag.
+     */
+    private RTag tempTag;
 
     /**
      * Convenience method to set up the {@link TaggingHelper} then start this activity from a fragment.
@@ -159,7 +165,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
                                     .subscribe(getFilterObserver());
 
         // Set up recycler view.
-        if (taggingHelper.filter.isEmpty()) items = realm.allObjectsSorted(RTag.class, "sortName", Sort.ASCENDING);
+        if (taggingHelper.filter.isEmpty()) items = realm.where(RTag.class).findAllSorted("sortName", Sort.ASCENDING);
         else applyFilter(taggingHelper.filter);
         adapter = new TagCardAdapter(this, items);
         recyclerView.setAdapter(adapter);
@@ -231,26 +237,8 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
                 onBackPressed();
                 return true;
             case R.id.action_new_tag:
-                new MaterialDialog.Builder(this)
-                        .title(R.string.action_new_tag)
-                        .content(R.string.prompt_new_tag)
-                        .autoDismiss(false)
-                        .negativeText(R.string.cancel)
-                        .onNegative((dialog, which) -> dialog.dismiss())
-                        .input(R.string.tag_name_hint, 0, false, (dialog, input) -> {
-                            String newName = input.toString().trim();
-                            try (Realm iRealm = Realm.getDefaultInstance()) {
-                                if (iRealm.where(RTag.class).equalTo("name", newName).findFirst() == null) {
-                                    // Name is available, create the RTag then dismiss the dialog.
-                                    iRealm.executeTransaction(tRealm -> tRealm.copyToRealm(new RTag(newName)));
-                                    dialog.dismiss();
-                                } else {
-                                    //noinspection ConstantConditions
-                                    dialog.getInputEditText().setError(C.getStr(R.string.err_name_taken));
-                                }
-                            }
-                        })
-                        .show();
+                Dialogs.uniqueNameDialog(this, RTag.class, R.string.action_new_tag, R.string.prompt_new_tag,
+                        R.string.tag_name_hint, null, R.id.action_new_tag, -1);
                 return true;
             case R.id.action_edit_tags:
                 startSupportActionMode(this);
@@ -265,6 +253,50 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
         switch (item.getItemId()) {
             default:
                 return false;
+        }
+    }
+
+    /**
+     * Called when we wish to take some action.
+     * @param event {@link ActionEvent}.
+     */
+    @Subscribe
+    public void onActionEvent(ActionEvent event) {
+        switch (event.getActionId()) {
+            case R.id.action_new_tag:
+                ActionHelper.createNewTag(realm, (String) event.getData());
+                break;
+            case R.id.action_rename_tag:
+                ActionHelper.renameTag(realm, tempTag, (String) event.getData());
+                break;
+            case R.id.action_delete_tag:
+                ActionHelper.deleteTag(realm, tempTag);
+                break;
+        }
+    }
+
+    /**
+     * Called when one of the action buttons is clicked on a tag card.
+     * @param event {@link TagCardClickEvent}.
+     */
+    @Subscribe
+    public void onTagCardAction(TagCardClickEvent event) {
+        // Store tag.
+        tempTag = items.where()
+                       .equalTo("name", event.getName())
+                       .findFirst();
+        // Open some dialog.
+        switch (event.getType()) {
+            case RENAME:
+                // Show rename dialog.
+                Dialogs.uniqueNameDialog(this, RTag.class, R.string.title_rename_tag, R.string.prompt_rename_tag,
+                        R.string.tag_name_hint, event.getName(), R.id.action_rename_tag, -1);
+                break;
+            case DELETE:
+                // Show delete confirm dialog.
+                Dialogs.simpleYesNoDialog(this, R.string.title_delete_tag,
+                        C.getStr(R.string.prompt_delete_tag, event.getName()), R.id.action_delete_tag);
+                break;
         }
     }
 
@@ -359,83 +391,6 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
         items = realm.where(RTag.class)
                      .contains("name", filter, Case.INSENSITIVE)
                      .findAllSorted("sortName");
-    }
-
-    /**
-     * Called when one of the action buttons is clicked on a tag card.
-     * @param event {@link TagCardClickEvent}.
-     */
-    @Subscribe
-    public void onTagCardAction(TagCardClickEvent event) {
-        switch (event.getType()) {
-            case RENAME:
-                // Show rename dialog.
-                new MaterialDialog.Builder(this)
-                        .title(R.string.title_rename_tag)
-                        .content(R.string.prompt_rename_tag)
-                        .autoDismiss(false)
-                        .negativeText(R.string.cancel)
-                        .onNegative((dialog, which) -> dialog.dismiss())
-                        .input(C.getStr(R.string.tag_name_hint), event.getName(), false, (dialog, input) -> {
-                            String newName = input.toString().trim();
-
-                            // If it's the same name, do nothing, just dismiss.
-                            if (event.getName().equals(newName)) {
-                                dialog.dismiss();
-                                return;
-                            }
-
-                            // Get Realm and check if name already exists.
-                            try (Realm iRealm = Realm.getDefaultInstance()) {
-                                if (iRealm.where(RTag.class).equalTo("name", newName).findFirst() == null) {
-                                    // Name is available; rename the RTag.
-                                    iRealm.executeTransaction(tRealm -> {
-                                        RTag rTag = tRealm.where(RTag.class)
-                                                          .equalTo("name", event.getName())
-                                                          .findFirst();
-                                        rTag.setName(newName);
-                                        rTag.setSortName(newName.toLowerCase());
-                                    });
-
-                                    // Now make sure that we swap the old name for the new one in the old/new lists.
-                                    TaggingHelper th = TaggingHelper.get();
-                                    if (th.oldCheckedItems.remove(event.getName())) th.oldCheckedItems.add(newName);
-                                    if (th.newCheckedItems.remove(event.getName())) th.newCheckedItems.add(newName);
-
-                                    dialog.dismiss();
-                                } else {
-                                    // Name already exists, set the error text and _don't_ dismiss the dialog.
-                                    //noinspection ConstantConditions
-                                    dialog.getInputEditText().setError(C.getStr(R.string.err_name_taken));
-                                }
-                            }
-                        })
-                        .show();
-                break;
-            case DELETE:
-                // Show delete confirm dialog.
-                new MaterialDialog.Builder(this)
-                        .title(R.string.title_delete_tag)
-                        .content(C.getStr(R.string.prompt_delete_tag, event.getName()))
-                        .positiveText(R.string.yes)
-                        .negativeText(R.string.no)
-                        .onPositive((dialog, which) -> {
-                            // Get Realm instance, then delete the list.
-                            Realm.getDefaultInstance()
-                                 .executeTransaction(tRealm -> tRealm
-                                         .where(RTag.class)
-                                         .equalTo("name", event.getName())
-                                         .findFirst()
-                                         .deleteFromRealm());
-
-                            // Remove tag name from the lists (if present).
-                            TaggingHelper th = TaggingHelper.get();
-                            th.oldCheckedItems.remove(event.getName());
-                            th.newCheckedItems.remove(event.getName());
-                        })
-                        .show();
-                break;
-        }
     }
 
     /**

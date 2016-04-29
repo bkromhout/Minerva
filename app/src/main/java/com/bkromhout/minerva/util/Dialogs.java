@@ -21,6 +21,7 @@ import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 import com.bkromhout.minerva.realm.RBookList;
 import io.realm.Realm;
+import io.realm.RealmModel;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import rx.Observable;
@@ -32,14 +33,28 @@ import rx.Observable;
  */
 public class Dialogs {
     /**
-     * Shows a simple Yes/No dialog using the given {@code title} and {@code text} string resources. Upon Yes being
-     * clicked, fires an {@link ActionEvent} using the given {@code actionId}.
+     * Shows a simple Yes/No dialog using the given {@code title} and {@code text} strings. Upon Yes being clicked,
+     * fires an {@link ActionEvent} using the given {@code actionId}.
      * @param ctx      Context to use.
      * @param title    String resource to use for title.
      * @param text     String resource to use for text.
      * @param actionId Action ID to send if Yes is clicked.
      */
-    public static void simpleYesNoDialog(Context ctx, @StringRes int title, @StringRes int text, @IdRes int actionId) {
+    public static void simpleYesNoDialog(final Context ctx, @StringRes final int title, @StringRes final int text,
+                                         @IdRes final int actionId) {
+        simpleYesNoDialog(ctx, title, C.getStr(text), actionId);
+    }
+
+    /**
+     * Shows a simple Yes/No dialog using the given {@code title} and {@code text} strings. Upon Yes being clicked,
+     * fires an {@link ActionEvent} using the given {@code actionId}.
+     * @param ctx      Context to use.
+     * @param title    String resource to use for title.
+     * @param text     String to use for text.
+     * @param actionId Action ID to send if Yes is clicked.
+     */
+    public static void simpleYesNoDialog(final Context ctx, @StringRes final int title, final String text,
+                                         @IdRes final int actionId) {
         new MaterialDialog.Builder(ctx)
                 .title(title)
                 .content(text)
@@ -58,8 +73,8 @@ public class Dialogs {
      * @param checkBoxText String resource to use for the checkbox.
      * @param actionId     Action ID to send if Yes is clicked.
      */
-    public static void yesNoCheckBoxDialog(Context ctx, @StringRes int title, @StringRes int text,
-                                           @StringRes int checkBoxText, @IdRes int actionId) {
+    public static void yesNoCheckBoxDialog(final Context ctx, @StringRes final int title, @StringRes final int text,
+                                           @StringRes final int checkBoxText, @IdRes final int actionId) {
         @SuppressLint("InflateParams")
         View view = LayoutInflater.from(ctx).inflate(R.layout.dialog_yes_no_checkbox, null);
         final TextView content = ButterKnife.findById(view, R.id.content);
@@ -83,7 +98,7 @@ public class Dialogs {
      * @param prefs Some *Prefs object which implements {@link BCTPref} so that we may get/put the current/new
      *              preference.
      */
-    public static void cardStyleDialog(Context ctx, BCTPref prefs) {
+    public static void cardStyleDialog(final Context ctx, final BCTPref prefs) {
         // Get current card type from prefs.
         final BookCardType cardType = prefs.getCardType(BookCardType.NORMAL);
         // Show dialog.
@@ -107,7 +122,7 @@ public class Dialogs {
      * @param ctx           Context to use.
      * @param initialRating The rating that the rating bar should show initially.
      */
-    public static void ratingDialog(Context ctx, int initialRating) {
+    public static void ratingDialog(final Context ctx, final int initialRating) {
         @SuppressLint("InflateParams")
         View view = LayoutInflater.from(ctx).inflate(R.layout.dialog_rating, null);
         final RatingBar ratingBar = ButterKnife.findById(view, R.id.rating_bar);
@@ -134,7 +149,7 @@ public class Dialogs {
      * @param ctx   Context to use.
      * @param realm Realm instance to use.
      */
-    public static void addToListDialogOrToast(Context ctx, Realm realm) {
+    public static void addToListDialogOrToast(final Context ctx, final Realm realm) {
         // Get list of normal lists.
         RealmResults<RBookList> lists = realm.where(RBookList.class)
                                              .equalTo("isSmartList", false)
@@ -159,27 +174,31 @@ public class Dialogs {
     }
 
     /**
-     * Shows an input dialog which will check the input against the current list names before allowing the {@link
-     * ActionEvent} to be fired. The event will only be fired if the input text is non-empty and not already used as a
-     * list's name. If entered text is the same as {@code preFill}, the dialog will be dismissed without doing
-     * anything.
+     * Shows an input dialog which will check the input against the current names used for the {@code modelClass} before
+     * allowing the {@link ActionEvent} to be fired. The event will only be fired if the input text is non-empty and the
+     * input is not a name already in use. If entered text is the same as {@code preFill}, the dialog will be dismissed
+     * without doing anything.
      * @param ctx         Context to use.
+     * @param modelClass  Model class whose {@code name} field will be checked.
      * @param title       String resource to use for title.
      * @param text        String resource to use for text.
+     * @param hint        String resource to use for hint.
      * @param preFill     String to pre-fill the edit text with.
      * @param actionId    Action ID to send if Yes is clicked and checks all pass.
      * @param posToUpdate If not -1, the position to put into a {@link UpdatePosEvent} which will be fired if the {@link
      *                    ActionEvent} is fired.
      */
-    public static void listNameDialog(Context ctx, @StringRes int title, @StringRes int text, String preFill,
-                                      @IdRes int actionId, int posToUpdate) {
+    public static void uniqueNameDialog(final Context ctx, final Class<? extends RealmModel> modelClass,
+                                        @StringRes final int title, @StringRes final int text,
+                                        @StringRes final int hint, final String preFill, @IdRes final int actionId,
+                                        final int posToUpdate) {
         new MaterialDialog.Builder(ctx)
                 .title(title)
                 .content(text)
                 .autoDismiss(false)
                 .negativeText(R.string.cancel)
                 .onNegative((dialog, which) -> dialog.dismiss())
-                .input(C.getStr(R.string.list_name_hint), preFill, false, (dialog, input) -> {
+                .input(C.getStr(hint), preFill, false, (dialog, input) -> {
                     // If it's the same value, do nothing.
                     String newName = input.toString().trim();
                     if (preFill != null && preFill.equals(newName)) {
@@ -189,9 +208,9 @@ public class Dialogs {
 
                     // Get Realm to check if name exists.
                     try (Realm innerRealm = Realm.getDefaultInstance()) {
-                        // If the name exists (other than the list's current name), set the error text on the
+                        // If the name exists (other than the model's current name), set the error text on the
                         // edit text. If it doesn't, fire an event off and dismiss the dialog.
-                        if (innerRealm.where(RBookList.class).equalTo("name", newName).findFirst() != null) {
+                        if (innerRealm.where(modelClass).equalTo("name", newName).findFirst() != null) {
                             //noinspection ConstantConditions
                             dialog.getInputEditText().setError(C.getStr(R.string.err_name_taken));
                         } else {
@@ -211,7 +230,7 @@ public class Dialogs {
      * @param posToUpdate If not -1, the position to put into a {@link UpdatePosEvent} which will be fired if the {@link
      *                    ActionEvent} is fired.
      */
-    public static void smartListQueryDialog(Context ctx, String queryString, int posToUpdate) {
+    public static void smartListQueryDialog(final Context ctx, final String queryString, final int posToUpdate) {
         new MaterialDialog.Builder(ctx)
                 .title(R.string.title_smart_list_query)
                 .content(queryString == null || queryString.isEmpty()

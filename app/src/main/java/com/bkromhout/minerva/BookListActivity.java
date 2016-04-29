@@ -330,12 +330,13 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 Dialogs.cardStyleDialog(this, listsPrefs);
                 return true;
             case R.id.action_rename_list:
-                Dialogs.listNameDialog(this, R.string.title_rename_list, R.string.prompt_rename_list, srcList.getName(),
+                Dialogs.uniqueNameDialog(this, RBookList.class, R.string.title_rename_list, R.string.prompt_rename_list,
+                        R.string.list_name_hint, srcList.getName(),
                         R.id.action_rename_list, posToUpdate);
                 return true;
             case R.id.action_rename_smart_list:
-                Dialogs.listNameDialog(this, R.string.title_rename_smart_list, R.string.prompt_rename_smart_list,
-                        srcList.getName(), R.id.action_rename_smart_list, posToUpdate);
+                Dialogs.uniqueNameDialog(this, RBookList.class, R.string.title_rename_smart_list, R.string.prompt_rename_smart_list,
+                        R.string.list_name_hint, srcList.getName(), R.id.action_rename_smart_list, posToUpdate);
                 return true;
             case R.id.action_edit_smart_list:
                 QueryBuilderActivity.start(this, smartListRuq);
