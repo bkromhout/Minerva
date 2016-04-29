@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TriStateCheckBox">
+        <attr name="state_partially_checked" format="boolean"/>
+        <attr name="partially_checked" format="boolean"/>
+    </declare-styleable>
+</resources>

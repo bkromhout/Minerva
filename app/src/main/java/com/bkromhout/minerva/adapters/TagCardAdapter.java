@@ -5,7 +5,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckedTextView;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -14,6 +14,7 @@ import com.bkromhout.minerva.TaggingActivity;
 import com.bkromhout.minerva.events.TagCardClickEvent;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.ui.RippleForegroundListener;
+import com.bkromhout.minerva.ui.TriStateCheckBox;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
@@ -61,13 +62,13 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
             // Do nothing if in action mode.
             if (isInActionMode) return;
 
-            CheckedTextView ctvTag = ButterKnife.findById(v, R.id.tag_name);
-            String tagName = ctvTag.getText().toString();
+            CheckBox cbTag = ButterKnife.findById(v, R.id.tag_name);
+            String tagName = cbTag.getText().toString();
             if (!checkedItems.remove(tagName)) {
                 checkedItems.add(tagName);
-                ctvTag.setChecked(true);
+                cbTag.setChecked(true);
             } else {
-                ctvTag.setChecked(false);
+                cbTag.setChecked(false);
             }
         });
 
@@ -103,7 +104,7 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
         @BindView(R.id.card)
         CardView card;
         @BindView(R.id.tag_name)
-        CheckedTextView tag;
+        TriStateCheckBox tag;
         @BindView(R.id.rename_tag)
         ImageButton rename;
         @BindView(R.id.delete_tag)

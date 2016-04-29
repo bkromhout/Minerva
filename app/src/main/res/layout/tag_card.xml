@@ -11,14 +11,10 @@
             android:layout_toStartOf="@+id/rename_tag"
             style="@style/MinervaDarkCard">
 
-        <CheckedTextView
+        <com.bkromhout.minerva.ui.TriStateCheckBox
                 android:id="@+id/tag_name"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="4dp"
-                android:gravity="center_vertical"
-                android:checkMark="?android:attr/listChoiceIndicatorMultiple"
                 style="@style/TextAppearance.AppCompat.Medium"
                 android:maxLines="1"
                 android:ellipsize="end"
