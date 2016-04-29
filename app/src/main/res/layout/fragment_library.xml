@@ -24,7 +24,7 @@
             android:contentDescription="@string/action_view_opts"
             app:layout_anchor="@id/recycler"
             app:layout_anchorGravity="bottom|right|end"
-            app:layout_behavior="com.bkromhout.minerva.util.ScrollAwareFABBehavior"/>
+            app:layout_behavior="com.bkromhout.minerva.ui.ScrollAwareFABBehavior"/>
 
     <android.support.percent.PercentRelativeLayout
             android:id="@+id/empty_library"
