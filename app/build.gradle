@@ -44,6 +44,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
         //incremental = false
     }
+
+    dexOptions {
+        javaMaxHeapSize "2048m"
+    }
 }
 
 apt {
