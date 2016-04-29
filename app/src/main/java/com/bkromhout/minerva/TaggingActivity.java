@@ -236,6 +236,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
                         .content(R.string.prompt_new_tag)
                         .autoDismiss(false)
                         .negativeText(R.string.cancel)
+                        .onNegative((dialog, which) -> dialog.dismiss())
                         .input(R.string.tag_name_hint, 0, false, (dialog, input) -> {
                             String newName = input.toString().trim();
                             try (Realm iRealm = Realm.getDefaultInstance()) {
@@ -374,6 +375,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
                         .content(R.string.prompt_rename_tag)
                         .autoDismiss(false)
                         .negativeText(R.string.cancel)
+                        .onNegative((dialog, which) -> dialog.dismiss())
                         .input(C.getStr(R.string.tag_name_hint), event.getName(), false, (dialog, input) -> {
                             String newName = input.toString().trim();
 
