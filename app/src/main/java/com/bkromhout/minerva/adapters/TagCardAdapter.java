@@ -13,7 +13,7 @@ import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.TaggingActivity;
 import com.bkromhout.minerva.events.TagCardClickEvent;
 import com.bkromhout.minerva.realm.RTag;
-import com.bkromhout.minerva.util.RippleForegroundListener;
+import com.bkromhout.minerva.ui.RippleForegroundListener;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;

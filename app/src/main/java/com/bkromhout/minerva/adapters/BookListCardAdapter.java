@@ -16,7 +16,7 @@ import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.events.BookListCardClickEvent;
 import com.bkromhout.minerva.realm.RBookList;
-import com.bkromhout.minerva.util.RippleForegroundListener;
+import com.bkromhout.minerva.ui.RippleForegroundListener;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;

@@ -1,4 +1,4 @@
-package com.bkromhout.minerva.util;
+package com.bkromhout.minerva.ui;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;

@@ -1,4 +1,4 @@
-package com.bkromhout.minerva.util;
+package com.bkromhout.minerva.ui;
 
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;

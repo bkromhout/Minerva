@@ -29,7 +29,7 @@ import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.util.Dialogs;
-import com.bkromhout.minerva.util.TagBackgroundSpan;
+import com.bkromhout.minerva.ui.TagBackgroundSpan;
 import com.bkromhout.minerva.util.Util;
 import com.bumptech.glide.Glide;
 import io.realm.Realm;
