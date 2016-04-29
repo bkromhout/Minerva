@@ -15,10 +15,10 @@
                 android:id="@+id/tag_name"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                style="@style/TextAppearance.AppCompat.Medium"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:textStyle="bold"
+                style="@style/TextAppearance.AppCompat.Medium"
                 tools:text="Test Tag"/>
     </android.support.v7.widget.CardView>
 
