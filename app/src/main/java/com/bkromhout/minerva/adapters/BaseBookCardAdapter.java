@@ -36,12 +36,6 @@ import org.greenrobot.eventbus.EventBus;
 public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends RecyclerView.ViewHolder> extends
         RealmBasedRecyclerViewAdapter<T, VH> {
     /**
-     * Information to use when drawing tags. The values in this class are retrieved from resources, so while they cannot
-     * be put into static final variables, we definitely only want to have to get them once. More importantly, we don't
-     * want to have to retrieve them at draw-time.
-     */
-    private static TagBackgroundSpan.TagBGDrawingInfo tagBGDrawingInfo = new TagBackgroundSpan.TagBGDrawingInfo();
-    /**
      * Help our cards ripple.
      */
     private static RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.card);
@@ -147,8 +141,8 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
         resolvedVH.tvDesc.setText(book.desc);
         resolvedVH.rbRating.setRating(book.rating);
         // Create a spannable string for the tag textview.
-        resolvedVH.tvTags.setText(TagBackgroundSpan.getSpannedTagString(book, tagBGDrawingInfo,
-                resolvedVH.tvTags.getMaxLines()), TextView.BufferType.SPANNABLE);
+        resolvedVH.tvTags.setText(TagBackgroundSpan.getSpannedTagString(book, resolvedVH.tvTags.getMaxLines()),
+                TextView.BufferType.SPANNABLE);
     }
 
     /**

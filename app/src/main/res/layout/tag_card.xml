@@ -11,16 +11,42 @@
             android:layout_toStartOf="@+id/rename_tag"
             style="@style/MinervaDarkCard">
 
-        <com.bkromhout.minerva.ui.TriStateCheckBox
-                android:id="@+id/tag_name"
+        <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:clickable="false"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:textStyle="bold"
-                style="@style/TextAppearance.AppCompat.Medium"
-                tools:text="Test Tag"/>
+                android:orientation="horizontal">
+            <com.bkromhout.minerva.ui.TriStateCheckBox
+                    android:id="@+id/tag_name"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="false"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textStyle="bold"
+                    style="@style/TextAppearance.AppCompat.Medium"
+                    tools:text="Test Tag"/>
+
+            <ImageButton
+                    android:id="@+id/tag_text_color"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:paddingStart="6dp"
+                    android:paddingEnd="4dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/title_tag_text_color"
+                    android:src="@drawable/color_circle"/>
+
+            <ImageButton
+                    android:id="@+id/tag_bg_color"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="6dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/title_tag_bg_color"
+                    android:src="@drawable/color_circle"/>
+        </LinearLayout>
     </android.support.v7.widget.CardView>
 
     <ImageButton
@@ -35,7 +61,7 @@
             android:src="@drawable/ic_rename"
             android:contentDescription="@string/title_rename_tag"
             android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:visibility="gone"/>
 
     <ImageButton
             android:id="@id/delete_tag"
@@ -48,5 +74,5 @@
             android:src="@drawable/ic_delete"
             android:contentDescription="@string/title_delete_tag"
             android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:visibility="gone"/>
 </RelativeLayout>

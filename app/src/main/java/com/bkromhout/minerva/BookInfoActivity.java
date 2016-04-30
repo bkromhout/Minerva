@@ -365,8 +365,8 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
 
         // Fill in tags or show empty text.
         if (book.tags.isEmpty()) tags.setText(R.string.no_tags);
-        else tags.setText(TagBackgroundSpan.getSpannedTagString(book, new TagBackgroundSpan.TagBGDrawingInfo(),
-                tags.getMaxLines()), TextView.BufferType.SPANNABLE);
+        else tags.setText(TagBackgroundSpan.getSpannedTagString(book, tags.getMaxLines()),
+                TextView.BufferType.SPANNABLE);
 
         // Fill in lists or show empty view.
         List<String> listNames = RBook.listsBookIsIn(book, realm);

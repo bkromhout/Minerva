@@ -1,5 +1,6 @@
 package com.bkromhout.minerva.realm;
 
+import com.bkromhout.minerva.C;
 import com.bkromhout.ruqus.Hide;
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -55,6 +56,8 @@ public class RTag extends RealmObject {
         this.name = "DEF_TAG_NAME";
         this.sortName = name.toLowerCase();
         this.taggedBooks = null;
+        this.textColor = C.DEFAULT_TAG_TEXT_COLOR;
+        this.bgColor = C.DEFAULT_TAG_BG_COLOR;
     }
 
     /**
@@ -65,6 +68,8 @@ public class RTag extends RealmObject {
         this.name = name;
         this.sortName = name.toLowerCase();
         this.taggedBooks = null;
+        this.textColor = C.DEFAULT_TAG_TEXT_COLOR;
+        this.bgColor = C.DEFAULT_TAG_BG_COLOR;
     }
 
     /**

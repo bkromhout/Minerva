@@ -32,6 +32,8 @@ public class Minerva extends Application {
         super.onCreate();
         // Stash application context.
         instance = this;
+        // Load certain resources into memory for fast access.
+        C.init(this);
         // Set up EventBus to use the generated index.
         EventBus.builder().addIndex(new EventBusIndex()).installDefaultEventBus();
         // Init Dexter.

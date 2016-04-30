@@ -110,6 +110,10 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
         CardView card;
         @BindView(R.id.tag_name)
         TriStateCheckBox tag;
+        @BindView(R.id.tag_text_color)
+        ImageButton textColor;
+        @BindView(R.id.tag_bg_color)
+        ImageButton bgColor;
         @BindView(R.id.rename_tag)
         ImageButton rename;
         @BindView(R.id.delete_tag)

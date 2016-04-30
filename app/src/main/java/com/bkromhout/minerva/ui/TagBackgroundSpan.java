@@ -1,19 +1,15 @@
 package com.bkromhout.minerva.ui;
 
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.support.annotation.ColorInt;
-import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.LeadingMarginSpan;
 import android.text.style.LineBackgroundSpan;
-import android.view.View;
 import com.binaryfork.spanny.Spanny;
-import com.bkromhout.minerva.Minerva;
-import com.bkromhout.minerva.R;
+import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RTag;
 
@@ -40,12 +36,8 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
     /**
      * Corner radii values for no corners.
      */
-    private static final float[] noCorners = new float[] {0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f};
+    private static final float[] NO_CORNERS = new float[] {0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f};
 
-    /**
-     * Information to use while drawing tag backgrounds.
-     */
-    private TagBGDrawingInfo di;
     /**
      * Colors to use for tag backgrounds.
      */
@@ -66,28 +58,23 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
     /**
      * Get a SpannableString suitable for displaying in a TextView using the given {@code book}'s {@link RTag}s.
      * @param book     Book whose tags to use.
-     * @param di       {@link TagBGDrawingInfo}.
      * @param maxLines Maximum number of lines to draw backgrounds for.
      * @return A SpannedString.
      */
-    public static SpannableString getSpannedTagString(RBook book, TagBGDrawingInfo di, int maxLines) {
+    public static SpannableString getSpannedTagString(RBook book, int maxLines) {
         Spanny spanny = new Spanny();
         HashMap<String, Integer> colorMap = new HashMap<>(book.tags.size());
-        // TODO Remove these hardcoded values once we implement tag colors.
-        int bgColor = ContextCompat.getColor(Minerva.getAppCtx(), R.color.grey700);
-        int fgColor = ContextCompat.getColor(Minerva.getAppCtx(), R.color.grey200);
         for (RTag tag : book.tags) {
-            spanny.append(tag.name, new ForegroundColorSpan(fgColor)).append(TAG_SEP);
-            colorMap.put(tag.name, bgColor);
+            spanny.append(tag.name, new ForegroundColorSpan(tag.textColor)).append(TAG_SEP);
+            colorMap.put(tag.name, tag.bgColor);
         }
         return Spanny.spanText(spanny,
-                new LeadingMarginSpan.Standard((int) di.cornerRadius),
-                new TagBackgroundSpan(colorMap, di, maxLines));
+                new LeadingMarginSpan.Standard((int) C.TAG_CORNER_RADIUS),
+                new TagBackgroundSpan(colorMap, maxLines));
     }
 
-    public TagBackgroundSpan(HashMap<String, Integer> colorMap, TagBGDrawingInfo di, int maxLines) {
+    public TagBackgroundSpan(HashMap<String, Integer> colorMap, int maxLines) {
         this.colorMap = colorMap;
-        this.di = di;
         this.maxLines = maxLines;
         this.path = new Path();
     }
@@ -101,7 +88,7 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
         sepTextWidth = p.measureText(TAG_SEP);
         int tempColor = p.getColor();
         // Draw the tag backgrounds for this line of text. Offset things a bit for the first line.
-        drawTagBgs(c, p, left + (int) di.cornerRadius, top, baseline, text.toString(), start, end);
+        drawTagBgs(c, p, left + (int) C.TAG_CORNER_RADIUS, top, baseline, text.toString(), start, end);
         p.setColor(tempColor);
     }
 
@@ -153,11 +140,11 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
         // Add a rounded rectangle to the path.
         path.addRoundRect(
                 // Only leave space for round corners at the start if startCorners is true.
-                startCorners ? x - di.cornerRadius : x,
+                startCorners ? x - C.TAG_CORNER_RADIUS : x,
                 y,
                 // Only leave space for round corners at the end if endCorners is true.
-                endCorners ? x + textWidth + di.cornerRadius : x + textWidth,
-                baseline + p.descent() + di.bottomPadding,
+                endCorners ? x + textWidth + C.TAG_CORNER_RADIUS : x + textWidth,
+                baseline + p.descent() + C.TAG_BOTTOM_PADDING,
                 // Use rounded corners based on the values of startCorners and endCorners.
                 getCornerRadii(startCorners, endCorners),
                 Path.Direction.CW);
@@ -237,10 +224,10 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
      * @return Corner radii array.
      */
     private float[] getCornerRadii(boolean startCorners, boolean endCorners) {
-        if (startCorners && endCorners) return di.allCorners;
-        else if (startCorners) return di.startCornersOnly;
-        else if (endCorners) return di.endCornersOnly;
-        else return noCorners;
+        if (startCorners && endCorners) return C.ALL_CORNERS;
+        else if (startCorners) return C.START_CORNERS_ONLY;
+        else if (endCorners) return C.END_CORNERS_ONLY;
+        else return NO_CORNERS;
     }
 
     /**
@@ -263,54 +250,5 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
         String fullPart = whole.substring(precedingSepIdx != -1 ? precedingSepIdx + TAG_SEP_LEN : 0, followingSepIdx);
         return colorMap.get(fullPart);
     }
-
-    /**
-     * Provides information which is used repeatedly while drawing tags. This is measurement information which is
-     * constant, but since we need to load it from resources it's better to create an instance of this class once and
-     * pass it around rather than to grab it every time we need to use it.
-     */
-    public static final class TagBGDrawingInfo {
-        /**
-         * How much padding to use on the bottom of the tag.
-         */
-        private final float bottomPadding;
-        /**
-         * Radius to use for rounded tag corners.
-         */
-        private final float cornerRadius;
-        /**
-         * Corner radii values for all corners.
-         */
-        private final float[] allCorners;
-        /**
-         * Corner radii values for start corners only.
-         */
-        private final float[] startCornersOnly;
-        /**
-         * Corner radii values for end corners only.
-         */
-        private final float[] endCornersOnly;
-
-        public TagBGDrawingInfo() {
-            Resources resources = Minerva.getAppCtx().getResources();
-            bottomPadding = resources.getDimension(R.dimen.tag_bottom_padding);
-            cornerRadius = resources.getDimension(R.dimen.tag_corner_radius);
-            allCorners = new float[] {cornerRadius, cornerRadius,  // Top left.
-                                      cornerRadius, cornerRadius,  // Top right.
-                                      cornerRadius, cornerRadius,  // Bottom right.
-                                      cornerRadius, cornerRadius}; // Bottom left.
-            boolean isLtr = resources.getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_LTR;
-            float[] leftCornersOnly = new float[] {cornerRadius, cornerRadius,
-                                                   -1f, -1f,
-                                                   -1f, -1f,
-                                                   cornerRadius, cornerRadius};
-            float[] rightCornersOnly = new float[] {0f, 0f,
-                                                    cornerRadius, cornerRadius,
-                                                    cornerRadius, cornerRadius,
-                                                    0f, 0f};
-
-            startCornersOnly = isLtr ? leftCornersOnly : rightCornersOnly;
-            endCornersOnly = isLtr ? rightCornersOnly : leftCornersOnly;
-        }
-    }
 }
+
