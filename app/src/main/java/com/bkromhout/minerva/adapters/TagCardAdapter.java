@@ -34,6 +34,10 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
      */
     private List<String> checkedItems;
     /**
+     * List of items which are partially checked. The strings in this list should correspond to names of {@link RTag}s.
+     */
+    private List<String> partiallyCheckedItems;
+    /**
      * Whether or not we're currently in action mode.
      */
     private boolean isInActionMode = false;
@@ -46,6 +50,7 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
     public TagCardAdapter(Context context, RealmResults<RTag> realmResults) {
         super(context, realmResults, true, true, null);
         this.checkedItems = TaggingActivity.TaggingHelper.get().newCheckedItems;
+        this.partiallyCheckedItems = TaggingActivity.TaggingHelper.get().newPartiallyCheckedItems;
     }
 
     @Override
@@ -64,17 +69,17 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
 
             CheckBox cbTag = ButterKnife.findById(v, R.id.tag_name);
             String tagName = cbTag.getText().toString();
-            if (!checkedItems.remove(tagName)) {
-                checkedItems.add(tagName);
-                cbTag.setChecked(true);
-            } else {
-                cbTag.setChecked(false);
-            }
+            // Try to remove from partially checked items; if that doesn't happen, try to remove from checked items;
+            // if that also doesn't happen, then add to checked items.
+            if (!partiallyCheckedItems.remove(tagName) && !checkedItems.remove(tagName)) checkedItems.add(tagName);
+            // Toggle the check mark state.
+            cbTag.toggle();
         });
 
-        // Set name and checked state
+        // Set name and checked state.
         viewHolder.tag.setText(tag.getName());
-        viewHolder.tag.setChecked(checkedItems.contains(tag.getName()));
+        if (partiallyCheckedItems.contains(tag.getName())) viewHolder.tag.setPartiallyChecked(true);
+        else viewHolder.tag.setChecked(checkedItems.contains(tag.getName()));
 
         // Set whether or not the action buttons are shown.
         viewHolder.rename.setVisibility(isInActionMode ? View.VISIBLE : View.GONE);

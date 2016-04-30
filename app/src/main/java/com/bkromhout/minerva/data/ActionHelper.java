@@ -350,7 +350,9 @@ public class ActionHelper {
         // Now make sure that we swap the old name for the new one in the old/new lists.
         TaggingHelper th = TaggingHelper.get();
         if (th.oldCheckedItems.remove(oldName)) th.oldCheckedItems.add(newName);
+        if (th.oldPartiallyCheckedItems.remove(oldName)) th.oldPartiallyCheckedItems.add(newName);
         if (th.newCheckedItems.remove(oldName)) th.newCheckedItems.add(newName);
+        if (th.newPartiallyCheckedItems.remove(oldName)) th.newPartiallyCheckedItems.add(newName);
     }
 
     /**
@@ -365,6 +367,8 @@ public class ActionHelper {
         // Remove tag name from the lists (if present).
         TaggingHelper th = TaggingHelper.get();
         th.oldCheckedItems.remove(tagName);
+        th.oldPartiallyCheckedItems.remove(tagName);
         th.newCheckedItems.remove(tagName);
+        th.newPartiallyCheckedItems.remove(tagName);
     }
 }

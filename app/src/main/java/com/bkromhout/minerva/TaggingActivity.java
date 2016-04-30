@@ -32,10 +32,7 @@ import com.jakewharton.rxbinding.widget.TextViewTextChangeEvent;
 import difflib.Delta;
 import difflib.DiffUtils;
 import difflib.Patch;
-import io.realm.Case;
-import io.realm.Realm;
-import io.realm.RealmResults;
-import io.realm.Sort;
+import io.realm.*;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import rx.Observer;
@@ -43,6 +40,7 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -104,8 +102,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
      * @param selectedBooks The selected {@link RBook}s.
      */
     public static void start(Fragment fragment, List<RBook> selectedBooks) {
-        TaggingActivity.TaggingHelper.get().init(selectedBooks,
-                RTag.tagListToStringList(RTag.listOfSharedTags(selectedBooks)));
+        TaggingActivity.TaggingHelper.get().init(selectedBooks);
         fragment.startActivityForResult(new Intent(fragment.getContext(), TaggingActivity.class), C.RC_TAG_ACTIVITY);
     }
 
@@ -125,8 +122,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
      */
     public static void start(Activity activity, List<RBook> selectedBooks) {
         // Initialize the tagging helper.
-        TaggingActivity.TaggingHelper.get().init(selectedBooks,
-                RTag.tagListToStringList(RTag.listOfSharedTags(selectedBooks)));
+        TaggingActivity.TaggingHelper.get().init(selectedBooks);
         activity.startActivityForResult(new Intent(activity, TaggingActivity.class), C.RC_TAG_ACTIVITY);
     }
 
@@ -344,10 +340,18 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
      */
     @OnClick(R.id.save)
     void onSaveButtonClicked() {
-        // Use the two lists to get deltas, then use them to figure out which tags were added and which were removed.
+        // Use the two checked lists to get deltas, then use the deltas to figure out which tags were added and which
+        // were removed.
         Patch<String> patch = DiffUtils.diff(taggingHelper.oldCheckedItems, taggingHelper.newCheckedItems);
         List<String> removedTagNames = getDeltaLines(Delta.TYPE.DELETE, patch.getDeltas());
         List<String> addedTagNames = getDeltaLines(Delta.TYPE.INSERT, patch.getDeltas());
+
+        // Now diff the partially checked items.
+        patch = DiffUtils.diff(taggingHelper.oldPartiallyCheckedItems, taggingHelper.newPartiallyCheckedItems);
+        // Add any removed partial checks to removedTagNames, but then remove any which are in addedTagNames (since
+        // we may have moved from partial->unchecked->checked).
+        removedTagNames.addAll(getDeltaLines(Delta.TYPE.DELETE, patch.getDeltas()));
+        removedTagNames.removeAll(addedTagNames);
 
         // Remove and add the applicable tags.
         RTag.removeTagsFromBooks(taggingHelper.selectedBooks, RTag.stringListToTagList(removedTagNames, false));
@@ -407,13 +411,21 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
          */
         public List<RBook> selectedBooks;
         /**
-         * List of originally checked tags.
+         * List of originally checked tags (those which all selected books share).
          */
         public List<String> oldCheckedItems;
         /**
-         * List of finally checked tags.
+         * List of originally partially checked tags (those which some, but not all, selected books have).
+         */
+        public List<String> oldPartiallyCheckedItems;
+        /**
+         * List of finally checked tags (those which all selected books share).
          */
         public List<String> newCheckedItems;
+        /**
+         * List of finally partially checked tags (those which some, but not all, selected books have).
+         */
+        public List<String> newPartiallyCheckedItems;
         /**
          * Current filter string.
          */
@@ -428,6 +440,25 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
             return INSTANCE;
         }
 
+        private TaggingHelper() {
+            selectedBooks = null;
+            oldCheckedItems = new ArrayList<>();
+            oldPartiallyCheckedItems = new ArrayList<>();
+            newCheckedItems = new ArrayList<>();
+            newPartiallyCheckedItems = new ArrayList<>();
+        }
+
+        /**
+         * Convenience method for initializing the {@link TaggingHelper}.
+         * @param books List of books.
+         */
+        public void init(List<RBook> books) {
+            this.selectedBooks = books;
+            calculateSharedTags(books);
+            this.newCheckedItems = new ArrayList<>(this.oldCheckedItems);
+            this.newPartiallyCheckedItems = new ArrayList<>(this.oldPartiallyCheckedItems);
+        }
+
         /**
          * Resets the current {@link TaggingHelper} instance.
          */
@@ -435,21 +466,40 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
             INSTANCE = new TaggingHelper();
         }
 
-        private TaggingHelper() {
-            selectedBooks = null;
-            oldCheckedItems = new ArrayList<>();
-            newCheckedItems = new ArrayList<>();
-        }
-
         /**
-         * Convenience method for initializing the {@link TaggingHelper}.
-         * @param books            List of books.
-         * @param currCheckedItems List of tags to have checked.
+         * Processes the given {@code books} and populates {@link #oldCheckedItems} and {@link
+         * #oldPartiallyCheckedItems}.
+         * @param books A list of {@link RBook}s.
          */
-        public void init(List<RBook> books, List<String> currCheckedItems) {
-            this.selectedBooks = books;
-            this.oldCheckedItems = currCheckedItems;
-            this.newCheckedItems = new ArrayList<>(currCheckedItems);
+        private void calculateSharedTags(List<RBook> books) {
+            if (books == null) throw new IllegalArgumentException("books must not be null.");
+            if (books.isEmpty()) return;
+
+            ArrayList<RTag> tagsOnAll = null;
+            HashSet<RTag> tagsOnSome = new HashSet<>();
+
+            // Loop through books.
+            for (RBook book : books) {
+                RealmList<RTag> bookTags = book.getTags();
+
+                // Add all of this book's tags to the tagsOnSome HashSet (we won't have duplicates).
+                tagsOnSome.addAll(bookTags);
+
+                if (tagsOnAll != null)// Only keep tags which are also in this book's tag list.
+                    tagsOnAll.retainAll(book.getTags());
+                else // If we haven't created the tag list, do that now.
+                    tagsOnAll = new ArrayList<>(book.getTags());
+            }
+
+            if (tagsOnAll != null) {
+                // Remove anything from tagsOnSome which is in tagsOnAll.
+                tagsOnSome.removeAll(tagsOnAll);
+                // Assign names strings from tagsOnAll to oldCheckedItems.
+                for (RTag tag : tagsOnAll) oldCheckedItems.add(tag.getName());
+            }
+
+            // Assign name strings from tagsOnSome to oldPartiallyCheckedItems.
+            for (RTag tag : tagsOnSome) oldPartiallyCheckedItems.add(tag.getName());
         }
     }
 }

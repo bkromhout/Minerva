@@ -9,7 +9,6 @@ import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 import rx.Observable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -94,43 +93,6 @@ public class RTag extends RealmObject {
                          .toList()
                          .toBlocking()
                          .single();
-    }
-
-    /**
-     * Creates a list of tag string from a list of {@link RTag}s.
-     * @param tags List of {@link RTag}s.
-     * @return List of tag strings, or {@code null} if {@code tags} is null.
-     */
-    public static List<String> tagListToStringList(List<RTag> tags) {
-        if (tags == null) return null;
-        ArrayList<String> strTags = new ArrayList<>(tags.size());
-        for (RTag tag : tags) strTags.add(tag.getName());
-        return strTags;
-    }
-
-    /**
-     * Checks the given {@code books} and returns a list of {@link RTag}s that that have in common.
-     * @param books A list of {@link RBook}s.
-     * @return A list of {@link RTag}s the {@code books} have in common.
-     */
-    public static List<RTag> listOfSharedTags(List<RBook> books) {
-        if (books == null) throw new IllegalArgumentException("books must not be null.");
-        if (books.isEmpty()) return new ArrayList<>();
-        ArrayList<RTag> tags = null;
-
-        for (RBook book : books) {
-            if (tags != null) {
-                // Only keep tags which are also in this book's tag list.
-                tags.retainAll(book.getTags());
-            } else {
-                // If we haven't created the tag list, do that now.
-                tags = new ArrayList<>(book.getTags());
-            }
-            // These books don't all share any common tags, go ahead and return the empty list.
-            if (tags.isEmpty()) return tags;
-        }
-        // We actually have some common tags, return them.
-        return tags;
     }
 
     /**
