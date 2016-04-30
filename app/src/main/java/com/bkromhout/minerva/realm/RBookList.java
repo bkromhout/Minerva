@@ -23,7 +23,7 @@ public class RBookList extends RealmObject {
      */
     @PrimaryKey
     @Required
-    private String name;
+    public String name;
     /**
      * TODO This is a work-around until Realm can do case-insensitive sorting.
      * <p>
@@ -31,28 +31,28 @@ public class RBookList extends RealmObject {
      */
     @Index
     @Hide
-    private String sortName;
+    public String sortName;
     /**
      * Position number for the next item to be added to this list.
      */
     @Hide
-    private Long nextPos;
+    public Long nextPos;
     /**
      * References to the {@link RBookListItem}s that this list contains.
      */
     @Hide
-    private RealmList<RBookListItem> listItems;
+    public RealmList<RBookListItem> listItems;
     /**
      * Whether or not this list is a smart list.
      */
     @Hide
-    private boolean isSmartList;
+    public boolean isSmartList;
     /**
      * If {@link #isSmartList} is true, this will be the string representation of a {@link
      * com.bkromhout.ruqus.RealmUserQuery}.
      */
     @Hide
-    private String smartListRuqString;
+    public String smartListRuqString;
 
     /**
      * Create a default {@link RBookList}.
@@ -195,7 +195,7 @@ public class RBookList extends RealmObject {
             // If there is a query, we'll need to actually add the items, which means we need to get a
             // RealmUserQuery first.
             if (smartListRuqString == null || smartListRuqString.isEmpty())
-                realm.executeTransaction(tRealm -> setSmartList(false));
+                realm.executeTransaction(tRealm -> isSmartList = false);
             else convertToNormalListUsingRuq(realm, new RealmUserQuery(smartListRuqString));
         }
     }
@@ -214,9 +214,9 @@ public class RBookList extends RealmObject {
         List<RBookListItem> bookListItems = booksToBookListItems(ruq.execute(realm));
         realm.executeTransaction(tRealm -> {
             // Turn this into a normal list.
-            setSmartList(false);
-            getListItems().addAll(bookListItems);
-            setSmartListRuqString(null);
+            isSmartList = false;
+            listItems.addAll(bookListItems);
+            smartListRuqString = null;
         });
     }
 
@@ -248,54 +248,6 @@ public class RBookList extends RealmObject {
         }
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSortName() {
-        return sortName;
-    }
-
-    public void setSortName(String sortName) {
-        this.sortName = sortName;
-    }
-
-    public Long getNextPos() {
-        return nextPos;
-    }
-
-    public void setNextPos(Long nextPos) {
-        this.nextPos = nextPos;
-    }
-
-    public RealmList<RBookListItem> getListItems() {
-        return listItems;
-    }
-
-    public void setListItems(RealmList<RBookListItem> listItems) {
-        this.listItems = listItems;
-    }
-
-    public boolean isSmartList() {
-        return isSmartList;
-    }
-
-    public void setSmartList(boolean smartList) {
-        isSmartList = smartList;
-    }
-
-    public String getSmartListRuqString() {
-        return smartListRuqString;
-    }
-
-    public void setSmartListRuqString(String smartListRuqString) {
-        this.smartListRuqString = smartListRuqString;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -303,11 +255,11 @@ public class RBookList extends RealmObject {
 
         RBookList rBookList = (RBookList) o;
 
-        return getName().equals(rBookList.getName());
+        return name.equals(rBookList.name);
     }
 
     @Override
     public int hashCode() {
-        return getName().hashCode();
+        return name.hashCode();
     }
 }

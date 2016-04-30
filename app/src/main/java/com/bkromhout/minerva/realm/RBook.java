@@ -263,7 +263,7 @@ public class RBook extends RealmObject {
                                                          .equalTo("book.relPath", book.getRelPath())
                                                          .findAll();
             // For each RBookListItem, add the name of the owning RBookList.
-            for (int i = listItems.size() - 1; i >= 0; i--) listNames.add(listItems.get(i).owningList.getName());
+            for (int i = listItems.size() - 1; i >= 0; i--) listNames.add(listItems.get(i).owningList.name);
 
             // Search through smart lists too, but do it a bit differently.
             RealmResults<RBookList> smartLists = realm.where(RBookList.class)
@@ -272,17 +272,17 @@ public class RBook extends RealmObject {
             // For each smart list:
             for (RBookList smartList : smartLists) {
                 // Get the query and its type.
-                RealmUserQuery ruq = new RealmUserQuery(smartList.getSmartListRuqString());
+                RealmUserQuery ruq = new RealmUserQuery(smartList.smartListRuqString);
                 ModelType at = ModelType.fromRealmClass(ruq.getQueryClass());
 
                 if (at == ModelType.BOOK) {
                     // For RBook-type queries, we can simply check if the results contain the book.
-                    if (ruq.execute(realm).contains(book)) listNames.add(smartList.getName());
+                    if (ruq.execute(realm).contains(book)) listNames.add(smartList.name);
                 } else if (at == ModelType.BOOK_LIST_ITEM) {
                     // For RBookListItem-type queries, we have to do another Realm query to see if there's an
                     // RBookListItem for the book.
                     if (ruq.execute(realm).where().equalTo("book.relPath", book.getRelPath()).findFirst() != null)
-                        listNames.add(smartList.getName());
+                        listNames.add(smartList.name);
                 }
             }
         }

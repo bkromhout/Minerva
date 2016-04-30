@@ -163,7 +163,7 @@ public class Dialogs {
             new MaterialDialog.Builder(ctx)
                     .title(R.string.action_add_to_list)
                     .items(Observable.from(lists)
-                                     .map(RBookList::getName)
+                                     .map(list -> list.name)
                                      .toList()
                                      .toBlocking()
                                      .single())

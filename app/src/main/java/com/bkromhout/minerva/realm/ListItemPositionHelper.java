@@ -34,7 +34,7 @@ public class ListItemPositionHelper {
 
         RBookList bookList = targetItem.owningList;
         // Get the items which come before targetItem.
-        RealmResults<RBookListItem> beforeTarget = bookList.getListItems()
+        RealmResults<RBookListItem> beforeTarget = bookList.listItems
                                                            .where()
                                                            .lessThan("pos", targetItem.pos)
                                                            .findAllSorted("pos", Sort.DESCENDING);
@@ -67,7 +67,7 @@ public class ListItemPositionHelper {
 
         RBookList bookList = targetItem.owningList;
         // Get the items which come after targetItem.
-        RealmResults<RBookListItem> afterTarget = bookList.getListItems()
+        RealmResults<RBookListItem> afterTarget = bookList.listItems
                                                           .where()
                                                           .greaterThan("pos", targetItem.pos)
                                                           .findAllSorted("pos");
@@ -159,6 +159,6 @@ public class ListItemPositionHelper {
         Long pos = LongMath.mean(p1, p2);
 
         // Make sure there isn't an item in the calculated position. If there is, return null.
-        return bookList.getListItems().where().equalTo("pos", pos).findFirst() == null ? pos : null;
+        return bookList.listItems.where().equalTo("pos", pos).findFirst() == null ? pos : null;
     }
 }

@@ -145,7 +145,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         srcList = realm.where(RBookList.class).equalTo("name", selStr).findFirst();
 
         // Set title, then check to see if we have a RUQ from the savedInstanceState.
-        setTitle(srcList.getName());
+        setTitle(srcList.name);
         if (savedInstanceState != null && savedInstanceState.containsKey(C.RUQ))
             smartListRuq = savedInstanceState.getParcelable(C.RUQ);
 
@@ -198,12 +198,12 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
             return;
         }
         // Check first to see if list is a smart list.
-        if (srcList.isSmartList()) {
-            String ruqString = srcList.getSmartListRuqString();
+        if (srcList.isSmartList) {
+            String ruqString = srcList.smartListRuqString;
             // Smart list; check to see if we need to set it up.
             if (ruqString != null && !ruqString.isEmpty()) {
                 // Smart list already has a non-empty RUQ string, create a RUQ and then set up the UI using it.
-                smartListRuq = new RealmUserQuery(srcList.getSmartListRuqString());
+                smartListRuq = new RealmUserQuery(srcList.smartListRuqString);
                 updateUi();
             } else if (ruqString == null) {
                 // We need to set up the smart list first. Open the query builder.
@@ -214,7 +214,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
             }
         } else {
             // Normal list.
-            items = srcList.getListItems().where().findAllSorted("pos");
+            items = srcList.listItems.where().findAllSorted("pos");
             modelType = ModelType.BOOK;
             adapter = makeAdapter();
             recyclerView.setAdapter(adapter);
@@ -331,11 +331,11 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 return true;
             case R.id.action_rename_list:
                 Dialogs.uniqueNameDialog(this, RBookList.class, R.string.title_rename_list, R.string.prompt_rename_list,
-                        R.string.list_name_hint, srcList.getName(), R.id.action_rename_list, posToUpdate);
+                        R.string.list_name_hint, srcList.name, R.id.action_rename_list, posToUpdate);
                 return true;
             case R.id.action_rename_smart_list:
                 Dialogs.uniqueNameDialog(this, RBookList.class, R.string.title_rename_smart_list,
-                        R.string.prompt_rename_smart_list, R.string.list_name_hint, srcList.getName(),
+                        R.string.prompt_rename_smart_list, R.string.list_name_hint, srcList.name,
                         R.id.action_rename_smart_list, posToUpdate);
                 return true;
             case R.id.action_edit_smart_list:
@@ -417,7 +417,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     public void onActionEvent(ActionEvent event) {
         switch (event.getActionId()) {
             case R.id.action_clear: {
-                realm.executeTransaction(tRealm -> srcList.getListItems().deleteAllFromRealm());
+                realm.executeTransaction(tRealm -> srcList.listItems.deleteAllFromRealm());
                 break;
             }
             case R.id.action_open_query_builder: {

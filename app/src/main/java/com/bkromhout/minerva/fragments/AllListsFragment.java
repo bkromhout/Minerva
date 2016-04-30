@@ -282,8 +282,8 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
         switch (actionId) {
             case R.id.action_show_query: {
                 Dialogs.smartListQueryDialog(getActivity(),
-                        tempList.getSmartListRuqString() == null || tempList.getSmartListRuqString().isEmpty() ? null :
-                                new RealmUserQuery(tempList.getSmartListRuqString()).toString(), position);
+                        tempList.smartListRuqString == null || tempList.smartListRuqString.isEmpty() ? null :
+                                new RealmUserQuery(tempList.smartListRuqString).toString(), position);
                 break;
             }
             case R.id.action_rename_list: {
@@ -300,7 +300,7 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
                 break;
             }
             case R.id.action_edit_smart_list: {
-                String ruqString = tempList.getSmartListRuqString();
+                String ruqString = tempList.smartListRuqString;
                 QueryBuilderActivity.start(this, ruqString == null || ruqString.isEmpty()
                         ? null : new RealmUserQuery(ruqString));
                 break;
@@ -341,7 +341,7 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
                 break;
             }
             case R.id.action_open_query_builder: {
-                String ruqString = tempList.getSmartListRuqString();
+                String ruqString = tempList.smartListRuqString;
                 QueryBuilderActivity.start(this, ruqString == null || ruqString.isEmpty()
                         ? null : new RealmUserQuery(ruqString));
                 break;

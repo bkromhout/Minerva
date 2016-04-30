@@ -65,9 +65,9 @@ public class RBookListItem extends RealmObject {
         this.book = book;
 
         // Position is the next position number from owningList. Then we update the next position number.
-        this.pos = owningList.getNextPos();
+        this.pos = owningList.nextPos;
         try (Realm realm = Realm.getDefaultInstance()) {
-            realm.executeTransaction(tRealm -> owningList.setNextPos(this.pos + C.LIST_ITEM_GAP));
+            realm.executeTransaction(tRealm -> owningList.nextPos = this.pos + C.LIST_ITEM_GAP);
         }
     }
 

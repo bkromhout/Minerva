@@ -220,8 +220,8 @@ public class ActionHelper {
      */
     public static void updateSmartList(Realm realm, RBookList list, String ruqString) {
         if (list == null) return;
-        if (!list.isSmartList()) throw new IllegalStateException("list is not a smart list.");
-        realm.executeTransaction(tRealm -> list.setSmartListRuqString(ruqString));
+        if (!list.isSmartList) throw new IllegalStateException("list is not a smart list.");
+        realm.executeTransaction(tRealm -> list.smartListRuqString = ruqString);
     }
 
     /**
@@ -256,7 +256,7 @@ public class ActionHelper {
      */
     private static void _deleteList(RBookList list) {
         // First, delete the list items (unless this is a smart list).
-        if (!list.isSmartList()) list.getListItems().deleteAllFromRealm();
+        if (!list.isSmartList) list.listItems.deleteAllFromRealm();
         // Then, delete the book list.
         list.deleteFromRealm();
     }
@@ -271,8 +271,8 @@ public class ActionHelper {
         if (newName == null || newName.isEmpty())
             throw new IllegalArgumentException("newName must be non-null and non-empty.");
         realm.executeTransaction(tRealm -> {
-            list.setName(newName);
-            list.setSortName(newName.toLowerCase()); // TODO Work-around
+            list.name = newName;
+            list.sortName = newName.toLowerCase(); // TODO Work-around
         });
     }
 
@@ -287,7 +287,7 @@ public class ActionHelper {
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.executeTransaction(tRealm -> {
                 // Get the next first open position.
-                Long nextFirstPos = bookList.getListItems().where().min("pos").longValue() - C.LIST_ITEM_GAP;
+                Long nextFirstPos = bookList.listItems.where().min("pos").longValue() - C.LIST_ITEM_GAP;
                 // Loop through itemsToMove backwards and move those items to the start of this list.
                 for (int i = itemsToMove.size() - 1; i >= 0; i--) {
                     itemsToMove.get(i).pos = nextFirstPos;
@@ -308,14 +308,14 @@ public class ActionHelper {
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.executeTransaction(tRealm -> {
                 // Get the next last open position.
-                Long nextLastPos = bookList.getNextPos();
+                Long nextLastPos = bookList.nextPos;
                 // Loop through itemsToMove and move those items to the end of this list.
                 for (RBookListItem item : itemsToMove) {
                     item.pos = nextLastPos;
                     nextLastPos += C.LIST_ITEM_GAP;
                 }
                 // Set bookList's nextPos.
-                bookList.setNextPos(nextLastPos);
+                bookList.nextPos = nextLastPos;
             });
         }
     }
