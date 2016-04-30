@@ -24,7 +24,10 @@ import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.ReImporter;
 import com.bkromhout.minerva.enums.BookCardType;
-import com.bkromhout.minerva.events.*;
+import com.bkromhout.minerva.events.ActionEvent;
+import com.bkromhout.minerva.events.BookCardClickEvent;
+import com.bkromhout.minerva.events.PrefChangeEvent;
+import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.prefs.RecentPrefs;
 import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 import com.bkromhout.minerva.realm.RBook;
@@ -250,7 +253,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
                 return true;
             case R.id.action_rate:
                 int initialRating = adapter.getSelectedItemCount() == 1
-                        ? ((RBook) adapter.getSelectedRealmObjects().get(0)).getRating() : 0;
+                        ? ((RBook) adapter.getSelectedRealmObjects().get(0)).rating : 0;
                 Dialogs.ratingDialog(getContext(), initialRating);
                 return true;
             case R.id.action_add_to_list:
@@ -288,7 +291,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
                 realm.executeTransaction(tRealm -> {
                     // Set isInRecents to false for all RBooks which currently have it set to true.
                     RealmResults<RBook> recentBooks = tRealm.where(RBook.class).equalTo("isInRecents", true).findAll();
-                    for (int i = recentBooks.size() - 1; i >= 0; i--) recentBooks.get(i).setInRecents(false);
+                    for (int i = recentBooks.size() - 1; i >= 0; i--) recentBooks.get(i).isInRecents = false;
                 });
                 break;
             }
@@ -308,7 +311,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
             case R.id.action_remove: {
                 realm.executeTransaction(tRealm -> {
                     // Set isInRecents to false for all selected RBooks.
-                    for (RBook book : selectedItems) book.setInRecents(false);
+                    for (RBook book : selectedItems) book.isInRecents = false;
                 });
                 break;
             }

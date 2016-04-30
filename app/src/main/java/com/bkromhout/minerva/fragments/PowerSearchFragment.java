@@ -20,7 +20,10 @@ import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.ReImporter;
 import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.enums.ModelType;
-import com.bkromhout.minerva.events.*;
+import com.bkromhout.minerva.events.ActionEvent;
+import com.bkromhout.minerva.events.BookCardClickEvent;
+import com.bkromhout.minerva.events.PrefChangeEvent;
+import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.prefs.PowerSearchPrefs;
 import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 import com.bkromhout.minerva.realm.RBook;
@@ -231,7 +234,8 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
                 return true;
             case R.id.action_save_as_smart_list:
                 if (ruq == null) return true;
-                Dialogs.uniqueNameDialog(getActivity(), RBookList.class, R.string.action_new_smart_list, R.string.prompt_new_smart_list,
+                Dialogs.uniqueNameDialog(getActivity(), RBookList.class, R.string.action_new_smart_list,
+                        R.string.prompt_new_smart_list,
 
                         R.string.list_name_hint, null, R.id.action_new_smart_list, -1);
                 return true;
@@ -261,7 +265,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
                 TaggingActivity.start(this, getSelectedBooks());
                 return true;
             case R.id.action_rate:
-                int initialRating = adapter.getSelectedItemCount() == 1 ? getSelectedBooks().get(0).getRating() : 0;
+                int initialRating = adapter.getSelectedItemCount() == 1 ? getSelectedBooks().get(0).rating : 0;
                 Dialogs.ratingDialog(getContext(), initialRating);
                 return true;
             case R.id.action_re_import:

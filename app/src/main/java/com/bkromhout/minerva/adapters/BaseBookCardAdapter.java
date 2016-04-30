@@ -76,7 +76,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
     public long getItemId(int position) {
         if (position == super.getItemCount()) return Long.MIN_VALUE;
         T item = realmResults.get(position);
-        if (item instanceof RBook) return ((RBook) item).getUniqueId();
+        if (item instanceof RBook) return ((RBook) item).uniqueId;
         else if (item instanceof RBookListItem) return ((RBookListItem) item).uniqueId;
         else throw new IllegalArgumentException("Unexpected item type: " + item.getClass().getName());
     }
@@ -95,23 +95,23 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
 
         // Set card click handler.
         vh.content.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
-                BookCardClickEvent.Type.NORMAL, book.getRelPath(), position)));
+                BookCardClickEvent.Type.NORMAL, book.relPath, position)));
 
         // Set card long click handler.
         vh.content.setOnLongClickListener(v -> {
             if (mayStartDrags) startDragging(vh);
-            else EventBus.getDefault().post(new BookCardClickEvent(BookCardClickEvent.Type.LONG, book.getRelPath(),
+            else EventBus.getDefault().post(new BookCardClickEvent(BookCardClickEvent.Type.LONG, book.relPath,
                     position));
             return true;
         });
 
         // Set info button handler.
         vh.btnInfo.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
-                BookCardClickEvent.Type.INFO, book.getRelPath(), position)));
+                BookCardClickEvent.Type.INFO, book.relPath, position)));
 
         // Fill in data.
-        vh.tvTitle.setText(book.getTitle());
-        vh.tvAuthor.setText(book.getAuthor());
+        vh.tvTitle.setText(book.title);
+        vh.tvAuthor.setText(book.author);
 
         // Do bindings for the rest of the view holder based on its real type.
         if (vh instanceof CompactCardVH) bindCompactBookCard((CompactCardVH) vh, book);
@@ -129,7 +129,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
      */
     private void bindCompactBookCard(CompactCardVH resolvedVH, RBook book) {
         // Fill in data.
-        resolvedVH.tvRating.setText(String.valueOf(book.getRating()));
+        resolvedVH.tvRating.setText(String.valueOf(book.rating));
     }
 
     /**
@@ -141,11 +141,11 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
     private void bindNoCoverBookCard(NoCoverCardVH resolvedVH, int position, RBook book) {
         // Set quick tag button handler.
         resolvedVH.btnQuickTag.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
-                BookCardClickEvent.Type.QUICK_TAG, book.getRelPath(), position)));
+                BookCardClickEvent.Type.QUICK_TAG, book.relPath, position)));
 
         // Fill in data.
-        resolvedVH.tvDesc.setText(book.getDesc());
-        resolvedVH.rbRating.setRating(book.getRating());
+        resolvedVH.tvDesc.setText(book.desc);
+        resolvedVH.rbRating.setRating(book.rating);
         // Create a spannable string for the tag textview.
         resolvedVH.tvTags.setText(TagBackgroundSpan.getSpannedTagString(book, tagBGDrawingInfo,
                 resolvedVH.tvTags.getMaxLines()), TextView.BufferType.SPANNABLE);
@@ -158,10 +158,10 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
      */
     private void bindNormalBookCard(NormalCardVH resolvedVH, RBook book) {
         // Set cover image.
-        if (book.hasCoverImage()) Glide.with(activity)
-                                       .load(CoverHelper.get().getCoverImageFile(book.getRelPath()))
-                                       .centerCrop()
-                                       .into(resolvedVH.ivCoverImage);
+        if (book.hasCoverImage) Glide.with(activity)
+                                     .load(CoverHelper.get().getCoverImageFile(book.relPath))
+                                     .centerCrop()
+                                     .into(resolvedVH.ivCoverImage);
         else resolvedVH.ivCoverImage.setImageDrawable(ContextCompat.getDrawable(Minerva.getAppCtx(),
                 R.drawable.epub_logo_color));
     }

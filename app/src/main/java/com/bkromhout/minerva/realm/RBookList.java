@@ -121,7 +121,7 @@ public class RBookList extends RealmObject {
     private boolean _isBookInList(RBook book) {
         return listItems.where()
                         .equalTo("owningList.name", name)
-                        .equalTo("book.relPath", book.getRelPath())
+                        .equalTo("book.relPath", book.relPath)
                         .findFirst() != null;
     }
 
@@ -177,7 +177,7 @@ public class RBookList extends RealmObject {
             realm.executeTransaction(tRealm -> {
                 // Delete the book list items.
                 for (RBook book : books)
-                    listItems.where().equalTo("book.relPath", book.getRelPath()).findFirst().deleteFromRealm();
+                    listItems.where().equalTo("book.relPath", book.relPath).findFirst().deleteFromRealm();
             });
         }
     }

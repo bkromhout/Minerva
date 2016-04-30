@@ -178,7 +178,7 @@ public class ReImporter {
         // Convert RBooks to a list of Files.
         message.setText(R.string.ril_build_file_list);
         subs.add(Observable.from(books)
-                           .map(RBook::getRelPath)
+                           .map(book -> book.relPath)
                            .map(relPath -> {
                                File file = Util.getFileFromRelPath(currDir, relPath);
                                if (file == null) errors.append(C.getStr(R.string.ril_err_getting_file,
@@ -274,7 +274,7 @@ public class ReImporter {
 
         // Add RBook to queue, update message and progress.
         bookQueue.add(book);
-        message.setText(C.getStr(R.string.ril_read_file, book.getTitle()));
+        message.setText(C.getStr(R.string.ril_read_file, book.title));
         progressBar.incrementProgressBy(1);
     }
 
@@ -314,7 +314,7 @@ public class ReImporter {
                     for (RBook book : bookQueue) {
                         // Try to find existing RBook before adding a new one.
                         RBook existingBook = bgRealm.where(RBook.class)
-                                                    .equalTo("relPath", book.getRelPath())
+                                                    .equalTo("relPath", book.relPath)
                                                     .findFirst();
 
                         // If we have an existing RBook for this file, just update the fields which we read from the

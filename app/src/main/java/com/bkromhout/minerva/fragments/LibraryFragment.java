@@ -283,7 +283,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
                 return true;
             case R.id.action_rate:
                 int initialRating = adapter.getSelectedItemCount() == 1
-                        ? ((RBook) adapter.getSelectedRealmObjects().get(0)).getRating() : 0;
+                        ? ((RBook) adapter.getSelectedRealmObjects().get(0)).rating : 0;
                 Dialogs.ratingDialog(getContext(), initialRating);
                 return true;
             case R.id.action_re_import:
@@ -482,8 +482,8 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
 
     /**
      * Create a {@link BaseBookCardAdapter} based on the current view options and return it.
-     * @return New {@link BaseBookCardAdapter}. Will return null if we cannot get the activity context, if
-     * {@link #books} is null or invalid, or if the current value of {@link #cardType} is not valid.
+     * @return New {@link BaseBookCardAdapter}. Will return null if we cannot get the activity context, if {@link
+     * #books} is null or invalid, or if the current value of {@link #cardType} is not valid.
      */
     private BaseBookCardAdapter makeAdapter() {
         Context ctx = getActivity();
@@ -542,11 +542,11 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
         if (position < 0 || position >= books.size()) return null;
         switch (sortType) {
             case TITLE:
-                return String.valueOf(Character.toUpperCase(books.get(position).getTitle().charAt(0)));
+                return String.valueOf(Character.toUpperCase(books.get(position).title.charAt(0)));
             case AUTHOR:
-                return String.valueOf(Character.toUpperCase(books.get(position).getAuthor().charAt(0)));
+                return String.valueOf(Character.toUpperCase(books.get(position).author.charAt(0)));
             case RATING:
-                return String.valueOf(books.get(position).getRating());
+                return String.valueOf(books.get(position).rating);
             default:
                 return null;
         }

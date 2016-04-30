@@ -180,9 +180,9 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
         if (book == null) throw new IllegalArgumentException("Invalid relative path, no matching RBook found.");
 
         // Set cover image (we do this separately since we don't want flickering if the change listener fires).
-        if (book.hasCoverImage()) {
+        if (book.hasCoverImage) {
             Glide.with(this)
-                 .load(CoverHelper.get().getCoverImageFile(book.getRelPath()))
+                 .load(CoverHelper.get().getCoverImageFile(book.relPath))
                  .centerCrop()
                  .into(coverImage);
         } else coverImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.epub_logo_color));
@@ -258,7 +258,7 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
                 TaggingActivity.start(this, book);
                 return true;
             case R.id.action_rate:
-                Dialogs.ratingDialog(this, book.getRating());
+                Dialogs.ratingDialog(this, book.rating);
                 return true;
             case R.id.action_re_import:
                 Dialogs.simpleYesNoDialog(this, R.string.title_re_import_book, R.string.prompt_re_import_book,
@@ -310,7 +310,7 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
     @OnClick(R.id.cover_image)
     void onHeaderImageClicked(View v) {
         // If this book actually has a cover, start the CoverActivity.
-        if (book.hasCoverImage()) CoverActivity.start(this, book.getRelPath());
+        if (book.hasCoverImage) CoverActivity.start(this, book.relPath);
     }
 
     /**
@@ -328,7 +328,7 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
     @OnClick(R.id.edit_rating)
     void onEditRatingClicked() {
         // Open the rating dialog.
-        Dialogs.ratingDialog(this, book.getRating());
+        Dialogs.ratingDialog(this, book.rating);
     }
 
     /**
@@ -346,25 +346,25 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
     @SuppressLint("SetTextI18n")
     private void updateUi() {
         // Set title.
-        collapsibleToolbar.setTitle(book.getTitle());
+        collapsibleToolbar.setTitle(book.title);
 
         // Fill in common views using book data.
-        title.setText(book.getTitle());
-        author.setText(book.getAuthor());
-        desc.setText(book.getDesc());
-        chapCount.setText(String.valueOf(book.getNumChaps()));
-        rating.setRating(book.getRating());
-        path.setText(DefaultPrefs.get().getLibDir("") + book.getRelPath());
+        title.setText(book.title);
+        author.setText(book.author);
+        desc.setText(book.desc);
+        chapCount.setText(String.valueOf(book.numChaps));
+        rating.setRating(book.rating);
+        path.setText(DefaultPrefs.get().getLibDir("") + book.relPath);
 
-        lastReadDate.setText(book.getLastReadDate() == null ? C.getStr(R.string.never)
-                : DateUtils.getRelativeDateTimeString(this, book.getLastReadDate().getTime(),
+        lastReadDate.setText(book.lastReadDate == null ? C.getStr(R.string.never)
+                : DateUtils.getRelativeDateTimeString(this, book.lastReadDate.getTime(),
                 DateUtils.SECOND_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_SHOW_TIME));
 
-        lastImportDate.setText(DateUtils.getRelativeDateTimeString(this, book.getLastImportDate().getTime(),
+        lastImportDate.setText(DateUtils.getRelativeDateTimeString(this, book.lastImportDate.getTime(),
                 DateUtils.SECOND_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_SHOW_TIME));
 
         // Fill in tags or show empty text.
-        if (book.getTags().isEmpty()) tags.setText(R.string.no_tags);
+        if (book.tags.isEmpty()) tags.setText(R.string.no_tags);
         else tags.setText(TagBackgroundSpan.getSpannedTagString(book, new TagBackgroundSpan.TagBGDrawingInfo(),
                 tags.getMaxLines()), TextView.BufferType.SPANNABLE);
 
@@ -377,49 +377,49 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
         }
 
         // Fill in or hide conditional views using book data.
-        String temp = book.getSubjects();
+        String temp = book.subjects;
         if (temp == null || temp.isEmpty()) togglePart(Part.SUBJECTS, false);
         else {
             togglePart(Part.SUBJECTS, true);
             subjects.setText(temp);
         }
 
-        temp = book.getTypes();
+        temp = book.types;
         if (temp == null || temp.isEmpty()) togglePart(Part.TYPES, false);
         else {
             togglePart(Part.TYPES, true);
             types.setText(temp);
         }
 
-        temp = book.getFormat();
+        temp = book.format;
         if (temp == null || temp.isEmpty()) togglePart(Part.FORMAT, false);
         else {
             togglePart(Part.FORMAT, true);
             format.setText(temp);
         }
 
-        temp = book.getLanguage();
+        temp = book.language;
         if (temp == null || temp.isEmpty()) togglePart(Part.LANGUAGE, false);
         else {
             togglePart(Part.LANGUAGE, true);
             language.setText(temp);
         }
 
-        temp = book.getPublisher();
+        temp = book.language;
         if (temp == null || temp.isEmpty()) togglePart(Part.PUBLISHER, false);
         else {
             togglePart(Part.PUBLISHER, true);
             publisher.setText(temp);
         }
 
-        temp = book.getPubDate();
+        temp = book.pubDate;
         if (temp == null || temp.isEmpty()) togglePart(Part.PUBLISH_DATE, false);
         else {
             togglePart(Part.PUBLISH_DATE, true);
             publishDate.setText(temp);
         }
 
-        temp = book.getModDate();
+        temp = book.modDate;
         if (temp == null || temp.isEmpty()) togglePart(Part.MOD_DATE, false);
         else {
             togglePart(Part.MOD_DATE, true);

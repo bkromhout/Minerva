@@ -37,83 +37,83 @@ public class RBook extends RealmObject {
      */
     @Index
     @Hide
-    private long uniqueId;
+    public long uniqueId;
     /**
      * Path to book file (relative to library directory).
      */
     @PrimaryKey
     @Required
     @VisibleAs(string = "Relative Path")
-    private String relPath;
+    public String relPath;
     /**
      * Book title from epub. (We only get the first one for this)
      */
     @Index
     @Required
-    private String title;
+    public String title;
     /**
      * Book author from epub. (We only get the first one for this)
      */
     @Index
     @Required
-    private String author;
+    public String author;
     /**
      * Book description from epub.
      */
     @VisibleAs(string = "Description")
-    private String desc;
+    public String desc;
     /**
      * Book subjects from epub. Comma separated.
      */
-    private String subjects;
+    public String subjects;
     /**
      * Book types from epub. Comma separated.
      */
-    private String types;
+    public String types;
     /**
      * Book format from epub.
      */
-    private String format;
+    public String format;
     /**
      * Book language from epub.
      */
-    private String language;
+    public String language;
     /**
      * Book publisher from epub. (We only get the first one for this)
      */
-    private String publisher;
+    public String publisher;
     /**
      * Book Identifier from epub. (We only get the first one for this)
      * <p>
      * Note that this is just simply whatever is set in the epub, we can't guarantee that it's unique!
      */
     @VisibleAs(string = "Book ID")
-    private String bookId;
+    public String bookId;
     /**
      * Date that the epub reports it was created.
      */
     @Hide
-    private String createDate;
+    public String createDate;
     /**
      * Date that the epub reports it was published.
      */
     @VisibleAs(string = "Date Book Published (String)")
-    private String pubDate;
+    public String pubDate;
     /**
      * Date that the epub reports it was modified.
      */
     @Hide
-    private String modDate;
+    public String modDate;
     /**
      * Number of chapters in the book. We get this number by getting the size of the TOC... epub is a weird standard, so
      * that might not work.
      */
     @VisibleAs(string = "Chapter Count")
-    private int numChaps;
+    public int numChaps;
     /**
      * Whether or not the book has a cover image.
      */
-    private boolean hasCoverImage;
+    public boolean hasCoverImage;
 
     /* Below this are variables which hold data that are not read from the ePub file. */
 
@@ -121,32 +121,32 @@ public class RBook extends RealmObject {
      * Hash of file from the last time it was imported.
      */
     @Hide
-    private byte[] hash;
+    public byte[] hash;
     /**
      * Date that the data for this book was last modified.
      */
-    private Date lastModifiedDate;
+    public Date lastModifiedDate;
     /**
      * Date that the epub file was last read.
      */
-    private Date lastImportDate;
+    public Date lastImportDate;
     /**
      * Date that the book was last opened to read.
      */
-    private Date lastReadDate;
+    public Date lastReadDate;
     /**
      * Whether or not the book should be shown in the {@link com.bkromhout.minerva.fragments.RecentFragment}.
      */
-    private boolean isInRecents;
+    public boolean isInRecents;
     /**
      * List of {@link RTag}s attached to this book.
      */
-    private RealmList<RTag> tags;
+    public RealmList<RTag> tags;
     /**
      * Assigned rating.
      */
     @Index
-    private int rating;
+    public int rating;
 
     /**
      * Create a default {@link RBook}.
@@ -226,27 +226,27 @@ public class RBook extends RealmObject {
             throw new IllegalStateException("You must call this method from within a Realm transaction.");
 
         // TODO Check if the hashes are different here, and if they aren't then we're done.
-        setHash(otherBook.getHash());
+        this.hash = otherBook.hash;
 
-        setTitle(otherBook.getTitle());
-        setAuthor(otherBook.getAuthor());
-        setDesc(otherBook.getDesc());
-        setSubjects(otherBook.getSubjects());
-        setTypes(otherBook.getTypes());
-        setFormat(otherBook.getFormat());
-        setLanguage(otherBook.getLanguage());
-        setPublisher(otherBook.getPublisher());
-        setBookId(otherBook.getBookId());
-        setCreateDate(otherBook.getCreateDate());
-        setPubDate(otherBook.getPubDate());
-        setModDate(otherBook.getModDate());
-        setNumChaps(otherBook.getNumChaps());
+        this.title = otherBook.title;
+        this.author = otherBook.author;
+        this.desc = otherBook.desc;
+        this.subjects = otherBook.subjects;
+        this.types = otherBook.types;
+        this.format = otherBook.format;
+        this.language = otherBook.language;
+        this.publisher = otherBook.publisher;
+        this.bookId = otherBook.bookId;
+        this.createDate = otherBook.createDate;
+        this.pubDate = otherBook.pubDate;
+        this.modDate = otherBook.modDate;
+        this.numChaps = otherBook.numChaps;
         // Delete the cover image if the other book doesn't have one.
-        if (hasCoverImage() && !otherBook.hasCoverImage()) CoverHelper.get().deleteCoverImage(getRelPath());
-        setHasCoverImage(otherBook.hasCoverImage());
+        if (this.hasCoverImage && !otherBook.hasCoverImage) CoverHelper.get().deleteCoverImage(this.relPath);
+        this.hasCoverImage = otherBook.hasCoverImage;
 
-        setLastImportDate(otherBook.getLastImportDate());
-        setLastModifiedDate(otherBook.getLastModifiedDate());
+        this.lastImportDate = otherBook.lastImportDate;
+        this.lastModifiedDate = otherBook.lastModifiedDate;
     }
 
     /**
@@ -260,7 +260,7 @@ public class RBook extends RealmObject {
         if (book != null) {
             // Check all list items which contain this book (only the set of all normal lists will be represented here).
             RealmResults<RBookListItem> listItems = realm.where(RBookListItem.class)
-                                                         .equalTo("book.relPath", book.getRelPath())
+                                                         .equalTo("book.relPath", book.relPath)
                                                          .findAll();
             // For each RBookListItem, add the name of the owning RBookList.
             for (int i = listItems.size() - 1; i >= 0; i--) listNames.add(listItems.get(i).owningList.name);
@@ -281,196 +281,12 @@ public class RBook extends RealmObject {
                 } else if (at == ModelType.BOOK_LIST_ITEM) {
                     // For RBookListItem-type queries, we have to do another Realm query to see if there's an
                     // RBookListItem for the book.
-                    if (ruq.execute(realm).where().equalTo("book.relPath", book.getRelPath()).findFirst() != null)
+                    if (ruq.execute(realm).where().equalTo("book.relPath", book.relPath).findFirst() != null)
                         listNames.add(smartList.name);
                 }
             }
         }
         return listNames;
-    }
-
-    public String getRelPath() {
-        return relPath;
-    }
-
-    public void setRelPath(String relPath) {
-        this.relPath = relPath;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
-    public String getSubjects() {
-        return subjects;
-    }
-
-    public void setSubjects(String subjects) {
-        this.subjects = subjects;
-    }
-
-    public String getTypes() {
-        return types;
-    }
-
-    public void setTypes(String types) {
-        this.types = types;
-    }
-
-    public String getFormat() {
-        return format;
-    }
-
-    public void setFormat(String format) {
-        this.format = format;
-    }
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-
-    public String getPublisher() {
-        return publisher;
-    }
-
-    public void setPublisher(String publisher) {
-        this.publisher = publisher;
-    }
-
-    public String getBookId() {
-        return bookId;
-    }
-
-    public void setBookId(String bookId) {
-        this.bookId = bookId;
-    }
-
-    public String getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(String createDate) {
-        this.createDate = createDate;
-    }
-
-    public String getPubDate() {
-        return pubDate;
-    }
-
-    public void setPubDate(String pubDate) {
-        this.pubDate = pubDate;
-    }
-
-    public String getModDate() {
-        return modDate;
-    }
-
-    public void setModDate(String modDate) {
-        this.modDate = modDate;
-    }
-
-    public int getNumChaps() {
-        return numChaps;
-    }
-
-    public void setNumChaps(int numChaps) {
-        this.numChaps = numChaps;
-    }
-
-    public boolean hasCoverImage() {
-        return hasCoverImage;
-    }
-
-    public void setHasCoverImage(boolean hasCoverImage) {
-        this.hasCoverImage = hasCoverImage;
-    }
-
-    public byte[] getHash() {
-        return hash;
-    }
-
-    public void setHash(byte[] hash) {
-        this.hash = hash;
-    }
-
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public Date getLastImportDate() {
-        return lastImportDate;
-    }
-
-    public void setLastImportDate(Date lastImportDate) {
-        this.lastImportDate = lastImportDate;
-    }
-
-    public Date getLastReadDate() {
-        return lastReadDate;
-    }
-
-    public void setLastReadDate(Date lastReadDate) {
-        this.lastReadDate = lastReadDate;
-    }
-
-    public boolean isInRecents() {
-        return isInRecents;
-    }
-
-    public void setInRecents(boolean inRecents) {
-        isInRecents = inRecents;
-    }
-
-    public RealmList<RTag> getTags() {
-        return tags;
-    }
-
-    public void setTags(RealmList<RTag> tags) {
-        this.tags = tags;
-    }
-
-    public int getRating() {
-        return rating;
-    }
-
-    public void setRating(int rating) {
-        this.rating = rating;
-    }
-
-    public long getUniqueId() {
-        return uniqueId;
-    }
-
-    public void setUniqueId(long uniqueId) {
-        this.uniqueId = uniqueId;
     }
 
     @Override
@@ -480,13 +296,13 @@ public class RBook extends RealmObject {
 
         RBook rBook = (RBook) o;
 
-        return getUniqueId() == rBook.getUniqueId() && getRelPath().equals(rBook.getRelPath());
+        return uniqueId == rBook.uniqueId && relPath.equals(rBook.relPath);
     }
 
     @Override
     public int hashCode() {
-        int result = getRelPath().hashCode();
-        result = 31 * result + (int) (getUniqueId() ^ (getUniqueId() >>> 32));
+        int result = relPath.hashCode();
+        result = 31 * result + (int) (uniqueId ^ (uniqueId >>> 32));
         return result;
     }
 }

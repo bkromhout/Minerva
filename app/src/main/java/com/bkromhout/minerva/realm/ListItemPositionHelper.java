@@ -35,9 +35,9 @@ public class ListItemPositionHelper {
         RBookList bookList = targetItem.owningList;
         // Get the items which come before targetItem.
         RealmResults<RBookListItem> beforeTarget = bookList.listItems
-                                                           .where()
-                                                           .lessThan("pos", targetItem.pos)
-                                                           .findAllSorted("pos", Sort.DESCENDING);
+                .where()
+                .lessThan("pos", targetItem.pos)
+                .findAllSorted("pos", Sort.DESCENDING);
 
         // Move itemToMove to between beforeTarget.first()/null and targetItem.
         moveItemToBetween(bookList, itemToMove, beforeTarget.isEmpty() ? null : beforeTarget.first(), targetItem);
@@ -68,9 +68,9 @@ public class ListItemPositionHelper {
         RBookList bookList = targetItem.owningList;
         // Get the items which come after targetItem.
         RealmResults<RBookListItem> afterTarget = bookList.listItems
-                                                          .where()
-                                                          .greaterThan("pos", targetItem.pos)
-                                                          .findAllSorted("pos");
+                .where()
+                .greaterThan("pos", targetItem.pos)
+                .findAllSorted("pos");
 
         // Move itemToMove to between targetItem and afterTarget.first()/null.
         moveItemToBetween(bookList, itemToMove, targetItem, afterTarget.isEmpty() ? null : afterTarget.first());

@@ -120,9 +120,9 @@ public class RTag extends RealmObject {
             for (RBook book : books) {
                 for (RTag tag : tags) {
                     // If the book doesn't already have the tag,
-                    if (!book.getTags().contains(tag)) {
+                    if (!book.tags.contains(tag)) {
                         // add the tag to the book,
-                        book.getTags().add(tag);
+                        book.tags.add(tag);
                         // and add the book to the tag.
                         tag.taggedBooks.add(book);
                     }
@@ -147,7 +147,7 @@ public class RTag extends RealmObject {
             for (RBook book : books) {
                 for (RTag tag : tags) {
                     // If the book has the tag, remove it,
-                    if (book.getTags().remove(tag)) {
+                    if (book.tags.remove(tag)) {
                         // and remove the book from the tag.
                         tag.taggedBooks.remove(book);
                     }

@@ -72,11 +72,11 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
      */
     public static SpannableString getSpannedTagString(RBook book, TagBGDrawingInfo di, int maxLines) {
         Spanny spanny = new Spanny();
-        HashMap<String, Integer> colorMap = new HashMap<>(book.getTags().size());
+        HashMap<String, Integer> colorMap = new HashMap<>(book.tags.size());
         // TODO Remove these hardcoded values once we implement tag colors.
         int bgColor = ContextCompat.getColor(Minerva.getAppCtx(), R.color.grey700);
         int fgColor = ContextCompat.getColor(Minerva.getAppCtx(), R.color.grey200);
-        for (RTag tag : book.getTags()) {
+        for (RTag tag : book.tags) {
             spanny.append(tag.name, new ForegroundColorSpan(fgColor)).append(TAG_SEP);
             colorMap.put(tag.name, bgColor);
         }

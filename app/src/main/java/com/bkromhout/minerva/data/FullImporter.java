@@ -285,7 +285,7 @@ public class FullImporter {
 
         // Add RBook to queue and emit file path.
         bookQueue.add(rBook);
-        logSubject.onNext(C.getStr(R.string.fil_read_file, rBook.getRelPath()));
+        logSubject.onNext(C.getStr(R.string.fil_read_file, rBook.relPath));
         progressSubject.onNext(numDone++);
     }
 
@@ -325,7 +325,7 @@ public class FullImporter {
                     for (RBook book : bookQueue) {
                         // Try to find existing RBook before adding a new one.
                         RBook existingBook = bgRealm.where(RBook.class)
-                                                    .equalTo("relPath", book.getRelPath())
+                                                    .equalTo("relPath", book.relPath)
                                                     .findFirst();
 
                         // If we have an existing RBook for this file, just update the fields which we read from the

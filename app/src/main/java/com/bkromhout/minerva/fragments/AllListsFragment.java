@@ -287,7 +287,8 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
                 break;
             }
             case R.id.action_rename_list: {
-                Dialogs.uniqueNameDialog(getActivity(), RBookList.class, R.string.title_rename_list, R.string.prompt_rename_list,
+                Dialogs.uniqueNameDialog(getActivity(), RBookList.class, R.string.title_rename_list,
+                        R.string.prompt_rename_list,
 
                         R.string.list_name_hint, listName,
                         R.id.action_rename_list, position);
@@ -295,7 +296,8 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
             }
             case R.id.action_rename_smart_list: {
                 Dialogs.uniqueNameDialog(getActivity(), RBookList.class, R.string.title_rename_smart_list,
-                        R.string.prompt_rename_smart_list, R.string.list_name_hint, listName, R.id.action_rename_smart_list, position
+                        R.string.prompt_rename_smart_list, R.string.list_name_hint, listName,
+                        R.id.action_rename_smart_list, position
                 );
                 break;
             }
@@ -402,7 +404,8 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
     @OnClick(R.id.fab2)
     void onFabNewSmartListClick() {
         // Collapse the mini FAB and change the main FAB's icon back to a plus, then show the new smart list dialog.
-        Dialogs.uniqueNameDialog(getActivity(), RBookList.class, R.string.action_new_smart_list, R.string.prompt_new_smart_list,
+        Dialogs.uniqueNameDialog(getActivity(), RBookList.class, R.string.action_new_smart_list,
+                R.string.prompt_new_smart_list,
                 R.string.list_name_hint, null,
                 R.id.action_new_smart_list, -1);
         activateFabs(false);

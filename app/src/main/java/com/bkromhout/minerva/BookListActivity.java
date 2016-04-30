@@ -380,7 +380,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 TaggingActivity.start(this, getSelectedBooks());
                 return true;
             case R.id.action_rate:
-                int initialRating = adapter.getSelectedItemCount() == 1 ? getSelectedBooks().get(0).getRating() : 0;
+                int initialRating = adapter.getSelectedItemCount() == 1 ? getSelectedBooks().get(0).rating : 0;
                 Dialogs.ratingDialog(this, initialRating);
                 return true;
             case R.id.action_move_to_top:

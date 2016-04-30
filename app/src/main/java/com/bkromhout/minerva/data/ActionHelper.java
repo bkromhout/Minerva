@@ -75,7 +75,7 @@ public class ActionHelper {
      */
     public static void rateBooks(Realm realm, List<RBook> books, int rating) {
         realm.executeTransaction(tRealm -> {
-            for (RBook book : books) book.setRating(rating);
+            for (RBook book : books) book.rating = rating;
         });
     }
 
@@ -86,7 +86,7 @@ public class ActionHelper {
      * @param context The context to use to open the file.
      */
     public static void openBookUsingIntent(RBook book, Context context) {
-        File file = Util.getFileFromRelPath(book.getRelPath());
+        File file = Util.getFileFromRelPath(book.relPath);
         // TODO Make the user aware if the underlying file doesn't exist!
         if (file == null) return;
 
@@ -102,8 +102,8 @@ public class ActionHelper {
             context.startActivity(newIntent);
             // Put book at the top of the recents list.
             realm.executeTransaction(tRealm -> {
-                book.setLastReadDate(Calendar.getInstance().getTime());
-                book.setInRecents(true);
+                book.lastReadDate = Calendar.getInstance().getTime();
+                book.isInRecents = true;
             });
         } catch (ActivityNotFoundException e) {
             // Tell the user there aren't any apps which advertise the ability to handle the book's file type.
@@ -156,14 +156,14 @@ public class ActionHelper {
                 for (RBook book : books) {
                     // Delete any RBookListItems which may exist for these books.
                     tRealm.where(RBookListItem.class)
-                          .contains("book.relPath", book.getRelPath())
+                          .contains("book.relPath", book.relPath)
                           .findAll()
                           .deleteAllFromRealm();
                     // Get the relative path of the book, in case we wish to delete the real files too.
-                    String relPath = book.getRelPath();
+                    String relPath = book.relPath;
                     relPaths.add(relPath);
                     // Be sure to delete the cover file, if we have one.
-                    if (book.hasCoverImage()) CoverHelper.get().deleteCoverImage(relPath);
+                    if (book.hasCoverImage) CoverHelper.get().deleteCoverImage(relPath);
                     // Delete the actual RBook from Realm.
                     book.deleteFromRealm();
                 }

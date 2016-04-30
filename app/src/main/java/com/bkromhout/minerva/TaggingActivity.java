@@ -510,15 +510,15 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
 
             // Loop through books.
             for (RBook book : books) {
-                RealmList<RTag> bookTags = book.getTags();
+                RealmList<RTag> bookTags = book.tags;
 
                 // Add all of this book's tags to the tagsOnSome HashSet (we won't have duplicates).
                 tagsOnSome.addAll(bookTags);
 
                 if (tagsOnAll != null)// Only keep tags which are also in this book's tag list.
-                    tagsOnAll.retainAll(book.getTags());
+                    tagsOnAll.retainAll(book.tags);
                 else // If we haven't created the tag list, do that now.
-                    tagsOnAll = new ArrayList<>(book.getTags());
+                    tagsOnAll = new ArrayList<>(book.tags);
             }
 
             if (tagsOnAll != null) {
