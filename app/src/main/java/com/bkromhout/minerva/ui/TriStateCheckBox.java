@@ -4,11 +4,9 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.util.AttributeSet;
 import android.view.ViewDebug;
-import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 
 /**
@@ -30,9 +28,6 @@ public class TriStateCheckBox extends AppCompatCheckBox implements TriCheckable 
 
     public TriStateCheckBox(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
-        if (!isInEditMode()) setSupportButtonTintList(ContextCompat.getColorStateList(Minerva.getAppCtx(),
-                R.color.tri_checkable_color));
         setButtonDrawable(R.drawable.tri_state_checkmark);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TriStateCheckBox);
