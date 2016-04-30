@@ -2,10 +2,10 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
         android:name="ic_checkbox_unchecked"
         android:width="32dp"
-        android:viewportWidth="48"
         android:height="32dp"
+        android:tint="@color/tri_checkable_color"
         android:viewportHeight="48"
-        android:tint="@color/tri_checkable_color">
+        android:viewportWidth="48">
     <group
             android:name="icon_null"
             android:translateX="24"
