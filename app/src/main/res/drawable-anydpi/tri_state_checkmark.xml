@@ -20,4 +20,8 @@
             android:fromId="@+id/checked"
             android:toId="@+id/unchecked"
             android:drawable="@drawable/anim_checkbox_checked_to_unchecked"/>
+    <transition
+            android:fromId="@+id/partial"
+            android:toId="@+id/unchecked"
+            android:drawable="@drawable/anim_checkbox_partial_to_unchecked"/>
 </animated-selector>
