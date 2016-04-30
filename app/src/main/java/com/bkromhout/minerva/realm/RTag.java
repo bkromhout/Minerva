@@ -20,7 +20,7 @@ public class RTag extends RealmObject {
      */
     @PrimaryKey
     @Required
-    private String name;
+    public String name;
     /**
      * TODO This is a work-around until Realm can do case-insensitive sorting.
      * <p>
@@ -28,12 +28,22 @@ public class RTag extends RealmObject {
      */
     @Index
     @Hide
-    private String sortName;
+    public String sortName;
+    /**
+     * Color to use for the tag's text.
+     */
+    @Hide
+    public int textColor;
+    /**
+     * Color to use for the tag's background.
+     */
+    @Hide
+    public int bgColor;
     /**
      * {@link RBook}s which are tagged with this tag.
      */
     @Hide
-    private RealmList<RBook> taggedBooks;
+    public RealmList<RBook> taggedBooks;
 
     /**
      * Create a default {@link RTag}.
@@ -114,7 +124,7 @@ public class RTag extends RealmObject {
                         // add the tag to the book,
                         book.getTags().add(tag);
                         // and add the book to the tag.
-                        tag.getTaggedBooks().add(book);
+                        tag.taggedBooks.add(book);
                     }
                 }
             }
@@ -139,36 +149,12 @@ public class RTag extends RealmObject {
                     // If the book has the tag, remove it,
                     if (book.getTags().remove(tag)) {
                         // and remove the book from the tag.
-                        tag.getTaggedBooks().remove(book);
+                        tag.taggedBooks.remove(book);
                     }
                 }
             }
             realm.commitTransaction();
         }
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSortName() {
-        return sortName;
-    }
-
-    public void setSortName(String sortName) {
-        this.sortName = sortName;
-    }
-
-    public RealmList<RBook> getTaggedBooks() {
-        return taggedBooks;
-    }
-
-    public void setTaggedBooks(RealmList<RBook> taggedBooks) {
-        this.taggedBooks = taggedBooks;
     }
 
     @Override
@@ -178,11 +164,11 @@ public class RTag extends RealmObject {
 
         RTag rTag = (RTag) o;
 
-        return getName().equals(rTag.getName());
+        return name.equals(rTag.name);
     }
 
     @Override
     public int hashCode() {
-        return getName().hashCode();
+        return name.hashCode();
     }
 }

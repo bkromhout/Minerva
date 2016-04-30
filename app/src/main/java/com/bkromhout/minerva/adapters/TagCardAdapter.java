@@ -77,9 +77,9 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
         });
 
         // Set name and checked state.
-        viewHolder.tag.setText(tag.getName());
-        if (partiallyCheckedItems.contains(tag.getName())) viewHolder.tag.setPartiallyChecked(true);
-        else viewHolder.tag.setChecked(checkedItems.contains(tag.getName()));
+        viewHolder.tag.setText(tag.name);
+        if (partiallyCheckedItems.contains(tag.name)) viewHolder.tag.setPartiallyChecked(true);
+        else viewHolder.tag.setChecked(checkedItems.contains(tag.name));
 
         // Set whether or not the action buttons are shown.
         viewHolder.rename.setVisibility(isInActionMode ? View.VISIBLE : View.GONE);
@@ -87,9 +87,9 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
 
         // Set action button click handlers.
         viewHolder.rename.setOnClickListener(v -> EventBus.getDefault().post(
-                new TagCardClickEvent(TagCardClickEvent.Type.RENAME, tag.getName())));
+                new TagCardClickEvent(TagCardClickEvent.Type.RENAME, tag.name)));
         viewHolder.delete.setOnClickListener(v -> EventBus.getDefault().post(
-                new TagCardClickEvent(TagCardClickEvent.Type.DELETE, tag.getName())));
+                new TagCardClickEvent(TagCardClickEvent.Type.DELETE, tag.name)));
     }
 
     /**

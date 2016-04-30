@@ -340,11 +340,11 @@ public class ActionHelper {
      * @param newName New tag name.
      */
     public static void renameTag(Realm realm, RTag tag, String newName) {
-        String oldName = tag.getName();
+        String oldName = tag.name;
         // Name is available; rename the RTag.
         realm.executeTransaction(tRealm -> {
-            tag.setName(newName);
-            tag.setSortName(newName.toLowerCase());
+            tag.name = newName;
+            tag.sortName = newName.toLowerCase();
         });
 
         // Now make sure that we swap the old name for the new one in the old/new lists.
@@ -366,7 +366,7 @@ public class ActionHelper {
         th.markForExplicitUpdateIfNecessary();
 
         // Delete the tag from Realm.
-        String tagName = tag.getName();
+        String tagName = tag.name;
         realm.executeTransaction(tRealm -> tag.deleteFromRealm());
 
         // Remove tag name from the lists (if present).

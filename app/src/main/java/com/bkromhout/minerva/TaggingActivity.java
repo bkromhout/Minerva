@@ -525,11 +525,11 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
                 // Remove anything from tagsOnSome which is in tagsOnAll.
                 tagsOnSome.removeAll(tagsOnAll);
                 // Assign names strings from tagsOnAll to oldCheckedItems.
-                for (RTag tag : tagsOnAll) oldCheckedItems.add(tag.getName());
+                for (RTag tag : tagsOnAll) oldCheckedItems.add(tag.name);
             }
 
             // Assign name strings from tagsOnSome to oldPartiallyCheckedItems.
-            for (RTag tag : tagsOnSome) oldPartiallyCheckedItems.add(tag.getName());
+            for (RTag tag : tagsOnSome) oldPartiallyCheckedItems.add(tag.name);
         }
     }
 }

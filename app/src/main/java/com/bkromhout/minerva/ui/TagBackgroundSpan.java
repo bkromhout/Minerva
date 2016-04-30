@@ -77,8 +77,8 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
         int bgColor = ContextCompat.getColor(Minerva.getAppCtx(), R.color.grey700);
         int fgColor = ContextCompat.getColor(Minerva.getAppCtx(), R.color.grey200);
         for (RTag tag : book.getTags()) {
-            spanny.append(tag.getName(), new ForegroundColorSpan(fgColor)).append(TAG_SEP);
-            colorMap.put(tag.getName(), bgColor);
+            spanny.append(tag.name, new ForegroundColorSpan(fgColor)).append(TAG_SEP);
+            colorMap.put(tag.name, bgColor);
         }
         return Spanny.spanText(spanny,
                 new LeadingMarginSpan.Standard((int) di.cornerRadius),
