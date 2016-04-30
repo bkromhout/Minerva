@@ -370,8 +370,8 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
         ArrayList<String> lines = new ArrayList<>();
         // Loop through all of the deltas.
         for (Delta delta : deltas) {
-            // For all of the specified type, add their lines to the list.
-            if (delta.getType().equals(deltaType)) {
+            // For all deltas which are of the specified type or are CHANGE deltas, add their lines to the list.
+            if (delta.getType().equals(deltaType) || delta.getType() == Delta.TYPE.CHANGE) {
                 // Have to look in different places based on the type of delta.
                 if (deltaType == Delta.TYPE.DELETE) //noinspection unchecked
                     lines.addAll(delta.getOriginal().getLines());
