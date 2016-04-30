@@ -84,50 +84,42 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         if (position == getItemCount() || !(viewHolder instanceof BaseCardVH)) return;
-        bindBaseCard((BaseCardVH) viewHolder, position);
-    }
-
-    /**
-     * Bind a {@link BaseCardVH}.
-     * @param resolvedVH Base book card view holder.
-     * @param position   Position in {@link #realmResults} to get {@link RBook} or {@link RBookListItem} from.
-     */
-    private void bindBaseCard(BaseCardVH resolvedVH, int position) {
+        BaseCardVH vh = (BaseCardVH) viewHolder;
         // Get/check variables needed to help bind.
         RBookListItem bookListItem = getBookListItemFromT(realmResults.get(position));
         RBook book = bookListItem != null ? bookListItem.getBook() : getBookFromT(realmResults.get(position));
         if (book == null || rippleFgListener == null) throw new IllegalArgumentException();
 
         // Visually distinguish selected cards during multi-select mode.
-        resolvedVH.cardView.setActivated(selectedPositions.contains(position));
+        vh.cardView.setActivated(selectedPositions.contains(position));
 
         // Set card click handler.
-        resolvedVH.content.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
+        vh.content.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
                 BookCardClickEvent.Type.NORMAL, book.getRelPath(), position)));
 
         // Set card long click handler.
-        resolvedVH.content.setOnLongClickListener(v -> {
-            if (mayStartDrags) startDragging(resolvedVH);
+        vh.content.setOnLongClickListener(v -> {
+            if (mayStartDrags) startDragging(vh);
             else EventBus.getDefault().post(new BookCardClickEvent(BookCardClickEvent.Type.LONG, book.getRelPath(),
                     position));
             return true;
         });
 
         // Set info button handler.
-        resolvedVH.btnInfo.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
+        vh.btnInfo.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
                 BookCardClickEvent.Type.INFO, book.getRelPath(), position)));
 
         // Fill in data.
-        resolvedVH.tvTitle.setText(book.getTitle());
-        resolvedVH.tvAuthor.setText(book.getAuthor());
+        vh.tvTitle.setText(book.getTitle());
+        vh.tvAuthor.setText(book.getAuthor());
 
         // Do bindings for the rest of the view holder based on its real type.
-        if (resolvedVH instanceof CompactCardVH) bindCompactBookCard((CompactCardVH) resolvedVH, book);
-        if (resolvedVH instanceof NoCoverCardVH) bindNoCoverBookCard((NoCoverCardVH) resolvedVH, position, book);
-        if (resolvedVH instanceof NormalCardVH) bindNormalBookCard((NormalCardVH) resolvedVH, book);
+        if (vh instanceof CompactCardVH) bindCompactBookCard((CompactCardVH) vh, book);
+        if (vh instanceof NoCoverCardVH) bindNoCoverBookCard((NoCoverCardVH) vh, position, book);
+        if (vh instanceof NormalCardVH) bindNormalBookCard((NormalCardVH) vh, book);
 
         // If we have an RBookListItem, store its key on the CardView.
-        if (bookListItem != null) resolvedVH.cardView.setTag(bookListItem.getUniqueId());
+        if (bookListItem != null) vh.cardView.setTag(bookListItem.getUniqueId());
     }
 
     /**
