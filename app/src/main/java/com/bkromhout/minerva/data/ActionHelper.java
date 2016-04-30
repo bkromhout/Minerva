@@ -290,7 +290,7 @@ public class ActionHelper {
                 Long nextFirstPos = bookList.getListItems().where().min("pos").longValue() - C.LIST_ITEM_GAP;
                 // Loop through itemsToMove backwards and move those items to the start of this list.
                 for (int i = itemsToMove.size() - 1; i >= 0; i--) {
-                    itemsToMove.get(i).setPos(nextFirstPos);
+                    itemsToMove.get(i).pos = nextFirstPos;
                     nextFirstPos -= C.LIST_ITEM_GAP;
                 }
             });
@@ -311,7 +311,7 @@ public class ActionHelper {
                 Long nextLastPos = bookList.getNextPos();
                 // Loop through itemsToMove and move those items to the end of this list.
                 for (RBookListItem item : itemsToMove) {
-                    item.setPos(nextLastPos);
+                    item.pos = nextLastPos;
                     nextLastPos += C.LIST_ITEM_GAP;
                 }
                 // Set bookList's nextPos.

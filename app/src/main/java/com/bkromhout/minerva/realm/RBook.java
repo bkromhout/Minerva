@@ -263,7 +263,7 @@ public class RBook extends RealmObject {
                                                          .equalTo("book.relPath", book.getRelPath())
                                                          .findAll();
             // For each RBookListItem, add the name of the owning RBookList.
-            for (int i = listItems.size() - 1; i >= 0; i--) listNames.add(listItems.get(i).getOwningList().getName());
+            for (int i = listItems.size() - 1; i >= 0; i--) listNames.add(listItems.get(i).owningList.getName());
 
             // Search through smart lists too, but do it a bit differently.
             RealmResults<RBookList> smartLists = realm.where(RBookList.class)

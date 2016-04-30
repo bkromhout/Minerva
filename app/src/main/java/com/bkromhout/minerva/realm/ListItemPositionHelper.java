@@ -30,13 +30,13 @@ public class ListItemPositionHelper {
      */
     public static void moveItemToBefore(RBookListItem itemToMove, RBookListItem targetItem) {
         if (itemToMove == null || targetItem == null) throw new IllegalArgumentException("Neither item may be null.");
-        if (itemToMove.getUniqueId() == targetItem.getUniqueId()) return;
+        if (itemToMove.uniqueId == targetItem.uniqueId) return;
 
-        RBookList bookList = targetItem.getOwningList();
+        RBookList bookList = targetItem.owningList;
         // Get the items which come before targetItem.
         RealmResults<RBookListItem> beforeTarget = bookList.getListItems()
                                                            .where()
-                                                           .lessThan("pos", targetItem.getPos())
+                                                           .lessThan("pos", targetItem.pos)
                                                            .findAllSorted("pos", Sort.DESCENDING);
 
         // Move itemToMove to between beforeTarget.first()/null and targetItem.
@@ -63,13 +63,13 @@ public class ListItemPositionHelper {
      */
     public static void moveItemToAfter(RBookListItem itemToMove, RBookListItem targetItem) {
         if (itemToMove == null || targetItem == null) throw new IllegalArgumentException("Neither item may be null.");
-        if (itemToMove.getUniqueId() == targetItem.getUniqueId()) return;
+        if (itemToMove.uniqueId == targetItem.uniqueId) return;
 
-        RBookList bookList = targetItem.getOwningList();
+        RBookList bookList = targetItem.owningList;
         // Get the items which come after targetItem.
         RealmResults<RBookListItem> afterTarget = bookList.getListItems()
                                                           .where()
-                                                          .greaterThan("pos", targetItem.getPos())
+                                                          .greaterThan("pos", targetItem.pos)
                                                           .findAllSorted("pos");
 
         // Move itemToMove to between targetItem and afterTarget.first()/null.
@@ -121,7 +121,7 @@ public class ListItemPositionHelper {
         // Get Realm, update itemToMove, then close Realm.
         try (Realm realm = Realm.getDefaultInstance()) {
             final Long finalNewPos = newPos;
-            realm.executeTransaction(tRealm -> itemToMove.setPos(finalNewPos));
+            realm.executeTransaction(tRealm -> itemToMove.pos = finalNewPos);
         }
     }
 
@@ -148,11 +148,11 @@ public class ListItemPositionHelper {
         if (item1 == null && item2 == null) throw new IllegalArgumentException("Both items are null.");
 
         // Handle acceptable nulls.
-        if (item1 == null) return LongMath.checkedSubtract(item2.getPos(), C.LIST_ITEM_GAP);
-        if (item2 == null) return LongMath.checkedAdd(item1.getPos(), C.LIST_ITEM_GAP);
+        if (item1 == null) return LongMath.checkedSubtract(item2.pos, C.LIST_ITEM_GAP);
+        if (item2 == null) return LongMath.checkedAdd(item1.pos, C.LIST_ITEM_GAP);
 
         // Get positions, make sure that item2 doesn't precede item1 and isn't in the same position as item1.
-        Long p1 = item1.getPos(), p2 = item2.getPos();
+        Long p1 = item1.pos, p2 = item2.pos;
         if (p2 <= p1) throw new IllegalArgumentException("item2 was before or at the same position as item1.");
 
         // Calculate middle.

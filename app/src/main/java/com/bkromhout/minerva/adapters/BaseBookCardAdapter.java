@@ -77,7 +77,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
         if (position == super.getItemCount()) return Long.MIN_VALUE;
         T item = realmResults.get(position);
         if (item instanceof RBook) return ((RBook) item).getUniqueId();
-        else if (item instanceof RBookListItem) return ((RBookListItem) item).getUniqueId();
+        else if (item instanceof RBookListItem) return ((RBookListItem) item).uniqueId;
         else throw new IllegalArgumentException("Unexpected item type: " + item.getClass().getName());
     }
 
@@ -87,7 +87,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
         BaseCardVH vh = (BaseCardVH) viewHolder;
         // Get/check variables needed to help bind.
         RBookListItem bookListItem = getBookListItemFromT(realmResults.get(position));
-        RBook book = bookListItem != null ? bookListItem.getBook() : getBookFromT(realmResults.get(position));
+        RBook book = bookListItem != null ? bookListItem.book : getBookFromT(realmResults.get(position));
         if (book == null || rippleFgListener == null) throw new IllegalArgumentException();
 
         // Visually distinguish selected cards during multi-select mode.
@@ -119,7 +119,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
         if (vh instanceof NormalCardVH) bindNormalBookCard((NormalCardVH) vh, book);
 
         // If we have an RBookListItem, store its key on the CardView.
-        if (bookListItem != null) vh.cardView.setTag(bookListItem.getUniqueId());
+        if (bookListItem != null) vh.cardView.setTag(bookListItem.uniqueId);
     }
 
     /**
@@ -173,7 +173,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
      */
     private RBook getBookFromT(T item) {
         if (item instanceof RBook) return (RBook) item;
-        else if (item instanceof RBookListItem) return ((RBookListItem) item).getBook();
+        else if (item instanceof RBookListItem) return ((RBookListItem) item).book;
         else throw new IllegalArgumentException("item not one of expected types, cannot get RBook.");
     }
 

@@ -241,7 +241,7 @@ public class RBookList extends RealmObject {
                 nextPos = 0L;
                 // Loop through the items and set their new position values, then increment nextPos.
                 for (RBookListItem listItem : orderedItems) {
-                    listItem.setPos(nextPos);
+                    listItem.pos = nextPos;
                     nextPos += C.LIST_ITEM_GAP;
                 }
             });

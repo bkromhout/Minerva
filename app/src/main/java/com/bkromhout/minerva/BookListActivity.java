@@ -603,7 +603,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         if (modelType == ModelType.BOOK)
             book = realm.where(RBook.class).equalTo("relPath", event.getRelPath()).findFirst();
         else if (modelType == ModelType.BOOK_LIST_ITEM)
-            book = realm.where(RBookListItem.class).equalTo("book.relPath", event.getRelPath()).findFirst().getBook();
+            book = realm.where(RBookListItem.class).equalTo("book.relPath", event.getRelPath()).findFirst().book;
         else throw new IllegalArgumentException("Invalid adapter type.");
 
         if (actionMode != null) {

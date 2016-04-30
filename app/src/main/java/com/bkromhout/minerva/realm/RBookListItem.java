@@ -21,15 +21,15 @@ public class RBookListItem extends RealmObject {
      */
     @PrimaryKey
     @Hide
-    private long uniqueId;
+    public long uniqueId;
     /**
      * The {@link RBookList} which this item belongs to.
      */
-    private RBookList owningList;
+    public RBookList owningList;
     /**
      * {@link RBook} that this item refers to.
      */
-    private RBook book;
+    public RBook book;
     /**
      * Position of {@link RBook} in its owning {@link RBookList}.
      * <p>
@@ -39,7 +39,7 @@ public class RBookListItem extends RealmObject {
      */
     @Index
     @Hide
-    private Long pos;
+    public Long pos;
 
     /**
      * Create a default {@link RBookListItem}.
@@ -81,7 +81,7 @@ public class RBookListItem extends RealmObject {
         // Check for nulls.
         if (item1 == null || item2 == null) return false;
         // Check if from same list.
-        return item1.getOwningList().equals(item2.getOwningList());
+        return item1.owningList.equals(item2.owningList);
     }
 
     /**
@@ -94,40 +94,8 @@ public class RBookListItem extends RealmObject {
         if (listItems.isEmpty()) return new ArrayList<>();
 
         ArrayList<RBook> books = new ArrayList<>(listItems.size());
-        for (RBookListItem listItem : listItems) books.add(listItem.getBook());
+        for (RBookListItem listItem : listItems) books.add(listItem.book);
         return books;
-    }
-
-    public long getUniqueId() {
-        return uniqueId;
-    }
-
-    public void setUniqueId(long uniqueId) {
-        this.uniqueId = uniqueId;
-    }
-
-    public RBookList getOwningList() {
-        return owningList;
-    }
-
-    public void setOwningList(RBookList owningList) {
-        this.owningList = owningList;
-    }
-
-    public RBook getBook() {
-        return book;
-    }
-
-    public void setBook(RBook book) {
-        this.book = book;
-    }
-
-    public Long getPos() {
-        return pos;
-    }
-
-    public void setPos(Long pos) {
-        this.pos = pos;
     }
 
     @Override

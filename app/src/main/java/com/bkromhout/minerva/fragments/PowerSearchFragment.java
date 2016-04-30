@@ -362,7 +362,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
         if (queryType == ModelType.BOOK)
             book = (RBook) results.where().equalTo("relPath", event.getRelPath()).findFirst();
         else if (queryType == ModelType.BOOK_LIST_ITEM)
-            book = ((RBookListItem) results.where().equalTo("book.relPath", event.getRelPath()).findFirst()).getBook();
+            book = ((RBookListItem) results.where().equalTo("book.relPath", event.getRelPath()).findFirst()).book;
         else throw new IllegalArgumentException("Invalid queryType");
 
         if (actionMode != null) {
