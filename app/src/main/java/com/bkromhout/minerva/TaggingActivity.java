@@ -328,6 +328,8 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
      */
     @OnClick(R.id.cancel)
     void onCancelButtonClicked() {
+        taggingHelper = null;
+        TaggingHelper.reset();
         finish();
     }
 
