@@ -86,7 +86,10 @@ public class ActionHelper {
      * @param context The context to use to open the file.
      */
     public static void openBookUsingIntent(RBook book, Context context) {
-        File file = Util.getFileFromRelPath(book.relPath);
+        // TODO Realm's bytecode transformer fails our build if we use the field here instead of a getter...
+        //File file = Util.getFileFromRelPath(book.relPath);
+        File file = Util.getFileFromRelPath(book.getRelPath());
+        
         // TODO Make the user aware if the underlying file doesn't exist!
         if (file == null) return;
 

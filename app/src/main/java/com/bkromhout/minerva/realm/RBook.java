@@ -289,6 +289,10 @@ public class RBook extends RealmObject {
         return listNames;
     }
 
+    public String getRelPath() {
+        return relPath;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
