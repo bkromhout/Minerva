@@ -18,8 +18,8 @@ import butterknife.OnClick;
 import com.bkromhout.minerva.adapters.*;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.ReImporter;
-import com.bkromhout.minerva.enums.AdapterType;
 import com.bkromhout.minerva.enums.BookCardType;
+import com.bkromhout.minerva.enums.ModelType;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
 import com.bkromhout.minerva.events.PrefChangeEvent;
@@ -34,7 +34,6 @@ import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.RealmRecyclerView;
 import com.bkromhout.ruqus.RealmUserQuery;
 import io.realm.Realm;
-import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
@@ -95,7 +94,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     /**
      * Type of objects in the adapter.
      */
-    private AdapterType adapterType = AdapterType.BOOK;
+    private ModelType modelType = ModelType.BOOK;
     /**
      * The list of {@link RBookListItem}s being shown.
      */
@@ -103,7 +102,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     /**
      * Recycler view adapter.
      */
-    private RealmBasedRecyclerViewAdapter adapter;
+    private BaseBookCardAdapter adapter;
     /**
      * Action mode.
      */
@@ -192,7 +191,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         // If we already have a RealmUserQuery, just use that right away.
         if (smartListRuq != null) {
             // Use RUQ to set up UI.
-            adapterType = AdapterType.fromRealmClass(smartListRuq.getQueryClass());
+            modelType = ModelType.fromRealmClass(smartListRuq.getQueryClass());
             items = smartListRuq.execute(realm);
             adapter = makeAdapter();
             recyclerView.setAdapter(adapter);
@@ -216,6 +215,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         } else {
             // Normal list.
             items = srcList.getListItems().where().findAllSorted("pos");
+            modelType = ModelType.BOOK;
             adapter = makeAdapter();
             recyclerView.setAdapter(adapter);
         }
@@ -291,7 +291,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         } else {
             // Normal list; reorder mode.
             mode.setTitle(R.string.title_reorder_mode);
-            ((BaseBookCardAdapter) adapter).setDragMode(true);
+            adapter.setDragMode(true);
         }
         return true;
     }
@@ -307,7 +307,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         if (!isReorderMode) {
             adapter.clearSelections();
         } else {
-            ((BaseBookCardAdapter) adapter).setDragMode(false);
+            adapter.setDragMode(false);
             isReorderMode = false;
         }
         actionMode = null;
@@ -331,12 +331,12 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 return true;
             case R.id.action_rename_list:
                 Dialogs.uniqueNameDialog(this, RBookList.class, R.string.title_rename_list, R.string.prompt_rename_list,
-                        R.string.list_name_hint, srcList.getName(),
-                        R.id.action_rename_list, posToUpdate);
+                        R.string.list_name_hint, srcList.getName(), R.id.action_rename_list, posToUpdate);
                 return true;
             case R.id.action_rename_smart_list:
-                Dialogs.uniqueNameDialog(this, RBookList.class, R.string.title_rename_smart_list, R.string.prompt_rename_smart_list,
-                        R.string.list_name_hint, srcList.getName(), R.id.action_rename_smart_list, posToUpdate);
+                Dialogs.uniqueNameDialog(this, RBookList.class, R.string.title_rename_smart_list,
+                        R.string.prompt_rename_smart_list, R.string.list_name_hint, srcList.getName(),
+                        R.id.action_rename_smart_list, posToUpdate);
                 return true;
             case R.id.action_edit_smart_list:
                 QueryBuilderActivity.start(this, smartListRuq);
@@ -536,9 +536,9 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
      */
     @SuppressWarnings("unchecked")
     private List<RBook> getSelectedBooks() {
-        if (adapterType == AdapterType.BOOK)
+        if (modelType == ModelType.BOOK)
             return adapter.getSelectedRealmObjects();
-        else if (adapterType == AdapterType.BOOK_LIST_ITEM) return RBookListItem.booksFromBookListItems(
+        else if (modelType == ModelType.BOOK_LIST_ITEM) return RBookListItem.booksFromBookListItems(
                 adapter.getSelectedRealmObjects());
         else throw new IllegalArgumentException("Invalid type.");
     }
@@ -548,8 +548,8 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
      * @return Adapter.
      */
     @SuppressWarnings("unchecked")
-    private RealmBasedRecyclerViewAdapter makeAdapter() {
-        if (adapterType == AdapterType.BOOK) {
+    private BaseBookCardAdapter makeAdapter() {
+        if (modelType == ModelType.BOOK) {
             switch (cardType) {
                 case NORMAL:
                     return new BookCardAdapter(this, (RealmResults<RBook>) items);
@@ -560,7 +560,7 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
                 default:
                     throw new IllegalStateException("Invalid card type.");
             }
-        } else if (adapterType == AdapterType.BOOK_LIST_ITEM) {
+        } else if (modelType == ModelType.BOOK_LIST_ITEM) {
             switch (cardType) {
                 case NORMAL:
                     return new BookItemCardAdapter(this, (RealmResults<RBookListItem>) items);
@@ -600,9 +600,9 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
         if (isReorderMode) return;
         // Get the associated RBook.
         RBook book;
-        if (adapterType == AdapterType.BOOK)
+        if (modelType == ModelType.BOOK)
             book = realm.where(RBook.class).equalTo("relPath", event.getRelPath()).findFirst();
-        else if (adapterType == AdapterType.BOOK_LIST_ITEM)
+        else if (modelType == ModelType.BOOK_LIST_ITEM)
             book = realm.where(RBookListItem.class).equalTo("book.relPath", event.getRelPath()).findFirst().getBook();
         else throw new IllegalArgumentException("Invalid adapter type.");
 
@@ -655,8 +655,10 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     public void onUpdatePosEvent(UpdatePosEvent event) {
         // Remove the sticky event.
         EventBus.getDefault().removeStickyEvent(event);
-        // Update the item at the position in the event.
-        adapter.notifyItemChanged(event.getPosition());
+        // If the event's position is ALL_POSITIONS, indicate the whole dataset changed. Otherwise, update the item
+        // at the position in the event.
+        if (event.getPosition() == UpdatePosEvent.ALL_POSITIONS) adapter.notifyDataSetChanged();
+        else adapter.notifyItemChanged(event.getPosition());
     }
 
     /**

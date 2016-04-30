@@ -18,12 +18,9 @@ import com.bkromhout.minerva.*;
 import com.bkromhout.minerva.adapters.*;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.ReImporter;
-import com.bkromhout.minerva.enums.AdapterType;
 import com.bkromhout.minerva.enums.BookCardType;
-import com.bkromhout.minerva.events.ActionEvent;
-import com.bkromhout.minerva.events.BookCardClickEvent;
-import com.bkromhout.minerva.events.PrefChangeEvent;
-import com.bkromhout.minerva.events.UpdatePosEvent;
+import com.bkromhout.minerva.enums.ModelType;
+import com.bkromhout.minerva.events.*;
 import com.bkromhout.minerva.prefs.PowerSearchPrefs;
 import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 import com.bkromhout.minerva.realm.RBook;
@@ -36,7 +33,6 @@ import com.bkromhout.rrvl.FastScrollerHandleState;
 import com.bkromhout.rrvl.RealmRecyclerView;
 import com.bkromhout.ruqus.RealmUserQuery;
 import io.realm.Realm;
-import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
@@ -76,7 +72,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     /**
      * Current query type. Changes as {@link #ruq} changes.
      */
-    private AdapterType queryType;
+    private ModelType queryType;
     /**
      * Current query results.
      */
@@ -84,7 +80,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     /**
      * Adapter currently being used by the recycler view.
      */
-    private RealmBasedRecyclerViewAdapter adapter;
+    private BaseBookCardAdapter adapter;
     /**
      * Action mode.
      */
@@ -130,7 +126,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
         // Restore RealmUserQuery if we're coming back from a configuration change.
         if (savedInstanceState != null && savedInstanceState.containsKey(C.RUQ)) {
             ruq = savedInstanceState.getParcelable(C.RUQ);
-            queryType = AdapterType.values()[savedInstanceState.getInt(QUERY_TYPE)];
+            queryType = ModelType.values()[savedInstanceState.getInt(QUERY_TYPE)];
         }
 
         recyclerView.setFastScrollHandleStateListener(this);
@@ -323,7 +319,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
                     // We've changed our query. Get the RealmUserQuery.
                     ruq = data.getParcelableExtra(C.RUQ);
                     // Figure out the query type.
-                    queryType = AdapterType.fromRealmClass(ruq.getQueryClass());
+                    queryType = ModelType.fromRealmClass(ruq.getQueryClass());
                     // Update the UI.
                     updateUi();
                 }
@@ -363,9 +359,9 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     public void onCardClicked(BookCardClickEvent event) {
         // Get the associated RBook.
         RBook book;
-        if (queryType == AdapterType.BOOK)
+        if (queryType == ModelType.BOOK)
             book = (RBook) results.where().equalTo("relPath", event.getRelPath()).findFirst();
-        else if (queryType == AdapterType.BOOK_LIST_ITEM)
+        else if (queryType == ModelType.BOOK_LIST_ITEM)
             book = ((RBookListItem) results.where().equalTo("book.relPath", event.getRelPath()).findFirst()).getBook();
         else throw new IllegalArgumentException("Invalid queryType");
 
@@ -419,9 +415,9 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
      */
     @SuppressWarnings("unchecked")
     private List<RBook> getSelectedBooks() {
-        if (queryType == AdapterType.BOOK)
+        if (queryType == ModelType.BOOK)
             return adapter.getSelectedRealmObjects();
-        else if (queryType == AdapterType.BOOK_LIST_ITEM) return RBookListItem.booksFromBookListItems(
+        else if (queryType == ModelType.BOOK_LIST_ITEM) return RBookListItem.booksFromBookListItems(
                 adapter.getSelectedRealmObjects());
         else throw new IllegalArgumentException("Invalid type.");
     }
@@ -431,9 +427,9 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
      * @return Adapter, or null if {@link #ruq} is null/invalid or {@link #cardType} is null/invalid.
      */
     @SuppressWarnings("unchecked")
-    private RealmBasedRecyclerViewAdapter makeAdapter() {
+    private BaseBookCardAdapter makeAdapter() {
         if (ruq == null || !ruq.isQueryValid()) return null;
-        else if (queryType == AdapterType.BOOK) {
+        else if (queryType == ModelType.BOOK) {
             switch (cardType) {
                 case NORMAL:
                     return new BookCardAdapter(getActivity(), (RealmResults<RBook>) results);
@@ -444,7 +440,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
                 default:
                     return null;
             }
-        } else if (queryType == AdapterType.BOOK_LIST_ITEM) {
+        } else if (queryType == ModelType.BOOK_LIST_ITEM) {
             switch (cardType) {
                 case NORMAL:
                     return new BookItemCardAdapter(getActivity(), (RealmResults<RBookListItem>) results);
@@ -498,8 +494,10 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     public void onUpdatePosEvent(UpdatePosEvent event) {
         // Remove the sticky event.
         EventBus.getDefault().removeStickyEvent(event);
-        // Update the item at the position in the event.
-        adapter.notifyItemChanged(event.getPosition());
+        // If the event's position is ALL_POSITIONS, indicate the whole dataset changed. Otherwise, update the item
+        // at the position in the event.
+        if (event.getPosition() == UpdatePosEvent.ALL_POSITIONS) adapter.notifyDataSetChanged();
+        else adapter.notifyItemChanged(event.getPosition());
     }
 
     @Override

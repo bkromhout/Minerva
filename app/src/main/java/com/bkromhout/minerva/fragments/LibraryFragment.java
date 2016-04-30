@@ -20,6 +20,7 @@ import butterknife.OnClick;
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkromhout.minerva.*;
+import com.bkromhout.minerva.adapters.BaseBookCardAdapter;
 import com.bkromhout.minerva.adapters.BookCardAdapter;
 import com.bkromhout.minerva.adapters.BookCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
@@ -40,7 +41,6 @@ import com.bkromhout.rrvl.FastScrollHandleStateListener;
 import com.bkromhout.rrvl.FastScrollerHandleState;
 import com.bkromhout.rrvl.RealmRecyclerView;
 import io.realm.Realm;
-import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
@@ -88,7 +88,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
     /**
      * Adapter currently being used by the recycler view.
      */
-    private RealmBasedRecyclerViewAdapter adapter;
+    private BaseBookCardAdapter adapter;
     /**
      * Action mode.
      */
@@ -402,8 +402,10 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
     public void onUpdatePosEvent(UpdatePosEvent event) {
         // Remove the sticky event.
         EventBus.getDefault().removeStickyEvent(event);
-        // Update the item at the position in the event.
-        adapter.notifyItemChanged(event.getPosition());
+        // If the event's position is ALL_POSITIONS, indicate the whole dataset changed. Otherwise, update the item
+        // at the position in the event.
+        if (event.getPosition() == UpdatePosEvent.ALL_POSITIONS) adapter.notifyDataSetChanged();
+        else adapter.notifyItemChanged(event.getPosition());
     }
 
     @OnClick(R.id.open_full_importer)
@@ -479,11 +481,11 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
     }
 
     /**
-     * Create a {@link RealmBasedRecyclerViewAdapter} based on the current view options and return it.
-     * @return New {@link RealmBasedRecyclerViewAdapter}. Will return null if we cannot get the activity context, if
+     * Create a {@link BaseBookCardAdapter} based on the current view options and return it.
+     * @return New {@link BaseBookCardAdapter}. Will return null if we cannot get the activity context, if
      * {@link #books} is null or invalid, or if the current value of {@link #cardType} is not valid.
      */
-    private RealmBasedRecyclerViewAdapter makeAdapter() {
+    private BaseBookCardAdapter makeAdapter() {
         Context ctx = getActivity();
         if (ctx == null || books == null || !books.isValid()) return null;
 

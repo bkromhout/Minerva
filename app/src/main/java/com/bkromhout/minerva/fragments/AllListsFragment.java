@@ -380,8 +380,10 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
     public void onUpdatePosEvent(UpdatePosEvent event) {
         // Remove the sticky event.
         EventBus.getDefault().removeStickyEvent(event);
-        // Update the item at the position in the event.
-        adapter.notifyItemChanged(event.getPosition());
+        // If the event's position is ALL_POSITIONS, indicate the whole dataset changed. Otherwise, update the item
+        // at the position in the event.
+        if (event.getPosition() == UpdatePosEvent.ALL_POSITIONS) adapter.notifyDataSetChanged();
+        else adapter.notifyItemChanged(event.getPosition());
     }
 
     /**

@@ -2,7 +2,7 @@ package com.bkromhout.minerva.realm;
 
 import com.bkromhout.minerva.data.CoverHelper;
 import com.bkromhout.minerva.data.SuperBook;
-import com.bkromhout.minerva.enums.AdapterType;
+import com.bkromhout.minerva.enums.ModelType;
 import com.bkromhout.minerva.util.BookUtils;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.ruqus.Hide;
@@ -273,12 +273,12 @@ public class RBook extends RealmObject {
             for (RBookList smartList : smartLists) {
                 // Get the query and its type.
                 RealmUserQuery ruq = new RealmUserQuery(smartList.getSmartListRuqString());
-                AdapterType at = AdapterType.fromRealmClass(ruq.getQueryClass());
+                ModelType at = ModelType.fromRealmClass(ruq.getQueryClass());
 
-                if (at == AdapterType.BOOK) {
+                if (at == ModelType.BOOK) {
                     // For RBook-type queries, we can simply check if the results contain the book.
                     if (ruq.execute(realm).contains(book)) listNames.add(smartList.getName());
-                } else if (at == AdapterType.BOOK_LIST_ITEM) {
+                } else if (at == ModelType.BOOK_LIST_ITEM) {
                     // For RBookListItem-type queries, we have to do another Realm query to see if there's an
                     // RBookListItem for the book.
                     if (ruq.execute(realm).where().equalTo("book.relPath", book.getRelPath()).findFirst() != null)

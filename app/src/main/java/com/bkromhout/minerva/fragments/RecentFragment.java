@@ -24,10 +24,7 @@ import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.ReImporter;
 import com.bkromhout.minerva.enums.BookCardType;
-import com.bkromhout.minerva.events.ActionEvent;
-import com.bkromhout.minerva.events.BookCardClickEvent;
-import com.bkromhout.minerva.events.PrefChangeEvent;
-import com.bkromhout.minerva.events.UpdatePosEvent;
+import com.bkromhout.minerva.events.*;
 import com.bkromhout.minerva.prefs.RecentPrefs;
 import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 import com.bkromhout.minerva.realm.RBook;
@@ -75,7 +72,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
     /**
      * Adapter currently being used by the recycler view.
      */
-    private RealmBasedRecyclerViewAdapter adapter;
+    private BaseBookCardAdapter adapter;
     /**
      * Action mode.
      */
@@ -457,8 +454,10 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
     public void onUpdatePosEvent(UpdatePosEvent event) {
         // Remove the sticky event.
         EventBus.getDefault().removeStickyEvent(event);
-        // Update the item at the position in the event.
-        adapter.notifyItemChanged(event.getPosition());
+        // If the event's position is ALL_POSITIONS, indicate the whole dataset changed. Otherwise, update the item
+        // at the position in the event.
+        if (event.getPosition() == UpdatePosEvent.ALL_POSITIONS) adapter.notifyDataSetChanged();
+        else adapter.notifyItemChanged(event.getPosition());
     }
 
     @Override

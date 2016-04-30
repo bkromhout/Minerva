@@ -276,7 +276,7 @@
 
     <string name="prompt_new_tag">Enter a name for the new tag.</string>
     <string name="prompt_rename_tag">Enter a new name for the tag.</string>
-    <string name="prompt_delete_tag">Are you sure you want to delete \"%1$s\"?</string>
+    <string name="prompt_delete_tag">Are you sure you want to delete \"%1$s\"? This is permanent, and will not be undone even if you leave the tagging screen without saving!</string>
 
     <string name="tag_name_hint">Tag Name</string>
 

@@ -21,6 +21,7 @@ import com.bkromhout.minerva.adapters.TagCardAdapter;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.TagCardClickEvent;
+import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.util.Dialogs;
@@ -335,10 +336,6 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
 
     /**
      * Called when the save button is clicked.
-     * <p>
-     * TODO find a way to make sure that other items are updated in the RV if needed. Example, rename a tag but not...
-     * all of the books which have that tag are selected, so some items may be wrong if they don't get refreshed by RV
-     * before the user can see them (i.e., they are not selected but are within the set of already-drawn RV items).
      */
     @OnClick(R.id.save)
     void onSaveButtonClicked() {
@@ -355,9 +352,14 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
         removedTagNames.addAll(getDeltaLines(Delta.TYPE.DELETE, patch.getDeltas()));
         removedTagNames.removeAll(addedTagNames);
 
+        boolean removedAny = !removedTagNames.isEmpty(), addedAny = !addedTagNames.isEmpty();
         // Remove and add the applicable tags.
-        RTag.removeTagsFromBooks(taggingHelper.selectedBooks, RTag.stringListToTagList(removedTagNames, false));
-        RTag.addTagsToBooks(taggingHelper.selectedBooks, RTag.stringListToTagList(addedTagNames, true));
+        if (removedAny)
+            RTag.removeTagsFromBooks(taggingHelper.selectedBooks, RTag.stringListToTagList(removedTagNames, false));
+        if (addedAny)
+            RTag.addTagsToBooks(taggingHelper.selectedBooks, RTag.stringListToTagList(addedTagNames, true));
+        // If we actually removed and/or added any tags, indicate that we may need an explicit update.
+        if (removedAny || addedAny) taggingHelper.markForExplicitUpdateIfNecessary();
 
         // Reset the TaggingHelper and finish this activity.
         taggingHelper = null;
@@ -400,7 +402,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
     }
 
     /**
-     * Class to help us hold complex objects until not needed any longer.
+     * Class to help us hold complex objects necessary for keeping track of tagging state until not needed any longer.
      */
     public static class TaggingHelper {
         /**
@@ -412,6 +414,15 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
          * List of {@link RBook}s whose will be modified.
          */
         public List<RBook> selectedBooks;
+        /**
+         * Whether or not we'll require an explicit update if we make changes or tag(s) are deleted. This is set to true
+         * if {@link #selectedBooks} is of size 1.
+         */
+        private boolean willRequireExplicitUpdate;
+        /**
+         * Whether or not we should actually <i>do</i> an explicit update before our next reset.
+         */
+        private boolean doExplicitUpdate;
         /**
          * List of originally checked tags (those which all selected books share).
          */
@@ -442,8 +453,24 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
             return INSTANCE;
         }
 
+        /**
+         * Resets the current {@link TaggingHelper} instance.
+         * <p>
+         * If an old instance is present and has indicated it requires an explicit update, will sent an {@link
+         * UpdatePosEvent} with the value {@link UpdatePosEvent#ALL_POSITIONS} before resetting.
+         */
+        public static void reset() {
+            // If our instance has indicated it needs an explicit update, send one before resetting.
+            if (INSTANCE != null && INSTANCE.doExplicitUpdate)
+                EventBus.getDefault().postSticky(new UpdatePosEvent(UpdatePosEvent.ALL_POSITIONS));
+            // Recreate instance.
+            INSTANCE = new TaggingHelper();
+        }
+
         private TaggingHelper() {
             selectedBooks = null;
+            willRequireExplicitUpdate = false;
+            doExplicitUpdate = false;
             oldCheckedItems = new ArrayList<>();
             oldPartiallyCheckedItems = new ArrayList<>();
             newCheckedItems = new ArrayList<>();
@@ -454,18 +481,19 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
          * Convenience method for initializing the {@link TaggingHelper}.
          * @param books List of books.
          */
-        public void init(List<RBook> books) {
+        private void init(List<RBook> books) {
             this.selectedBooks = books;
+            willRequireExplicitUpdate = books.size() == 1;
             calculateSharedTags(books);
             this.newCheckedItems = new ArrayList<>(this.oldCheckedItems);
             this.newPartiallyCheckedItems = new ArrayList<>(this.oldPartiallyCheckedItems);
         }
 
         /**
-         * Resets the current {@link TaggingHelper} instance.
+         * Indicate that we'll want to send an explicit update at some point if we think it would be necessary.
          */
-        public static void reset() {
-            INSTANCE = new TaggingHelper();
+        public void markForExplicitUpdateIfNecessary() {
+            if (willRequireExplicitUpdate) doExplicitUpdate = true;
         }
 
         /**

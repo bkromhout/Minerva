@@ -28,8 +28,8 @@ import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.realm.RBook;
-import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.ui.TagBackgroundSpan;
+import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bumptech.glide.Glide;
 import io.realm.Realm;
@@ -238,8 +238,9 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
             realm.close();
             realm = null;
         }
-        // If we need to update the book's card, send the sticky event now.
-        if (needsPosUpdate) EventBus.getDefault().postSticky(new UpdatePosEvent(posToUpdate));
+        // If we need to update the book's card, send the sticky event now (unless there's already a sticky event.)
+        if (needsPosUpdate && EventBus.getDefault().getStickyEvent(UpdatePosEvent.class) == null)
+            EventBus.getDefault().postSticky(new UpdatePosEvent(posToUpdate));
     }
 
     @Override
@@ -304,12 +305,6 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
                 break;
             }
         }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // If we came back from TaggingActivity and we changed the tags on the book, we'll need to update its card.
-        if (requestCode == C.RC_TAG_ACTIVITY && resultCode == RESULT_OK) needsPosUpdate = true;
     }
 
     @OnClick(R.id.cover_image)

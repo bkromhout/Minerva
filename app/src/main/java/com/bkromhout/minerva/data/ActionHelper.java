@@ -361,11 +361,15 @@ public class ActionHelper {
      * @param tag   {@link RTag} to delete.
      */
     public static void deleteTag(Realm realm, RTag tag) {
+        TaggingHelper th = TaggingHelper.get();
+        // Indicate that we might need an explicit update.
+        th.markForExplicitUpdateIfNecessary();
+
+        // Delete the tag from Realm.
         String tagName = tag.getName();
         realm.executeTransaction(tRealm -> tag.deleteFromRealm());
 
         // Remove tag name from the lists (if present).
-        TaggingHelper th = TaggingHelper.get();
         th.oldCheckedItems.remove(tagName);
         th.oldPartiallyCheckedItems.remove(tagName);
         th.newCheckedItems.remove(tagName);
