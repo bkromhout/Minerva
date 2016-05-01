@@ -435,7 +435,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
         new MaterialDialog.Builder(getContext())
                 .title(R.string.action_view_opts)
                 .titleGravity(GravityEnum.CENTER)
-                .customView(view, false)
+                .customView(view, true)
                 .contentGravity(GravityEnum.CENTER)
                 .positiveText(R.string.ok)
                 .negativeText(R.string.cancel)
