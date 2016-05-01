@@ -25,6 +25,7 @@
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
     </style>
+
     <style name="MinervaDarkCardNoRipple" parent="CardView.Dark">
         <item name="android:layout_marginStart">@dimen/card_margin_left</item>
         <item name="android:layout_marginTop">@dimen/card_margin_top</item>
@@ -34,7 +35,7 @@
         <item name="cardElevation">@dimen/card_elevation</item>
     </style>
 
-    <!-- ImageButton style -->
+    <!-- Button styles -->
     <style name="ImageButtonRippleBg" parent="Widget.AppCompat.ImageButton">
         <item name="android:paddingStart">12dp</item>
         <item name="android:paddingEnd">12dp</item>

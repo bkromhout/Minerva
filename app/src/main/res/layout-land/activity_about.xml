@@ -74,12 +74,12 @@
                     app:layout_aspectRatio="100%"
                     android:layout_centerHorizontal="true"
                     android:layout_below="@id/about_app_version"
-                    android:backgroundTint="@android:color/transparent"
                     android:src="@drawable/github_logo"
                     android:tint="@color/textColorPrimary"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"
-                    android:contentDescription="@string/acc_github_logo"/>
+                    android:contentDescription="@string/acc_github_logo"
+                    style="@style/ImageButtonRippleBg"/>
         </android.support.percent.PercentRelativeLayout>
 
         <FrameLayout

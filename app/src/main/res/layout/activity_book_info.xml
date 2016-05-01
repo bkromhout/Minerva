@@ -163,25 +163,25 @@
                         android:rating="3"
                         style="?android:attr/ratingBarStyleSmall"/>
 
-                <ImageButton
+                <android.support.v7.widget.AppCompatImageButton
                         android:id="@+id/edit_rating"
                         app:layout_widthPercent="17%"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_toStartOf="@+id/edit_tags"
-                        android:backgroundTint="@color/colorAccent"
+                        app:backgroundTint="@color/colorAccent"
                         android:tint="@color/textColorPrimary"
                         android:contentDescription="@string/acc_rating"
                         android:src="@drawable/ic_stars"/>
 
-                <ImageButton
+                <android.support.v7.widget.AppCompatImageButton
                         android:id="@id/edit_tags"
                         app:layout_widthPercent="17%"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_marginStart="8dp"
-                        android:backgroundTint="@color/colorAccent"
+                        app:backgroundTint="@color/colorAccent"
                         android:tint="@color/textColorPrimary"
                         android:contentDescription="@string/acc_quick_tag"
                         android:src="@drawable/ic_tags"/>
