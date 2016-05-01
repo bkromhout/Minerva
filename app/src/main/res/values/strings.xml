@@ -238,7 +238,7 @@
     <string name="lbl_chap_count">Chapter Count</string>
     <string name="lbl_tags">Tags</string>
     <string name="lbl_tags_colon">Tags:</string>
-    <string name="lbl_in_lists">In Lists</string>
+    <string name="lbl_lists">Lists</string>
     <string name="lbl_path">Path</string>
     <string name="lbl_last_read_date">Last Read</string>
     <string name="lbl_last_import_date">Last Imported</string>
