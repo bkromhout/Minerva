@@ -60,12 +60,12 @@
             android:layout_marginTop="@dimen/card_margin_top"
             android:layout_toStartOf="@+id/delete_tag"
             android:layout_alignBaseline="@id/card"
-            android:backgroundTint="@android:color/transparent"
             android:tint="@color/textColorPrimary"
             android:src="@drawable/ic_rename"
             android:contentDescription="@string/title_rename_tag"
             android:visibility="gone"
-            tools:visibility="gone"/>
+            style="@style/ImageButtonRippleBg"
+            tools:visibility="visible"/>
 
     <ImageButton
             android:id="@id/delete_tag"
@@ -73,10 +73,10 @@
             android:layout_height="@dimen/tag_card_height"
             android:layout_marginTop="@dimen/card_margin_top"
             android:layout_alignParentEnd="true"
-            android:backgroundTint="@android:color/transparent"
             android:tint="@color/textColorPrimary"
             android:src="@drawable/ic_delete"
             android:contentDescription="@string/title_delete_tag"
             android:visibility="gone"
-            tools:visibility="gone"/>
+            style="@style/ImageButtonRippleBg"
+            tools:visibility="visible"/>
 </RelativeLayout>
