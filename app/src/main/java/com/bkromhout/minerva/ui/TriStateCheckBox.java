@@ -74,8 +74,8 @@ public class TriStateCheckBox extends AppCompatCheckBox implements TriCheckable 
      */
     @Override
     public void setChecked(boolean checked) {
+        if (isPartiallyChecked) isPartiallyChecked = false;
         super.setChecked(checked);
-        isPartiallyChecked = false;
     }
 
     @Override
