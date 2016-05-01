@@ -8,7 +8,7 @@ public class TagCardClickEvent {
      * The various types of clicks that might have happened.
      */
     public enum Type {
-        RENAME, DELETE
+        RENAME, DELETE, TEXT_COLOR, BG_COLOR
     }
 
     /**

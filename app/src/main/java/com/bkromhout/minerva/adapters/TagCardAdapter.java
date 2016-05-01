@@ -1,6 +1,10 @@
 package com.bkromhout.minerva.adapters;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.support.annotation.ColorInt;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -62,6 +66,18 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
     public void onBindViewHolder(TagCardVH viewHolder, int position) {
         RTag tag = realmResults.get(position);
 
+        // Set the tag's name as a...tag...on the various buttons.
+        viewHolder.textColor.setTag(tag.name);
+        viewHolder.bgColor.setTag(tag.name);
+        viewHolder.rename.setTag(tag.name);
+        viewHolder.delete.setTag(tag.name);
+
+        // Set whether or not the color and action buttons are shown.
+        viewHolder.textColor.setVisibility(isInActionMode ? View.GONE : View.VISIBLE);
+        viewHolder.bgColor.setVisibility(isInActionMode ? View.GONE : View.VISIBLE);
+        viewHolder.rename.setVisibility(isInActionMode ? View.VISIBLE : View.GONE);
+        viewHolder.delete.setVisibility(isInActionMode ? View.VISIBLE : View.GONE);
+
         // Set card click listener.
         viewHolder.card.setOnClickListener(v -> {
             // Do nothing if in action mode.
@@ -81,15 +97,22 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
         if (partiallyCheckedItems.contains(tag.name)) viewHolder.tag.setPartiallyChecked(true);
         else viewHolder.tag.setChecked(checkedItems.contains(tag.name));
 
-        // Set whether or not the action buttons are shown.
-        viewHolder.rename.setVisibility(isInActionMode ? View.VISIBLE : View.GONE);
-        viewHolder.delete.setVisibility(isInActionMode ? View.VISIBLE : View.GONE);
+        // Set the color buttons colors.
+        setColorButtonColor(viewHolder.textColor, tag.textColor);
+        setColorButtonColor(viewHolder.bgColor, tag.bgColor);
+    }
 
-        // Set action button click handlers.
-        viewHolder.rename.setOnClickListener(v -> EventBus.getDefault().post(
-                new TagCardClickEvent(TagCardClickEvent.Type.RENAME, tag.name)));
-        viewHolder.delete.setOnClickListener(v -> EventBus.getDefault().post(
-                new TagCardClickEvent(TagCardClickEvent.Type.DELETE, tag.name)));
+    /**
+     * Take's {@code colorButton}'s layer drawable (which it is assumed it is), finds the {@code circle} layer, and
+     * tints that drawable the given {@code color}.
+     * @param colorButton {@code ImageButton} with a {@link LayerDrawable} as its drawable.
+     * @param color       Color to tint the {@code circle} layer of the {@code colorButton}'s {@link LayerDrawable}.
+     */
+    private void setColorButtonColor(ImageButton colorButton, @ColorInt int color) {
+        LayerDrawable layerDrawable = (LayerDrawable) colorButton.getDrawable();
+        Drawable colorCircle = layerDrawable.findDrawableByLayerId(R.id.circle);
+        // TODO Do we need to set the tint mode for APIs 21 and/or 22?
+        DrawableCompat.setTint(colorCircle, color);
     }
 
     /**
@@ -125,6 +148,18 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
 
             // Make the card ripple when touched.
             tag.setOnTouchListener(rippleFgListener);
+            textColor.setOnTouchListener(rippleFgListener);
+            bgColor.setOnTouchListener(rippleFgListener);
+
+            // Set button click handlers.
+            rename.setOnClickListener(v -> EventBus.getDefault().post(
+                    new TagCardClickEvent(TagCardClickEvent.Type.RENAME, (String) v.getTag())));
+            delete.setOnClickListener(v -> EventBus.getDefault().post(
+                    new TagCardClickEvent(TagCardClickEvent.Type.DELETE, (String) v.getTag())));
+            textColor.setOnClickListener(v -> EventBus.getDefault().post(
+                    new TagCardClickEvent(TagCardClickEvent.Type.TEXT_COLOR, (String) v.getTag())));
+            bgColor.setOnClickListener(v -> EventBus.getDefault().post(
+                    new TagCardClickEvent(TagCardClickEvent.Type.BG_COLOR, (String) v.getTag())));
         }
     }
 }

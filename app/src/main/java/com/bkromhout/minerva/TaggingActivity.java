@@ -3,6 +3,8 @@ package com.bkromhout.minerva;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
@@ -17,6 +19,7 @@ import android.widget.EditText;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.afollestad.materialdialogs.color.ColorChooserDialog;
 import com.bkromhout.minerva.adapters.TagCardAdapter;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.events.ActionEvent;
@@ -48,7 +51,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * Activity used to apply (and remove) tags to (and from) books.
  */
-public class TaggingActivity extends AppCompatActivity implements ActionMode.Callback {
+public class TaggingActivity extends AppCompatActivity implements ActionMode.Callback,
+        ColorChooserDialog.ColorCallback {
     // Views.
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -294,7 +298,31 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
                 Dialogs.simpleYesNoDialog(this, R.string.title_delete_tag,
                         C.getStr(R.string.prompt_delete_tag, event.getName()), R.id.action_delete_tag);
                 break;
+            case TEXT_COLOR:
+                new ColorChooserDialog.Builder(this, R.string.title_tag_text_color)
+                        .preselect(tempTag.textColor)
+                        .show();
+                break;
+            case BG_COLOR:
+                new ColorChooserDialog.Builder(this, R.string.title_tag_text_color)
+                        .preselect(tempTag.bgColor)
+                        .show();
+                break;
         }
+    }
+
+    /**
+     * Set the new text or background color for {@link #tempTag}.
+     * @param dialog        Dialog whose title string's resource ID will determine if we're setting the text or
+     *                      background color.
+     * @param selectedColor New text or background color.
+     */
+    @Override
+    public void onColorSelection(@NonNull ColorChooserDialog dialog, @ColorInt int selectedColor) {
+        if (dialog.getTitle() == R.string.title_tag_text_color) // Text color dialog.
+            ActionHelper.setTagTextColor(realm, tempTag, selectedColor);
+        else // Background color dialog.
+            ActionHelper.setTagBgColor(realm, tempTag, selectedColor);
     }
 
     /**

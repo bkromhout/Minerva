@@ -3,6 +3,7 @@ package com.bkromhout.minerva.data;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.ColorInt;
 import android.support.v4.content.FileProvider;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
@@ -334,6 +335,26 @@ public class ActionHelper {
      */
     public static void createNewTag(Realm realm, String tagName) {
         realm.executeTransaction(tRealm -> tRealm.copyToRealm(new RTag(tagName)));
+    }
+
+    /**
+     * Set the given {@code tag}'s {@code textColor}.
+     * @param realm     Instance of Realm to use.
+     * @param tag       {@link RTag} to assign new text color to.
+     * @param textColor New text color.
+     */
+    public static void setTagTextColor(Realm realm, RTag tag, @ColorInt int textColor) {
+        realm.executeTransaction(tRealm -> tag.textColor = textColor);
+    }
+
+    /**
+     * Set the given {@code tag}'s {@code bgColor}.
+     * @param realm   Instance of Realm to use.
+     * @param tag     {@link RTag} to assign new background color to.
+     * @param bgColor New background color.
+     */
+    public static void setTagBgColor(Realm realm, RTag tag, @ColorInt int bgColor) {
+        realm.executeTransaction(tRealm -> tag.bgColor = bgColor);
     }
 
     /**
