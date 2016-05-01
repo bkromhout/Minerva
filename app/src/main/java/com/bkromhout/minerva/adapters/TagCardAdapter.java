@@ -101,9 +101,9 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
         viewHolder.delete.setOnClickListener(v -> EventBus.getDefault().post(
                 new TagCardClickEvent(TagCardClickEvent.Type.DELETE, tag.name)));
         viewHolder.textColor.setOnClickListener(v -> EventBus.getDefault().post(
-                new TagCardClickEvent(TagCardClickEvent.Type.TEXT_COLOR, tag.name, position)));
+                new TagCardClickEvent(TagCardClickEvent.Type.TEXT_COLOR, tag.name)));
         viewHolder.bgColor.setOnClickListener(v -> EventBus.getDefault().post(
-                new TagCardClickEvent(TagCardClickEvent.Type.BG_COLOR, tag.name, position)));
+                new TagCardClickEvent(TagCardClickEvent.Type.BG_COLOR, tag.name)));
     }
 
     /**
