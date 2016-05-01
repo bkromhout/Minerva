@@ -268,10 +268,10 @@
     <!-- ******************************** Tagging Activity ******************************** -->
     <string name="title_activity_tagging">Choose Tags</string>
     <string name="title_tag_edit_mode">Tag Edit Mode</string>
+    <string name="title_tag_text_color">Tag Text Color</string>
+    <string name="title_tag_bg_color">Tag Background Color</string>
     <string name="title_rename_tag">Rename Tag</string>
     <string name="title_delete_tag">Delete Tag</string>
-    <string name="title_tag_text_color">Text Color</string>
-    <string name="title_tag_bg_color">Text Color</string>
 
     <string name="action_new_tag">New Tag</string>
     <string name="action_edit_tags">Edit Tags</string>
@@ -281,8 +281,6 @@
     <string name="prompt_delete_tag">Are you sure you want to delete \"%1$s\"? This is permanent, and will not be undone even if you leave the tagging screen without saving!</string>
 
     <string name="tag_name_hint">Tag Name</string>
-    <string name="acc_tag_text_color">Tag Text Color</string>
-    <string name="acc_tag_bg_color">Tag Background Color</string>
 
     <!-- ******************************** Settings Activity ******************************** -->
     <string name="title_activity_settings">@string/settings</string>

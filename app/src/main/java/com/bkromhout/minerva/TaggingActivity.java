@@ -91,6 +91,10 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
      * Temporary storage for a tag.
      */
     private RTag tempTag;
+    /**
+     * Temporary storage for a position.
+     */
+    private int tempPos;
 
     /**
      * Convenience method to set up the {@link TaggingHelper} then start this activity from a fragment.
@@ -299,13 +303,17 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
                         C.getStr(R.string.prompt_delete_tag, event.getName()), R.id.action_delete_tag);
                 break;
             case TEXT_COLOR:
+                tempPos = event.getPos();
                 new ColorChooserDialog.Builder(this, R.string.title_tag_text_color)
                         .preselect(tempTag.textColor)
+                        .dynamicButtonColor(false)
                         .show();
                 break;
             case BG_COLOR:
-                new ColorChooserDialog.Builder(this, R.string.title_tag_text_color)
+                tempPos = event.getPos();
+                new ColorChooserDialog.Builder(this, R.string.title_tag_bg_color)
                         .preselect(tempTag.bgColor)
+                        .dynamicButtonColor(false)
                         .show();
                 break;
         }
@@ -323,6 +331,10 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
             ActionHelper.setTagTextColor(realm, tempTag, selectedColor);
         else // Background color dialog.
             ActionHelper.setTagBgColor(realm, tempTag, selectedColor);
+        // Notify the adapter that it needs to re-draw the tag's card.
+        adapter.notifyItemChanged(tempPos);
+        // Indicate that we might need an explicit update.
+        taggingHelper.markForExplicitUpdateIfNecessary();
     }
 
     /**

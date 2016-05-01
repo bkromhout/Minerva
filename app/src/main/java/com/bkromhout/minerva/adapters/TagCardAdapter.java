@@ -66,12 +66,6 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
     public void onBindViewHolder(TagCardVH viewHolder, int position) {
         RTag tag = realmResults.get(position);
 
-        // Set the tag's name as a...tag...on the various buttons.
-        viewHolder.textColor.setTag(tag.name);
-        viewHolder.bgColor.setTag(tag.name);
-        viewHolder.rename.setTag(tag.name);
-        viewHolder.delete.setTag(tag.name);
-
         // Set whether or not the color and action buttons are shown.
         viewHolder.textColor.setVisibility(isInActionMode ? View.GONE : View.VISIBLE);
         viewHolder.bgColor.setVisibility(isInActionMode ? View.GONE : View.VISIBLE);
@@ -100,6 +94,16 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
         // Set the color buttons colors.
         setColorButtonColor(viewHolder.textColor, tag.textColor);
         setColorButtonColor(viewHolder.bgColor, tag.bgColor);
+
+        // Set button click handlers.
+        viewHolder.rename.setOnClickListener(v -> EventBus.getDefault().post(
+                new TagCardClickEvent(TagCardClickEvent.Type.RENAME, tag.name)));
+        viewHolder.delete.setOnClickListener(v -> EventBus.getDefault().post(
+                new TagCardClickEvent(TagCardClickEvent.Type.DELETE, tag.name)));
+        viewHolder.textColor.setOnClickListener(v -> EventBus.getDefault().post(
+                new TagCardClickEvent(TagCardClickEvent.Type.TEXT_COLOR, tag.name, position)));
+        viewHolder.bgColor.setOnClickListener(v -> EventBus.getDefault().post(
+                new TagCardClickEvent(TagCardClickEvent.Type.BG_COLOR, tag.name, position)));
     }
 
     /**
@@ -150,16 +154,6 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
             tag.setOnTouchListener(rippleFgListener);
             textColor.setOnTouchListener(rippleFgListener);
             bgColor.setOnTouchListener(rippleFgListener);
-
-            // Set button click handlers.
-            rename.setOnClickListener(v -> EventBus.getDefault().post(
-                    new TagCardClickEvent(TagCardClickEvent.Type.RENAME, (String) v.getTag())));
-            delete.setOnClickListener(v -> EventBus.getDefault().post(
-                    new TagCardClickEvent(TagCardClickEvent.Type.DELETE, (String) v.getTag())));
-            textColor.setOnClickListener(v -> EventBus.getDefault().post(
-                    new TagCardClickEvent(TagCardClickEvent.Type.TEXT_COLOR, (String) v.getTag())));
-            bgColor.setOnClickListener(v -> EventBus.getDefault().post(
-                    new TagCardClickEvent(TagCardClickEvent.Type.BG_COLOR, (String) v.getTag())));
         }
     }
 }
