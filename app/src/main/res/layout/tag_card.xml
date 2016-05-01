@@ -12,6 +12,7 @@
             style="@style/MinervaDarkCard">
 
         <LinearLayout
+                android:id="@+id/content"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
@@ -22,10 +23,12 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:clickable="false"
+                    android:focusable="false"
                     android:maxLines="1"
                     android:ellipsize="end"
                     android:textStyle="bold"
                     style="@style/TextAppearance.AppCompat.Medium"
+                    android:background="@null"
                     tools:text="Test Tag"/>
 
             <ImageButton
@@ -34,7 +37,7 @@
                     android:layout_height="match_parent"
                     android:paddingStart="6dp"
                     android:paddingEnd="4dp"
-                    android:background="@android:color/transparent"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/title_tag_text_color"
                     android:src="@drawable/color_circle"/>
 
@@ -44,7 +47,7 @@
                     android:layout_height="match_parent"
                     android:paddingStart="4dp"
                     android:paddingEnd="6dp"
-                    android:background="@android:color/transparent"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/title_tag_bg_color"
                     android:src="@drawable/color_circle"/>
         </LinearLayout>

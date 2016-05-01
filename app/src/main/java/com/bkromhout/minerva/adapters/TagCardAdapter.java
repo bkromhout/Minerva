@@ -152,8 +152,6 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
 
             // Make the card ripple when touched.
             tag.setOnTouchListener(rippleFgListener);
-            textColor.setOnTouchListener(rippleFgListener);
-            bgColor.setOnTouchListener(rippleFgListener);
         }
     }
 }
