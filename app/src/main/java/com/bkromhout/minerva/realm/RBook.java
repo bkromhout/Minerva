@@ -271,6 +271,7 @@ public class RBook extends RealmObject {
                                                       .findAllSorted("name");
             // For each smart list:
             for (RBookList smartList : smartLists) {
+                if (smartList.smartListRuqString == null || smartList.smartListRuqString.isEmpty()) continue;
                 // Get the query and its type.
                 RealmUserQuery ruq = new RealmUserQuery(smartList.smartListRuqString);
                 ModelType at = ModelType.fromRealmClass(ruq.getQueryClass());
