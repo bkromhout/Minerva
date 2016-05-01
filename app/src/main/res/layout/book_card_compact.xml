@@ -68,8 +68,8 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:tint="@color/textColorSecondary"
-                android:backgroundTint="@android:color/transparent"
                 android:src="@drawable/ic_info_unfilled"
-                android:contentDescription="@string/acc_book_info"/>
+                android:contentDescription="@string/acc_book_info"
+                style="@style/ImageButtonRippleBg"/>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

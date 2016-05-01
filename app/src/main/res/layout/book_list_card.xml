@@ -31,10 +31,10 @@
                 android:layout_toStartOf="@+id/btn_actions"
                 android:layout_centerVertical="true"
                 android:tint="@color/textColorPrimary"
-                android:backgroundTint="@android:color/transparent"
                 android:src="@drawable/ic_lightbulb_filled"
                 android:contentDescription="@string/action_show_query"
                 android:visibility="gone"
+                style="@style/ImageButtonRippleBg"
                 tools:visibility="visible"/>
 
         <ImageButton
@@ -44,8 +44,8 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:tint="@color/textColorSecondary"
-                android:backgroundTint="@android:color/transparent"
                 android:src="@drawable/ic_more_vertical"
-                android:contentDescription="@string/acc_actions"/>
+                android:contentDescription="@string/acc_actions"
+                style="@style/ImageButtonRippleBg"/>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

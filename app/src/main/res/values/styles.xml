@@ -38,7 +38,9 @@
     <!-- Button styles -->
     <style name="ImageButtonRippleBg" parent="Widget.AppCompat.ImageButton">
         <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingTop">10dp</item>
         <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingBottom">10dp</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
     </style>
 

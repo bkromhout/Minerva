@@ -42,18 +42,18 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:tint="@color/textColorSecondary"
-                        android:backgroundTint="@android:color/transparent"
                         android:src="@drawable/ic_info_unfilled"
-                        android:contentDescription="@string/acc_book_info"/>
+                        android:contentDescription="@string/acc_book_info"
+                        style="@style/ImageButtonRippleBg"/>
 
                 <ImageButton
                         android:id="@+id/btn_quick_tag"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:tint="@color/textColorSecondary"
-                        android:backgroundTint="@android:color/transparent"
                         android:src="@drawable/ic_tags"
-                        android:contentDescription="@string/acc_quick_tag"/>
+                        android:contentDescription="@string/acc_quick_tag"
+                        style="@style/ImageButtonRippleBg"/>
             </android.support.v7.widget.ButtonBarLayout>
 
             <TextView
