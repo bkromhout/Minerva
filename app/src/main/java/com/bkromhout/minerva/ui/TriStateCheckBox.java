@@ -2,8 +2,11 @@ package com.bkromhout.minerva.ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.util.AttributeSet;
 import android.view.ViewDebug;
@@ -28,6 +31,12 @@ public class TriStateCheckBox extends AppCompatCheckBox implements TriCheckable 
 
     public TriStateCheckBox(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            // This actually doesn't achieve anything color-wise, but for some odd reason it does prevent issues
+            // related to animations lagging...To be honest, I'm not about to question it.
+            setButtonTintMode(PorterDuff.Mode.SRC_IN);
+            setButtonTintList(ContextCompat.getColorStateList(context, R.color.tri_checkable_color));
+        }
         setButtonDrawable(R.drawable.tri_state_checkmark);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TriStateCheckBox);

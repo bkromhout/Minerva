@@ -3,10 +3,10 @@
           xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:state_enabled="false"
           android:alpha="0.28"
-          android:color="?attr/colorControlNormal"/>
-    <item android:color="?attr/colorControlActivated"
+          android:color="@color/textColorPrimary"/>
+    <item android:color="@color/colorAccent"
           app:state_partially_checked="true"/>
     <item android:state_checked="true"
-          android:color="?attr/colorControlActivated"/>
-    <item android:color="?attr/colorControlNormal"/>
+          android:color="@color/colorAccent"/>
+    <item android:color="@color/textColorPrimary"/>
 </selector>
