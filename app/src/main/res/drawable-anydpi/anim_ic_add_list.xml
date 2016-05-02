@@ -12,14 +12,14 @@
             android:id="@+id/state_plus"/>
 
     <transition
-            android:fromId="@id/state_plus"
-            android:toId="@id/state_list"
+            android:fromId="@+id/state_plus"
+            android:toId="@+id/state_list"
             android:drawable="@drawable/anim_plus_to_list">
     </transition>
 
     <transition
-            android:fromId="@id/state_list"
-            android:toId="@id/state_plus"
+            android:fromId="@+id/state_list"
+            android:toId="@+id/state_plus"
             android:drawable="@drawable/anim_list_to_plus">
     </transition>
 </animated-selector>
