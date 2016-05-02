@@ -3,6 +3,7 @@ package com.bkromhout.minerva.adapters;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.CardView;
@@ -115,8 +116,12 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
     private void setColorButtonColor(ImageButton colorButton, @ColorInt int color) {
         LayerDrawable layerDrawable = (LayerDrawable) colorButton.getDrawable();
         Drawable colorCircle = layerDrawable.findDrawableByLayerId(R.id.circle);
-        // TODO Do we need to set the tint mode for APIs 21 and/or 22?
-        DrawableCompat.setTint(colorCircle, color);
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
+            // API 21 is really quite stubborn when it comes to colors, annoyingly.
+            colorCircle = DrawableCompat.wrap(colorCircle);
+            DrawableCompat.setTint(colorCircle, color);
+            layerDrawable.setDrawableByLayerId(R.id.circle, colorCircle);
+        } else DrawableCompat.setTint(colorCircle, color);
     }
 
     /**
