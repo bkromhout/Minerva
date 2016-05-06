@@ -21,7 +21,6 @@
             android:id="@+id/recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="@dimen/recycler_view_padding"
             app:dragAndDrop="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             style="@style/RealmRVFastScroll"/>
