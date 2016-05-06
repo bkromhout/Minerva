@@ -5,6 +5,7 @@ import com.bkromhout.minerva.data.SuperBook;
 import com.bkromhout.minerva.enums.ModelType;
 import com.bkromhout.minerva.util.BookUtils;
 import com.bkromhout.minerva.util.Util;
+import com.bkromhout.rrvl.UIDModel;
 import com.bkromhout.ruqus.Hide;
 import com.bkromhout.ruqus.Queryable;
 import com.bkromhout.ruqus.RealmUserQuery;
@@ -29,7 +30,7 @@ import java.util.List;
  * Represents a book in Realm.
  */
 @Queryable(name = "Books")
-public class RBook extends RealmObject {
+public class RBook extends RealmObject implements UIDModel {
     public static final String SUBJECT_STR_SEP = ";SUBJECT_STR_SEP;";
     public static final String TYPE_STR_SEP = ";TYPE_STR_SEP;";
     /**
@@ -291,6 +292,11 @@ public class RBook extends RealmObject {
     }
 
     public String getRelPath() {
+        return relPath;
+    }
+
+    @Override
+    public Object getUID() {
         return relPath;
     }
 

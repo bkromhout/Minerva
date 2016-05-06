@@ -1,6 +1,7 @@
 package com.bkromhout.minerva.realm;
 
 import com.bkromhout.minerva.C;
+import com.bkromhout.rrvl.UIDModel;
 import com.bkromhout.ruqus.Hide;
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -15,7 +16,7 @@ import java.util.List;
 /**
  * Represents a tag in Realm.
  */
-public class RTag extends RealmObject {
+public class RTag extends RealmObject implements UIDModel {
     /**
      * Tag name.
      */
@@ -160,6 +161,11 @@ public class RTag extends RealmObject {
             }
             realm.commitTransaction();
         }
+    }
+
+    @Override
+    public Object getUID() {
+        return name;
     }
 
     @Override

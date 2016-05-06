@@ -26,9 +26,9 @@ import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.FastScrollHandleStateListener;
 import com.bkromhout.rrvl.FastScrollerHandleState;
 import com.bkromhout.rrvl.RealmRecyclerView;
+import com.bkromhout.rrvl.RealmRecyclerViewAdapter;
 import com.bkromhout.ruqus.RealmUserQuery;
 import io.realm.Realm;
-import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -69,7 +69,7 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
     /**
      * Adapter for the recycler view.
      */
-    private RealmBasedRecyclerViewAdapter adapter;
+    private RealmRecyclerViewAdapter adapter;
     /**
      * Action mode.
      */

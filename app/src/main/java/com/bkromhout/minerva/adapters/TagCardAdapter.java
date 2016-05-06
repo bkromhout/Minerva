@@ -20,7 +20,7 @@ import com.bkromhout.minerva.events.TagCardClickEvent;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.ui.RippleForegroundListener;
 import com.bkromhout.minerva.ui.TriStateCheckBox;
-import io.realm.RealmBasedRecyclerViewAdapter;
+import com.bkromhout.rrvl.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 
@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Realm RecyclerView Adapter for tag cards.
  */
-public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardAdapter.TagCardVH> {
+public class TagCardAdapter extends RealmRecyclerViewAdapter<RTag, TagCardAdapter.TagCardVH> {
     /**
      * Help our cards ripple.
      */
@@ -53,7 +53,7 @@ public class TagCardAdapter extends RealmBasedRecyclerViewAdapter<RTag, TagCardA
      * @param realmResults Results of a Realm query to display.
      */
     public TagCardAdapter(Context context, RealmResults<RTag> realmResults) {
-        super(context, realmResults, true, true, null);
+        super(context, realmResults);
         this.checkedItems = TaggingActivity.TaggingHelper.get().newCheckedItems;
         this.partiallyCheckedItems = TaggingActivity.TaggingHelper.get().newPartiallyCheckedItems;
     }

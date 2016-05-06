@@ -19,8 +19,9 @@ import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookListItem;
 import com.bkromhout.minerva.ui.RippleForegroundListener;
 import com.bkromhout.minerva.ui.TagBackgroundSpan;
+import com.bkromhout.rrvl.RealmRecyclerViewAdapter;
+import com.bkromhout.rrvl.UIDModel;
 import com.bumptech.glide.Glide;
-import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
@@ -33,8 +34,8 @@ import org.greenrobot.eventbus.EventBus;
  * happen if the number/height of the items is <i>just</i> enough to fill the viewport, but not enough to allow
  * scrolling).
  */
-public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends RecyclerView.ViewHolder> extends
-        RealmBasedRecyclerViewAdapter<T, VH> {
+public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH extends RecyclerView.ViewHolder> extends
+        RealmRecyclerViewAdapter<T, VH> {
     /**
      * Help our cards ripple.
      */
@@ -49,7 +50,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject, VH extends Recy
     boolean mayStartDrags = false;
 
     public BaseBookCardAdapter(Activity activity, RealmResults<T> realmResults) {
-        super(activity, realmResults, true, true, null);
+        super(activity, realmResults);
         this.activity = activity;
         setHasStableIds(true);
     }

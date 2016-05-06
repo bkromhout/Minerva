@@ -36,8 +36,8 @@ import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.FastScrollHandleStateListener;
 import com.bkromhout.rrvl.FastScrollerHandleState;
 import com.bkromhout.rrvl.RealmRecyclerView;
+import com.bkromhout.rrvl.RealmRecyclerViewAdapter;
 import io.realm.Realm;
-import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import org.greenrobot.eventbus.EventBus;
@@ -397,9 +397,9 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
     }
 
     /**
-     * Create a {@link RealmBasedRecyclerViewAdapter} based on the current view options and return it.
-     * @return New {@link RealmBasedRecyclerViewAdapter}. Will return null if we cannot get the activity context, if
-     * {@link #books} is null or invalid, or if the current value of {@link #cardType} is not valid.
+     * Create a {@link RealmRecyclerViewAdapter} based on the current view options and return it.
+     * @return New {@link RealmRecyclerViewAdapter}. Will return null if we cannot get the activity context, if {@link
+     * #books} is null or invalid, or if the current value of {@link #cardType} is not valid.
      */
     private BaseBookCardAdapter makeAdapter() {
         if (books == null || !books.isValid()) return null;

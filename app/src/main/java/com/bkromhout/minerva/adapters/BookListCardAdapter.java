@@ -17,7 +17,7 @@ import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.events.BookListCardClickEvent;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.ui.RippleForegroundListener;
-import io.realm.RealmBasedRecyclerViewAdapter;
+import com.bkromhout.rrvl.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 
@@ -29,7 +29,7 @@ import org.greenrobot.eventbus.EventBus;
  * happen if the number/height of the items is just enough to fill the available space, but not enough to allow
  * scrolling).
  */
-public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList, RecyclerView.ViewHolder> {
+public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, RecyclerView.ViewHolder> {
     /**
      * Help our cards ripple.
      */
@@ -41,7 +41,7 @@ public class BookListCardAdapter extends RealmBasedRecyclerViewAdapter<RBookList
      * @param realmResults Results of a Realm query to display.
      */
     public BookListCardAdapter(Context context, RealmResults<RBookList> realmResults) {
-        super(context, realmResults, true, true, null);
+        super(context, realmResults);
     }
 
     @Override

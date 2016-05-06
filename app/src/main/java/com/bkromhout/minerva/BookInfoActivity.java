@@ -139,7 +139,7 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
     /**
      * Listen for changes to {@link #book}. Call {@link #updateUi()} when they occur.
      */
-    private RealmChangeListener bookListener = this::updateUi;
+    private RealmChangeListener<RBook> bookListener = newBook -> updateUi();
 
     /**
      * Start the {@link BookInfoActivity} for the {@link RBook} with the given {@code relPath}.

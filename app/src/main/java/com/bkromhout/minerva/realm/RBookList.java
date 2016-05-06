@@ -1,6 +1,7 @@
 package com.bkromhout.minerva.realm;
 
 import com.bkromhout.minerva.C;
+import com.bkromhout.rrvl.UIDModel;
 import com.bkromhout.ruqus.Hide;
 import com.bkromhout.ruqus.RealmUserQuery;
 import io.realm.Realm;
@@ -17,7 +18,7 @@ import java.util.List;
 /**
  * Represents a book list in Realm.
  */
-public class RBookList extends RealmObject {
+public class RBookList extends RealmObject implements UIDModel {
     /**
      * Book list name. This must be unique!
      */
@@ -246,6 +247,11 @@ public class RBookList extends RealmObject {
                 }
             });
         }
+    }
+
+    @Override
+    public Object getUID() {
+        return name;
     }
 
     @Override

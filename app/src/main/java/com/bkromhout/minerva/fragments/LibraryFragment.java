@@ -97,12 +97,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
      * Realm change listener which takes care of toggling view visibility when {@link #books} changes from empty to
      * non-empty and vice versa.
      */
-    private RealmChangeListener emptyListener = new RealmChangeListener() {
-        @Override
-        public void onChange() {
-            toggleEmptyState(books.isEmpty());
-        }
-    };
+    private RealmChangeListener<RealmResults<RBook>> emptyListener = results -> toggleEmptyState(results.isEmpty());
 
     public LibraryFragment() {
         // Required empty public constructor

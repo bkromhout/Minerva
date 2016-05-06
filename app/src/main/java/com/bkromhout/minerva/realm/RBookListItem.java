@@ -1,6 +1,7 @@
 package com.bkromhout.minerva.realm;
 
 import com.bkromhout.minerva.C;
+import com.bkromhout.rrvl.UIDModel;
 import com.bkromhout.ruqus.Hide;
 import com.bkromhout.ruqus.Queryable;
 import io.realm.Realm;
@@ -15,7 +16,7 @@ import java.util.List;
  * Represents an item in a book list in Realm.
  */
 @Queryable(name = "Books in normal lists")
-public class RBookListItem extends RealmObject {
+public class RBookListItem extends RealmObject implements UIDModel {
     /**
      * A unique long value.
      */
@@ -96,6 +97,11 @@ public class RBookListItem extends RealmObject {
         ArrayList<RBook> books = new ArrayList<>(listItems.size());
         for (RBookListItem listItem : listItems) books.add(listItem.book);
         return books;
+    }
+
+    @Override
+    public Object getUID() {
+        return uniqueId;
     }
 
     @Override
