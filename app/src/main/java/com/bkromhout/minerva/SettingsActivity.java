@@ -5,18 +5,21 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import butterknife.ButterKnife;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
+import com.bkromhout.minerva.util.Util;
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 
 /**
  * Settings activity, just loads a custom PreferenceFragment.
  */
-public class SettingsActivity extends AppCompatActivity implements FolderChooserDialog.FolderCallback {
+public class SettingsActivity extends PermCheckingActivity implements FolderChooserDialog.FolderCallback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +34,22 @@ public class SettingsActivity extends AppCompatActivity implements FolderChooser
 
         // Show preference fragment.
         getFragmentManager().beginTransaction().replace(R.id.content, new SettingsFragment()).commit();
+
+        // Handle permissions. Make sure we continue a request process if applicable.
+        initAndContinuePermChecksIfNeeded();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // We don't have any events, but PermCheckingActivity does.
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     @Override
@@ -55,6 +74,12 @@ public class SettingsActivity extends AppCompatActivity implements FolderChooser
         // Updating this preference cause the fragment to notice and update the summary for the library directory
         // preference, since the fragment implements OnSharedPreferenceChangeListener.
         DefaultPrefs.get().putLibDir(folder.getAbsolutePath());
+    }
+
+    @NonNull
+    @Override
+    protected View getSnackbarAnchorView() {
+        return ButterKnife.findById(this, R.id.coordinator);
     }
 
     /**
@@ -115,7 +140,7 @@ public class SettingsActivity extends AppCompatActivity implements FolderChooser
          * @return Always true, since we always handle the click.
          */
         private boolean onLibDirPrefClick(Preference preference) {
-            // TODO check permissions.
+            if (!Util.checkForStoragePermAndFireEventIfNeeded()) return true;
 
             // Set up most of dialog. Our SettingsActivity is the only possible host for this fragment.
             FolderChooserDialog.Builder builder = new FolderChooserDialog.Builder((SettingsActivity) getActivity())

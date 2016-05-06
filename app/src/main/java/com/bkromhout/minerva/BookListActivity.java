@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.NonNull;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -44,7 +44,8 @@ import java.util.List;
 /**
  * Activity which displays a list of books based on an {@link RBookList}.
  */
-public class BookListActivity extends AppCompatActivity implements ActionMode.Callback, ReImporter.IReImportListener {
+public class BookListActivity extends PermCheckingActivity implements ActionMode.Callback,
+        ReImporter.IReImportListener {
     // Key strings for the bundle passed when this activity is started.
     public static final String LIST_NAME = "LIST_NAME";
     private static final String KEY_IS_REORDER_MODE = "IS_REORDER_MODE";
@@ -164,6 +165,9 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
             // ...And whether we will still need to send a position update upon finishing.
             if (savedInstanceState.getBoolean(C.NEEDS_POS_UPDATE)) needsPosUpdate = true;
         }
+
+        // Handle permissions. Make sure we continue a request process if applicable.
+        initAndContinuePermChecksIfNeeded();
     }
 
     /**
@@ -673,5 +677,11 @@ public class BookListActivity extends AppCompatActivity implements ActionMode.Ca
     public Activity getCtx() {
         // Provide our activity context to the ReImporter so that it can draw its progress dialog.
         return this;
+    }
+
+    @NonNull
+    @Override
+    protected View getSnackbarAnchorView() {
+        return ButterKnife.findById(this, R.id.coordinator);
     }
 }

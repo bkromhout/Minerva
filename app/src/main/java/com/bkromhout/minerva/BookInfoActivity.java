@@ -5,10 +5,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.view.Menu;
@@ -42,7 +42,7 @@ import java.util.List;
 /**
  * Displays information for some {@link com.bkromhout.minerva.realm.RBook}.
  */
-public class BookInfoActivity extends AppCompatActivity implements ReImporter.IReImportListener {
+public class BookInfoActivity extends PermCheckingActivity implements ReImporter.IReImportListener {
     /**
      * Part of the information for which views are conditionally shown.
      * @see #togglePart(Part, boolean)
@@ -194,6 +194,9 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
 
         // If we have a saved instance state, check whether we will still need to send a position update upon finishing.
         if (savedInstanceState != null && savedInstanceState.getBoolean(C.NEEDS_POS_UPDATE)) needsPosUpdate = true;
+
+        // Handle permissions. Make sure we continue a request process if applicable.
+        initAndContinuePermChecksIfNeeded();
     }
 
     @Override
@@ -477,5 +480,11 @@ public class BookInfoActivity extends AppCompatActivity implements ReImporter.IR
     @Override
     public void onReImportFinished(boolean wasSuccess) {
         // Nothing, realm's change listener takes care of updating the UI for us.
+    }
+
+    @NonNull
+    @Override
+    protected View getSnackbarAnchorView() {
+        return ButterKnife.findById(this, R.id.coordinator);
     }
 }

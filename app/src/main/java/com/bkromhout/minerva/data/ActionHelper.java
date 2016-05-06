@@ -1,19 +1,15 @@
 package com.bkromhout.minerva.data;
 
-import android.Manifest;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.ColorInt;
 import android.support.v4.content.FileProvider;
-import android.support.v4.content.PermissionChecker;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 import com.bkromhout.minerva.C;
-import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.TaggingActivity.TaggingHelper;
-import com.bkromhout.minerva.events.MissingPermEvent;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
@@ -22,7 +18,6 @@ import com.bkromhout.minerva.util.Util;
 import com.bkromhout.ruqus.RealmUserQuery;
 import com.google.common.collect.Lists;
 import io.realm.Realm;
-import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,18 +28,6 @@ import java.util.List;
  * Convenience class which provides static methods to execute actions, preventing the need for duplicate code.
  */
 public class ActionHelper {
-    /**
-     * Checks to see if the app currently holds the READ_EXTERNAL_STORAGE permissions, and fires a {@link
-     * MissingPermEvent} if it doesn't.
-     * @return False if we had to fire the event because we don't have the permission. True if we have the permission.
-     */
-    private static boolean checkForStoragePermAndFireEventIfNeeded() {
-        if (PermissionChecker.checkSelfPermission(Minerva.getAppCtx(), Manifest.permission.READ_EXTERNAL_STORAGE) ==
-                PermissionChecker.PERMISSION_GRANTED) return true;
-        EventBus.getDefault().post(new MissingPermEvent(Manifest.permission.READ_EXTERNAL_STORAGE));
-        return false;
-    }
-
     /*
      * Book Actions.
      */
@@ -104,7 +87,7 @@ public class ActionHelper {
      * @param context The context to use to open the file.
      */
     public static void openBookUsingIntent(RBook book, Context context) {
-        if (!checkForStoragePermAndFireEventIfNeeded()) return;
+        if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
 
         // TODO Realm's bytecode transformer fails our build if we use the field here instead of a getter...
         //File file = Util.getFileFromRelPath(book.relPath);
@@ -152,7 +135,7 @@ public class ActionHelper {
      * @param listener Object to provide a context for drawing a dialog and to call back to when re-import is finished.
      */
     public static void reImportBooks(List<RBook> books, ReImporter.IReImportListener listener) {
-        if (!checkForStoragePermAndFireEventIfNeeded()) return;
+        if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
         ReImporter.reImportBooks(books, listener);
     }
 
@@ -177,7 +160,7 @@ public class ActionHelper {
         if (books == null || books.isEmpty()) return;
 
         // If deleteRealFiles is true, check permissions before doing anything.
-        if (deleteRealFiles && !checkForStoragePermAndFireEventIfNeeded()) return;
+        if (deleteRealFiles && !Util.checkForStoragePermAndFireEventIfNeeded()) return;
 
         List<String> relPaths = new ArrayList<>(books.size());
         // Delete what we created.

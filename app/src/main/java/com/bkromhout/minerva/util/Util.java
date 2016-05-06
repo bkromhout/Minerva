@@ -1,5 +1,6 @@
 package com.bkromhout.minerva.util;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -19,11 +20,13 @@ import com.bkromhout.minerva.MainActivity;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.SuperBook;
+import com.bkromhout.minerva.events.MissingPermEvent;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashingInputStream;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.epub.EpubReader;
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -106,6 +109,18 @@ public class Util {
             default:
                 return -1;
         }
+    }
+
+    /**
+     * Checks to see if the app currently holds the READ_EXTERNAL_STORAGE permissions, and fires a {@link
+     * MissingPermEvent} if it doesn't.
+     * @return False if we had to fire the event because we don't have the permission. True if we have the permission.
+     */
+    public static boolean checkForStoragePermAndFireEventIfNeeded() {
+        if (hasPerm(Manifest.permission.READ_EXTERNAL_STORAGE)) return true;
+
+        EventBus.getDefault().post(new MissingPermEvent(Manifest.permission.READ_EXTERNAL_STORAGE));
+        return false;
     }
 
     /**

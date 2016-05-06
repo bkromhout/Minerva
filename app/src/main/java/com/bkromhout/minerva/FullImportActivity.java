@@ -2,7 +2,6 @@ package com.bkromhout.minerva;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.view.MenuItem;
@@ -15,13 +14,14 @@ import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
 import com.bkromhout.minerva.data.FullImporter;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.util.Util;
+import org.greenrobot.eventbus.EventBus;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.Subject;
 
 import java.io.File;
 
-public class FullImportActivity extends AppCompatActivity implements FullImporter.IFullImportListener,
+public class FullImportActivity extends PermCheckingActivity implements FullImporter.IFullImportListener,
         FolderChooserDialog.FolderCallback {
     /**
      * States that the header can be in.
@@ -52,6 +52,8 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
     }
 
     // Views
+    @BindView(R.id.rl)
+    RelativeLayout rl;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.header)
@@ -102,6 +104,9 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
         getSupportActionBar().setHomeButtonEnabled(true);
 
         initUi();
+
+        // Handle permissions. Make sure we continue a request process if applicable.
+        initAndContinuePermChecksIfNeeded();
     }
 
     /**
@@ -138,13 +143,16 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
     @Override
     protected void onStart() {
         super.onStart();
+        // We don't have any events, but PermCheckingActivity does.
+        EventBus.getDefault().register(this);
         FullImporter.get().registerListener(this);
     }
 
     @Override
     protected void onStop() {
-        super.onStop();
+        EventBus.getDefault().unregister(this);
         FullImporter.get().unregisterListener();
+        super.onStop();
     }
 
     @Override
@@ -256,16 +264,14 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
     void onButtonClick(View view) {
         switch (currBtnState) {
             case START_IMPORT:
-                // TODO check permissions.
-
+                if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
                 FullImporter.get().doFullImport(this);
                 break;
             case CANCEL_IMPORT:
                 FullImporter.get().cancelFullImport();
                 break;
             case CHOOSE_DIR:
-                // TODO check permissions.
-
+                if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
                 // Set up most of dialog. Our SettingsActivity is the only possible host for this fragment.
                 FolderChooserDialog.Builder builder = new FolderChooserDialog.Builder(this)
                         .chooseButton(R.string.ok)
@@ -373,5 +379,11 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
     public void setCancelled() {
         // Does the same thing for now.
         setReady();
+    }
+
+    @NonNull
+    @Override
+    protected View getSnackbarAnchorView() {
+        return rl;
     }
 }

@@ -18,6 +18,8 @@ import org.greenrobot.eventbus.Subscribe;
 
 /**
  * Base for activities which need to check permissions.
+ * <p>
+ * TODO It'd be nice to handle all of this stuff by ourselves rather than relaying on Dexter.
  */
 public abstract class PermCheckingActivity extends AppCompatActivity {
     /**
@@ -25,11 +27,11 @@ public abstract class PermCheckingActivity extends AppCompatActivity {
      */
     private PermissionListener storagePL;
     /**
-     * Whether or not the permissions nag snackbar is currently showing.
+     * Reference to permissions nag snackbar so that we can dismiss it if need be.
      */
-    private boolean isPermSnackbarShown = false;
+    private Snackbar permSnackbar;
     /**
-     * Reference to rationale dialog so that we can dismiss it as needed.
+     * Reference to rationale dialog so that we can dismiss it if need be.
      */
     private MaterialDialog rationaleDialog;
 
@@ -47,7 +49,6 @@ public abstract class PermCheckingActivity extends AppCompatActivity {
     public final void onMissingPermEvent(MissingPermEvent event) {
         // Currently we only have one permission we'd need to check for, read external storage, so we don't bother
         // checking the permission string in the event.
-        //showPermNagSnackbar();
         checkPermsIfNotAlreadyDoingSo();
     }
 
@@ -82,7 +83,11 @@ public abstract class PermCheckingActivity extends AppCompatActivity {
      * Check for permissions we need if we're not already in the process of doing so.
      */
     protected final void checkPermsIfNotAlreadyDoingSo() {
-        if (!Dexter.isRequestOngoing()) Dexter.checkPermission(storagePL, Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (!Dexter.isRequestOngoing()) {
+            // If the nag snackbar is shown, get rid of it first.
+            if (permSnackbar != null) permSnackbar.dismiss();
+            Dexter.checkPermission(storagePL, Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
     }
 
     /**
@@ -98,8 +103,7 @@ public abstract class PermCheckingActivity extends AppCompatActivity {
      *              permission was already permanently denied, not simply to provide rationale before requesting it.
      */
     private void showRationaleDialog(PermissionToken token) {
-        MaterialDialog.Builder builder = new MaterialDialog.Builder(this)
-                .title(R.string.storage_permission);
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(this).title(R.string.storage_permission);
 
         // Add dependant parts.
         if (token != null) {
@@ -129,25 +133,25 @@ public abstract class PermCheckingActivity extends AppCompatActivity {
      */
     private void showPermNagSnackbar() {
         // Don't queue a second snackbar.
-        if (isPermSnackbarShown) return;
+        if (permSnackbar != null) return;
 
         // This snackbar with make Dexter try to get the permission again.
-        Snackbar.make(getSnackbarAnchorView(), R.string.storage_permission_needed, Snackbar.LENGTH_INDEFINITE)
+        Snackbar.make(getSnackbarAnchorView(), R.string.storage_permission_needed,
+                Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.retry, v -> Dexter.checkPermission(storagePL,
                         Manifest.permission.READ_EXTERNAL_STORAGE))
                 .setCallback(new Snackbar.Callback() {
                     @Override
                     public void onDismissed(Snackbar snackbar, int event) {
                         super.onDismissed(snackbar, event);
-                        isPermSnackbarShown = false;
+                        permSnackbar = null;
                     }
 
                     @Override
                     public void onShown(Snackbar snackbar) {
                         super.onShown(snackbar);
-                        isPermSnackbarShown = true;
+                        permSnackbar = snackbar;
                     }
-                })
-                .show();
+                }).show();
     }
 }

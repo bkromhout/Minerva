@@ -269,6 +269,6 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
     @Override
     protected View getSnackbarAnchorView() {
         // We want to be sure that the snackbar plays nice with the FABs in our fragments.
-        return ButterKnife.findById(fragCont, R.id.fab);
+        return ButterKnife.findById(fragCont, R.id.coordinator);
     }
 }
