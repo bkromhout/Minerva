@@ -1,18 +1,16 @@
 package com.bkromhout.minerva;
 
-import android.Manifest;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,28 +18,19 @@ import android.view.View;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.bkromhout.minerva.events.MissingPermEvent;
 import com.bkromhout.minerva.fragments.AllListsFragment;
 import com.bkromhout.minerva.fragments.LibraryFragment;
 import com.bkromhout.minerva.fragments.PowerSearchFragment;
 import com.bkromhout.minerva.fragments.RecentFragment;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.util.Util;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.EmptyPermissionListener;
-import com.karumi.dexter.listener.single.PermissionListener;
 import io.realm.Realm;
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 /**
  * Main activity, responsible for hosting fragments.
  */
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends PermCheckingActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TITLE = "TITLE";
     // Represents the various fragments that this activity can show.
     public static final int FRAG_RECENT = 0;
@@ -71,14 +60,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Nav Drawer Toggle (burger menu).
      */
     private ActionBarDrawerToggle drawerToggle;
-    /**
-     * Permission listener for the Read External Storage permission.
-     */
-    PermissionListener storagePL;
-    /**
-     * Whether or not the permissions nag snackbar is currently showing.
-     */
-    private boolean isPermSnackbarShown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,10 +83,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Set up the nav drawer and its toggle.
         initDrawer();
 
-        // Handle permissions. Make sure we continue a request process if applicable.
-        initPLs();
-        Dexter.continuePendingRequestIfPossible(storagePL);
-
         // Ensure that the same fragment is selected as was last time.
         if (savedInstanceState == null) {
             // Make sure we show the library fragment if we don't have a saved instance state, don't have a saved
@@ -117,6 +94,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Make sure we set the title back to what it was otherwise.
             setTitle(savedInstanceState.getString(TITLE));
         }
+
+        // Handle permissions. Make sure we continue a request process if applicable.
+        initAndContinuePermChecksIfNeeded();
     }
 
     @Override
@@ -150,29 +130,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerToggle.setToolbarNavigationClickListener(v -> onBackPressed());
     }
 
-    /**
-     * Create PermissionListeners.
-     */
-    private void initPLs() {
-        storagePL = new EmptyPermissionListener() {
-            @Override
-            public void onPermissionDenied(PermissionDeniedResponse response) {
-                super.onPermissionDenied(response);
-                // For a regular denial, just show the snackbar. For a permanent denial, show a dialog which has a
-                // link to the app info screen.
-                if (!response.isPermanentlyDenied()) showPermNagSnackbar();
-                else showRationaleDialog(null);
-            }
-
-            @Override
-            public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
-                super.onPermissionRationaleShouldBeShown(permission, token);
-                if (permission.getName().equals(Manifest.permission.READ_EXTERNAL_STORAGE))
-                    showRationaleDialog(token);
-            }
-        };
-    }
-
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         Util.forceMenuIcons(menu, this, getClass().getSimpleName());
@@ -182,10 +139,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
+        // We don't have any events, but PermCheckingActivity does.
         EventBus.getDefault().register(this);
-
-        // Check for permissions if not already doing so.
-        if (!Dexter.isRequestOngoing()) Dexter.checkPermission(storagePL, Manifest.permission.READ_EXTERNAL_STORAGE);
     }
 
     @Override
@@ -310,70 +265,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         defaultPrefs.putCurrFrag(frag);
     }
 
-    /**
-     * Called when one of the fragments has indicated that we are missing a permission that we need.
-     * @param event {@link MissingPermEvent}.
-     */
-    @Subscribe
-    public void onMissingPermEvent(MissingPermEvent event) {
-        // Currently we only have one permission we'd need to check for, read external storage, so we don't bother
-        // checking the permission string in the event.
-        showPermNagSnackbar();
-    }
-
-    /**
-     * Show dialog explaining why we need permission.
-     * @param token Token to continue request. If this is nonnull, then we know we're showing this dialog because the
-     *              permission was already permanently denied, not simply to provide rationale before requesting it.
-     */
-    private void showRationaleDialog(PermissionToken token) {
-        MaterialDialog.Builder builder = new MaterialDialog.Builder(MainActivity.this)
-                .title(R.string.storage_permission);
-
-        // Add dependant parts.
-        if (token != null) {
-            // This dialog is simply to provide rationale prior to showing the system's permission request dialog.
-            builder.content(R.string.storage_permission_rationale)
-                   .positiveText(R.string.ok)
-                   .dismissListener(dialog -> token.continuePermissionRequest());
-        } else {
-            // This dialog needs to provide a way to open the app info screen, because the permission was already
-            // permanently denied.
-            builder.content(R.string.storage_permission_rationale_long)
-                   .positiveText(R.string.app_info)
-                   .negativeText(R.string.cancel)
-                   .onPositive((dialog, which) -> Util.openAppInfo(MainActivity.this))
-                   .onNegative((dialog, which) -> dialog.cancel())
-                   .cancelListener(dialog -> showPermNagSnackbar());
-        }
-
-        builder.show();
-    }
-
-    /**
-     * Show a snackbar to nag user to grant permission.
-     */
-    private void showPermNagSnackbar() {
-        // Don't queue a second snackbar.
-        if (isPermSnackbarShown) return;
-
-        // This snackbar with make Dexter try to get the permission again.
-        Snackbar.make(fragCont, R.string.storage_permission_needed, Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.retry, v -> Dexter.checkPermission(storagePL,
-                        Manifest.permission.READ_EXTERNAL_STORAGE))
-                .setCallback(new Snackbar.Callback() {
-                    @Override
-                    public void onDismissed(Snackbar snackbar, int event) {
-                        super.onDismissed(snackbar, event);
-                        isPermSnackbarShown = false;
-                    }
-
-                    @Override
-                    public void onShown(Snackbar snackbar) {
-                        super.onShown(snackbar);
-                        isPermSnackbarShown = true;
-                    }
-                })
-                .show();
+    @NonNull
+    @Override
+    protected View getSnackbarAnchorView() {
+        // We want to be sure that the snackbar plays nice with the FABs in our fragments.
+        return ButterKnife.findById(fragCont, R.id.fab);
     }
 }
