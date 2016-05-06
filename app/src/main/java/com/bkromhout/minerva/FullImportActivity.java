@@ -307,7 +307,7 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
             if (s == null) tvLog.setText("");
             else {
                 tvLog.append(s);
-                // Scroll log down as we append lines. TODO only scroll if we're close to the bottom now?
+                // Scroll log down as we append lines.
                 svLogCont.post(() -> svLogCont.fullScroll(View.FOCUS_DOWN));
             }
         });
@@ -319,7 +319,7 @@ public class FullImportActivity extends AppCompatActivity implements FullImporte
             if (s == null) tvELog.setText("");
             else {
                 tvELog.append(s);
-                // Scroll log down as we append lines. TODO only scroll if we're close to the bottom now?
+                // Scroll log down as we append lines.
                 svELogCont.post(() -> svELogCont.fullScroll(View.FOCUS_DOWN));
             }
         });

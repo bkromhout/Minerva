@@ -24,8 +24,6 @@ public class RTag extends RealmObject implements UIDModel {
     @Required
     public String name;
     /**
-     * TODO This is a work-around until Realm can do case-insensitive sorting.
-     * <p>
      * Same as {@link #name}, but in lower-case.
      */
     @Index

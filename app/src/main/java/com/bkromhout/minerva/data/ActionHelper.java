@@ -276,7 +276,7 @@ public class ActionHelper {
             throw new IllegalArgumentException("newName must be non-null and non-empty.");
         realm.executeTransaction(tRealm -> {
             list.name = newName;
-            list.sortName = newName.toLowerCase(); // TODO Work-around
+            list.sortName = newName.toLowerCase();
         });
     }
 
