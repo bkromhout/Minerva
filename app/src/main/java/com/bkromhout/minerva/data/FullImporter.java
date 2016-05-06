@@ -56,6 +56,10 @@ public class FullImporter {
      */
     private int numTotal;
     /**
+     * Total number of errors logged.
+     */
+    private int numErrors;
+    /**
      * ReplaySubject wrapped in a SerializedSubject which holds log lines.
      */
     private Subject<String, String> logSubject;
@@ -154,23 +158,22 @@ public class FullImporter {
         currState = State.PREP;
 
         // Listener updates.
-        logSubject.onNext(null);
-        errorSubject.onNext(null);
+        publishLog(null);
+        publishError(null);
         if (listener != null) listener.setRunning();
-        logSubject.onNext(C.getStr(R.string.fil_starting));
+        publishLog(C.getStr(R.string.fil_starting));
         progressSubject.onNext(-1);
 
         // Get and check currently configured library directory.
         String libDirPath = DefaultPrefs.get().getLibDir(null);
         if ((currDir = Util.tryResolveDir(libDirPath)) == null) {
             // We don't have a valid library directory.
-            logSubject.onNext(C.getStr(R.string.fil_err_invalid_lib_dir));
-            errorSubject.onNext(C.getStr(R.string.fil_err_invalid_lib_dir));
+            publishError(C.getStr(R.string.fil_err_invalid_lib_dir));
             resetState();
             return;
         }
 
-        logSubject.onNext(C.getStr(R.string.fil_finding_files));
+        publishLog(C.getStr(R.string.fil_finding_files));
         // Get a list of files in the directory (and its subdirectories) which have certain extensions.
         // This will call through to onGotFileList() once it has the results.
         fileWalkerSubscription = Observable
@@ -192,7 +195,7 @@ public class FullImporter {
      *              try to import.
      */
     private void onGotFileList(List<File> files) {
-        logSubject.onNext(C.getStr(R.string.fil_done));
+        publishLog(C.getStr(R.string.fil_done));
         // Check if we should stop.
         if (isIdleOrTryingToBe()) {
             resetState();
@@ -204,7 +207,7 @@ public class FullImporter {
         // Check file list.
         if (files.isEmpty()) {
             // We don't have any files.
-            logSubject.onNext(C.getStr(R.string.fil_err_no_files));
+            publishLog(C.getStr(R.string.fil_err_no_files));
             resetState();
             return;
         }
@@ -214,7 +217,7 @@ public class FullImporter {
         numTotal = files.size();
 
         // Update listener.
-        logSubject.onNext(C.getStr(R.string.fil_found_files, numTotal));
+        publishLog(C.getStr(R.string.fil_found_files, numTotal));
         if (listener != null) listener.setMaxProgress(numTotal);
         progressSubject.onNext(numDone);
 
@@ -239,7 +242,7 @@ public class FullImporter {
 
         // Change state to running.
         currState = State.IMPORTING;
-        logSubject.onNext(C.getStr(R.string.fil_reading_files));
+        publishLog(C.getStr(R.string.fil_reading_files));
 
         // Do importer flow.
         fileImporterSubscription = Observable
@@ -264,8 +267,7 @@ public class FullImporter {
         try {
             return Util.readEpubFile(file, relPath);
         } catch (IllegalArgumentException e) {
-            logSubject.onNext(C.getStr(R.string.fil_err_processing_file, e.getMessage()));
-            errorSubject.onNext(C.getStr(R.string.fil_err_processing_file, e.getMessage()));
+            publishError(C.getStr(R.string.fil_err_processing_file, e.getMessage()));
             return null;
         }
     }
@@ -285,7 +287,7 @@ public class FullImporter {
 
         // Add RBook to queue and emit file path.
         bookQueue.add(rBook);
-        logSubject.onNext(C.getStr(R.string.fil_read_file, rBook.relPath));
+        publishLog(C.getStr(R.string.fil_read_file, rBook.relPath));
         progressSubject.onNext(numDone++);
     }
 
@@ -296,8 +298,7 @@ public class FullImporter {
     private void onFileImporterError(Throwable t) {
         String s = C.getStr(R.string.fil_err_generic);
         Log.e("FullImporter", s, t);
-        logSubject.onNext("\n" + s + ":\n\"" + t.getMessage() + "\"\n");
-        errorSubject.onNext("\n" + s + ":\n\"" + t.getMessage() + "\"\n");
+        publishError("\n" + s + ":\n\"" + t.getMessage() + "\"\n");
         cancelFullImport();
     }
 
@@ -305,7 +306,7 @@ public class FullImporter {
      * What to do after we've finished importing all books.
      */
     private void onAllFilesImported() {
-        logSubject.onNext(C.getStr(R.string.fil_all_files_read));
+        publishLog(C.getStr(R.string.fil_all_files_read));
         // Check if we should stop.
         if (isIdleOrTryingToBe()) {
             resetState();
@@ -315,7 +316,7 @@ public class FullImporter {
         // Cancelling isn't allowed from this point until we're done persisting data to Realm.
         currState = State.SAVING;
         if (listener != null) listener.setSaving();
-        logSubject.onNext(C.getStr(R.string.fil_saving_files));
+        publishLog(C.getStr(R.string.fil_saving_files));
         progressSubject.onNext(-1);
 
         // We've finished importing all books, now we'll persist them to Realm.
@@ -335,14 +336,13 @@ public class FullImporter {
                     }
                 },
                 () -> {
-                    logSubject.onNext(C.getStr(R.string.fil_done));
+                    publishLog(C.getStr(R.string.fil_done));
                     fullImportFinished();
                 },
                 error -> {
                     String s = C.getStr(R.string.fil_err_realm);
                     Log.e("FullImporter", s, error);
-                    logSubject.onNext("\n" + s + "\n");
-                    errorSubject.onNext("\n" + s + "\n");
+                    publishError("\n" + s + "\n");
                     unsafeCancelFullImport();
                 });
     }
@@ -353,8 +353,8 @@ public class FullImporter {
     private void fullImportFinished() {
         // Save current time to prefs to indicate a full import completed, then tell listener we finished.
         DefaultPrefs.get().putLastFullImportTime(Calendar.getInstance().getTimeInMillis());
-        // TODO print finished with errors if applicable here
-        logSubject.onNext(C.getStr(R.string.fil_finished));
+        if (numErrors > 0) publishLog(C.getStr(R.string.fil_finished_with_errors, numErrors));
+        else publishLog(C.getStr(R.string.fil_finished));
         resetState();
         if (listener != null) listener.setReady();
     }
@@ -378,10 +378,30 @@ public class FullImporter {
      */
     private void unsafeCancelFullImport() {
         if (listener != null) listener.setCancelling();
-        logSubject.onNext(C.getStr(R.string.fil_cancelling));
+        publishLog(C.getStr(R.string.fil_cancelling));
         resetState();
-        logSubject.onNext(C.getStr(R.string.fil_done));
+        publishLog(C.getStr(R.string.fil_done));
         if (listener != null) listener.setCancelled();
+    }
+
+    /**
+     * Publish a log line to the {@link #logSubject}.
+     * @param logStr String to log.
+     */
+    private void publishLog(String logStr) {
+        logSubject.onNext(logStr);
+    }
+
+    /**
+     * Publish a log line to the {@link #errorSubject} and the {@link #logSubject}.
+     * @param errStr String to log.
+     */
+    private void publishError(String errStr) {
+        if (errStr != null) {
+            publishLog(errStr);
+            numErrors++;
+        }
+        errorSubject.onNext(errStr);
     }
 
     /**
@@ -403,6 +423,7 @@ public class FullImporter {
         this.currDir = null;
         this.numDone = 0;
         this.numTotal = 0;
+        this.numErrors = 0;
         this.bookQueue = new LinkedList<>();
 
         // Close Realm.

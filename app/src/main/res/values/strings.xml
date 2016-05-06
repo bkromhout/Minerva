@@ -156,8 +156,8 @@
     <string name="fil_read_file">Read \"%1$s\"\n</string>
     <string name="fil_all_files_read">\nAll files read\n\n</string>
     <string name="fil_saving_files">Saving file data…</string>
-    <string name="fil_finished">\nFinished with full import!</string>
-    <string name="fil_finished_with_errors">\nFinished full import, with errors.</string>
+    <string name="fil_finished">\nFinished full import.</string>
+    <string name="fil_finished_with_errors">\nFinished full import, with %1$d errors.</string>
     <string name="fil_cancelling">\nCancelling…</string>
 
     <string name="fil_err_generic">Error while importing and converting files</string>
