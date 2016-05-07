@@ -3,6 +3,13 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
+    <!-- Elevations -->
+    <dimen name="button_elevation">2dp</dimen>
+    <dimen name="button_pressed_translationZ">4dp</dimen>
+
+    <dimen name="card_elevation">2dp</dimen>
+    <dimen name="card_pressed_translationZ">6dp</dimen>
+
     <!-- FABs -->
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="mini_fab_margin">24dp</dimen>
@@ -28,7 +35,6 @@
     <dimen name="tag_line_spacing_extra">4dp</dimen>
 
     <!-- Cards -->
-    <dimen name="card_elevation">4dp</dimen>
     <dimen name="card_margin">4dp</dimen>
 
     <dimen name="large_cover_width">96dp</dimen>

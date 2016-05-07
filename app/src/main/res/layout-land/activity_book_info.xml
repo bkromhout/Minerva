@@ -173,7 +173,8 @@
                         android:backgroundTint="@color/colorAccent"
                         android:tint="@color/textColorPrimary"
                         android:contentDescription="@string/acc_rating"
-                        android:src="@drawable/ic_stars"/>
+                        android:src="@drawable/ic_stars"
+                        style="@style/LiftOnTouchButton"/>
 
                 <ImageButton
                         android:id="@id/edit_tags"
@@ -185,7 +186,8 @@
                         android:backgroundTint="@color/colorAccent"
                         android:tint="@color/textColorPrimary"
                         android:contentDescription="@string/acc_quick_tag"
-                        android:src="@drawable/ic_tags"/>
+                        android:src="@drawable/ic_tags"
+                        style="@style/LiftOnTouchButton"/>
             </android.support.percent.PercentRelativeLayout>
 
             <TextView

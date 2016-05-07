@@ -49,6 +49,7 @@
 
     <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
+            style="@style/Widget.Design.FloatingActionButton"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:layout_margin="@dimen/fab_margin"
@@ -173,7 +174,8 @@
                         app:backgroundTint="@color/colorAccent"
                         android:tint="@color/textColorPrimary"
                         android:contentDescription="@string/acc_rating"
-                        android:src="@drawable/ic_stars"/>
+                        android:src="@drawable/ic_stars"
+                        style="@style/LiftOnTouchButton"/>
 
                 <android.support.v7.widget.AppCompatImageButton
                         android:id="@id/edit_tags"
@@ -185,7 +187,8 @@
                         app:backgroundTint="@color/colorAccent"
                         android:tint="@color/textColorPrimary"
                         android:contentDescription="@string/acc_quick_tag"
-                        android:src="@drawable/ic_tags"/>
+                        android:src="@drawable/ic_tags"
+                        style="@style/LiftOnTouchButton"/>
             </android.support.percent.PercentRelativeLayout>
 
             <TextView
