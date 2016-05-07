@@ -27,12 +27,9 @@
     </style>
 
     <style name="MinervaDarkCardNoRipple" parent="CardView.Dark">
-        <item name="android:layout_marginStart">@dimen/card_margin_left</item>
-        <item name="android:layout_marginTop">@dimen/card_margin_top</item>
-        <item name="android:layout_marginEnd">@dimen/card_margin_right</item>
-        <item name="android:layout_marginBottom">@dimen/card_margin_bottom</item>
+        <item name="android:layout_margin">@dimen/card_margin</item>
         <item name="cardBackgroundColor">@color/card_bg_color</item>
-        <item name="cardElevation">@dimen/card_elevation</item>
+        <!--<item name="cardElevation">@dimen/card_elevation</item>-->
     </style>
 
     <!-- Button styles -->
@@ -45,7 +42,11 @@
     </style>
 
     <!-- RealmRecyclerView styles -->
-    <style name="RealmRVFastScroll">
+    <style name="RealmRVBase">
+        <item name="rvPadding">@dimen/recycler_view_padding</item>
+    </style>
+
+    <style name="RealmRVFastScroll" parent="RealmRVBase">
         <item name="fastScroll">true</item>
         <item name="autoHideFastScrollHandle">true</item>
         <item name="handleAutoHideDelay">1000</item>

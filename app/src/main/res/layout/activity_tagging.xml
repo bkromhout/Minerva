@@ -15,7 +15,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/toolbar"
-            android:layout_marginBottom="4dp"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:maxLines="1"
@@ -26,7 +25,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/tag_filter"
-            android:layout_above="@+id/buttons"/>
+            android:layout_above="@+id/buttons"
+            style="@style/RealmRVBase"/>
 
     <android.support.v7.widget.ButtonBarLayout
             android:id="@id/buttons"

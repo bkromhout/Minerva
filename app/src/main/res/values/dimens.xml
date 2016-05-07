@@ -9,7 +9,8 @@
     <dimen name="mini_fab_translate">-64dp</dimen>
 
     <!-- RecyclerView Padding -->
-    <dimen name="recycler_view_padding">8dp</dimen>
+    <!-- We already have a 4dp margin around our cards, so add another 4dp to get the standard 8dp -->
+    <dimen name="recycler_view_padding">4dp</dimen>
     <!-- Padding for end of recycler views to avoid FAB overlap -->
     <dimen name="rv_end_padding">80dp</dimen>
 
@@ -27,11 +28,8 @@
     <dimen name="tag_line_spacing_extra">4dp</dimen>
 
     <!-- Cards -->
-    <dimen name="card_elevation">6dp</dimen>
-    <dimen name="card_margin_top">3dp</dimen>
-    <dimen name="card_margin_right">4dp</dimen>
-    <dimen name="card_margin_bottom">3dp</dimen>
-    <dimen name="card_margin_left">4dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="card_margin">4dp</dimen>
 
     <dimen name="large_cover_width">96dp</dimen>
     <dimen name="large_cover_height">128dp</dimen>
