@@ -14,7 +14,11 @@ import io.realm.RealmResults;
 public class BookCardAdapter extends BaseBookCardAdapter<RBook, RecyclerView.ViewHolder> {
 
     public BookCardAdapter(Activity activity, RealmResults<RBook> realmResults) {
-        super(activity, realmResults);
+        this(activity, realmResults, true);
+    }
+
+    public BookCardAdapter(Activity activity, RealmResults<RBook> realmResults, boolean addFooterView) {
+        super(activity, realmResults, addFooterView);
     }
 
     @Override

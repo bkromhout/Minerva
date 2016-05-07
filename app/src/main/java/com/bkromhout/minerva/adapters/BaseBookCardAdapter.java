@@ -29,10 +29,10 @@ import org.greenrobot.eventbus.EventBus;
 /**
  * Base adapter for book card adapters to extend.
  * <p>
- * Unless there are no items, automatically adds an empty footer view to ensure that we'll never get into a situation
- * where a FAB is obscuring the last item and we aren't able to scroll to make it hide itself (which would otherwise
- * happen if the number/height of the items is <i>just</i> enough to fill the viewport, but not enough to allow
- * scrolling).
+ * Unless there are no items, can optionally automatically add an empty footer view to ensure that we'll never get into
+ * a situation where a FAB is obscuring the last item and we aren't able to scroll to make it hide itself (which would
+ * otherwise happen if the number/height of the items is <i>just</i> enough to fill the viewport, but not enough to
+ * allow scrolling).
  */
 public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH extends RecyclerView.ViewHolder> extends
         RealmRecyclerViewAdapter<T, VH> {
@@ -45,25 +45,36 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
      */
     private Activity activity;
     /**
+     * If true, add a footer view which
+     */
+    private boolean addFooterView;
+    /**
      * Whether or not this adapter may allow item dragging to start.
      */
     boolean mayStartDrags = false;
 
     public BaseBookCardAdapter(Activity activity, RealmResults<T> realmResults) {
+        this(activity, realmResults, true);
+    }
+
+    public BaseBookCardAdapter(Activity activity, RealmResults<T> realmResults, boolean addFooterView) {
         super(activity, realmResults);
         this.activity = activity;
+        this.addFooterView = addFooterView;
         setHasStableIds(true);
     }
 
     @Override
     public int getItemCount() {
+        // Just call super if we know we don't want to add a footer view.
+        if (!addFooterView) return super.getItemCount();
         int superCount = super.getItemCount();
         return superCount == 0 ? 0 : superCount + 1;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (super.getItemCount() != 0 && position == super.getItemCount()) return C.FOOTER_ITEM_TYPE;
+        if (addFooterView && super.getItemCount() != 0 && position == super.getItemCount()) return C.FOOTER_ITEM_TYPE;
         else return super.getItemViewType(position);
     }
 
@@ -206,6 +217,9 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
 
         return true;
     }
+
+    // TODO use the new stuff from rrvl 2.0.2 to try and get cards' elevations to cooperate during drags
+    // Hopefully as simple as setting them "selected" and changing selector accordingly?
 
     /**
      * A base ViewHolder class for all book cards.

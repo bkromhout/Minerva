@@ -556,22 +556,22 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
         if (modelType == ModelType.BOOK) {
             switch (cardType) {
                 case NORMAL:
-                    return new BookCardAdapter(this, (RealmResults<RBook>) items);
+                    return new BookCardAdapter(this, (RealmResults<RBook>) items, false);
                 case NO_COVER:
-                    return new BookCardNoCoverAdapter(this, (RealmResults<RBook>) items);
+                    return new BookCardNoCoverAdapter(this, (RealmResults<RBook>) items, false);
                 case COMPACT:
-                    return new BookCardCompactAdapter(this, (RealmResults<RBook>) items);
+                    return new BookCardCompactAdapter(this, (RealmResults<RBook>) items, false);
                 default:
                     throw new IllegalStateException("Invalid card type.");
             }
         } else if (modelType == ModelType.BOOK_LIST_ITEM) {
             switch (cardType) {
                 case NORMAL:
-                    return new BookItemCardAdapter(this, (RealmResults<RBookListItem>) items);
+                    return new BookItemCardAdapter(this, (RealmResults<RBookListItem>) items, false);
                 case NO_COVER:
-                    return new BookItemCardNoCoverAdapter(this, (RealmResults<RBookListItem>) items);
+                    return new BookItemCardNoCoverAdapter(this, (RealmResults<RBookListItem>) items, false);
                 case COMPACT:
-                    return new BookItemCardCompactAdapter(this, (RealmResults<RBookListItem>) items);
+                    return new BookItemCardCompactAdapter(this, (RealmResults<RBookListItem>) items, false);
                 default:
                     throw new IllegalStateException("Invalid card type.");
             }
