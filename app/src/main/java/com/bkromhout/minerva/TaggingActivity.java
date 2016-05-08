@@ -1,21 +1,22 @@
 package com.bkromhout.minerva;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ActionMode;
-import android.support.v7.widget.ButtonBarLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -53,23 +54,16 @@ import java.util.concurrent.TimeUnit;
 /**
  * Activity used to apply (and remove) tags to (and from) books.
  */
-public class TaggingActivity extends AppCompatActivity implements ActionMode.Callback, SnackKiosk.Snacker,
-        ColorChooserDialog.ColorCallback {
+public class TaggingActivity extends AppCompatActivity implements SnackKiosk.Snacker, ColorChooserDialog.ColorCallback {
     // Views.
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.rl)
-    RelativeLayout rl;
-    @BindView(R.id.recycler)
-    RealmRecyclerView recyclerView;
+    @BindView(R.id.coordinator)
+    CoordinatorLayout coordinator;
     @BindView(R.id.tag_filter)
     EditText filter;
-    @BindView(R.id.buttons)
-    ButtonBarLayout buttons;
-    @BindView(R.id.cancel)
-    Button btnCancel;
-    @BindView(R.id.save)
-    Button btnSave;
+    @BindView(R.id.recycler)
+    RealmRecyclerView recyclerView;
 
     /**
      * Instance of {@link TaggingHelper}.
@@ -149,8 +143,9 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
         // Set up toolbar.
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
+        getSupportActionBar().setHomeAsUpIndicator(Util.getTintedDrawable(this, R.drawable.ic_close,
+                R.color.textColorPrimary));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
 
         // Get TaggingHelper, Realm, then set up the rest of UI.
         taggingHelper = TaggingHelper.get();
@@ -228,48 +223,67 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
     }
 
     @Override
-    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-        mode.setTitle(R.string.title_tag_edit_mode);
-        buttons.setVisibility(View.GONE);
-        adapter.setInActionMode(true);
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        Util.forceMenuIcons(menu, this, getClass().getSimpleName());
-        return true;
-    }
-
-    @Override
-    public void onDestroyActionMode(ActionMode mode) {
-        adapter.setInActionMode(false);
-        buttons.setVisibility(View.VISIBLE);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 return true;
-            case R.id.action_new_tag:
-                Dialogs.uniqueNameDialog(this, RTag.class, R.string.action_new_tag, R.string.prompt_new_tag,
-                        R.string.tag_name_hint, null, R.id.action_new_tag, -1);
-                return true;
-            case R.id.action_edit_tags:
-                startSupportActionMode(this);
+            case R.id.action_save_tags:
+                saveTags();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    @Override
-    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-        switch (item.getItemId()) {
-            default:
-                return false;
+    /**
+     * Called when one of the action buttons is clicked on a tag card.
+     * @param event {@link TagCardClickEvent}.
+     */
+    @Subscribe
+    public void onTagCardAction(TagCardClickEvent event) {
+        // Store tag.
+        tempTag = items.where()
+                       .equalTo("name", event.getName())
+                       .findFirst();
+        // Open some dialog.
+        switch (event.getType()) {
+            case TEXT_COLOR:
+                new ColorChooserDialog.Builder(this, R.string.title_tag_text_color)
+                        .preselect(tempTag.textColor)
+                        .dynamicButtonColor(false)
+                        .show();
+                break;
+            case BG_COLOR:
+                new ColorChooserDialog.Builder(this, R.string.title_tag_bg_color)
+                        .preselect(tempTag.bgColor)
+                        .dynamicButtonColor(false)
+                        .show();
+                break;
+            case ACTIONS:
+                onCardMenuActionClicked(event.getActionId(), event.getName());
+                break;
+        }
+    }
+
+    /**
+     * Called when one of the menu items on the tag card's action menu is clicked.
+     * @param actionId ID of the clicked action.
+     * @param tagName  Name of the clicked tag.
+     */
+    private void onCardMenuActionClicked(int actionId, String tagName) {
+        switch (actionId) {
+            case R.id.action_rename_tag:
+                // Show rename dialog.
+                Dialogs.uniqueNameDialog(this, RTag.class, R.string.title_rename_tag, R.string.prompt_rename_tag,
+                        R.string.tag_name_hint, tagName, R.id.action_rename_tag, -1);
+                break;
+            case R.id.action_delete_tag:
+                // Show delete confirm dialog.
+                Dialogs.simpleConfirmDialog(this, R.string.title_delete_tag,
+                        C.getStr(R.string.prompt_delete_tag, tagName), R.string.action_delete,
+                        R.id.action_delete_tag);
+                break;
         }
     }
 
@@ -288,44 +302,6 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
                 break;
             case R.id.action_delete_tag:
                 ActionHelper.deleteTag(realm, tempTag);
-                break;
-        }
-    }
-
-    /**
-     * Called when one of the action buttons is clicked on a tag card.
-     * @param event {@link TagCardClickEvent}.
-     */
-    @Subscribe
-    public void onTagCardAction(TagCardClickEvent event) {
-        // Store tag.
-        tempTag = items.where()
-                       .equalTo("name", event.getName())
-                       .findFirst();
-        // Open some dialog.
-        switch (event.getType()) {
-            case RENAME:
-                // Show rename dialog.
-                Dialogs.uniqueNameDialog(this, RTag.class, R.string.title_rename_tag, R.string.prompt_rename_tag,
-                        R.string.tag_name_hint, event.getName(), R.id.action_rename_tag, -1);
-                break;
-            case DELETE:
-                // Show delete confirm dialog.
-                Dialogs.simpleConfirmDialog(this, R.string.title_delete_tag,
-                        C.getStr(R.string.prompt_delete_tag, event.getName()), R.string.action_delete,
-                        R.id.action_delete_tag);
-                break;
-            case TEXT_COLOR:
-                new ColorChooserDialog.Builder(this, R.string.title_tag_text_color)
-                        .preselect(tempTag.textColor)
-                        .dynamicButtonColor(false)
-                        .show();
-                break;
-            case BG_COLOR:
-                new ColorChooserDialog.Builder(this, R.string.title_tag_bg_color)
-                        .preselect(tempTag.bgColor)
-                        .dynamicButtonColor(false)
-                        .show();
                 break;
         }
     }
@@ -376,20 +352,26 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
     }
 
     /**
-     * Called when the cancel button is clicked.
+     * Show the new tag dialog when the FAB is clicked.
      */
-    @OnClick(R.id.cancel)
-    void onCancelButtonClicked() {
+    @OnClick(R.id.fab)
+    void onFabNewTagClicked() {
+        Dialogs.uniqueNameDialog(this, RTag.class, R.string.action_new_tag, R.string.prompt_new_tag,
+                R.string.tag_name_hint, null, R.id.action_new_tag, -1);
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Reset the tagging helper when we back out of the activity.
         taggingHelper = null;
         TaggingHelper.reset();
-        finish();
+        super.onBackPressed();
     }
 
     /**
      * Called when the save button is clicked.
      */
-    @OnClick(R.id.save)
-    void onSaveButtonClicked() {
+    private void saveTags() {
         // Use the two checked lists to get deltas, then use the deltas to figure out which tags were added and which
         // were removed.
         Patch<String> patch = DiffUtils.diff(taggingHelper.oldCheckedItems, taggingHelper.newCheckedItems);
@@ -455,7 +437,27 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
     @NonNull
     @Override
     public View getSnackbarAnchorView() {
-        return rl;
+        return coordinator;
+    }
+
+    /**
+     * Override this method so that we remove focus from our filter EditText when we click outside its bounds.
+     */
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = getCurrentFocus();
+            if (v instanceof EditText) {
+                Rect outRect = new Rect();
+                v.getGlobalVisibleRect(outRect);
+                if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
+                    v.clearFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event);
     }
 
     /**
@@ -516,7 +518,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
          * If an old instance is present and has indicated it requires an explicit update, will sent an {@link
          * UpdatePosEvent} with the value {@link UpdatePosEvent#ALL_POSITIONS} before resetting.
          */
-        public static void reset() {
+        private static void reset() {
             // If our instance has indicated it needs an explicit update, send one before resetting.
             if (INSTANCE != null && INSTANCE.doExplicitUpdate)
                 EventBus.getDefault().postSticky(new UpdatePosEvent(UpdatePosEvent.ALL_POSITIONS));

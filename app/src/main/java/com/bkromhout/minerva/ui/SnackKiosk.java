@@ -112,6 +112,36 @@ public class SnackKiosk {
      * @param messageRes Message to show on the Snackbar.
      * @param actionRes  String resource to use for the action button's text. Can be {@code -1} to omit the action
      *                   button.
+     * @param duration   How long to show the Snackbar for.
+     */
+    public static void snack(@StringRes final int messageRes, @StringRes final int actionRes, final int duration) {
+        snack(C.getStr(messageRes), actionRes, -1, duration);
+    }
+
+    /**
+     * Show a Snackbar.
+     * <p>
+     * If a {@link Snacker} isn't currently attached, a Snackbar will be queued and shown the next time {@link
+     * #attachSnacker(Snacker)} is called. However, only one Snackbar will be queued, so the last call made to any of
+     * the {@code snack} methods during that time wins.
+     * @param message   Message to show on the Snackbar.
+     * @param actionRes String resource to use for the action button's text. Can be {@code -1} to omit the action
+     *                  button.
+     * @param duration  How long to show the Snackbar for.
+     */
+    public static void snack(final String message, @StringRes final int actionRes, final int duration) {
+        snack(message, actionRes, -1, duration);
+    }
+
+    /**
+     * Show a Snackbar.
+     * <p>
+     * If a {@link Snacker} isn't currently attached, a Snackbar will be queued and shown the next time {@link
+     * #attachSnacker(Snacker)} is called. However, only one Snackbar will be queued, so the last call made to any of
+     * the {@code snack} methods during that time wins.
+     * @param messageRes Message to show on the Snackbar.
+     * @param actionRes  String resource to use for the action button's text. Can be {@code -1} to omit the action
+     *                   button.
      * @param actionId   ID resource to help determine an action to take when the action button is pressed. Can be
      *                   {@code -1} to simply dismiss the Snackbar. Ignored if {@code actionRes} is {@code -1}.
      * @param duration   How long to show the Snackbar for.

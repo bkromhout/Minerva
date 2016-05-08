@@ -77,7 +77,6 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
 
         // Set up the nav drawer and its toggle.
         initDrawer();

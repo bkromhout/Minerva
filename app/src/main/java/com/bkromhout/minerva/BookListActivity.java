@@ -136,7 +136,6 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
 
         // Read extras bundle.
         readExtras(getIntent().getExtras());

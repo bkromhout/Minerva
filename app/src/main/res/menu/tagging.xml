@@ -3,14 +3,8 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-            android:id="@+id/action_new_tag"
-            app:showAsAction="ifRoom"
-            android:icon="@drawable/ic_add"
-            android:title="@string/action_new_tag"/>
-
-    <item
-            android:id="@+id/action_edit_tags"
-            app:showAsAction="ifRoom"
-            android:icon="@drawable/ic_edit"
-            android:title="@string/action_edit_tags"/>
+            android:id="@+id/action_save_tags"
+            app:showAsAction="always"
+            android:icon="@drawable/ic_done"
+            android:title="@string/action_save_tags"/>
 </menu>

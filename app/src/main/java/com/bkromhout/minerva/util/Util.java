@@ -11,8 +11,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.ColorRes;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.view.menu.MenuBuilder;
 import android.view.Menu;
 import com.bkromhout.minerva.MainActivity;
@@ -68,14 +70,16 @@ public class Util {
     }
 
     /**
-     * Mutates the given {@code drawable}, then tints it using {@link android.graphics.PorterDuff.Mode#SRC_IN} to the
-     * color defined by the given {@code colorResId}.
-     * @param drawable   Drawable to tint.
-     * @param colorResId The resource ID for a color resource.
+     * Get a tinted drawable.
+     * @param ctx         The context to use.
+     * @param drawableRes The drawable resource to use.
+     * @param colorRes    The color resource to use.
+     * @return Tinted drawable.
      */
-    public static void tintDrawable(Context ctx, Drawable drawable, @ColorRes int colorResId) {
-        int color = ContextCompat.getColor(ctx, colorResId);
-        drawable.mutate().setColorFilter(color, PorterDuff.Mode.SRC_IN);
+    public static Drawable getTintedDrawable(Context ctx, @DrawableRes int drawableRes, @ColorRes int colorRes) {
+        Drawable drawable = ContextCompat.getDrawable(ctx, drawableRes);
+        DrawableCompat.setTint(drawable, ContextCompat.getColor(ctx, colorRes));
+        return drawable;
     }
 
     /**

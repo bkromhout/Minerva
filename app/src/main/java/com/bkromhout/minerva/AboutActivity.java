@@ -37,7 +37,6 @@ public class AboutActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
 
         initUi();
     }

@@ -1,5 +1,7 @@
 package com.bkromhout.minerva.events;
 
+import android.support.annotation.IdRes;
+
 /**
  * Fired when some sort of click event happens for a book list card.
  */
@@ -29,25 +31,25 @@ public class BookListCardClickEvent {
     private final int position;
 
     /**
-     * Create a new {@link BookListCardClickEvent}
-     * @param type     Type of click.
-     * @param name     Name of the list.
-     * @param actionId ID of the clicked menu item (if applicable).
-     */
-    public BookListCardClickEvent(Type type, String name, int actionId, int position) {
-        this.type = type;
-        this.name = name;
-        this.actionId = actionId;
-        this.position = position;
-    }
-
-    /**
      * Create a new {@link BookListCardClickEvent}.
      * @param type Type of click.
      * @param name Name of the list.
      */
     public BookListCardClickEvent(Type type, String name, int position) {
         this(type, name, -1, position);
+    }
+
+    /**
+     * Create a new {@link BookListCardClickEvent}
+     * @param type     Type of click.
+     * @param name     Name of the list.
+     * @param actionId ID of the clicked menu item (if applicable).
+     */
+    public BookListCardClickEvent(Type type, String name, @IdRes int actionId, int position) {
+        this.type = type;
+        this.name = name;
+        this.actionId = actionId;
+        this.position = position;
     }
 
     /**

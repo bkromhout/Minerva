@@ -172,7 +172,6 @@ public class BookInfoActivity extends PermCheckingActivity implements ReImporter
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
 
         // Get Realm and read extras bundle.
         String relPath = getIntent().getStringExtra(C.REL_PATH);

@@ -12,8 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.TaggingActivity;
 import com.bkromhout.minerva.events.TagCardClickEvent;
@@ -29,7 +31,7 @@ import java.util.List;
 /**
  * Realm RecyclerView Adapter for tag cards.
  */
-public class TagCardAdapter extends RealmRecyclerViewAdapter<RTag, TagCardAdapter.TagCardVH> {
+public class TagCardAdapter extends RealmRecyclerViewAdapter<RTag, RecyclerView.ViewHolder> {
     /**
      * Help our cards ripple.
      */
@@ -42,10 +44,6 @@ public class TagCardAdapter extends RealmRecyclerViewAdapter<RTag, TagCardAdapte
      * List of items which are partially checked. The strings in this list should correspond to names of {@link RTag}s.
      */
     private List<String> partiallyCheckedItems;
-    /**
-     * Whether or not we're currently in action mode.
-     */
-    private boolean isInActionMode = false;
 
     /**
      * Create a new {@link TagCardAdapter}.
@@ -59,25 +57,39 @@ public class TagCardAdapter extends RealmRecyclerViewAdapter<RTag, TagCardAdapte
     }
 
     @Override
-    public TagCardVH onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new TagCardVH(inflater.inflate(R.layout.tag_card, parent, false));
+    public int getItemCount() {
+        int superCount = super.getItemCount();
+        return superCount == 0 ? 0 : superCount + 1;
     }
 
     @Override
-    public void onBindViewHolder(TagCardVH viewHolder, int position) {
+    public int getItemViewType(int position) {
+        if (super.getItemCount() != 0 && position == super.getItemCount()) return C.FOOTER_ITEM_TYPE;
+        else return super.getItemViewType(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        if (position == super.getItemCount()) return Long.MIN_VALUE;
+        else return super.getItemId(position);
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == C.FOOTER_ITEM_TYPE)
+            return new RecyclerView.ViewHolder(inflater.inflate(R.layout.empty_footer, parent, false)) {};
+        else
+            return new TagCardVH(inflater.inflate(R.layout.tag_card, parent, false));
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+        if (position == getItemCount() || !(viewHolder instanceof TagCardVH)) return;
+        TagCardVH vh = (TagCardVH) viewHolder;
         RTag tag = realmResults.get(position);
 
-        // Set whether or not the color and action buttons are shown.
-        viewHolder.textColor.setVisibility(isInActionMode ? View.GONE : View.VISIBLE);
-        viewHolder.bgColor.setVisibility(isInActionMode ? View.GONE : View.VISIBLE);
-        viewHolder.rename.setVisibility(isInActionMode ? View.VISIBLE : View.GONE);
-        viewHolder.delete.setVisibility(isInActionMode ? View.VISIBLE : View.GONE);
-
         // Set card click listener.
-        viewHolder.card.setOnClickListener(v -> {
-            // Do nothing if in action mode.
-            if (isInActionMode) return;
-
+        vh.card.setOnClickListener(v -> {
             CheckBox cbTag = ButterKnife.findById(v, R.id.tag_name);
             String tagName = cbTag.getText().toString();
             // Try to remove from partially checked items; if that doesn't happen, try to remove from checked items;
@@ -88,23 +100,31 @@ public class TagCardAdapter extends RealmRecyclerViewAdapter<RTag, TagCardAdapte
         });
 
         // Set name and checked state.
-        viewHolder.tag.setText(tag.name);
-        if (partiallyCheckedItems.contains(tag.name)) viewHolder.tag.setPartiallyChecked(true);
-        else viewHolder.tag.setChecked(checkedItems.contains(tag.name));
+        vh.tag.setText(tag.name);
+        if (partiallyCheckedItems.contains(tag.name)) vh.tag.setPartiallyChecked(true);
+        else vh.tag.setChecked(checkedItems.contains(tag.name));
 
         // Set the color buttons colors.
-        setColorButtonColor(viewHolder.textColor, tag.textColor);
-        setColorButtonColor(viewHolder.bgColor, tag.bgColor);
+        setColorButtonColor(vh.textColor, tag.textColor);
+        setColorButtonColor(vh.bgColor, tag.bgColor);
 
-        // Set button click handlers.
-        viewHolder.rename.setOnClickListener(v -> EventBus.getDefault().post(
-                new TagCardClickEvent(TagCardClickEvent.Type.RENAME, tag.name)));
-        viewHolder.delete.setOnClickListener(v -> EventBus.getDefault().post(
-                new TagCardClickEvent(TagCardClickEvent.Type.DELETE, tag.name)));
-        viewHolder.textColor.setOnClickListener(v -> EventBus.getDefault().post(
+        // Set color button click handlers.
+        vh.textColor.setOnClickListener(v -> EventBus.getDefault().post(
                 new TagCardClickEvent(TagCardClickEvent.Type.TEXT_COLOR, tag.name)));
-        viewHolder.bgColor.setOnClickListener(v -> EventBus.getDefault().post(
+        vh.bgColor.setOnClickListener(v -> EventBus.getDefault().post(
                 new TagCardClickEvent(TagCardClickEvent.Type.BG_COLOR, tag.name)));
+
+        // Set up btnActions so that it displays a popup menu.
+        vh.btnActions.setOnClickListener(view -> {
+            PopupMenu menu = new PopupMenu(view.getContext(), view);
+            menu.getMenuInflater().inflate(R.menu.tag_card_actions, menu.getMenu());
+            menu.setOnMenuItemClickListener(item -> {
+                EventBus.getDefault().post(new TagCardClickEvent(TagCardClickEvent.Type.ACTIONS, tag.name,
+                        item.getItemId()));
+                return true;
+            });
+            menu.show();
+        });
     }
 
     /**
@@ -125,16 +145,6 @@ public class TagCardAdapter extends RealmRecyclerViewAdapter<RTag, TagCardAdapte
     }
 
     /**
-     * Set whether or not we're currently in action mode.
-     * @param isInActionMode True or false :)
-     */
-    public void setInActionMode(boolean isInActionMode) {
-        if (this.isInActionMode == isInActionMode) return;
-        this.isInActionMode = isInActionMode;
-        notifyDataSetChanged();
-    }
-
-    /**
      * TagCardVH class.
      */
     public class TagCardVH extends RecyclerView.ViewHolder {
@@ -146,10 +156,8 @@ public class TagCardAdapter extends RealmRecyclerViewAdapter<RTag, TagCardAdapte
         ImageButton textColor;
         @BindView(R.id.tag_bg_color)
         ImageButton bgColor;
-        @BindView(R.id.rename_tag)
-        ImageButton rename;
-        @BindView(R.id.delete_tag)
-        ImageButton delete;
+        @BindView(R.id.btn_actions)
+        ImageButton btnActions;
 
         public TagCardVH(View itemView) {
             super(itemView);

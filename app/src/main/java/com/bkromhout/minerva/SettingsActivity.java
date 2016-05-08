@@ -36,7 +36,6 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
 
         // Show preference fragment.
         getFragmentManager().beginTransaction().replace(R.id.content, new SettingsFragment()).commit();

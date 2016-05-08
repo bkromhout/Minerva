@@ -102,7 +102,6 @@ public class ImportActivity extends PermCheckingActivity implements Importer.IIm
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
 
         initUi();
 

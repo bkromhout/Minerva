@@ -1,56 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.design.widget.CoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/rl"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/coordinator"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:descendantFocusability="beforeDescendants"
-        android:focusableInTouchMode="true">
+        android:fitsSystemWindows="true"
+        tools:context=".TaggingActivity">
 
-    <include
-            layout="@layout/toolbar"
-            android:id="@+id/toolbar"/>
-
-    <EditText
-            android:id="@+id/tag_filter"
-            android:layout_width="match_parent"
+    <android.support.design.widget.AppBarLayout
             android:layout_height="wrap_content"
-            android:layout_below="@id/toolbar"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:maxLines="1"
-            android:hint="@string/action_filter"/>
+            android:layout_width="match_parent"
+            android:focusableInTouchMode="true"
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+        <include layout="@layout/toolbar"/>
+
+        <EditText
+                android:id="@+id/tag_filter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:hint="@string/action_filter"/>
+    </android.support.design.widget.AppBarLayout>
 
     <com.bkromhout.rrvl.RealmRecyclerView
-            android:id="@id/recycler"
+            android:id="@+id/recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/tag_filter"
-            android:layout_above="@+id/buttons"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             style="@style/RealmRVBase"/>
 
-    <android.support.v7.widget.ButtonBarLayout
-            android:id="@id/buttons"
-            android:layout_width="match_parent"
+    <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:orientation="horizontal">
-
-        <Button
-                android:id="@+id/cancel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                style="?android:attr/buttonBarButtonStyle"
-                android:text="@string/cancel"/>
-
-        <Button
-                android:id="@+id/save"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-
-                style="?android:attr/buttonBarButtonStyle"
-                android:text="@string/save"/>
-    </android.support.v7.widget.ButtonBarLayout>
-</RelativeLayout>
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_add"
+            android:tint="@color/textColorPrimary"
+            android:clickable="true"
+            android:contentDescription="@string/action_new_tag"
+            app:layout_anchor="@id/recycler"
+            app:layout_anchorGravity="bottom|right|end"
+            app:layout_behavior="com.bkromhout.minerva.ui.ScrollAwareFABBehavior"/>
+</android.support.design.widget.CoordinatorLayout>

@@ -64,8 +64,9 @@ public class QueryBuilderActivity extends AppCompatActivity implements RealmQuer
         // Set up toolbar.
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
+        getSupportActionBar().setHomeAsUpIndicator(Util.getTintedDrawable(this, R.drawable.ic_close,
+                R.color.textColorPrimary));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
 
         // Read extras bundle.
         Bundle b = getIntent().getExtras();

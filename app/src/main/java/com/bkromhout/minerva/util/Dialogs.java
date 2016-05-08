@@ -4,12 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;
+import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 import butterknife.ButterKnife;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkromhout.minerva.C;
@@ -20,6 +20,7 @@ import com.bkromhout.minerva.events.PrefChangeEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 import com.bkromhout.minerva.realm.RBookList;
+import com.bkromhout.minerva.ui.SnackKiosk;
 import io.realm.Realm;
 import io.realm.RealmModel;
 import io.realm.RealmResults;
@@ -113,6 +114,7 @@ public class Dialogs {
         // Show dialog.
         new MaterialDialog.Builder(ctx)
                 .title(R.string.action_card_type)
+                .negativeText(R.string.cancel)
                 .items(BookCardType.names())
                 .itemsCallbackSingleChoice(cardType.getNum(), (dialog, itemView, which, text) -> {
                     // Do nothing if it's the same.
@@ -165,12 +167,13 @@ public class Dialogs {
                                              .findAllSorted("sortName");
 
         if (lists.size() == 0) {
-            // If we don't have any lists, just show a toast.
-            Toast.makeText(ctx, R.string.toast_no_lists, Toast.LENGTH_SHORT).show();
+            // If we don't have any lists, just show a snackbar.
+            SnackKiosk.snack(R.string.toast_no_lists, Snackbar.LENGTH_SHORT);
         } else {
             // Create a material dialog.
             new MaterialDialog.Builder(ctx)
                     .title(R.string.action_add_to_list)
+                    .negativeText(R.string.cancel)
                     .items(Observable.from(lists)
                                      .map(list -> list.name)
                                      .toList()
@@ -205,6 +208,7 @@ public class Dialogs {
                 .title(title)
                 .content(text)
                 .autoDismiss(false)
+                .positiveText(R.string.save)
                 .negativeText(R.string.cancel)
                 .onNegative((dialog, which) -> dialog.dismiss())
                 .input(C.getStr(hint), preFill, false, (dialog, input) -> {
@@ -244,7 +248,7 @@ public class Dialogs {
                 .title(R.string.title_smart_list_query)
                 .content(queryString == null || queryString.isEmpty()
                         ? C.getStr(R.string.no_query_for_smart_list) : queryString)
-                .positiveText(R.string.ok)
+                .positiveText(R.string.dismiss)
                 .neutralText(R.string.action_open_query_builder)
                 .onNeutral((dialog, which) ->
                         EventBus.getDefault().post(new ActionEvent(R.id.action_open_query_builder, null, posToUpdate)))

@@ -4,9 +4,9 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.ColorInt;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
 import android.webkit.MimeTypeMap;
-import android.widget.Toast;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.TaggingActivity.TaggingHelper;
@@ -14,6 +14,7 @@ import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
 import com.bkromhout.minerva.realm.RTag;
+import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.ruqus.RealmUserQuery;
 import com.google.common.collect.Lists;
@@ -113,7 +114,7 @@ public class ActionHelper {
             });
         } catch (ActivityNotFoundException e) {
             // Tell the user there aren't any apps which advertise the ability to handle the book's file type.
-            Toast.makeText(context, C.getStr(R.string.toast_err_no_apps), Toast.LENGTH_LONG).show();
+            SnackKiosk.snack(R.string.toast_err_no_apps, R.string.dismiss, Snackbar.LENGTH_LONG);
         }
     }
 

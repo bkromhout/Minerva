@@ -12,6 +12,7 @@
 
     <!--suppress CheckTagEmptyBody -->
     <string name="empty"></string>
+    <string name="dismiss">Dismiss</string>
     <string name="ok">OK</string>
     <string name="got_it">Got it</string>
     <string name="yes">Yes</string>
@@ -30,7 +31,7 @@
 
     <!-- Common error strings -->
     <string name="err_name_taken">Name already in use</string>
-    <string name="toast_err_no_apps">No apps installed which can open this file</string>
+    <string name="toast_err_no_apps">You have no apps which can open this book’s file</string>
     <string name="toast_err_invalid_query">Invalid Query</string>
 
     <!-- Permissions -->
@@ -279,14 +280,13 @@
 
     <!-- ******************************** Tagging Activity ******************************** -->
     <string name="title_activity_tagging">Choose Tags</string>
-    <string name="title_tag_edit_mode">Tag Edit Mode</string>
     <string name="title_tag_text_color">Tag Text Color</string>
     <string name="title_tag_bg_color">Tag Background Color</string>
     <string name="title_rename_tag">Rename Tag</string>
     <string name="title_delete_tag">Delete Tag</string>
 
+    <string name="action_save_tags">Save Tags</string>
     <string name="action_new_tag">New Tag</string>
-    <string name="action_edit_tags">Edit Tags</string>
 
     <string name="prompt_new_tag">Enter a name for the new tag</string>
     <string name="prompt_rename_tag">Enter a new name for the tag</string>
