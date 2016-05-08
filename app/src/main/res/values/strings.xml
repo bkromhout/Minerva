@@ -1,16 +1,24 @@
 <resources>
+    <!-- Special characters (for easy copy-paste):
+    Right single quote: ’
+    Left double quote:  “
+    Right double quote: ”
+    -->
+
     <!-- ******************************** General ******************************** -->
     <string name="app_name">Minerva</string>
-    <string name="tag_line">Organize your eBooks with ease!</string>
+    <string name="tag_line">Organize your eBooks with ease</string>
     <string name="app_info">App Info</string>
 
     <!--suppress CheckTagEmptyBody -->
     <string name="empty"></string>
     <string name="ok">OK</string>
+    <string name="got_it">Got it</string>
     <string name="yes">Yes</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="no">No</string>
+    <string name="not_now">Not now</string>
     <string name="clear">Clear</string>
     <string name="settings">Settings</string>
     <string name="retry">Retry</string>
@@ -21,21 +29,21 @@
     <string name="sort_desc">Descending</string>
 
     <!-- Common error strings -->
-    <string name="err_name_taken">Name is already taken.</string>
-    <string name="toast_err_no_apps">No apps installed which can open this file.</string>
+    <string name="err_name_taken">Name already in use</string>
+    <string name="toast_err_no_apps">No apps installed which can open this file</string>
     <string name="toast_err_invalid_query">Invalid Query</string>
 
     <!-- Permissions -->
     <string name="storage_permission">Storage Permission</string>
-    <string name="storage_permission_rationale">Minerva uses the Storage permission to read book files in the folder you
+    <string name="storage_permission_rationale">Minerva uses the Storage permission to read book files in a folder you
         specify.</string>
     <string name="storage_permission_needed">Storage permission needed</string>
-    <string name="storage_permission_perm_denied">Minerva needs the Storage permission, but it was permanently denied.\n
-        Open the App Info screen to grant it.</string>
+    <string name="storage_permission_perm_denied">Minerva needs the Storage permission, but you permanently denied it.
+        \nOpen the App Info screen to grant it.</string>
 
-    <string name="storage_permission_rationale_long">Minerva uses the Storage permission to read book files in the
-        folder you specify.\n\nSince you\'ve permanently denied the Storage permission, you\'ll need to manually grant
-        it from the App Info screen.</string>
+    <string name="storage_permission_rationale_long">Minerva uses the Storage permission to read book files in a
+        folder you specify.\n\nSince you permanently denied the Storage permission, you need to grant it from the App
+        Info screen.</string>
 
     <!-- Query Builder Activity -->
     <string name="title_activity_query_builder">Query Builder</string>
@@ -48,9 +56,9 @@
     <!-- Clear -->
     <string name="action_clear">@string/clear</string>
     <string name="action_clear_list">Clear List</string>
-    <string name="prompt_clear_list">Are you sure you want to clear this list of all items?</string>
+    <string name="prompt_clear_list">Clear this list of all books?</string>
     <string name="action_clear_recents">Clear Recents</string>
-    <string name="prompt_clear_recents">Are you sure you wish to clear all books from the recents list?</string>
+    <string name="prompt_clear_recents">Clear all books from the recents list?</string>
 
     <!-- Delete -->
     <string name="action_delete">Delete</string>
@@ -58,12 +66,12 @@
     <string name="title_delete_books">Delete Books</string>
     <string name="title_delete_list">Delete List</string>
     <string name="title_delete_lists">Delete Lists</string>
-    <string name="prompt_delete_book">Are you sure you want to delete this book from your library?</string>
-    <string name="prompt_delete_books">Are you sure you want to delete the selected books from your library?</string>
+    <string name="prompt_delete_book">Delete this book from your library?</string>
+    <string name="prompt_delete_books">Delete the selected books from your library?</string>
     <string name="prompt_delete_from_device_too">Delete from device too</string>
     <string name="info_delete_from_device_permanent">This is permanent</string>
-    <string name="prompt_delete_list">Are you sure you want to delete this list?</string>
-    <string name="prompt_delete_lists">Are you sure you want to delete the selected lists?</string>
+    <string name="prompt_delete_list">Delete this list?</string>
+    <string name="prompt_delete_lists">Delete the selected lists?</string>
 
     <!-- Rate -->
     <string name="action_rate">Rate</string>
@@ -73,15 +81,15 @@
     <string name="action_re_import">Re-Import</string>
     <string name="title_re_import_book">Re-Import Book</string>
     <string name="title_re_import_books">Re-Import Books</string>
-    <string name="prompt_re_import_book">Are you sure you want to re-import this book?</string>
-    <string name="prompt_re_import_books">Are you sure you want to re-import the selected books?</string>
+    <string name="prompt_re_import_book">Re-import this book?</string>
+    <string name="prompt_re_import_books">Re-import the selected books?</string>
 
     <!-- Remove -->
     <string name="action_remove">Remove</string>
     <string name="title_remove_book">Remove Book</string>
     <string name="title_remove_books">Remove Books</string>
-    <string name="prompt_remove_from_list">Are you sure you want to remove the selected books from this list?</string>
-    <string name="prompt_remove_from_recents">Are you sure you wish to remove the selected books from the recents list?</string>
+    <string name="prompt_remove_from_list">Remove the selected books from this list?</string>
+    <string name="prompt_remove_from_recents">Remove the selected books from the recents list?</string>
 
     <!-- Actions name strings for actions without many associated strings (i.e., they're more "standalone"), or whose
          associated strings are contained to one area of the app and thus are in another part of this file. -->
@@ -124,7 +132,7 @@
 
     <string name="prompt_empty_library">Your library is empty and sad</string>
     <string name="action_open_importer">Open Importer</string>
-    <string name="toast_no_lists">There are no lists</string>
+    <string name="toast_no_lists">You have no lists</string>
 
 
     <!-- ******************************** Importing Process ******************************** -->
@@ -137,12 +145,12 @@
     <string name="import_header_saving">Saving…</string>
     <string name="import_header_cancelling">Cancelling…</string>
 
-    <string name="lbl_folder">Folder:</string>
-    <string name="lbl_last_full_import_time">Last Successful Full Import:</string>
+    <string name="lbl_folder">Folder</string>
+    <string name="lbl_last_full_import_time">Last Successful Full Import</string>
     <string name="last_full_import_time_default">Never</string>
 
-    <string name="import_red_choose_dir">You must choose a library folder before you can do a full import.</string>
-    <string name="import_red_no_cancel">Books are now being saved to the database, cancelling is not allowed.</string>
+    <string name="import_red_choose_dir">Choose a library folder first</string>
+    <string name="import_red_no_cancel">Saving book info; you can’t cancel now</string>
 
     <string name="start_full_import">Start Full Import</string>
     <string name="choose_library_dir">Choose Library Folder</string>
@@ -157,7 +165,7 @@
     <string name="ril_build_file_list">Building file list…</string>
     <string name="il_found_files">Found %1$d file(s)\n\n</string>
     <string name="il_reading_files">Reading files:\n</string>
-    <string name="il_read_file">Read \"%1$s\"\n</string>
+    <string name="il_read_file">Read “%1$s”\n</string>
     <string name="il_all_files_read">\nAll files read\n\n</string>
     <string name="il_saving_files">Saving file data…</string>
     <string name="il_finished">\nFinished import.</string>
@@ -165,8 +173,8 @@
     <string name="il_cancelling">\nCancelling…</string>
 
     <string name="il_err_generic">Error while importing and converting files</string>
-    <string name="il_err_processing_file">Error while importing \"%1$s\"\n</string>
-    <string name="ril_err_getting_file">Error getting file \"%1$s\"\n</string>
+    <string name="il_err_processing_file">Error while importing “%1$s”\n</string>
+    <string name="ril_err_getting_file">Error getting file “%1$s”\n</string>
     <string name="ril_err_getting_files">Error while getting files</string>
     <string name="il_err_invalid_lib_dir">Invalid library folder, cancelling import</string>
     <string name="il_err_no_files">There are no files to import</string>
@@ -179,12 +187,12 @@
     <!-- Re-Import Dialog Message Strings -->
     <string name="ril_starting">Starting re-import</string>
     <string name="ril_reading_files">Reading files…</string>
-    <string name="ril_read_file">Read file for \"%1$s\"</string>
+    <string name="ril_read_file">Read file for “%1$s”</string>
     <string name="ril_saving_data">Saving data…</string>
     <string name="ril_done">Done</string>
     <string name="ril_done_with_errors">Done, with errors</string>
 
-    <string name="ril_err_reading_file">Error while reading \"%1$s\"\n</string>
+    <string name="ril_err_reading_file">Error while reading “%1$s”\n</string>
     <string name="ril_err_reading_files">Error while reading files</string>
     <string name="ril_err_realm">@string/il_err_realm</string>
 
@@ -212,6 +220,7 @@
     <!-- Smart Lists -->
     <string name="action_new_smart_list">New Smart List</string>
     <string name="action_show_query">Show Query</string>
+    <string name="action_convert">Convert</string>
     <string name="action_to_normal_list">To Normal List</string>
 
     <string name="title_smart_list_query">Smart List Query</string>
@@ -222,11 +231,12 @@
 
     <string name="prompt_new_smart_list">Enter a name for the new smart list</string>
     <string name="prompt_rename_smart_list">Enter a new name for the smart list</string>
-    <string name="prompt_convert_to_normal_list">Are you sure you want to convert this smart list to a normal list? You cannot undo this action.</string>
-    <string name="prompt_delete_smart_list">Are you sure you want to delete this smart list?</string>
+    <string name="prompt_convert_to_normal_list">Convert this smart list to a normal list?
+        \n\nYou cannot undo this action.</string>
+    <string name="prompt_delete_smart_list">Delete this smart list?</string>
 
-    <string name="no_query_for_smart_list">You haven\'t entered a query for this smart list.</string>
-    <string name="no_query_for_smart_list_n">You haven\'t entered a query\nfor this smart list.</string>
+    <string name="no_query_for_smart_list">You haven’t entered a query for this smart list.</string>
+    <string name="no_query_for_smart_list_n">You haven’t entered a query\nfor this smart list.</string>
     <string name="smart_list_created">Smart List Created</string>
 
 
@@ -240,7 +250,6 @@
     <string name="lbl_rating_colon">Rating:</string>
     <string name="lbl_chap_count">Chapter Count</string>
     <string name="lbl_tags">Tags</string>
-    <string name="lbl_tags_colon">Tags:</string>
     <string name="lbl_lists">Lists</string>
     <string name="lbl_path">Path</string>
     <string name="lbl_last_read_date">Last Read</string>
@@ -260,7 +269,7 @@
     <string name="acc_rating">@string/title_dialog_rating</string>
 
     <string name="no_tags">This book has no tags</string>
-    <string name="no_lists">This book isn\'t in any lists</string>
+    <string name="no_lists">This book isn’t in any lists</string>
 
     <string name="dummy_title">The Title of a Book</string>
     <string name="dummy_author">Firstname Lastname</string>
@@ -279,10 +288,10 @@
     <string name="action_new_tag">New Tag</string>
     <string name="action_edit_tags">Edit Tags</string>
 
-    <string name="prompt_new_tag">Enter a name for the new tag.</string>
-    <string name="prompt_rename_tag">Enter a new name for the tag.</string>
-    <string name="prompt_delete_tag">Are you sure you want to delete \"%1$s\"?
-        \n\nThis is permanent, even if you leave the tagging screen without saving!</string>
+    <string name="prompt_new_tag">Enter a name for the new tag</string>
+    <string name="prompt_rename_tag">Enter a new name for the tag</string>
+    <string name="prompt_delete_tag">Delete “%1$s”?\n\nThis is permanent, even if you leave the tagging screen
+        without saving.</string>
 
     <string name="tag_name_hint">Tag Name</string>
 
@@ -292,8 +301,7 @@
     <string name="title_lib_dir">Library Folder</string>
     <string name="title_auto_import">Auto Import</string>
 
-    <string name="lib_dir_default">[Not Set]</string>
-    <string name="summary_auto_import">If enabled, will check the library folder each time the app starts and import new files</string>
+    <string name="summary_auto_import">If enabled, Minerva checks the library folder each time it starts</string>
 
     <!-- ******************************** About Activity ******************************** -->
     <string name="title_activity_about">@string/nav_item_about</string>

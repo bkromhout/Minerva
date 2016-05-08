@@ -100,7 +100,7 @@
                     android:layout_marginEnd="2dp"
                     android:layout_below="@id/description"
                     android:textColor="@color/grey200"
-                    android:text="@string/lbl_rating_colon"/>
+                    android:text="@string/lbl_rating"/>
 
             <RatingBar
                     android:id="@+id/rating"

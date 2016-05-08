@@ -33,50 +33,53 @@ import rx.Observable;
  */
 public class Dialogs {
     /**
-     * Shows a simple Yes/No dialog using the given {@code title} and {@code text} strings. Upon Yes being clicked,
-     * fires an {@link ActionEvent} using the given {@code actionId}.
+     * Shows a simple confirmation dialog using the given {@code title}, {@code text}, and {@code posText} strings. Upon
+     * the positive button being clicked, fires an {@link ActionEvent} using the given {@code actionId}.
      * @param ctx      Context to use.
      * @param title    String resource to use for title.
      * @param text     String resource to use for text.
+     * @param posText  String resource to use for positive button text.
      * @param actionId Action ID to send if Yes is clicked.
      */
-    public static void simpleYesNoDialog(final Context ctx, @StringRes final int title, @StringRes final int text,
-                                         @IdRes final int actionId) {
-        simpleYesNoDialog(ctx, title, C.getStr(text), actionId);
+    public static void simpleConfirmDialog(final Context ctx, @StringRes final int title, @StringRes final int text,
+                                           @StringRes final int posText, @IdRes final int actionId) {
+        simpleConfirmDialog(ctx, title, C.getStr(text), posText, actionId);
     }
 
     /**
-     * Shows a simple Yes/No dialog using the given {@code title} and {@code text} strings. Upon Yes being clicked,
-     * fires an {@link ActionEvent} using the given {@code actionId}.
+     * Shows a simple confirmation dialog using the given {@code title}, {@code text}, and {@code posText} strings. Upon
+     * the positive button being clicked, fires an {@link ActionEvent} using the given {@code actionId}.
      * @param ctx      Context to use.
      * @param title    String resource to use for title.
      * @param text     String to use for text.
+     * @param posText  String resource to use for positive button text.
      * @param actionId Action ID to send if Yes is clicked.
      */
-    public static void simpleYesNoDialog(final Context ctx, @StringRes final int title, final String text,
-                                         @IdRes final int actionId) {
+    public static void simpleConfirmDialog(final Context ctx, @StringRes final int title, final String text,
+                                           @StringRes final int posText, @IdRes final int actionId) {
         new MaterialDialog.Builder(ctx)
                 .title(title)
                 .content(text)
-                .positiveText(R.string.yes)
-                .negativeText(R.string.no)
+                .positiveText(posText)
+                .negativeText(R.string.cancel)
                 .onPositive((dialog, which) -> EventBus.getDefault().post(new ActionEvent(actionId, null)))
                 .show();
     }
 
     /**
-     * Same as {@link #simpleYesNoDialog(Context, int, int, int)}, but adds a single check box which allows for
+     * Same as {@link #simpleConfirmDialog(Context, int, int, int, int)}, but adds a single check box which allows for
      * additional input.
      * @param ctx             Context to use.
      * @param title           String resource to use for title.
      * @param text            String resource to use for text.
      * @param checkBoxText    String resource to use for the checkbox.
      * @param checkedInfoText String resource to use for red text shown when checkbox is checked.
+     * @param posText         String resource to use for positive button text.
      * @param actionId        Action ID to send if Yes is clicked.
      */
-    public static void yesNoCheckBoxDialog(final Context ctx, @StringRes final int title, @StringRes final int text,
-                                           @StringRes final int checkBoxText, @StringRes final int checkedInfoText,
-                                           @IdRes final int actionId) {
+    public static void confirmCheckBoxDialog(final Context ctx, @StringRes final int title, @StringRes final int text,
+                                             @StringRes final int checkBoxText, @StringRes final int checkedInfoText,
+                                             @StringRes final int posText, @IdRes final int actionId) {
         @SuppressLint("InflateParams")
         View view = LayoutInflater.from(ctx).inflate(R.layout.dialog_yes_no_checkbox, null);
         final TextView content = ButterKnife.findById(view, R.id.content);
@@ -91,8 +94,8 @@ public class Dialogs {
         new MaterialDialog.Builder(ctx)
                 .title(title)
                 .customView(view, false)
-                .positiveText(R.string.yes)
-                .negativeText(R.string.no)
+                .positiveText(posText)
+                .negativeText(R.string.cancel)
                 .onPositive((dialog, which) ->
                         EventBus.getDefault().post(new ActionEvent(actionId, checkBox.isChecked())))
                 .show();

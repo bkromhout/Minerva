@@ -53,8 +53,7 @@
                     android:layout_marginBottom="4dp"
                     android:layout_below="@id/lbl_import_folder"
                     android:maxLines="1"
-                    android:ellipsize="start"
-                    android:text="@string/lib_dir_default"/>
+                    android:ellipsize="start"/>
 
             <TextView
                     android:id="@+id/lbl_last_import_time"

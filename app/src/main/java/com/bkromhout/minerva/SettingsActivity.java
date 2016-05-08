@@ -103,7 +103,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
             // Set up the library directory preference.
             Preference libDir = getPreferenceScreen().findPreference(DefaultPrefs.LIB_DIR);
             libDir.setOnPreferenceClickListener(this::onLibDirPrefClick);
-            libDir.setSummary(DefaultPrefs.get().getLibDir(getString(R.string.lib_dir_default)));
+            libDir.setSummary(DefaultPrefs.get().getLibDir(""));
         }
 
         @Override
@@ -130,7 +130,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
             if (key.equals(DefaultPrefs.LIB_DIR)) {
                 // Update the summary for the library directory fragment to be the path.
                 getPreferenceScreen().findPreference(DefaultPrefs.LIB_DIR)
-                                     .setSummary(sharedPreferences.getString(key, getString(R.string.lib_dir_default)));
+                                     .setSummary(sharedPreferences.getString(key, ""));
             }
         }
 

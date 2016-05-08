@@ -4,7 +4,6 @@
 
         <Preference
                 android:title="@string/title_lib_dir"
-                android:summary="@string/lib_dir_default"
                 android:key="@string/key_lib_dir"/>
 
         <CheckBoxPreference

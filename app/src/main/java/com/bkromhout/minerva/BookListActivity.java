@@ -346,20 +346,21 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 QueryBuilderActivity.start(this, smartListRuq);
                 return true;
             case R.id.action_clear:
-                Dialogs.simpleYesNoDialog(this, R.string.action_clear_list, R.string.prompt_clear_list,
-                        R.id.action_clear);
+                Dialogs.simpleConfirmDialog(this, R.string.action_clear_list, R.string.prompt_clear_list,
+                        R.string.action_clear, R.id.action_clear);
                 return true;
             case R.id.action_convert_to_normal_list:
-                Dialogs.simpleYesNoDialog(this, R.string.title_convert_to_normal_list,
-                        R.string.prompt_convert_to_normal_list, R.id.action_convert_to_normal_list);
+                Dialogs.simpleConfirmDialog(this, R.string.title_convert_to_normal_list,
+                        R.string.prompt_convert_to_normal_list, R.string.action_convert,
+                        R.id.action_convert_to_normal_list);
                 return true;
             case R.id.action_delete_list:
-                Dialogs.simpleYesNoDialog(this, R.string.title_delete_list, R.string.prompt_delete_list,
-                        R.id.action_delete_list);
+                Dialogs.simpleConfirmDialog(this, R.string.title_delete_list, R.string.prompt_delete_list,
+                        R.string.action_delete, R.id.action_delete_list);
                 return true;
             case R.id.action_delete_smart_list:
-                Dialogs.simpleYesNoDialog(this, R.string.title_delete_smart_list, R.string.prompt_delete_smart_list,
-                        R.id.action_delete_smart_list);
+                Dialogs.simpleConfirmDialog(this, R.string.title_delete_smart_list, R.string.prompt_delete_smart_list,
+                        R.string.action_delete, R.id.action_delete_smart_list);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -398,17 +399,17 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 actionMode.finish();
                 return true;
             case R.id.action_re_import:
-                Dialogs.simpleYesNoDialog(this, R.string.title_re_import_books, R.string.prompt_re_import_books,
-                        R.id.action_re_import);
+                Dialogs.simpleConfirmDialog(this, R.string.title_re_import_books, R.string.prompt_re_import_books,
+                        R.string.action_re_import, R.id.action_re_import);
                 return true;
             case R.id.action_remove:
-                Dialogs.simpleYesNoDialog(this, R.string.title_remove_books, R.string.prompt_remove_from_list,
-                        R.id.action_remove);
+                Dialogs.simpleConfirmDialog(this, R.string.title_remove_books, R.string.prompt_remove_from_list,
+                        R.string.action_remove, R.id.action_remove);
                 return true;
             case R.id.action_delete:
-                Dialogs.yesNoCheckBoxDialog(this, R.string.title_delete_books, R.string.prompt_delete_books,
+                Dialogs.confirmCheckBoxDialog(this, R.string.title_delete_books, R.string.prompt_delete_books,
                         R.string.prompt_delete_from_device_too, R.string.info_delete_from_device_permanent,
-                        R.id.action_delete);
+                        R.string.action_delete, R.id.action_delete);
             default:
                 return false;
         }

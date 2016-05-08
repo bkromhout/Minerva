@@ -264,13 +264,13 @@ public class BookInfoActivity extends PermCheckingActivity implements ReImporter
                 Dialogs.ratingDialog(this, book.rating);
                 return true;
             case R.id.action_re_import:
-                Dialogs.simpleYesNoDialog(this, R.string.title_re_import_book, R.string.prompt_re_import_book,
-                        R.id.action_re_import);
+                Dialogs.simpleConfirmDialog(this, R.string.title_re_import_book, R.string.prompt_re_import_book,
+                        R.string.action_re_import, R.id.action_re_import);
                 return true;
             case R.id.action_delete:
-                Dialogs.yesNoCheckBoxDialog(this, R.string.title_delete_book, R.string.prompt_delete_book,
+                Dialogs.confirmCheckBoxDialog(this, R.string.title_delete_book, R.string.prompt_delete_book,
                         R.string.prompt_delete_from_device_too, R.string.info_delete_from_device_permanent,
-                        R.id.action_delete);
+                        R.string.action_delete, R.id.action_delete);
                 return true;
             case android.R.id.home:
                 onBackPressed();

@@ -109,7 +109,7 @@ public abstract class PermCheckingActivity extends AppCompatActivity {
         if (token != null) {
             // This dialog is simply to provide rationale prior to showing the system's permission request dialog.
             builder.content(R.string.storage_permission_rationale)
-                   .positiveText(R.string.ok)
+                   .positiveText(R.string.got_it)
                    .onPositive((dialog, which) -> dialog.cancel())
                    .cancelListener(dialog -> token.continuePermissionRequest())
                    .dismissListener(dialog -> rationaleDialog = null);
@@ -118,7 +118,7 @@ public abstract class PermCheckingActivity extends AppCompatActivity {
             // permanently denied.
             builder.content(R.string.storage_permission_rationale_long)
                    .positiveText(R.string.app_info)
-                   .negativeText(R.string.cancel)
+                   .negativeText(R.string.not_now)
                    .onPositive((dialog, which) -> Util.openAppInfo(this))
                    .onNegative((dialog, which) -> dialog.cancel())
                    .cancelListener(dialog -> showPermNagSnackbar())

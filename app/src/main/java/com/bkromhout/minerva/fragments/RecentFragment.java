@@ -226,8 +226,8 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
                 Dialogs.cardStyleDialog(getContext(), recentPrefs);
                 return true;
             case R.id.action_clear:
-                Dialogs.simpleYesNoDialog(getContext(), R.string.action_clear_list, R.string.prompt_clear_list,
-                        R.id.action_clear);
+                Dialogs.simpleConfirmDialog(getContext(), R.string.action_clear_recents, R.string.prompt_clear_recents,
+                        R.string.action_clear, R.id.action_clear);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -260,18 +260,17 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
                 Dialogs.addToListDialogOrToast(getActivity(), realm);
                 return true;
             case R.id.action_re_import:
-                Dialogs.simpleYesNoDialog(getContext(), R.string.title_re_import_books, R.string.prompt_re_import_books,
-                        R.id.action_re_import);
+                Dialogs.simpleConfirmDialog(getContext(), R.string.title_re_import_books,
+                        R.string.prompt_re_import_books, R.string.action_re_import, R.id.action_re_import);
                 return true;
             case R.id.action_remove:
-                Dialogs.simpleYesNoDialog(getContext(), R.string.title_remove_books,
-                        R.string.prompt_remove_from_recents,
-                        R.id.action_remove);
+                Dialogs.simpleConfirmDialog(getContext(), R.string.title_remove_books,
+                        R.string.prompt_remove_from_recents, R.string.action_remove, R.id.action_remove);
                 return true;
             case R.id.action_delete:
-                Dialogs.yesNoCheckBoxDialog(getContext(), R.string.title_delete_books, R.string.prompt_delete_books,
+                Dialogs.confirmCheckBoxDialog(getContext(), R.string.title_delete_books, R.string.prompt_delete_books,
                         R.string.prompt_delete_from_device_too, R.string.info_delete_from_device_permanent,
-                        R.id.action_delete);
+                        R.string.action_delete, R.id.action_delete);
                 return true;
             default:
                 return false;

@@ -226,8 +226,8 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
         // Handle actions.
         switch (item.getItemId()) {
             case R.id.action_delete_lists:
-                Dialogs.simpleYesNoDialog(getContext(), R.string.title_delete_lists, R.string.prompt_delete_lists,
-                        R.id.action_delete_lists);
+                Dialogs.simpleConfirmDialog(getContext(), R.string.title_delete_lists, R.string.prompt_delete_lists,
+                        R.string.action_delete, R.id.action_delete_lists);
                 return true;
             default:
                 return false;
@@ -308,19 +308,20 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
                 break;
             }
             case R.id.action_convert_to_normal_list: {
-                Dialogs.simpleYesNoDialog(getActivity(), R.string.title_convert_to_normal_list,
-                        R.string.prompt_convert_to_normal_list, R.id.action_convert_to_normal_list);
+                Dialogs.simpleConfirmDialog(getActivity(), R.string.title_convert_to_normal_list,
+                        R.string.prompt_convert_to_normal_list, R.string.action_convert,
+                        R.id.action_convert_to_normal_list);
 
                 break;
             }
             case R.id.action_delete_list: {
-                Dialogs.simpleYesNoDialog(getActivity(), R.string.title_delete_list, R.string.prompt_delete_list,
-                        R.id.action_delete_list);
+                Dialogs.simpleConfirmDialog(getActivity(), R.string.title_delete_list, R.string.prompt_delete_list,
+                        R.string.action_delete, R.id.action_delete_list);
                 break;
             }
             case R.id.action_delete_smart_list: {
-                Dialogs.simpleYesNoDialog(getActivity(), R.string.title_delete_smart_list,
-                        R.string.prompt_delete_smart_list, R.id.action_delete_list);
+                Dialogs.simpleConfirmDialog(getActivity(), R.string.title_delete_smart_list,
+                        R.string.prompt_delete_smart_list, R.string.action_delete, R.id.action_delete_list);
                 break;
             }
         }

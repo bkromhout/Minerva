@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.ButtonBarLayout;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -296,8 +295,9 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
                 break;
             case DELETE:
                 // Show delete confirm dialog.
-                Dialogs.simpleYesNoDialog(this, R.string.title_delete_tag,
-                        C.getStr(R.string.prompt_delete_tag, event.getName()), R.id.action_delete_tag);
+                Dialogs.simpleConfirmDialog(this, R.string.title_delete_tag,
+                        C.getStr(R.string.prompt_delete_tag, event.getName()), R.string.action_delete,
+                        R.id.action_delete_tag);
                 break;
             case TEXT_COLOR:
                 new ColorChooserDialog.Builder(this, R.string.title_tag_text_color)
