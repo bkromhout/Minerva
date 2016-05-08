@@ -125,8 +125,8 @@
 
 
     <!-- ******************************** Importing Process ******************************** -->
-    <!-- Full Import Activity -->
-    <string name="title_activity_full_import">Library Import</string>
+    <!-- Import Activity -->
+    <string name="title_activity_import">Importer</string>
 
     <string name="import_header_initializing">Initializing…</string>
     <string name="import_header_ready">Ready</string>
@@ -148,23 +148,26 @@
     <string name="lbl_rad_log_errors_only">Errors Only</string>
 
     <!-- Full Importer Log Strings -->
-    <string name="fil_done">Done\n</string>
-    <string name="fil_starting">Starting full import\n\n</string>
+    <string name="il_done">Done\n</string>
+    <string name="il_starting">Starting import\n\n</string>
     <string name="fil_finding_files">Finding files…</string>
-    <string name="fil_found_files">Found %1$d file(s)\n\n</string>
-    <string name="fil_reading_files">Reading files:\n</string>
-    <string name="fil_read_file">Read \"%1$s\"\n</string>
-    <string name="fil_all_files_read">\nAll files read\n\n</string>
-    <string name="fil_saving_files">Saving file data…</string>
-    <string name="fil_finished">\nFinished full import.</string>
-    <string name="fil_finished_with_errors">\nFinished full import, with %1$d errors.</string>
-    <string name="fil_cancelling">\nCancelling…</string>
+    <string name="ril_build_file_list">Building file list…</string>
+    <string name="il_found_files">Found %1$d file(s)\n\n</string>
+    <string name="il_reading_files">Reading files:\n</string>
+    <string name="il_read_file">Read \"%1$s\"\n</string>
+    <string name="il_all_files_read">\nAll files read\n\n</string>
+    <string name="il_saving_files">Saving file data…</string>
+    <string name="il_finished">\nFinished import.</string>
+    <string name="il_finished_with_errors">\nFinished import with %1$d errors.</string>
+    <string name="il_cancelling">\nCancelling…</string>
 
-    <string name="fil_err_generic">Error while importing and converting files</string>
-    <string name="fil_err_processing_file">Error while importing \"%1$s\"\n</string>
-    <string name="fil_err_invalid_lib_dir">Invalid library folder, cancelling import</string>
-    <string name="fil_err_no_files">There are no files to import</string>
-    <string name="fil_err_realm">Realm error</string>
+    <string name="il_err_generic">Error while importing and converting files</string>
+    <string name="il_err_processing_file">Error while importing \"%1$s\"\n</string>
+    <string name="ril_err_getting_file">Error getting file \"%1$s\"\n</string>
+    <string name="ril_err_getting_files">Error while getting files</string>
+    <string name="il_err_invalid_lib_dir">Invalid library folder, cancelling import</string>
+    <string name="il_err_no_files">There are no files to import</string>
+    <string name="il_err_realm">Realm error</string>
 
     <!-- Re-Import Dialog -->
     <string name="title_dialog_re_import_progress">Re-Import Progress</string>
@@ -172,18 +175,15 @@
 
     <!-- Re-Import Dialog Message Strings -->
     <string name="ril_starting">Starting re-import</string>
-    <string name="ril_build_file_list">Building file list…</string>
     <string name="ril_reading_files">Reading files…</string>
     <string name="ril_read_file">Read file for \"%1$s\"</string>
     <string name="ril_saving_data">Saving data…</string>
     <string name="ril_done">Done</string>
     <string name="ril_done_with_errors">Done, with errors</string>
 
-    <string name="ril_err_getting_file">Error getting file \"%1$s\"\n</string>
-    <string name="ril_err_getting_files">Error while getting files</string>
     <string name="ril_err_reading_file">Error while reading \"%1$s\"\n</string>
     <string name="ril_err_reading_files">Error while reading files</string>
-    <string name="ril_err_realm">@string/fil_err_realm</string>
+    <string name="ril_err_realm">@string/il_err_realm</string>
 
 
     <!-- ******************************** Lists ******************************** -->

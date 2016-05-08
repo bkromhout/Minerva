@@ -249,7 +249,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
         switch (item.getItemId()) {
             case R.id.action_import:
                 // Open the full import activity.
-                Util.startAct(getActivity(), FullImportActivity.class, null);
+                Util.startAct(getActivity(), ImportActivity.class, null);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -406,7 +406,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
     @OnClick(R.id.open_full_importer)
     void onOpenImporterClick() {
         // Open the full import activity.
-        Util.startAct(getActivity(), FullImportActivity.class, null);
+        Util.startAct(getActivity(), ImportActivity.class, null);
     }
 
     /**

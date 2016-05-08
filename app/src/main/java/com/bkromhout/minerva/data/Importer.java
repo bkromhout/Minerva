@@ -26,7 +26,7 @@ import java.util.Queue;
 /**
  * Handles full library imports.
  */
-public class FullImporter {
+public class Importer {
     /**
      * Various state the importer can be in.
      */
@@ -35,14 +35,25 @@ public class FullImporter {
     }
 
     /**
-     * Instance of FullImporter.
+     * Types of imports.
      */
-    private static FullImporter INSTANCE;
+    private enum ImportType {
+        FULL, REDO
+    }
+
+    /**
+     * Instance of Importer.
+     */
+    private static Importer INSTANCE;
 
     /**
      * The current state of the importer.
      */
     private State currState;
+    /**
+     * What type of import is currently running.
+     */
+    private ImportType currType;
     /**
      * What directory the importer is currently importing from.
      */
@@ -73,10 +84,9 @@ public class FullImporter {
      */
     private Subject<Integer, Integer> progressSubject;
     /**
-     * Subscription to an Rx flow which uses {@link RxFileWalker} to recursively walk down from a start directory in
-     * order to find files with specific extensions.
+     * Subscription to an Rx flow which attempts to get a list of files for us to import.
      */
-    private Subscription fileWalkerSubscription;
+    private Subscription fileResolverSubscription;
     /**
      * Subscription to an Rx flow which uses
      */
@@ -94,7 +104,7 @@ public class FullImporter {
     /**
      * Who is listening to our progress?
      */
-    private IFullImportListener listener;
+    private IImportListener listener;
     /**
      * Listener's subscription to the log stream.
      */
@@ -109,16 +119,16 @@ public class FullImporter {
     private Subscription listenerProgressSub;
 
     /**
-     * Get an instance of {@link FullImporter}.
+     * Get an instance of {@link Importer}.
      * @return Instance.
      */
-    public static FullImporter get() {
-        if (INSTANCE == null) INSTANCE = new FullImporter();
+    public static Importer get() {
+        if (INSTANCE == null) INSTANCE = new Importer();
         return INSTANCE;
     }
 
     // Empty constructor, this class gets static init only.
-    private FullImporter() {
+    private Importer() {
         resetState();
         // Create subjects here, they should always exist.
         logSubject = new SerializedSubject<>(ReplaySubject.create());
@@ -130,57 +140,88 @@ public class FullImporter {
      * Starts a full import run. The importer will import files from the configured library directory.
      * <p>
      * Calling this when the importer isn't in a ready state will do nothing.
-     * @param listener The {@link IFullImportListener} to register for this run, or null if no listener should be
+     * @param listener The {@link IImportListener} to register for this run, or null if no listener should be
      *                 registered. Note that if there is already a listener registered, this will be ignored.
      */
-    public void doFullImport(IFullImportListener listener) {
+    public void doFullImport(IImportListener listener) {
         // Don't do anything if we aren't in a ready state.
         if (currState != State.READY) return;
 
-        // Reset subjects and possible register a listener.
+        // Reset subjects and possibly register a listener.
         resetSubjects();
         if (listener != null) registerListener(listener);
 
+        currType = ImportType.FULL;
         // Kick off preparations; flow will continue from there.
         doFullImportPrep();
     }
 
     /**
-     * Prepare for a full import.
+     * TODO Make re-import process use this instead!
      * <p>
-     * Validate the current library directory, then try to recursively get all files with specific extensions within
-     * that directory.
+     * Starts a re-import run. The importer will re-import files associated with the given {@code books} from the
+     * configured library directory.
      * <p>
-     * At the end of this method we pass off control to an Rx flow which uses {@link RxFileWalker} to get a list of
-     * files; once that flow produces a list, it will call {@link #onGotFileList(List)}.
+     * Calling this when the importer isn't in a ready state will do nothing.
+     * @param listener The {@link IImportListener} to register for this run, or null if no listener should be
+     *                 registered. Note that if there is already a listener registered, this will be ignored.
+     * @param books    List of {@link RBook}s to re-import.
      */
-    private void doFullImportPrep() {
+    public void doReImport(IImportListener listener, List<RBook> books) {
+        // Don't do anything if we aren't in a ready state.
+        if (currState != State.READY) return;
+
+        // Reset subjects and possibly register a listener.
+        resetSubjects();
+        if (listener != null) registerListener(listener);
+        // TODO else, show a global snackbar saying re-import was started.
+
+        currType = ImportType.REDO;
+        // Kick off preparations; flow will continue from there.
+        doReImportPrep(books);
+    }
+
+    /**
+     * Prepare for import.
+     */
+    private void doCommonPrep() {
         currState = State.PREP;
 
         // Listener updates.
         publishLog(null);
         publishError(null);
         if (listener != null) listener.setRunning();
-        publishLog(C.getStr(R.string.fil_starting));
+        publishLog(C.getStr(R.string.il_starting));
         progressSubject.onNext(-1);
 
         // Get and check currently configured library directory.
         String libDirPath = DefaultPrefs.get().getLibDir(null);
         if ((currDir = Util.tryResolveDir(libDirPath)) == null) {
             // We don't have a valid library directory.
-            publishError(C.getStr(R.string.fil_err_invalid_lib_dir));
+            publishError(C.getStr(R.string.il_err_invalid_lib_dir));
             resetState();
-            return;
         }
+    }
+
+    /**
+     * Prepare for a full import.
+     * <p>
+     * Try to recursively get all files with specific extensions within the library directory.
+     * <p>
+     * At the end of this method we pass off control to an Rx flow which uses {@link RxFileWalker} to get a list of
+     * files; once that flow produces a list, it will call {@link #onGotFileList(List)}.
+     */
+    private void doFullImportPrep() {
+        doCommonPrep();
 
         publishLog(C.getStr(R.string.fil_finding_files));
         // Get a list of files in the directory (and its subdirectories) which have certain extensions.
         // This will call through to onGotFileList() once it has the results.
-        fileWalkerSubscription = Observable
+        fileResolverSubscription = Observable
                 .create(new RxFileWalker(currDir, C.VALID_EXTENSIONS))
                 .subscribeOn(Schedulers.io()) // Everything above runs on the io thread pool.
                 .unsubscribeOn(AndroidSchedulers.mainThread())
-                .doOnUnsubscribe(() -> fileWalkerSubscription = null)
+                .doOnUnsubscribe(() -> fileResolverSubscription = null)
                 .toList()
                 .single()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -188,26 +229,58 @@ public class FullImporter {
     }
 
     /**
-     * Called by {@link #fileWalkerSubscription} when it calls {@code onNext()}.
+     * Prepare for a re-import.
+     * <p>
+     * Try to get files which are associated with the given {@code books} from the library directory.
+     * <p>
+     * We use an Rx flow to do that, and once that flow produces a list, it will call {@link #onGotFileList(List)}.
+     * @param books List of {@link RBook}s to re-import.
+     */
+    private void doReImportPrep(List<RBook> books) {
+        doCommonPrep();
+
+        publishLog(C.getStr(R.string.ril_build_file_list));
+        fileResolverSubscription = Observable
+                .from(books)
+                .map(book -> book.relPath)
+                .map(relPath -> {
+                    File file = Util.getFileFromRelPath(currDir, relPath);
+                    if (file == null) publishError(C.getStr(R.string.ril_err_getting_file,
+                            currDir.getAbsolutePath() + relPath));
+                    return file;
+                })
+                .filter(file -> file != null)
+                .toList()
+                .single()
+                .subscribe(this::onGotFileList, t -> {
+                    String s = C.getStr(R.string.ril_err_getting_files);
+                    Timber.e(t, s);
+                    publishError("\n" + s + ":\n\"" + t.getMessage() + "\"\n");
+                    cancelFullImport();
+                });
+    }
+
+    /**
+     * Called by {@link #fileResolverSubscription} when it calls {@code onNext()}.
      * <p>
      * This is part of full import preparation.
      * @param files List of files with specific extensions found by {@link RxFileWalker}. These are the files we will
      *              try to import.
      */
     private void onGotFileList(List<File> files) {
-        publishLog(C.getStr(R.string.fil_done));
+        publishLog(C.getStr(R.string.il_done));
         // Check if we should stop.
         if (isIdleOrTryingToBe()) {
             resetState();
             return;
         }
         // Remove reference to subscription.
-        fileWalkerSubscription.unsubscribe();
+        fileResolverSubscription.unsubscribe();
 
         // Check file list.
         if (files.isEmpty()) {
             // We don't have any files.
-            publishLog(C.getStr(R.string.fil_err_no_files));
+            publishLog(C.getStr(R.string.il_err_no_files));
             resetState();
             return;
         }
@@ -217,7 +290,7 @@ public class FullImporter {
         numTotal = files.size();
 
         // Update listener.
-        publishLog(C.getStr(R.string.fil_found_files, numTotal));
+        publishLog(C.getStr(R.string.il_found_files, numTotal));
         if (listener != null) listener.setMaxProgress(numTotal);
         progressSubject.onNext(numDone);
 
@@ -242,7 +315,7 @@ public class FullImporter {
 
         // Change state to running.
         currState = State.IMPORTING;
-        publishLog(C.getStr(R.string.fil_reading_files));
+        publishLog(C.getStr(R.string.il_reading_files));
 
         // Do importer flow.
         fileImporterSubscription = Observable
@@ -267,7 +340,7 @@ public class FullImporter {
         try {
             return Util.readEpubFile(file, relPath);
         } catch (IllegalArgumentException e) {
-            publishError(C.getStr(R.string.fil_err_processing_file, e.getMessage()));
+            publishError(C.getStr(R.string.il_err_processing_file, e.getMessage()));
             return null;
         }
     }
@@ -287,7 +360,7 @@ public class FullImporter {
 
         // Add RBook to queue and emit file path.
         bookQueue.add(rBook);
-        publishLog(C.getStr(R.string.fil_read_file, rBook.relPath));
+        publishLog(C.getStr(R.string.il_read_file, rBook.relPath));
         progressSubject.onNext(numDone++);
     }
 
@@ -296,7 +369,7 @@ public class FullImporter {
      * @param t Throwable.
      */
     private void onFileImporterError(Throwable t) {
-        String s = C.getStr(R.string.fil_err_generic);
+        String s = C.getStr(R.string.il_err_generic);
         Timber.e(t, s);
         publishError("\n" + s + ":\n\"" + t.getMessage() + "\"\n");
         cancelFullImport();
@@ -306,7 +379,7 @@ public class FullImporter {
      * What to do after we've finished importing all books.
      */
     private void onAllFilesImported() {
-        publishLog(C.getStr(R.string.fil_all_files_read));
+        publishLog(C.getStr(R.string.il_all_files_read));
         // Check if we should stop.
         if (isIdleOrTryingToBe()) {
             resetState();
@@ -316,7 +389,7 @@ public class FullImporter {
         // Cancelling isn't allowed from this point until we're done persisting data to Realm.
         currState = State.SAVING;
         if (listener != null) listener.setSaving();
-        publishLog(C.getStr(R.string.fil_saving_files));
+        publishLog(C.getStr(R.string.il_saving_files));
         progressSubject.onNext(-1);
 
         // We've finished importing all books, now we'll persist them to Realm.
@@ -335,12 +408,9 @@ public class FullImporter {
                         else bgRealm.copyToRealmOrUpdate(book);
                     }
                 },
-                () -> {
-                    publishLog(C.getStr(R.string.fil_done));
-                    fullImportFinished();
-                },
+                this::importFinished,
                 error -> {
-                    String s = C.getStr(R.string.fil_err_realm);
+                    String s = C.getStr(R.string.il_err_realm);
                     Timber.e(error, s);
                     publishError("\n" + s + "\n");
                     unsafeCancelFullImport();
@@ -350,11 +420,13 @@ public class FullImporter {
     /**
      * Called when the full import has finished successfully.
      */
-    private void fullImportFinished() {
+    private void importFinished() {
+        // TODO global snackbar or something.
+        publishLog(C.getStr(R.string.il_done));
         // Save current time to prefs to indicate a full import completed, then tell listener we finished.
         DefaultPrefs.get().putLastFullImportTime(Calendar.getInstance().getTimeInMillis());
-        if (numErrors > 0) publishLog(C.getStr(R.string.fil_finished_with_errors, numErrors));
-        else publishLog(C.getStr(R.string.fil_finished));
+        if (numErrors > 0) publishLog(C.getStr(R.string.il_finished_with_errors, numErrors));
+        else publishLog(C.getStr(R.string.il_finished));
         resetState();
         if (listener != null) listener.setReady();
     }
@@ -377,10 +449,11 @@ public class FullImporter {
      * that method prohibit a cancel where it is required.
      */
     private void unsafeCancelFullImport() {
+        // TODO global snackbar or something.
         if (listener != null) listener.setCancelling();
-        publishLog(C.getStr(R.string.fil_cancelling));
+        publishLog(C.getStr(R.string.il_cancelling));
         resetState();
-        publishLog(C.getStr(R.string.fil_done));
+        publishLog(C.getStr(R.string.il_done));
         if (listener != null) listener.setCancelled();
     }
 
@@ -415,7 +488,7 @@ public class FullImporter {
         else return;
 
         // Unsubscribe from the file walker subscription.
-        if (fileWalkerSubscription != null) fileWalkerSubscription.unsubscribe();
+        if (fileResolverSubscription != null) fileResolverSubscription.unsubscribe();
         // Unsubscribe from the file importer subscription.
         if (fileImporterSubscription != null) fileImporterSubscription.unsubscribe();
 
@@ -430,6 +503,7 @@ public class FullImporter {
         if (realm != null) realm.close();
         realm = null;
 
+        this.currType = null;
         this.currState = State.READY;
     }
 
@@ -483,7 +557,7 @@ public class FullImporter {
      * If there is already a listener registered, this will do nothing.
      * @param listener Listener.
      */
-    public void registerListener(IFullImportListener listener) {
+    public void registerListener(IImportListener listener) {
         if (listener == null || this.listener != null) return;
         this.listener = listener;
 
@@ -526,7 +600,7 @@ public class FullImporter {
     /**
      * Implemented by classes which wish to listen to events from the full importer.
      */
-    public interface IFullImportListener {
+    public interface IImportListener {
         /**
          * Set the max progress state.
          * @param maxProgress Max progress.

@@ -71,8 +71,8 @@
                     android:value="com.bkromhout.minerva.MainActivity"/>
         </activity>
         <activity
-                android:name=".FullImportActivity"
-                android:label="@string/title_activity_full_import"
+                android:name=".ImportActivity"
+                android:label="@string/title_activity_import"
                 android:parentActivityName=".MainActivity"
                 android:theme="@style/AppTheme">
             <meta-data

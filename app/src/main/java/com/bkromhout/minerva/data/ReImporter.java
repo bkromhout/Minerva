@@ -170,7 +170,7 @@ public class ReImporter {
         if ((currDir = Util.tryResolveDir(DefaultPrefs.get().getLibDir(null))) == null) {
             // We don't have a valid library directory.
             currState = State.ERROR;
-            errors.append(C.getStr(R.string.fil_err_invalid_lib_dir));
+            errors.append(C.getStr(R.string.il_err_invalid_lib_dir));
             dismissDialogUnlessErrors();
             return;
         }

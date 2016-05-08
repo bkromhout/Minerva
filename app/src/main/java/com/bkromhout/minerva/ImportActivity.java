@@ -11,7 +11,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
-import com.bkromhout.minerva.data.FullImporter;
+import com.bkromhout.minerva.data.Importer;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.util.Util;
 import org.greenrobot.eventbus.EventBus;
@@ -21,7 +21,7 @@ import rx.subjects.Subject;
 
 import java.io.File;
 
-public class FullImportActivity extends PermCheckingActivity implements FullImporter.IFullImportListener,
+public class ImportActivity extends PermCheckingActivity implements Importer.IImportListener,
         FolderChooserDialog.FolderCallback {
     /**
      * States that the header can be in.
@@ -121,7 +121,7 @@ public class FullImportActivity extends PermCheckingActivity implements FullImpo
 
         // Check if the importer is already running; if it is then all we need to do is register as the listener,
         // because the fact that it's running allows us to make certain assumptions.
-        FullImporter importer = FullImporter.get();
+        Importer importer = Importer.get();
         if (!importer.isReady()) return; // Just return, we automatically register during onStart().
 
         // The importer isn't running, so we need to do a bit of work first, starting with checking if we have a
@@ -145,13 +145,13 @@ public class FullImportActivity extends PermCheckingActivity implements FullImpo
         super.onStart();
         // We don't have any events, but PermCheckingActivity does.
         EventBus.getDefault().register(this);
-        FullImporter.get().registerListener(this);
+        Importer.get().registerListener(this);
     }
 
     @Override
     protected void onStop() {
         EventBus.getDefault().unregister(this);
-        FullImporter.get().unregisterListener();
+        Importer.get().unregisterListener();
         super.onStop();
     }
 
@@ -265,10 +265,10 @@ public class FullImportActivity extends PermCheckingActivity implements FullImpo
         switch (currBtnState) {
             case START_IMPORT:
                 if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
-                FullImporter.get().doFullImport(this);
+                Importer.get().doFullImport(this);
                 break;
             case CANCEL_IMPORT:
-                FullImporter.get().cancelFullImport();
+                Importer.get().cancelFullImport();
                 break;
             case CHOOSE_DIR:
                 if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
