@@ -20,17 +20,17 @@
     </style>
 
     <!-- Dark Cards -->
+    <style name="MinervaDarkCardNoRipple" parent="CardView.Dark">
+        <item name="android:layout_marginTop">@dimen/card_margin</item>
+        <item name="cardBackgroundColor">@color/card_bg_color</item>
+        <item name="android:stateListAnimator">@anim/card_lift_state_list</item>
+        <!--<item name="cardElevation">@dimen/card_elevation</item>-->
+    </style>
+
     <style name="MinervaDarkCard" parent="MinervaDarkCardNoRipple">
         <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
-    </style>
-
-    <style name="MinervaDarkCardNoRipple" parent="CardView.Dark">
-        <item name="android:layout_margin">@dimen/card_margin</item>
-        <item name="cardBackgroundColor">@color/card_bg_color</item>
-        <item name="android:stateListAnimator">@anim/card_lift_state_list</item>
-        <!--<item name="cardElevation">@dimen/card_elevation</item>-->
     </style>
 
     <!-- Button styles -->
@@ -48,7 +48,9 @@
 
     <!-- RealmRecyclerView styles -->
     <style name="RealmRVBase">
-        <item name="rvPadding">@dimen/recycler_view_padding</item>
+        <item name="rvPaddingStart">@dimen/recycler_view_padding</item>
+        <item name="rvPaddingEnd">@dimen/recycler_view_padding</item>
+        <item name="rvPaddingBottom">@dimen/recycler_view_padding</item>
     </style>
 
     <style name="RealmRVFastScroll" parent="RealmRVBase">
@@ -61,7 +63,7 @@
         <item name="useFastScrollBubble">true</item>
     </style>
 
-    <!-- Book Info Activity -->
+    <!-- Book Info Activity text styles -->
     <style name="BookInfoLabelText" parent="TextAppearance.AppCompat.Button">
         <item name="android:textSize">10sp</item>
         <item name="android:textColor">@color/colorAccent</item>
