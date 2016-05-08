@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -29,6 +30,7 @@ import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
+import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.RealmRecyclerView;
@@ -44,7 +46,7 @@ import java.util.List;
 /**
  * Activity which displays a list of books based on an {@link RBookList}.
  */
-public class BookListActivity extends PermCheckingActivity implements ActionMode.Callback,
+public class BookListActivity extends PermCheckingActivity implements ActionMode.Callback, SnackKiosk.Snacker,
         ReImporter.IReImportListener {
     // Key strings for the bundle passed when this activity is started.
     public static final String LIST_NAME = "LIST_NAME";
@@ -53,6 +55,8 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
     // Views.
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.coordinator)
+    CoordinatorLayout coordinator;
     @BindView(R.id.recycler)
     RealmRecyclerView recyclerView;
     @BindView(R.id.smart_list_empty)
@@ -244,6 +248,18 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
         EventBus.getDefault().register(this);
         // Reattach to the ReImporter if it's currently running so that it can draw its dialog.
         ReImporter.reAttachIfExists(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SnackKiosk.startSnacking(this);
+    }
+
+    @Override
+    protected void onPause() {
+        SnackKiosk.stopSnacking();
+        super.onPause();
     }
 
     @Override
@@ -683,7 +699,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
 
     @NonNull
     @Override
-    protected View getSnackbarAnchorView() {
-        return ButterKnife.findById(this, R.id.coordinator);
+    public View getSnackbarAnchorView() {
+        return coordinator;
     }
 }

@@ -13,6 +13,7 @@ import butterknife.OnClick;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
 import com.bkromhout.minerva.data.Importer;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
+import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
 import org.greenrobot.eventbus.EventBus;
 import rx.Subscription;
@@ -21,7 +22,7 @@ import rx.subjects.Subject;
 
 import java.io.File;
 
-public class ImportActivity extends PermCheckingActivity implements Importer.IImportListener,
+public class ImportActivity extends PermCheckingActivity implements Importer.IImportListener, SnackKiosk.Snacker,
         FolderChooserDialog.FolderCallback {
     /**
      * States that the header can be in.
@@ -146,6 +147,18 @@ public class ImportActivity extends PermCheckingActivity implements Importer.IIm
         // We don't have any events, but PermCheckingActivity does.
         EventBus.getDefault().register(this);
         Importer.get().registerListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SnackKiosk.startSnacking(this);
+    }
+
+    @Override
+    protected void onPause() {
+        SnackKiosk.stopSnacking();
+        super.onPause();
     }
 
     @Override
@@ -383,7 +396,7 @@ public class ImportActivity extends PermCheckingActivity implements Importer.IIm
 
     @NonNull
     @Override
-    protected View getSnackbarAnchorView() {
+    public View getSnackbarAnchorView() {
         return rl;
     }
 }

@@ -5,12 +5,14 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import butterknife.ButterKnife;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
+import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
 import org.greenrobot.eventbus.EventBus;
 
@@ -19,12 +21,16 @@ import java.io.File;
 /**
  * Settings activity, just loads a custom PreferenceFragment.
  */
-public class SettingsActivity extends PermCheckingActivity implements FolderChooserDialog.FolderCallback {
+public class SettingsActivity extends PermCheckingActivity implements FolderChooserDialog.FolderCallback,
+        SnackKiosk.Snacker {
+    // Views
+    private CoordinatorLayout coordinator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        coordinator = ButterKnife.findById(this, R.id.coordinator);
 
         // Set up toolbar.
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
@@ -44,6 +50,18 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
         super.onStart();
         // We don't have any events, but PermCheckingActivity does.
         EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SnackKiosk.startSnacking(this);
+    }
+
+    @Override
+    protected void onPause() {
+        SnackKiosk.stopSnacking();
+        super.onPause();
     }
 
     @Override
@@ -78,8 +96,8 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
 
     @NonNull
     @Override
-    protected View getSnackbarAnchorView() {
-        return ButterKnife.findById(this, R.id.coordinator);
+    public View getSnackbarAnchorView() {
+        return coordinator;
     }
 
     /**

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
@@ -28,6 +29,7 @@ import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.realm.RBook;
+import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.ui.TagBackgroundSpan;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
@@ -42,7 +44,7 @@ import java.util.List;
 /**
  * Displays information for some {@link com.bkromhout.minerva.realm.RBook}.
  */
-public class BookInfoActivity extends PermCheckingActivity implements ReImporter.IReImportListener {
+public class BookInfoActivity extends PermCheckingActivity implements ReImporter.IReImportListener, SnackKiosk.Snacker {
     /**
      * Part of the information for which views are conditionally shown.
      * @see #togglePart(Part, boolean)
@@ -54,6 +56,8 @@ public class BookInfoActivity extends PermCheckingActivity implements ReImporter
     // AppBarLayout views.
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.coordinator)
+    CoordinatorLayout coordinator;
     @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsibleToolbar;
     @BindView(R.id.cover_image)
@@ -216,6 +220,18 @@ public class BookInfoActivity extends PermCheckingActivity implements ReImporter
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SnackKiosk.startSnacking(this);
+    }
+
+    @Override
+    protected void onPause() {
+        SnackKiosk.stopSnacking();
+        super.onPause();
     }
 
     @Override
@@ -485,7 +501,7 @@ public class BookInfoActivity extends PermCheckingActivity implements ReImporter
 
     @NonNull
     @Override
-    protected View getSnackbarAnchorView() {
-        return ButterKnife.findById(this, R.id.coordinator);
+    public View getSnackbarAnchorView() {
+        return coordinator;
     }
 }

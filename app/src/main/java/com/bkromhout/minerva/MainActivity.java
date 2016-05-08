@@ -3,7 +3,6 @@ package com.bkromhout.minerva;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -263,12 +262,5 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
 
         // Save things to prefs.
         defaultPrefs.putCurrFrag(frag);
-    }
-
-    @NonNull
-    @Override
-    protected View getSnackbarAnchorView() {
-        // We want to be sure that the snackbar plays nice with the FABs in our fragments.
-        return ButterKnife.findById(fragCont, R.id.coordinator);
     }
 }

@@ -5,7 +5,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.percent.PercentRelativeLayout;
 import android.support.v4.app.Fragment;
@@ -34,6 +36,7 @@ import com.bkromhout.minerva.events.BookCardClickEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.prefs.LibraryPrefs;
 import com.bkromhout.minerva.realm.RBook;
+import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.BubbleTextProvider;
@@ -52,8 +55,10 @@ import java.util.List;
  * Fragment in charge of showing the user's whole library.
  */
 public class LibraryFragment extends Fragment implements ActionMode.Callback, ReImporter.IReImportListener,
-        BubbleTextProvider, FastScrollHandleStateListener {
+        BubbleTextProvider, FastScrollHandleStateListener, SnackKiosk.Snacker {
     // Views.
+    @BindView(R.id.coordinator)
+    CoordinatorLayout coordinator;
     @BindView(R.id.fab)
     FloatingActionButton fabViewOpts;
     @BindView(R.id.recycler)
@@ -189,6 +194,18 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
         EventBus.getDefault().register(this);
         // Reattach to the ReImporter if it's currently running so that it can draw its dialog.
         ReImporter.reAttachIfExists(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SnackKiosk.startSnacking(this);
+    }
+
+    @Override
+    public void onPause() {
+        SnackKiosk.stopSnacking();
+        super.onPause();
     }
 
     @Override
@@ -552,5 +569,11 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
     @Override
     public void onHandleStateChanged(FastScrollerHandleState newState) {
         if (newState == FastScrollerHandleState.PRESSED) fabViewOpts.hide();
+    }
+
+    @NonNull
+    @Override
+    public View getSnackbarAnchorView() {
+        return coordinator;
     }
 }

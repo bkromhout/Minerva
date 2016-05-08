@@ -1,12 +1,11 @@
 package com.bkromhout.minerva;
 
 import android.Manifest;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkromhout.minerva.events.MissingPermEvent;
+import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
@@ -26,10 +25,6 @@ public abstract class PermCheckingActivity extends AppCompatActivity {
      * Permission listener for the Read External Storage permission.
      */
     private PermissionListener storagePL;
-    /**
-     * Reference to permissions nag snackbar so that we can dismiss it if need be.
-     */
-    private Snackbar permSnackbar;
     /**
      * Reference to rationale dialog so that we can dismiss it if need be.
      */
@@ -85,17 +80,10 @@ public abstract class PermCheckingActivity extends AppCompatActivity {
     protected final void checkPermsIfNotAlreadyDoingSo() {
         if (!Dexter.isRequestOngoing()) {
             // If the nag snackbar is shown, get rid of it first.
-            if (permSnackbar != null) permSnackbar.dismiss();
+            SnackKiosk.dismissIfActionId(R.id.sb_action_retry_perms_check);
             Dexter.checkPermission(storagePL, Manifest.permission.READ_EXTERNAL_STORAGE);
         }
     }
-
-    /**
-     * Get a view appropriate to use for creating a Snackbar.
-     * @return Snackbar anchor view.
-     */
-    @NonNull
-    protected abstract View getSnackbarAnchorView();
 
     /**
      * Show dialog explaining why we need permission.
@@ -133,25 +121,10 @@ public abstract class PermCheckingActivity extends AppCompatActivity {
      */
     private void showPermNagSnackbar() {
         // Don't queue a second snackbar.
-        if (permSnackbar != null) return;
+        if (SnackKiosk.isCurrentActionId(R.id.sb_action_retry_perms_check)) return;
 
         // This snackbar with make Dexter try to get the permission again.
-        Snackbar.make(getSnackbarAnchorView(), R.string.storage_permission_needed,
-                Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.retry, v -> Dexter.checkPermission(storagePL,
-                        Manifest.permission.READ_EXTERNAL_STORAGE))
-                .setCallback(new Snackbar.Callback() {
-                    @Override
-                    public void onDismissed(Snackbar snackbar, int event) {
-                        super.onDismissed(snackbar, event);
-                        permSnackbar = null;
-                    }
-
-                    @Override
-                    public void onShown(Snackbar snackbar) {
-                        super.onShown(snackbar);
-                        permSnackbar = snackbar;
-                    }
-                }).show();
+        SnackKiosk.snack(R.string.storage_permission_needed, R.string.retry, R.id.sb_action_retry_perms_check,
+                Snackbar.LENGTH_LONG);
     }
 }

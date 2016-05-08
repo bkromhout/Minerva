@@ -2,7 +2,9 @@ package com.bkromhout.minerva.fragments;
 
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +23,7 @@ import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookListCardClickEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.realm.RBookList;
+import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.FastScrollHandleStateListener;
@@ -38,8 +41,11 @@ import java.util.ArrayList;
 /**
  * Fragment in charge of showing all of the book lists.
  */
-public class AllListsFragment extends Fragment implements ActionMode.Callback, FastScrollHandleStateListener {
+public class AllListsFragment extends Fragment implements ActionMode.Callback, FastScrollHandleStateListener,
+        SnackKiosk.Snacker {
     // Views.
+    @BindView(R.id.coordinator)
+    CoordinatorLayout coordinator;
     @BindView(R.id.fab)
     FloatingActionButton fabNewList;
     @BindView(R.id.fab2)
@@ -154,6 +160,18 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SnackKiosk.startSnacking(this);
+    }
+
+    @Override
+    public void onPause() {
+        SnackKiosk.stopSnacking();
+        super.onPause();
     }
 
     @Override
@@ -436,5 +454,11 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
             fabNewSmartList.hide();
             fabNewList.hide();
         }
+    }
+
+    @NonNull
+    @Override
+    public View getSnackbarAnchorView() {
+        return coordinator;
     }
 }

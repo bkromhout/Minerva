@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -26,6 +27,7 @@ import com.bkromhout.minerva.events.TagCardClickEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RTag;
+import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.RealmRecyclerView;
@@ -51,11 +53,13 @@ import java.util.concurrent.TimeUnit;
 /**
  * Activity used to apply (and remove) tags to (and from) books.
  */
-public class TaggingActivity extends AppCompatActivity implements ActionMode.Callback,
+public class TaggingActivity extends AppCompatActivity implements ActionMode.Callback, SnackKiosk.Snacker,
         ColorChooserDialog.ColorCallback {
     // Views.
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.rl)
+    RelativeLayout rl;
     @BindView(R.id.recycler)
     RealmRecyclerView recyclerView;
     @BindView(R.id.tag_filter)
@@ -189,6 +193,18 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SnackKiosk.startSnacking(this);
+    }
+
+    @Override
+    protected void onPause() {
+        SnackKiosk.stopSnacking();
+        super.onPause();
     }
 
     @Override
@@ -434,6 +450,12 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
         items = realm.where(RTag.class)
                      .contains("name", filter, Case.INSENSITIVE)
                      .findAllSorted("sortName");
+    }
+
+    @NonNull
+    @Override
+    public View getSnackbarAnchorView() {
+        return rl;
     }
 
     /**

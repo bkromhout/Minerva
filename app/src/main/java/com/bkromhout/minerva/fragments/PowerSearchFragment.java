@@ -3,7 +3,9 @@ package com.bkromhout.minerva.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -29,6 +31,7 @@ import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
+import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.FastScrollHandleStateListener;
@@ -47,10 +50,12 @@ import java.util.List;
  * Fragment in charge of letting the user power search.
  */
 public class PowerSearchFragment extends Fragment implements ActionMode.Callback, ReImporter.IReImportListener,
-        FastScrollHandleStateListener {
+        FastScrollHandleStateListener, SnackKiosk.Snacker {
     private static final String QUERY_TYPE = "QUERY_TYPE";
 
     // Views.
+    @BindView(R.id.coordinator)
+    CoordinatorLayout coordinator;
     @BindView(R.id.fab)
     FloatingActionButton fabQuery;
     @BindView(R.id.recycler)
@@ -168,6 +173,18 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
         EventBus.getDefault().register(this);
         // Reattach to the ReImporter if it's currently running so that it can draw its dialog.
         ReImporter.reAttachIfExists(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SnackKiosk.startSnacking(this);
+    }
+
+    @Override
+    public void onPause() {
+        SnackKiosk.stopSnacking();
+        super.onPause();
     }
 
     @Override
@@ -514,5 +531,11 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     @Override
     public void onHandleStateChanged(FastScrollerHandleState newState) {
         if (newState == FastScrollerHandleState.PRESSED) fabQuery.hide();
+    }
+
+    @NonNull
+    @Override
+    public View getSnackbarAnchorView() {
+        return coordinator;
     }
 }

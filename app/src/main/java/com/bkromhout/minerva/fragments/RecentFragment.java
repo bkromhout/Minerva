@@ -3,7 +3,9 @@ package com.bkromhout.minerva.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -31,6 +33,7 @@ import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.prefs.RecentPrefs;
 import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 import com.bkromhout.minerva.realm.RBook;
+import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.FastScrollHandleStateListener;
@@ -49,8 +52,10 @@ import java.util.List;
  * Fragment in charge of showing recently opened books.
  */
 public class RecentFragment extends Fragment implements ActionMode.Callback, ReImporter.IReImportListener,
-        FastScrollHandleStateListener {
+        FastScrollHandleStateListener, SnackKiosk.Snacker {
     // Views.
+    @BindView(R.id.coordinator)
+    CoordinatorLayout coordinator;
     @BindView(R.id.fab)
     FloatingActionButton fabOpenRecent;
     @BindView(R.id.recycler)
@@ -166,6 +171,18 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
         EventBus.getDefault().register(this);
         // Reattach to the ReImporter if it's currently running so that it can draw its dialog.
         ReImporter.reAttachIfExists(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SnackKiosk.startSnacking(this);
+    }
+
+    @Override
+    public void onPause() {
+        SnackKiosk.stopSnacking();
+        super.onPause();
     }
 
     @Override
@@ -472,5 +489,11 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
     @Override
     public void onHandleStateChanged(FastScrollerHandleState newState) {
         if (newState == FastScrollerHandleState.PRESSED) fabOpenRecent.hide();
+    }
+
+    @NonNull
+    @Override
+    public View getSnackbarAnchorView() {
+        return coordinator;
     }
 }
