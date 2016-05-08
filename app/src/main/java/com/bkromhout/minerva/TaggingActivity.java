@@ -441,7 +441,7 @@ public class TaggingActivity extends AppCompatActivity implements SnackKiosk.Sna
     }
 
     /**
-     * Override this method so that we remove focus from our filter EditText when we click outside its bounds.
+     * Override this method so that we remove focus from our filter EditText when we click outside of its bounds.
      */
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
@@ -454,6 +454,8 @@ public class TaggingActivity extends AppCompatActivity implements SnackKiosk.Sna
                     v.clearFocus();
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    // Consume this touch event, we don't want to accidentally toggle one of the tag cards.
+                    return true;
                 }
             }
         }
