@@ -5,7 +5,7 @@
 
     <!-- Elevations -->
     <dimen name="button_elevation">2dp</dimen>
-    <dimen name="button_pressed_translationZ">4dp</dimen>
+    <dimen name="button_pressed_translationZ">6dp</dimen>
 
     <dimen name="card_elevation">2dp</dimen>
     <dimen name="card_pressed_translationZ">6dp</dimen>
