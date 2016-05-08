@@ -14,7 +14,6 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.IdRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.view.menu.MenuBuilder;
-import android.util.Log;
 import android.view.Menu;
 import com.bkromhout.minerva.MainActivity;
 import com.bkromhout.minerva.Minerva;
@@ -27,6 +26,7 @@ import com.google.common.hash.HashingInputStream;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.epub.EpubReader;
 import org.greenrobot.eventbus.EventBus;
+import timber.log.Timber;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -60,7 +60,8 @@ public class Util {
                     m.setAccessible(true);
                     m.invoke(menu, true);
                 } catch (Exception e) {
-                    Log.e(classSimpleName, "onMenuOpened...unable to set icons for overflow menu", e);
+                    Timber.tag(classSimpleName);
+                    Timber.e(e, "onMenuOpened...unable to set icons for overflow menu");
                 }
             }
         }

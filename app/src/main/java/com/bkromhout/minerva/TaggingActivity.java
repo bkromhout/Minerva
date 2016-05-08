@@ -42,6 +42,7 @@ import org.greenrobot.eventbus.Subscribe;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import timber.log.Timber;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -345,7 +346,7 @@ public class TaggingActivity extends AppCompatActivity implements ActionMode.Cal
             @Override
             public void onError(Throwable e) {
                 // Shouldn't happen, but we'll log it if it does.
-                Log.e("TaggingActivity", "Some error occurred due to the filter observer!");
+                Timber.e("Some error occurred due to the filter observer!");
                 e.printStackTrace();
             }
 

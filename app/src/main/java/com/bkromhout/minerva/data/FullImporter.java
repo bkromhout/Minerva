@@ -1,6 +1,5 @@
 package com.bkromhout.minerva.data;
 
-import android.util.Log;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
@@ -16,6 +15,7 @@ import rx.subjects.BehaviorSubject;
 import rx.subjects.ReplaySubject;
 import rx.subjects.SerializedSubject;
 import rx.subjects.Subject;
+import timber.log.Timber;
 
 import java.io.File;
 import java.util.Calendar;
@@ -297,7 +297,7 @@ public class FullImporter {
      */
     private void onFileImporterError(Throwable t) {
         String s = C.getStr(R.string.fil_err_generic);
-        Log.e("FullImporter", s, t);
+        Timber.e(t, s);
         publishError("\n" + s + ":\n\"" + t.getMessage() + "\"\n");
         cancelFullImport();
     }
@@ -341,7 +341,7 @@ public class FullImporter {
                 },
                 error -> {
                     String s = C.getStr(R.string.fil_err_realm);
-                    Log.e("FullImporter", s, error);
+                    Timber.e(error, s);
                     publishError("\n" + s + "\n");
                     unsafeCancelFullImport();
                 });
