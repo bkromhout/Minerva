@@ -270,7 +270,8 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
                 return true;
             case R.id.action_delete:
                 Dialogs.yesNoCheckBoxDialog(getContext(), R.string.title_delete_books, R.string.prompt_delete_books,
-                        R.string.prompt_delete_from_device_too, R.id.action_delete);
+                        R.string.prompt_delete_from_device_too, R.string.info_delete_from_device_permanent,
+                        R.id.action_delete);
                 return true;
             default:
                 return false;

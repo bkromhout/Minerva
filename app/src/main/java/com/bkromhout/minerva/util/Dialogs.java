@@ -67,20 +67,26 @@ public class Dialogs {
     /**
      * Same as {@link #simpleYesNoDialog(Context, int, int, int)}, but adds a single check box which allows for
      * additional input.
-     * @param ctx          Context to use.
-     * @param title        String resource to use for title.
-     * @param text         String resource to use for text.
-     * @param checkBoxText String resource to use for the checkbox.
-     * @param actionId     Action ID to send if Yes is clicked.
+     * @param ctx             Context to use.
+     * @param title           String resource to use for title.
+     * @param text            String resource to use for text.
+     * @param checkBoxText    String resource to use for the checkbox.
+     * @param checkedInfoText String resource to use for red text shown when checkbox is checked.
+     * @param actionId        Action ID to send if Yes is clicked.
      */
     public static void yesNoCheckBoxDialog(final Context ctx, @StringRes final int title, @StringRes final int text,
-                                           @StringRes final int checkBoxText, @IdRes final int actionId) {
+                                           @StringRes final int checkBoxText, @StringRes final int checkedInfoText,
+                                           @IdRes final int actionId) {
         @SuppressLint("InflateParams")
         View view = LayoutInflater.from(ctx).inflate(R.layout.dialog_yes_no_checkbox, null);
         final TextView content = ButterKnife.findById(view, R.id.content);
         final CheckBox checkBox = ButterKnife.findById(view, R.id.checkbox);
+        final TextView checkedInfo = ButterKnife.findById(view, R.id.checked_info);
         content.setText(text);
         checkBox.setText(checkBoxText);
+        // Show checkedInfo text when checkbox is checked.
+        if (checkedInfoText != -1) checkBox.setOnCheckedChangeListener((buttonView, isChecked) ->
+                checkedInfo.setText(isChecked ? checkedInfoText : R.string.empty));
 
         new MaterialDialog.Builder(ctx)
                 .title(title)
