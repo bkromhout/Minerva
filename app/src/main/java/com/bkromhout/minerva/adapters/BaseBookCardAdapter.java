@@ -5,6 +5,7 @@ import android.graphics.PorterDuff;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.widget.*;
 import butterknife.BindView;
@@ -218,8 +219,17 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
         return true;
     }
 
-    // TODO use the new stuff from rrvl 2.0.2 to try and get cards' elevations to cooperate during drags
-    // Hopefully as simple as setting them "selected" and changing selector accordingly?
+    @Override
+    public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
+        if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && viewHolder != null && viewHolder instanceof BaseCardVH)
+            ((BaseCardVH) viewHolder).cardView.setSelected(true);
+    }
+
+    @Override
+    public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+        if (viewHolder != null && viewHolder instanceof BaseCardVH)
+            ((BaseCardVH) viewHolder).cardView.setSelected(false);
+    }
 
     /**
      * A base ViewHolder class for all book cards.
@@ -239,7 +249,6 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
         public BaseCardVH(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-
             // Make sure background responds to changes in "activated" state.
             cardView.getBackground().setTintMode(PorterDuff.Mode.SRC);
             cardView.getBackground().setTintList(C.CARD_BG_COLORS);
