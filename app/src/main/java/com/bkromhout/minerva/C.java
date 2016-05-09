@@ -41,6 +41,7 @@ public final class C {
     public static final String NEEDS_POS_UPDATE = "needs_position_update";
     public static final String REL_PATH = "relative_path";
     public static final String IS_IN_ACTION_MODE = "is_in_action_mode";
+    public static final String SEARCH_STRING = "search_string";
     public static final String RUQ = "realm_user_query";
 
     /* Request codes. */

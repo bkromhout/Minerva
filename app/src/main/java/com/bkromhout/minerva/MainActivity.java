@@ -262,4 +262,26 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
         // Save things to prefs.
         defaultPrefs.putCurrFrag(frag);
     }
+
+    /**
+     * Override this method so that we remove focus from our filter EditText when we click outside of its bounds.
+     */
+//    @Override
+//    public boolean dispatchTouchEvent(MotionEvent event) {
+//        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//            View v = getCurrentFocus();
+//            if (v instanceof SearchView.SearchAutoComplete) {
+//                Rect outRect = new Rect();
+//                v.getGlobalVisibleRect(outRect);
+//                if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
+//                    v.clearFocus();
+//                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+//                    // Consume this touch event, we don't want to accidentally toggle one of the tag cards.
+//                    return true;
+//                }
+//            }
+//        }
+//        return super.dispatchTouchEvent(event);
+//    }
 }

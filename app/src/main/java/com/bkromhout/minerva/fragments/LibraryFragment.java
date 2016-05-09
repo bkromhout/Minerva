@@ -11,9 +11,11 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.percent.PercentRelativeLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.*;
 import android.widget.RadioGroup;
 import butterknife.BindView;
@@ -43,13 +45,19 @@ import com.bkromhout.rrvl.BubbleTextProvider;
 import com.bkromhout.rrvl.FastScrollHandleStateListener;
 import com.bkromhout.rrvl.FastScrollerHandleState;
 import com.bkromhout.rrvl.RealmRecyclerView;
+import com.jakewharton.rxbinding.support.v7.widget.RxSearchView;
+import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import timber.log.Timber;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Fragment in charge of showing the user's whole library.
@@ -94,6 +102,14 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
      * Adapter currently being used by the recycler view.
      */
     private BaseBookCardAdapter adapter;
+    /**
+     * Current filter string.
+     */
+    private String filter = null;
+    /**
+     * SearchView text change subscription.
+     */
+    private Subscription searchViewChangeSub;
     /**
      * Action mode.
      */
@@ -143,11 +159,15 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
 
         initUi();
 
-        // If we have a saved instance state, check to see if we were in action mode.
-        if (savedInstanceState != null && savedInstanceState.getBoolean(C.IS_IN_ACTION_MODE)) {
+        // Check saved state.
+        if (savedInstanceState != null) {
+            // Try to restore filter text.
+            filter = savedInstanceState.getString(C.SEARCH_STRING);
             // If we were in action mode, restore the adapter's state and start action mode.
-            adapter.restoreInstanceState(savedInstanceState);
-            startActionMode();
+            if (savedInstanceState.getBoolean(C.IS_IN_ACTION_MODE)) {
+                adapter.restoreInstanceState(savedInstanceState);
+                startActionMode();
+            }
         }
     }
 
@@ -185,6 +205,19 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.library, menu);
+        // Get SearchView.
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        if (searchView != null) {
+            // Restore search view text.
+            if (filter != null && !filter.isEmpty()) {
+                searchItem.expandActionView();
+                searchView.setQuery(filter, false);
+            }
+
+            // Create searchViewChangeSub.
+            createSearchViewChangeSub(searchView);
+        }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -216,6 +249,8 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
             adapter.saveInstanceState(outState);
             outState.putBoolean(C.IS_IN_ACTION_MODE, true);
         }
+        // Save the current filter string.
+        outState.putString(C.SEARCH_STRING, filter);
     }
 
     @Override
@@ -241,6 +276,8 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
             realm = null;
         }
         if (actionMode != null) actionMode.finish();
+        // Unsubscribe from SearchView text changes.
+        if (searchViewChangeSub != null && !searchViewChangeSub.isUnsubscribed()) searchViewChangeSub.unsubscribe();
     }
 
     @Override
@@ -481,6 +518,51 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
     }
 
     /**
+     * Create a subscriber which observes changes to the SearchView's text and updates filters {@link #books}
+     * accordingly.
+     * @param searchView SearchView to observe changes of.
+     */
+    private void createSearchViewChangeSub(SearchView searchView) {
+        // Unsubscribe from an existing subscriber (if it exists) first.
+        if (searchViewChangeSub != null && !searchViewChangeSub.isUnsubscribed()) searchViewChangeSub.unsubscribe();
+        // Create new subscriber.
+        searchViewChangeSub = RxSearchView.queryTextChanges(searchView)
+                                          .skip(1)
+                                          .debounce(500, TimeUnit.MILLISECONDS)
+                                          .observeOn(AndroidSchedulers.mainThread())
+                                          .subscribe(cs -> {
+                                              // Apply filter to items and then update adapter's copy of items.
+                                              getBooksList(cs.toString());
+                                              //noinspection unchecked
+                                              adapter.updateRealmResults(books);
+                                          }, t -> {
+                                              // Shouldn't happen, but we'll log it if it does.
+                                              Timber.e(t, "Some error occurred due to the SearchView observer!");
+                                          });
+    }
+
+    /**
+     * Queries Realm to get the {@link #books} list. Uses the given {@code filter} and keeps the current sort method and
+     * direction. This method does NOT update the adapter.
+     * @param filter String to use to filter the list. Can be {@code null}/empty.
+     */
+    private void getBooksList(String filter) {
+        this.filter = filter;
+        if (filter == null || filter.isEmpty())
+            books = realm.where(RBook.class)
+                         .findAllSorted(sortType.getRealmField(), sortDir.getRealmSort());
+        else
+            books = realm.where(RBook.class)
+                         .contains("title", filter, Case.INSENSITIVE)
+                         .or()
+                         .contains("author", filter, Case.INSENSITIVE)
+                         .findAllSorted(sortType.getRealmField(), sortDir.getRealmSort());
+
+        books.addChangeListener(emptyListener);
+        // TODO Might need to manually call toggleEmptyState() here.
+    }
+
+    /**
      * Uses the current view options to resort the current {@link RealmResults} in {@link #books}. This method makes no
      * attempts to force a redraw on the actual recycler view.
      * <p>
@@ -540,9 +622,11 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
      * @param showEmptyView Whether to show the empty view or not.
      */
     private void toggleEmptyState(boolean showEmptyView) {
-        recyclerView.setVisibility(showEmptyView ? View.GONE : View.VISIBLE);
-        fabViewOpts.setVisibility(showEmptyView ? View.GONE : View.VISIBLE);
-        emptyLibraryView.setVisibility(showEmptyView ? View.VISIBLE : View.GONE);
+        boolean isFiltering = filter != null && !filter.isEmpty();
+        // TODO Add a specific view to show when there are no results due to the filter.
+        recyclerView.setVisibility(!isFiltering && showEmptyView ? View.GONE : View.VISIBLE);
+        fabViewOpts.setVisibility(!isFiltering && showEmptyView ? View.GONE : View.VISIBLE);
+        emptyLibraryView.setVisibility(!isFiltering && showEmptyView ? View.VISIBLE : View.GONE);
     }
 
     @Override
