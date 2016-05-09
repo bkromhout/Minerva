@@ -23,7 +23,7 @@ import rx.subjects.Subject;
 
 import java.io.File;
 
-public class ImportActivity extends PermCheckingActivity implements Importer.IImportListener, SnackKiosk.Snacker,
+public class ImportActivity extends PermCheckingActivity implements Importer.ImportListener, SnackKiosk.Snacker,
         FolderChooserDialog.FolderCallback {
     /**
      * States that the header can be in.
@@ -60,8 +60,6 @@ public class ImportActivity extends PermCheckingActivity implements Importer.IIm
     Toolbar toolbar;
     @BindView(R.id.header)
     TextView tvHeader;
-    @BindView(R.id.import_folder)
-    TextView tvFolder;
     @BindView(R.id.last_import_time)
     TextView tvLastImportTime;
     @BindView(R.id.import_progress)
@@ -78,8 +76,6 @@ public class ImportActivity extends PermCheckingActivity implements Importer.IIm
     TextView tvELog;
     @BindView(R.id.import_log_type)
     Switch swLogType;
-    @BindView(R.id.choose_log)
-    Button btnChooseLog;
     @BindView(R.id.import_red_text)
     TextView tvRedText;
     @BindView(R.id.import_button)
@@ -137,8 +133,6 @@ public class ImportActivity extends PermCheckingActivity implements Importer.IIm
             setRedTextState(RedTextState.MUST_CHOOSE_FOLDER);
             needsToChooseDir = true;
         } else {
-            // We have a valid library directory.
-            tvFolder.setText(libDir.getAbsolutePath());
             // We're good!
             setReady();
         }
@@ -185,7 +179,7 @@ public class ImportActivity extends PermCheckingActivity implements Importer.IIm
      * Update the text view which shows the last import time.
      */
     private void updateLastImportTime() {
-        long lastTime = DefaultPrefs.get().getLastFullImportTime(-1);
+        long lastTime = DefaultPrefs.get().getLastImportSuccessTime(-1);
 
         if (lastTime == -1) tvLastImportTime.setText(R.string.last_import_time_default);
         else tvLastImportTime.setText(Util.getRelTimeString(this, lastTime));
@@ -314,7 +308,6 @@ public class ImportActivity extends PermCheckingActivity implements Importer.IIm
     public void onFolderSelection(@NonNull FolderChooserDialog dialog, @NonNull File folder) {
         String path = folder.getAbsolutePath();
         DefaultPrefs.get().putLibDir(path);
-        tvFolder.setText(path);
         needsToChooseDir = false;
         setReady();
     }
@@ -322,12 +315,6 @@ public class ImportActivity extends PermCheckingActivity implements Importer.IIm
     @Override
     public void setMaxProgress(int maxProgress) {
         progressBar.setMax(maxProgress);
-    }
-
-    @Override
-    public void setCurrImportDir(String importDir) {
-        if (importDir == null) return;
-        tvFolder.setText(importDir);
     }
 
     @Override

@@ -42,10 +42,6 @@
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
     </style>
 
-    <style name="ColoredLiftOnTouchButton" parent="LiftOnTouchButton">
-        <item name="android:backgroundTint">@color/colorAccent</item>
-    </style>
-
     <style name="LiftOnTouchButton">
         <item name="android:stateListAnimator">@anim/button_lift_state_list</item>
     </style>

@@ -27,10 +27,13 @@ import java.util.Queue;
  * Handles full library imports.
  */
 public class Importer {
+    public static final int SET_PROGRESS_INDETERMINATE = -1;
+    public static final int SET_PROGRESS_DETERMINATE_ZERO = -2;
+
     /**
      * Various state the importer can be in.
      */
-    private enum State {
+    public enum State {
         READY, PREP, IMPORTING, SAVING, CANCELLING, FINISHING
     }
 
@@ -104,7 +107,7 @@ public class Importer {
     /**
      * Who is listening to our progress?
      */
-    private IImportListener listener;
+    private ImportListener listener;
     /**
      * Listener's subscription to the log stream.
      */
@@ -119,7 +122,7 @@ public class Importer {
     private Subscription listenerProgressSub;
 
     /**
-     * Get an instance of {@link Importer}.
+     * Get the instance of {@link Importer}.
      * @return Instance.
      */
     public static Importer get() {
@@ -127,7 +130,7 @@ public class Importer {
         return INSTANCE;
     }
 
-    // Empty constructor, this class gets static init only.
+    // No public initialization.
     private Importer() {
         resetState();
         // Create subjects here, they should always exist.
@@ -140,10 +143,10 @@ public class Importer {
      * Starts a full import run. The importer will import files from the configured library directory.
      * <p>
      * Calling this when the importer isn't in a ready state will do nothing.
-     * @param listener The {@link IImportListener} to register for this run, or null if no listener should be
+     * @param listener The {@link ImportListener} to register for this run, or null if no listener should be
      *                 registered. Note that if there is already a listener registered, this will be ignored.
      */
-    public void doFullImport(IImportListener listener) {
+    public void doFullImport(ImportListener listener) {
         // Don't do anything if we aren't in a ready state.
         if (currState != State.READY) return;
 
@@ -163,11 +166,11 @@ public class Importer {
      * configured library directory.
      * <p>
      * Calling this when the importer isn't in a ready state will do nothing.
-     * @param listener The {@link IImportListener} to register for this run, or null if no listener should be
+     * @param listener The {@link ImportListener} to register for this run, or null if no listener should be
      *                 registered. Note that if there is already a listener registered, this will be ignored.
      * @param books    List of {@link RBook}s to re-import.
      */
-    public void doReImport(IImportListener listener, List<RBook> books) {
+    public void doReImport(ImportListener listener, List<RBook> books) {
         // Don't do anything if we aren't in a ready state.
         if (currState != State.READY) return;
 
@@ -424,7 +427,7 @@ public class Importer {
         // TODO global snackbar or something.
         publishLog(C.getStr(R.string.il_done));
         // Save current time to prefs to indicate a full import completed, then tell listener we finished.
-        DefaultPrefs.get().putLastFullImportTime(Calendar.getInstance().getTimeInMillis());
+        DefaultPrefs.get().putLastImportSuccessTime(Calendar.getInstance().getTimeInMillis());
         if (numErrors > 0) publishLog(C.getStr(R.string.il_finished_with_errors, numErrors));
         else publishLog(C.getStr(R.string.il_finished));
         resetState();
@@ -557,7 +560,7 @@ public class Importer {
      * If there is already a listener registered, this will do nothing.
      * @param listener Listener.
      */
-    public void registerListener(IImportListener listener) {
+    public void registerListener(ImportListener listener) {
         if (listener == null || this.listener != null) return;
         this.listener = listener;
 
@@ -578,7 +581,6 @@ public class Importer {
                 listener.setCancelling();
                 break;
         }
-        listener.setCurrImportDir(currDir == null ? null : currDir.getAbsolutePath());
         listener.setMaxProgress(numTotal);
         listenerProgressSub = listener.subscribeToProgressStream(progressSubject);
         listenerLogSub = listener.subscribeToLogStream(logSubject);
@@ -598,20 +600,14 @@ public class Importer {
     }
 
     /**
-     * Implemented by classes which wish to listen to events from the full importer.
+     * Implemented by classes which wish to listen to events from the importer.
      */
-    public interface IImportListener {
+    public interface ImportListener {
         /**
          * Set the max progress state.
          * @param maxProgress Max progress.
          */
         void setMaxProgress(int maxProgress);
-
-        /**
-         * Set the directory we're currently importing from.
-         * @param importDir Import directory.
-         */
-        void setCurrImportDir(String importDir);
 
         /**
          * Have the listener subscribe to the log stream and return their subscription.

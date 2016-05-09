@@ -27,6 +27,7 @@ import com.google.common.hash.HashingInputStream;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.epub.EpubReader;
 import org.greenrobot.eventbus.EventBus;
+import rx.Observable;
 import timber.log.Timber;
 
 import java.io.File;
@@ -236,5 +237,15 @@ public class Util {
         List<String> strings = Arrays.asList(string.split("\\Q" + separator + "\\E"));
         if (strings.size() == 1 && strings.get(0).trim().equals("")) return new ArrayList<>();
         return strings;
+    }
+
+    /**
+     * Takes a String Observable and concatenates its emissions into a single String using StringBuilder, then returns
+     * that String.
+     * @param stringObservable String observable.
+     * @return Concatenated string.
+     */
+    public static String rxToString(Observable<String> stringObservable) {
+        return stringObservable.reduce(new StringBuilder(), StringBuilder::append).toBlocking().single().toString();
     }
 }

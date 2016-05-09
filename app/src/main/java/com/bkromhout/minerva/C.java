@@ -15,6 +15,12 @@ import java.util.List;
  */
 public final class C {
     /**
+     * Maximum number of past logs to keep.
+     * <p>
+     * TODO Set this back to 30 after done testing!
+     */
+    public static final int MAX_LOGS = 5;
+    /**
      * URL of Minerva's GitHub repository.
      */
     public static final String GITHUB_REPO = "https://github.com/bkromhout/Minerva";

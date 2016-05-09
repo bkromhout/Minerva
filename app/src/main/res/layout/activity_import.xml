@@ -32,21 +32,6 @@
                 android:text="@string/import_header_initializing"/>
 
         <TextView
-                android:id="@+id/lbl_import_folder"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/LabelText"
-                android:text="@string/lbl_folder"/>
-
-        <TextView
-                android:id="@+id/import_folder"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:maxLines="1"
-                android:ellipsize="start"/>
-
-        <TextView
                 android:id="@+id/lbl_last_import_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -147,7 +132,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/lbl_choose_log"
-                    style="@style/ColoredLiftOnTouchButton"/>
+                    android:backgroundTint="@color/colorAccent"/>
         </LinearLayout>
 
         <TextView
