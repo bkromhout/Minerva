@@ -3,9 +3,9 @@ package com.bkromhout.minerva;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
-import android.text.format.DateUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -18,6 +18,7 @@ import com.bkromhout.minerva.util.Util;
 import org.greenrobot.eventbus.EventBus;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.subjects.Subject;
 
 import java.io.File;
@@ -53,8 +54,8 @@ public class ImportActivity extends PermCheckingActivity implements Importer.IIm
     }
 
     // Views
-    @BindView(R.id.rl)
-    RelativeLayout rl;
+    @BindView(R.id.base)
+    ViewGroup base;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.header)
@@ -65,6 +66,8 @@ public class ImportActivity extends PermCheckingActivity implements Importer.IIm
     TextView tvLastImportTime;
     @BindView(R.id.import_progress)
     ProgressBar progressBar;
+    @BindView(R.id.lbl_log)
+    TextView tvLogLabel;
     @BindView(R.id.import_log_cont)
     ScrollView svLogCont;
     @BindView(R.id.import_log)
@@ -74,11 +77,13 @@ public class ImportActivity extends PermCheckingActivity implements Importer.IIm
     @BindView(R.id.import_elog)
     TextView tvELog;
     @BindView(R.id.import_log_type)
-    RadioGroup rgLogType;
+    Switch swLogType;
+    @BindView(R.id.choose_log)
+    Button btnChooseLog;
     @BindView(R.id.import_red_text)
     TextView tvRedText;
     @BindView(R.id.import_button)
-    Button button;
+    Button btnMain;
 
     /**
      * What state the button is in currently.
@@ -95,7 +100,7 @@ public class ImportActivity extends PermCheckingActivity implements Importer.IIm
 
         // Set theme, create and bind views.
         setTheme(R.style.AppTheme);
-        setContentView(R.layout.activity_full_import);
+        setContentView(R.layout.activity_import);
         ButterKnife.bind(this);
 
         // Set up toolbar.
@@ -115,9 +120,8 @@ public class ImportActivity extends PermCheckingActivity implements Importer.IIm
     private void initUi() {
         setHeaderState(HeaderState.INIT);
 
-        // Set up the log type radio group.
-        rgLogType.setOnCheckedChangeListener(
-                (group, checkedId) -> setLogState(checkedId == R.id.rad_log_full ? LogState.FULL : LogState.ERRORS));
+        // Set up the log type switch.
+        swLogType.setOnCheckedChangeListener((v, isOn) -> setLogState(isOn ? LogState.ERRORS : LogState.FULL));
 
         // Check if the importer is already running; if it is then all we need to do is register as the listener,
         // because the fact that it's running allows us to make certain assumptions.
@@ -183,9 +187,8 @@ public class ImportActivity extends PermCheckingActivity implements Importer.IIm
     private void updateLastImportTime() {
         long lastTime = DefaultPrefs.get().getLastFullImportTime(-1);
 
-        if (lastTime == -1) tvLastImportTime.setText(R.string.last_full_import_time_default);
-        else tvLastImportTime.setText(DateUtils.getRelativeDateTimeString(this, lastTime, DateUtils.SECOND_IN_MILLIS,
-                DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_SHOW_TIME));
+        if (lastTime == -1) tvLastImportTime.setText(R.string.last_import_time_default);
+        else tvLastImportTime.setText(Util.getRelTimeString(this, lastTime));
     }
 
     /**
@@ -235,16 +238,16 @@ public class ImportActivity extends PermCheckingActivity implements Importer.IIm
      * @param enabled  Whether or not to have the button enabled.
      */
     private void setButtonState(ButtonState newState, boolean enabled) {
-        button.setEnabled(enabled);
+        btnMain.setEnabled(enabled);
         switch (newState) {
             case START_IMPORT:
-                button.setText(R.string.start_full_import);
+                btnMain.setText(R.string.start_full_import);
                 break;
             case CANCEL_IMPORT:
-                button.setText(R.string.cancel);
+                btnMain.setText(R.string.cancel);
                 break;
             case CHOOSE_DIR:
-                button.setText(R.string.choose_library_dir);
+                btnMain.setText(R.string.choose_library_dir);
                 break;
         }
         currBtnState = newState;
@@ -267,6 +270,14 @@ public class ImportActivity extends PermCheckingActivity implements Importer.IIm
                 return;
         }
         tvRedText.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Show a dialog with choices for current and past logs when clicked.
+     */
+    @OnClick(R.id.choose_log)
+    void onChooseLogClicked() {
+
     }
 
     /**
@@ -321,14 +332,18 @@ public class ImportActivity extends PermCheckingActivity implements Importer.IIm
 
     @Override
     public Subscription subscribeToLogStream(Subject<String, String> logSubject) {
-        return logSubject.onBackpressureBuffer().observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
-            if (s == null) tvLog.setText("");
-            else {
-                tvLog.append(s);
-                // Scroll log down as we append lines.
-                svLogCont.post(() -> svLogCont.fullScroll(View.FOCUS_DOWN));
-            }
-        });
+        return logSubject.onBackpressureBuffer().observeOn(AndroidSchedulers.mainThread()).subscribe(
+                new Action1<String>() {
+                    @Override
+                    public void call(String s) {
+                        if (s == null) tvLog.setText("");
+                        else {
+                            tvLog.append(s);
+                            // Scroll log down as we append lines.
+                            svLogCont.post(() -> svLogCont.fullScroll(View.FOCUS_DOWN));
+                        }
+                    }
+                });
     }
 
     @Override
@@ -396,6 +411,6 @@ public class ImportActivity extends PermCheckingActivity implements Importer.IIm
     @NonNull
     @Override
     public View getSnackbarAnchorView() {
-        return rl;
+        return base;
     }
 }

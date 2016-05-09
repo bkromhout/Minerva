@@ -12,12 +12,11 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.IdRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.view.menu.MenuBuilder;
+import android.text.format.DateUtils;
 import android.view.Menu;
-import com.bkromhout.minerva.MainActivity;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.SuperBook;
@@ -70,6 +69,18 @@ public class Util {
     }
 
     /**
+     * Using a long time value, get a string which expresses the date and time relative to now. Minimum resolution is
+     * seconds, transition resolution is one week, and we show the time when we transition to absolute.
+     * @param ctx  The context to use.
+     * @param time The time in milliseconds.
+     * @return Date time string.
+     */
+    public static String getRelTimeString(Context ctx, long time) {
+        return DateUtils.getRelativeDateTimeString(ctx, time, DateUtils.SECOND_IN_MILLIS, DateUtils.WEEK_IN_MILLIS,
+                DateUtils.FORMAT_SHOW_TIME).toString();
+    }
+
+    /**
      * Get a tinted drawable.
      * @param ctx         The context to use.
      * @param drawableRes The drawable resource to use.
@@ -92,28 +103,6 @@ public class Util {
         Intent intent = new Intent(ctx, actClass);
         if (params != null) intent.putExtras(params);
         ctx.startActivity(intent);
-    }
-
-    /**
-     * Takes a fragment constant integer (see the top of {@link MainActivity}) and returns the Android resource ID for
-     * the item in the nav drawer which corresponds to that fragment.
-     * @param frag Fragment integer constant.
-     * @return Nav drawer item resource ID.
-     */
-    @IdRes
-    public static int navIdFromFragConst(int frag) {
-        switch (frag) {
-            case MainActivity.FRAG_RECENT:
-                return R.id.nav_recent;
-            case MainActivity.FRAG_LIBRARY:
-                return R.id.nav_library;
-            case MainActivity.FRAG_ALL_LISTS:
-                return R.id.nav_all_lists;
-            case MainActivity.FRAG_POWER_SEARCH:
-                return R.id.nav_power_search;
-            default:
-                return -1;
-        }
     }
 
     /**

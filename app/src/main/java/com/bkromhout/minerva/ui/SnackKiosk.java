@@ -13,6 +13,10 @@ import org.greenrobot.eventbus.EventBus;
 
 /**
  * Allows us to show Snackbars from anywhere in the app without regard for how it gets shown.
+ * <p>
+ * TODO Have this use the builder pattern.
+ * <p>
+ * TODO Add ability to ignore a snack if we have a certain snacker attached.
  */
 public class SnackKiosk {
     /**

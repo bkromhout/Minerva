@@ -3,6 +3,7 @@ package com.bkromhout.minerva;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -87,7 +88,7 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
             // current fragment, or if the saved current fragment would need some bundle to help populate it.
             int frag = defaultPrefs.getCurrFrag(-1);
             switchFragments(frag != -1 ? frag : FRAG_LIBRARY);
-            navigationView.setCheckedItem(Util.navIdFromFragConst(frag));
+            navigationView.setCheckedItem(navIdFromFragConst(frag));
         } else {
             // Make sure we set the title back to what it was otherwise.
             setTitle(savedInstanceState.getString(TITLE));
@@ -261,6 +262,28 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
 
         // Save things to prefs.
         defaultPrefs.putCurrFrag(frag);
+    }
+
+    /**
+     * Takes a fragment constant integer (see the top of {@link MainActivity}) and returns the Android resource ID for
+     * the item in the nav drawer which corresponds to that fragment.
+     * @param frag Fragment integer constant.
+     * @return Nav drawer item resource ID.
+     */
+    @IdRes
+    private static int navIdFromFragConst(int frag) {
+        switch (frag) {
+            case FRAG_RECENT:
+                return R.id.nav_recent;
+            case FRAG_LIBRARY:
+                return R.id.nav_library;
+            case FRAG_ALL_LISTS:
+                return R.id.nav_all_lists;
+            case FRAG_POWER_SEARCH:
+                return R.id.nav_power_search;
+            default:
+                return -1;
+        }
     }
 
     /**

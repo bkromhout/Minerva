@@ -42,6 +42,10 @@
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
     </style>
 
+    <style name="ColoredLiftOnTouchButton" parent="LiftOnTouchButton">
+        <item name="android:backgroundTint">@color/colorAccent</item>
+    </style>
+
     <style name="LiftOnTouchButton">
         <item name="android:stateListAnimator">@anim/button_lift_state_list</item>
     </style>
@@ -63,10 +67,13 @@
         <item name="useFastScrollBubble">true</item>
     </style>
 
-    <!-- Book Info Activity text styles -->
-    <style name="BookInfoLabelText" parent="TextAppearance.AppCompat.Button">
+    <!-- Text styles -->
+    <style name="LabelText" parent="TextAppearance.AppCompat.Button">
         <item name="android:textSize">10sp</item>
         <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
+    <style name="BookInfoLabelText" parent="LabelText">
         <item name="android:layout_marginTop">8dp</item>
         <item name="android:layout_marginBottom">2dp</item>
     </style>

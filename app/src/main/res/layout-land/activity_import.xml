@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/rl"
+        android:id="@+id/base"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ImportActivity">
@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:layout_below="@id/toolbar"
+            android:layout_marginTop="?attr/actionBarSize"
             android:paddingTop="@dimen/activity_vertical_margin"
             android:paddingStart="@dimen/activity_horizontal_margin"
             android:paddingEnd="@dimen/activity_horizontal_margin"
@@ -32,7 +32,6 @@
                     android:id="@+id/header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
                     android:gravity="center_horizontal"
                     android:textStyle="bold"
                     style="?android:attr/textAppearanceLarge"
@@ -43,15 +42,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/header"
-                    android:textStyle="bold"
+                    style="@style/LabelText"
                     android:text="@string/lbl_folder"/>
 
             <TextView
                     android:id="@+id/import_folder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
                     android:layout_below="@id/lbl_import_folder"
+                    android:layout_marginBottom="4dp"
                     android:maxLines="1"
                     android:ellipsize="start"/>
 
@@ -60,22 +59,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/import_folder"
-                    android:textStyle="bold"
-                    android:text="@string/lbl_last_full_import_time"/>
+                    style="@style/LabelText"
+                    android:text="@string/lbl_last_import_time"/>
 
             <TextView
                     android:id="@+id/last_import_time"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginBottom="4dp"
                     android:layout_below="@id/lbl_last_import_time"
-                    android:text="@string/last_full_import_time_default"/>
+                    android:text="@string/last_import_time_default"/>
 
             <ProgressBar
                     android:id="@+id/import_progress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
                     android:layout_below="@id/last_import_time"
                     style="?android:attr/progressBarStyleHorizontal"/>
 
@@ -100,65 +98,96 @@
                     android:enabled="false"/>
         </RelativeLayout>
 
-        <RelativeLayout
-                android:id="@+id/right_cont"
+        <LinearLayout
                 app:layout_widthPercent="60%"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/activity_horizontal_margin"
-                android:layout_toEndOf="@id/left_cont">
+                android:layout_marginStart="8dp"
+                android:layout_toEndOf="@id/left_cont"
+                android:orientation="vertical">
 
-            <ScrollView
-                    android:id="@+id/import_log_cont"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_above="@+id/import_log_type"
-                    android:scrollbars="vertical">
-
-                <TextView
-                        android:id="@+id/import_log"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        tools:text="Current Full Importer Status"/>
-            </ScrollView>
-
-            <ScrollView
-                    android:id="@+id/import_elog_cont"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_above="@id/import_log_type"
-                    android:scrollbars="vertical"
-                    android:visibility="gone"
-                    tools:visibility="visible">
-
-                <TextView
-                        android:id="@+id/import_elog"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        tools:text="Current Full Importer Error Log"/>
-            </ScrollView>
-
-            <RadioGroup
-                    android:id="@id/import_log_type"
+            <TextView
+                    android:id="@+id/lbl_log"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:orientation="horizontal"
-                    android:gravity="center_horizontal"
-                    android:checkedButton="@id/rad_log_full">
+                    style="@style/LabelText"
+                    android:text="@string/lbl_log_from"/>
 
-                <RadioButton
-                        android:id="@+id/rad_log_full"
+            <FrameLayout
+                    android:id="@+id/import_logs_cont"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                <ScrollView
+                        android:id="@+id/import_log_cont"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scrollbars="vertical">
+
+                    <TextView
+                            android:id="@+id/import_log"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            tools:text="Current Importer Status"/>
+                </ScrollView>
+
+                <ScrollView
+                        android:id="@+id/import_elog_cont"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scrollbars="vertical"
+                        android:visibility="gone"
+                        tools:visibility="visible">
+
+                    <TextView
+                            android:id="@+id/import_elog"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            tools:text="Current Importer Error Log"/>
+                </ScrollView>
+            </FrameLayout>
+
+            <LinearLayout
+                    android:id="@+id/import_log_controls"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                <TextView
+                        android:id="@+id/lbl_full_log"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/lbl_rad_log_full"/>
+                        android:text="@string/lbl_full_log"
+                        style="@style/BookInfoTextSmall"/>
 
-                <RadioButton
-                        android:id="@+id/rad_log_errors_only"
+                <Switch
+                        android:id="@+id/import_log_type"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/lbl_rad_log_errors_only"/>
-            </RadioGroup>
-        </RelativeLayout>
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"/>
+
+                <TextView
+                        android:id="@+id/lbl_errors_only"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/lbl_errors_only"
+                        style="@style/BookInfoTextSmall"/>
+
+                <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+
+                <Button
+                        android:id="@+id/choose_log"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/lbl_choose_log"
+                        style="@style/ColoredLiftOnTouchButton"/>
+            </LinearLayout>
+        </LinearLayout>
     </android.support.percent.PercentRelativeLayout>
-</RelativeLayout>
+</FrameLayout>
