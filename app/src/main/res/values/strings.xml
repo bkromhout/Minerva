@@ -222,22 +222,6 @@
         <item quantity="other">. There are %1$d more import runs queued</item>
     </plurals>
 
-    <!-- Re-Import Dialog -->
-    <string name="title_dialog_re_import_progress">Re-Import Progress</string>
-    <string name="cancel_re_import">Cancel Re-Import</string>
-
-    <!-- Re-Import Dialog Message Strings -->
-    <string name="ril_reading_files">Reading files…</string>
-    <string name="ril_read_file">Read file for “%1$s”</string>
-    <string name="ril_saving_data">Saving data…</string>
-    <string name="ril_done">Done</string>
-    <string name="ril_done_with_errors">Done, with errors</string>
-
-    <string name="ril_err_reading_file">Error while reading “%1$s”\n</string>
-    <string name="ril_err_reading_files">Error while reading files</string>
-    <string name="ril_err_realm">@string/il_err_realm</string>
-
-
     <!-- ******************************** Lists ******************************** -->
     <string name="action_edit">Edit</string>
     <string name="action_rename">Rename</string>

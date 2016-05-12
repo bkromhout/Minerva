@@ -11,6 +11,7 @@ import android.widget.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
 import com.bkromhout.minerva.data.ImportLogger;
 import com.bkromhout.minerva.data.Importer;
@@ -22,6 +23,12 @@ import rx.Observer;
 
 import java.io.File;
 
+/**
+ * Activity which listens to our {@link Importer} and {@link ImportLogger} and displays the information which they
+ * provide.
+ * <p>
+ * Provides a place to manually trigger a full import and to view current and past import logs.
+ */
 public class ImportActivity extends PermCheckingActivity implements FolderChooserDialog.FolderCallback,
         Importer.ImportStateListener, ImportLogger.ImportLogListener, SnackKiosk.Snacker {
     /**
@@ -179,16 +186,6 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
     }
 
     /**
-     * Update the text view which shows the last import time.
-     */
-    private void updateLastImportTime() {
-        long lastTime = DefaultPrefs.get().getLastImportSuccessTime(-1);
-
-        if (lastTime == -1) tvLastImportTime.setText(R.string.last_import_time_default);
-        else tvLastImportTime.setText(Util.getRelTimeString(lastTime));
-    }
-
-    /**
      * Change the state of the header text.
      * @param newState New header state.
      */
@@ -274,7 +271,13 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
      */
     @OnClick(R.id.choose_log)
     void onChooseLogClicked() {
-        // TODO
+        // Show a dialog with log names as the options. When one is clicked, the ImportLogger shows it using our UI.
+        new MaterialDialog.Builder(this)
+                .title(R.string.lbl_choose_log)
+                .negativeText(R.string.cancel)
+                .items(ImportLogger.get().getLogList())
+                .itemsCallback((dialog, itemView, which, text) -> ImportLogger.get().switchLogs(which))
+                .show();
     }
 
     /**
@@ -318,22 +321,40 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
 
     @Override
     public void setLatestSuccessfulRun(long time) {
-        // TODO
+        // Either "Never" or a relative time string.
+        if (time == -1) tvLastImportTime.setText(R.string.last_import_time_default);
+        else tvLastImportTime.setText(Util.getRelTimeString(time));
     }
 
     @Override
     public void setNumQueued(int numQueued) {
-        // TODO
+        // Either "# Queued" or empty.
+        tvNumQueued.setText(numQueued > 0 ? C.getStr(R.string.num_queued, numQueued) : null);
+    }
+
+    /**
+     * Make a log label string using the partial string given.
+     * @param part Partial log label string.
+     * @return Log label string.
+     */
+    private String makeLogLabel(String part) {
+        return C.getStr(R.string.log_label, part);
     }
 
     @Override
-    public void setCurrLogLabel(String logLabel) {
-        // TODO
+    public void setCurrLogLabel(String logLabelPart) {
+        tvLogLabel.setText(makeLogLabel(logLabelPart));
     }
 
     @Override
-    public void setMaxProgress(int maxProgress) {
-        progressBar.setMax(maxProgress);
+    public void onProgressFlag(int maxProgress) {
+        // Change indeterminate state of the progress bar.
+        progressBar.setIndeterminate(maxProgress == Importer.SET_PROGRESS_INDETERMINATE);
+
+        if (maxProgress == Importer.SET_PROGRESS_DETERMINATE_ZERO) // Set progress to 0
+            progressBar.setProgress(0);
+        else if (maxProgress >= 0) // Set the max progress
+            progressBar.setMax(maxProgress);
     }
 
     @Override
@@ -347,7 +368,6 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
                 setHeaderState(HeaderState.READY);
                 setButtonState(ButtonState.START_IMPORT, true);
                 setRedTextState(RedTextState.NONE);
-                updateLastImportTime();
                 break;
             case PREP:
             case IMPORTING:
@@ -367,6 +387,12 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
                 setRedTextState(RedTextState.NONE);
                 break;
         }
+    }
+
+    @Override
+    public boolean shouldAutoSwitchWhenStarting() {
+        // If we're currently viewing the real-time log, we would like to switch when a new run starts.
+        return makeLogLabel(C.getStr(R.string.log_label_current_import_lc)).equals(tvLogLabel.getText());
     }
 
     @NonNull
@@ -431,11 +457,7 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
 
             @Override
             public void onNext(Integer i) {
-                if (i < 0) progressBar.setIndeterminate(true);
-                else {
-                    progressBar.setIndeterminate(false);
-                    progressBar.setProgress(i);
-                }
+                progressBar.setProgress(i);
             }
         };
     }

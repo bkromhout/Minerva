@@ -440,6 +440,11 @@ public class TaggingActivity extends AppCompatActivity implements SnackKiosk.Sna
         return coordinator;
     }
 
+    @Override
+    public Activity getCtx() {
+        return this;
+    }
+
     /**
      * Override this method so that we remove focus from our filter EditText when we click outside of its bounds.
      */

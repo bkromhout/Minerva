@@ -29,7 +29,13 @@ import java.util.Queue;
  * Handles all importing.
  */
 public class Importer {
+    /**
+     * Change the progress UI to an indeterminate state.
+     */
     public static final int SET_PROGRESS_INDETERMINATE = -1;
+    /**
+     * Clear the progress UI to a determinate, empty state.
+     */
     public static final int SET_PROGRESS_DETERMINATE_ZERO = -2;
 
     /**
@@ -44,13 +50,15 @@ public class Importer {
         Observer<Integer> getProgressObserver();
 
         /**
-         * Set the max progress state.
+         * Called when listener needs to change some meta-state of their progress UI.
          * <p>
-         * Listeners should be prepared to accept {@link #SET_PROGRESS_INDETERMINATE} and {@link
-         * #SET_PROGRESS_DETERMINATE_ZERO}, both of which are negative values, and react accordingly.
+         * Treat all positive numbers as values to use for maximum progress.
+         * <p>
+         * Also be prepared to accept {@link #SET_PROGRESS_INDETERMINATE} and {@link #SET_PROGRESS_DETERMINATE_ZERO},
+         * both of which are negative values, and react accordingly based on those constants' docs.
          * @param maxProgress Max progress, or special constant.
          */
-        void setMaxProgress(int maxProgress);
+        void onProgressFlag(int maxProgress);
 
         /**
          * Set the number of queued import runs.
@@ -271,7 +279,7 @@ public class Importer {
         createProgressSubject();
         subscribeListenerToProgressSubject();
         publishStateUpdate(State.PREP);
-        progressSubject.onNext(SET_PROGRESS_INDETERMINATE);
+        if (listener != null) listener.onProgressFlag(SET_PROGRESS_INDETERMINATE);
 
         // Get and check currently configured library directory.
         String libDirPath = DefaultPrefs.get().getLibDir(null);
@@ -369,7 +377,7 @@ public class Importer {
 
         // Update listener.
         logger.log(C.getStr(R.string.il_found_files, numTotal));
-        if (listener != null) listener.setMaxProgress(numTotal);
+        if (listener != null) listener.onProgressFlag(numTotal);
         progressSubject.onNext(numDone);
 
         // Start actual importing.
@@ -468,7 +476,7 @@ public class Importer {
         currState = State.SAVING;
         publishStateUpdate(State.SAVING);
         logger.log(C.getStr(R.string.il_saving_files));
-        progressSubject.onNext(SET_PROGRESS_INDETERMINATE);
+        if (listener != null) listener.onProgressFlag(SET_PROGRESS_INDETERMINATE);
 
         // We've finished importing all books, now we'll persist them to Realm.
         realm = Realm.getDefaultInstance();
@@ -579,7 +587,7 @@ public class Importer {
         }
 
         // Try to have the listener clear its progress UI, then destroy the progress subject.
-        progressSubject.onNext(SET_PROGRESS_DETERMINATE_ZERO);
+        if (listener != null) listener.onProgressFlag(SET_PROGRESS_DETERMINATE_ZERO);
         destroyProgressSubject();
 
         // Do a bit more logging.
@@ -630,7 +638,7 @@ public class Importer {
         // Catch the listener up to our current state.
         listener.onImportStateChanged(currState);
         listener.setNumQueued(queuedRuns.size());
-        listener.setMaxProgress(numTotal);
+        listener.onProgressFlag(numTotal);
         subscribeListenerToProgressSubject();
     }
 

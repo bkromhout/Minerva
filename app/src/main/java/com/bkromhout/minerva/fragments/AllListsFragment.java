@@ -1,6 +1,7 @@
 package com.bkromhout.minerva.fragments;
 
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -460,5 +461,10 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
     @Override
     public View getSnackbarAnchorView() {
         return coordinator;
+    }
+
+    @Override
+    public Activity getCtx() {
+        return getActivity();
     }
 }
