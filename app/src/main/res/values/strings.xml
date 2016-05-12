@@ -167,7 +167,8 @@
 
     <!-- Full Importer Log Strings -->
     <string name="il_done">Done\n</string>
-    <string name="il_starting">Starting import\n\n</string>
+    <string name="fil_starting">Starting full import\n\n</string>
+    <string name="ril_starting">Starting re-import\n\n</string>
     <string name="fil_finding_files">Finding files…</string>
     <string name="ril_build_file_list">Building file list…</string>
     <string name="il_found_files">Found %1$d file(s)\n\n</string>
@@ -192,7 +193,6 @@
     <string name="cancel_re_import">Cancel Re-Import</string>
 
     <!-- Re-Import Dialog Message Strings -->
-    <string name="ril_starting">Starting re-import</string>
     <string name="ril_reading_files">Reading files…</string>
     <string name="ril_read_file">Read file for “%1$s”</string>
     <string name="ril_saving_data">Saving data…</string>
