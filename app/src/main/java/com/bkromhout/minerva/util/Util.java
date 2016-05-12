@@ -72,13 +72,12 @@ public class Util {
     /**
      * Using a long time value, get a string which expresses the date and time relative to now. Minimum resolution is
      * seconds, transition resolution is one week, and we show the time when we transition to absolute.
-     * @param ctx  The context to use.
      * @param time The time in milliseconds.
      * @return Date time string.
      */
-    public static String getRelTimeString(Context ctx, long time) {
-        return DateUtils.getRelativeDateTimeString(ctx, time, DateUtils.SECOND_IN_MILLIS, DateUtils.WEEK_IN_MILLIS,
-                DateUtils.FORMAT_SHOW_TIME).toString();
+    public static String getRelTimeString(long time) {
+        return DateUtils.getRelativeDateTimeString(Minerva.getAppCtx(), time, DateUtils.SECOND_IN_MILLIS,
+                DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_SHOW_TIME).toString();
     }
 
     /**

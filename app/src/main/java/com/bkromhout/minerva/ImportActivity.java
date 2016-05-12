@@ -182,7 +182,7 @@ public class ImportActivity extends PermCheckingActivity implements Importer.Imp
         long lastTime = DefaultPrefs.get().getLastImportSuccessTime(-1);
 
         if (lastTime == -1) tvLastImportTime.setText(R.string.last_import_time_default);
-        else tvLastImportTime.setText(Util.getRelTimeString(this, lastTime));
+        else tvLastImportTime.setText(Util.getRelTimeString(lastTime));
     }
 
     /**

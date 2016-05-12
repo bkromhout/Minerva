@@ -2,6 +2,7 @@ package com.bkromhout.minerva.data;
 
 import android.support.annotation.NonNull;
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.realm.RImportLog;
 import com.bkromhout.minerva.util.Util;
@@ -22,11 +23,19 @@ import java.util.Calendar;
  */
 public class ImportLogger {
     /**
+     * Represents either the current log (if we're logging), or the most recent log (if we aren't logging).
+     */
+    public static final int CURRENT_OR_LATEST_LOG = 0;
+
+    /**
      * Implement to view past import logs and listen to running import logs.
      */
     public interface ImportLogListener {
         /**
          * Get an Observer whose {@code onNext()} method handles log string emissions.
+         * <p>
+         * It is expected that if {@code null} is passed to {@code onNext()}, the listener will clear whatever method it
+         * is using to display the full log in preparation for receiving new content.
          * @return Full log observer.
          */
         @NonNull
@@ -34,6 +43,9 @@ public class ImportLogger {
 
         /**
          * Get an Observer whose {@code onNext()} method handles error log string emissions.
+         * <p>
+         * It is expected that if {@code null} is passed to {@code onNext()}, the listener will clear whatever method it
+         * is using to display the error log in preparation for receiving new content.
          * @return Error log observer.
          */
         @NonNull
@@ -58,12 +70,20 @@ public class ImportLogger {
     private static ImportLogger INSTANCE;
 
     /*
-     * Common vars.
+     * Listener vars.
      */
     /**
      * Listener.
      */
     private ImportLogListener listener;
+    /**
+     * Listener's subscription to the log stream.
+     */
+    private Subscription listenerLogSub;
+    /**
+     * Listener's subscription to the error stream.
+     */
+    private Subscription listenerErrorSub;
 
     /*
      * Current import run vars.
@@ -85,18 +105,6 @@ public class ImportLogger {
      * Current number of errors logged.
      */
     private int currNumErrors;
-
-    /*
-     * Subscriber vars.
-     */
-    /**
-     * Listener's subscription to the log stream.
-     */
-    private Subscription listenerLogSub;
-    /**
-     * Listener's subscription to the error stream.
-     */
-    private Subscription listenerErrorSub;
 
     /**
      * Get the instance of {@link ImportLogger}.
@@ -163,8 +171,8 @@ public class ImportLogger {
      */
     private void unsubscribeListenerFromSubjects() {
         // Unsubscribe listener from old subjects.
-        if (listenerLogSub != null) listenerLogSub.unsubscribe();
-        if (listenerErrorSub != null) listenerErrorSub.unsubscribe();
+        if (listenerLogSub != null && !listenerLogSub.isUnsubscribed()) listenerLogSub.unsubscribe();
+        if (listenerErrorSub != null && !listenerErrorSub.isUnsubscribed()) listenerErrorSub.unsubscribe();
 
         // Null them.
         listenerLogSub = null;
@@ -182,9 +190,7 @@ public class ImportLogger {
                                                  .findAllSorted("endTime", Sort.DESCENDING);
 
             // Remove earliest log if we're at the limit.
-            realm.executeTransaction(tRealm -> {
-                if (logs.size() == C.MAX_LOGS) logs.last().deleteFromRealm();
-            });
+            if (logs.size() == C.MAX_LOGS) realm.executeTransaction(tRealm -> logs.last().deleteFromRealm());
         }
     }
 
@@ -195,6 +201,28 @@ public class ImportLogger {
     private void updateLastSuccessTime(long endTime) {
         DefaultPrefs.get().putLastImportSuccessTime(endTime);
         if (listener != null) listener.setLatestSuccessfulRun(endTime);
+    }
+
+    /**
+     * Publish a full log that we'd saved to the listener, if it's attached.
+     * @param fullLog Full log as a string.
+     */
+    private void publishSavedFullLog(String fullLog) {
+        if (listener == null) return;
+        Observer<String> fullLogObserver = listener.getFullLogObserver();
+        fullLogObserver.onNext(null);
+        fullLogObserver.onNext(fullLog);
+    }
+
+    /**
+     * Publish an error log that we'd saved to the listener, if it's attached.
+     * @param errorLog Error log as a string.
+     */
+    private void publishSavedErrorsLog(String errorLog) {
+        if (listener == null) return;
+        Observer<String> errorLogObserver = listener.getErrorLogObserver();
+        errorLogObserver.onNext(null);
+        errorLogObserver.onNext(errorLog);
     }
 
     /**
@@ -231,7 +259,8 @@ public class ImportLogger {
         // Make room for a new log if necessary.
         makeRoomForNewLogIfNeeded();
 
-        // TODO
+        // Switch the listener to the current log immediately, if it's attached.
+        switchLogs(CURRENT_OR_LATEST_LOG);
     }
 
     /**
@@ -254,8 +283,6 @@ public class ImportLogger {
 
         // Destroy subjects.
         destroySubjects();
-
-        // TODO Switch listener to use latest log strings.
 
         // Set isLogging to false.
         isLogging = false;
@@ -292,12 +319,82 @@ public class ImportLogger {
         return currNumErrors;
     }
 
+    /**
+     * Attaches the given {@code listener} so that it can receive updates for any current logs which start as well as
+     * view past logs.
+     * <p>
+     * Only one listener may be attached at a time.
+     * @param listener Import log listener.
+     */
     public final void startListening(ImportLogListener listener) {
-        // TODO
+        if (this.listener != null) throw new IllegalStateException("There is already a listener attached.");
+        this.listener = listener;
+
+        // Push the latest data to the listener immediately.
+        listener.setLatestSuccessfulRun(DefaultPrefs.get().getLastImportSuccessTime(-1));
+        switchLogs(CURRENT_OR_LATEST_LOG);
     }
 
+    /**
+     * Detaches the currently attached listener.
+     */
     public final void stopListening() {
-        // TODO
+        // Unsubscribe the listener's subscriptions, if they exist.
+        unsubscribeListenerFromSubjects();
+        listener = null;
+    }
+
+    /**
+     * Switches the log that is being shown in the listener to the one whose index is {@code whichLog}.
+     * <p>
+     * This is done by using the Observers obtained from the listener to clear and then send new content. A new log
+     * label is also set.
+     * <p>
+     * If currently logging an import run, passing {@code 0} for {@code whichLog} will subscribe the listener to the
+     * ongoing log.
+     * @param whichLog The index of the log to switch to. If invalid, this method does nothing.
+     */
+    public final void switchLogs(int whichLog) {
+        // Sanity checks.
+        if (whichLog < 0 || whichLog >= C.MAX_LOGS || listener == null) return;
+
+        // Special handling for when we're currently logging.
+        if (isLogging) {
+            if (whichLog == CURRENT_OR_LATEST_LOG) {
+                // If 0 is passed, we should subscribe the listener to the currently ongoing log.
+                subscribeListenerToSubjects();
+
+                // Now have the listener clear its current contents.
+                logSubject.onNext(null);
+                errorSubject.onNext(null);
+
+                // Then set the log label, and we're done.
+                listener.setCurrLogLabel(C.getStr(R.string.log_label_current_import_lc));
+                return;
+            } else // If we're logging and didn't pass 0, we want a past log; translate to proper index now.
+                whichLog--;
+        }
+
+        try (Realm realm = Realm.getDefaultInstance()) {
+            // Get the list of past logs from Realm.
+            RealmResults<RImportLog> logs = realm.where(RImportLog.class)
+                                                 .findAllSorted("endTime", Sort.DESCENDING);
+            // Make sure our index is valid. If it isn't, just do nothing.
+            if (whichLog >= logs.size()) return;
+
+            // Get the requested log.
+            RImportLog log = logs.get(whichLog);
+            // Make a log label for it.
+            String label = C.getStr(R.string.log_label_from_lc, Util.getRelTimeString(log.endTime));
+
+            // Make sure that the listener isn't subscribed currently.
+            unsubscribeListenerFromSubjects();
+
+            // Tell the listener the label, then publish the logs.
+            listener.setCurrLogLabel(label);
+            publishSavedFullLog(log.fullLog);
+            publishSavedErrorsLog(log.errorLog);
+        }
     }
 
     /**
