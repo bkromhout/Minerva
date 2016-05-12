@@ -16,7 +16,9 @@ import rx.subjects.ReplaySubject;
 import rx.subjects.SerializedSubject;
 import rx.subjects.Subject;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Helper class which handles logging functionality for the {@link Importer}.
@@ -342,6 +344,31 @@ public class ImportLogger {
         // Unsubscribe the listener's subscriptions, if they exist.
         unsubscribeListenerFromSubjects();
         listener = null;
+    }
+
+    /**
+     * Returns a list of past logs which are available for viewing. If there is an import running, the current log will
+     * be the first item. If there are no past logs, and there isn't an import running, the list will be empty.
+     * @return List of logs which may be viewed currently, or empty if there are none.
+     */
+    public final List<String> getLogList() {
+        ArrayList<String> logList = new ArrayList<>();
+
+        // Add the current log if we're logging.
+        if (isLogging) logList.add(C.getStr(R.string.log_label_current_import_uc));
+
+        // Add all past logs.
+        try (Realm realm = Realm.getDefaultInstance()) {
+            // Get the list of past logs from Realm.
+            RealmResults<RImportLog> logs = realm.where(RImportLog.class)
+                                                 .findAllSorted("endTime", Sort.DESCENDING);
+
+            // Create and add their labels.
+            for (RImportLog log : logs)
+                logList.add(C.getStr(R.string.log_label_from_uc, Util.getRelTimeString(log.endTime)));
+        }
+
+        return logList;
     }
 
     /**
