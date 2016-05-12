@@ -29,7 +29,6 @@ import com.bkromhout.minerva.adapters.BookCardAdapter;
 import com.bkromhout.minerva.adapters.BookCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
 import com.bkromhout.minerva.data.ActionHelper;
-import com.bkromhout.minerva.data.ReImporter;
 import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.enums.SortDir;
 import com.bkromhout.minerva.enums.SortType;
@@ -62,8 +61,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * Fragment in charge of showing the user's whole library.
  */
-public class LibraryFragment extends Fragment implements ActionMode.Callback, ReImporter.IReImportListener,
-        BubbleTextProvider, FastScrollHandleStateListener, SnackKiosk.Snacker {
+public class LibraryFragment extends Fragment implements ActionMode.Callback, BubbleTextProvider,
+        FastScrollHandleStateListener, SnackKiosk.Snacker {
     // Views.
     @BindView(R.id.coordinator)
     CoordinatorLayout coordinator;
@@ -225,8 +224,6 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        // Reattach to the ReImporter if it's currently running so that it can draw its dialog.
-        ReImporter.reAttachIfExists(this);
     }
 
     @Override
@@ -257,8 +254,6 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
-        // Detach from the ReImporter if it's currently running.
-        ReImporter.detachListener();
         // Finish action mode so that it doesn't leak.
         if (actionMode != null) actionMode.finish();
     }
@@ -302,7 +297,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_import:
-                // Open the full import activity.
+                // Open the import activity.
                 Util.startAct(getActivity(), ImportActivity.class, null);
                 return true;
             default:
@@ -368,9 +363,8 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
                 break;
             }
             case R.id.action_re_import: {
-                ActionHelper.reImportBooks(selectedItems, this);
-                // Don't dismiss action mode yet.
-                return;
+                ActionHelper.reImportBooks(selectedItems);
+                break;
             }
             case R.id.action_delete: {
                 ActionHelper.deleteBooks(selectedItems, (boolean) event.getData());
@@ -392,14 +386,6 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Re
                 break;
             }
         }
-    }
-
-    @Override
-    public void onReImportFinished(boolean wasSuccess) {
-        // Notify the adapter that it should refresh the layouts of the selected items.
-        adapter.notifySelectedItemsChanged();
-        // If we finished successfully, finish the action mode.
-        if (wasSuccess) actionMode.finish();
     }
 
     /**

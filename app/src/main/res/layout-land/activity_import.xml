@@ -58,6 +58,13 @@
                     android:layout_height="wrap_content"
                     style="?android:attr/progressBarStyleHorizontal"/>
 
+            <TextView
+                    android:id="@+id/num_queued"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/num_queued"
+                    style="@style/LabelText"/>
+
             <Space
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
@@ -94,7 +101,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/LabelText"
-                    android:text="@string/lbl_log_from"/>
+                    android:text="@string/log_label"/>
 
             <FrameLayout
                     android:id="@+id/import_logs_cont"

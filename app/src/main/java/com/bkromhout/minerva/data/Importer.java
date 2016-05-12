@@ -1,11 +1,13 @@
 package com.bkromhout.minerva.data;
 
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.rx.RxFileWalker;
+import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
 import io.realm.Realm;
 import rx.Observable;
@@ -24,7 +26,7 @@ import java.util.List;
 import java.util.Queue;
 
 /**
- * Handles full library imports.
+ * Handles all importing.
  */
 public class Importer {
     public static final int SET_PROGRESS_INDETERMINATE = -1;
@@ -35,20 +37,26 @@ public class Importer {
      */
     public interface ImportStateListener {
         /**
-         * Set the max progress state.
-         * <p>
-         * Listeners should be prepared to accept {@link #SET_PROGRESS_INDETERMINATE} and {@link
-         * #SET_PROGRESS_DETERMINATE_ZERO} and react accordingly.
-         * @param maxProgress Max progress.
-         */
-        void setMaxProgress(int maxProgress);
-
-        /**
          * Get an Observer whose {@code onNext()} method handles progress updates.
          * @return Progress observer.
          */
         @NonNull
         Observer<Integer> getProgressObserver();
+
+        /**
+         * Set the max progress state.
+         * <p>
+         * Listeners should be prepared to accept {@link #SET_PROGRESS_INDETERMINATE} and {@link
+         * #SET_PROGRESS_DETERMINATE_ZERO}, both of which are negative values, and react accordingly.
+         * @param maxProgress Max progress, or special constant.
+         */
+        void setMaxProgress(int maxProgress);
+
+        /**
+         * Set the number of queued import runs.
+         * @param numQueued Number of import runs in the queue.
+         */
+        void setNumQueued(int numQueued);
 
         /**
          * Called when the importer's state has changed.
@@ -65,7 +73,7 @@ public class Importer {
     }
 
     /**
-     * Types of imports.
+     * Types of import runs.
      */
     private enum ImportType {
         FULL, REDO
@@ -84,9 +92,13 @@ public class Importer {
      */
     private State currState;
     /**
-     * What type of import is currently running.
+     * The {@link ImportRun}s which are currently waiting to be executed.
      */
-    private ImportType currType;
+    private volatile Queue<ImportRun> queuedRuns;
+    /**
+     * The {@link ImportRun} that is currently being executed.
+     */
+    private ImportRun currRun = null;
     /**
      * What directory the importer is currently importing from.
      */
@@ -148,56 +160,101 @@ public class Importer {
 
     // No public initialization.
     private Importer() {
-        resetState();
-        // Get the ImportLogger now.
-        logger = ImportLogger.get();
-        // Create subject here, it should always exist.
-        progressSubject = new SerializedSubject<>(BehaviorSubject.create());
+        // Init vars
+        this.logger = ImportLogger.get();
+        this.currDir = null;
+        this.numDone = 0;
+        this.numTotal = 0;
+        this.currRun = null;
+        this.bookQueue = new LinkedList<>();
+        this.queuedRuns = new LinkedList<>();
+
+        // Set our state to READY.
+        currState = State.READY;
     }
 
     /**
-     * Starts a full import run. The importer will import files from the configured library directory.
-     * <p>
-     * Calling this when the importer isn't in a ready state will do nothing.
-     * @param listener The {@link ImportStateListener} to register for this run, or null if no listener should be
-     *                 registered. Note that if there is already a listener registered, this will be ignored.
+     * Create new progress subject.
      */
-    public void doFullImport(ImportStateListener listener) {
-        // Don't do anything if we aren't in a ready state.
-        if (currState != State.READY) return;
-
-        // Reset subjects and possibly register a listener.
-        resetProgressSubject();
-        if (listener != null) startListening(listener);
-
-        currType = ImportType.FULL;
-        // Kick off preparations; flow will continue from there.
-        doFullImportPrep();
+    private void createProgressSubject() {
+        if (progressSubject == null) progressSubject = new SerializedSubject<>(BehaviorSubject.create());
     }
 
     /**
-     * TODO Make re-import process use this instead!
-     * <p>
-     * Starts a re-import run. The importer will re-import files associated with the given {@code books} from the
-     * configured library directory.
-     * <p>
-     * Calling this when the importer isn't in a ready state will do nothing.
-     * @param listener The {@link ImportStateListener} to register for this run, or null if no listener should be
-     *                 registered. Note that if there is already a listener registered, this will be ignored.
-     * @param books    List of {@link RBook}s to re-import.
+     * Unsubscribe, complete, and nullify progress subject.
      */
-    public void doReImport(ImportStateListener listener, List<RBook> books) {
-        // Don't do anything if we aren't in a ready state.
-        if (currState != State.READY) return;
+    private void destroyProgressSubject() {
+        unsubscribeListenerFromProgressSubject();
 
-        // Reset subjects and possibly register a listener.
-        resetProgressSubject();
-        if (listener != null) startListening(listener);
-        // TODO else, show a global snackbar saying re-import was started.
+        // Complete subject, if it exists.
+        if (progressSubject != null) progressSubject.onCompleted();
 
-        currType = ImportType.REDO;
-        // Kick off preparations; flow will continue from there.
-        doReImportPrep(books);
+        // Null it.
+        progressSubject = null;
+    }
+
+    /**
+     * Subscribe listener to progress subject.
+     */
+    private void subscribeListenerToProgressSubject() {
+        // Subscribe to progress updates.
+        if (progressSubject != null && listenerProgressSub == null)
+            listenerProgressSub = progressSubject.observeOn(AndroidSchedulers.mainThread())
+                                                 .subscribe(listener.getProgressObserver());
+    }
+
+    /**
+     * Unsubscribe listener from progress subject.
+     */
+    private void unsubscribeListenerFromProgressSubject() {
+        // Unsubscribe listener from old subject.
+        if (listenerProgressSub != null && !listenerProgressSub.isUnsubscribed()) listenerProgressSub.unsubscribe();
+
+        // Null it.
+        listenerProgressSub = null;
+    }
+
+    /**
+     * Checks the state to determine if the importer is currently idle or is trying to get to an idle state.
+     * @return True if state is ready, cancelling, or finishing; otherwise false.
+     */
+    private boolean isReadyOrTryingToBe() {
+        return currState == State.READY || currState == State.CANCELLING || currState == State.FINISHING;
+    }
+
+    /**
+     * Publishes a new {@link State} to the listener, if it's attached.
+     * @param newState State to publish.
+     */
+    private void publishStateUpdate(State newState) {
+        if (listener != null) listener.onImportStateChanged(newState);
+    }
+
+    /**
+     * Queue a new import run. If no import runs are currently queued/running, the new one will be started immediately.
+     * @param newRun New import run.
+     */
+    private void queueNewRun(ImportRun newRun) {
+        queuedRuns.add(newRun);
+        int numBefore = queuedRuns.size();
+        startNextRun();
+        // Only update the listener if we know startNextRun() didn't do it.
+        if (queuedRuns.size() == numBefore && listener != null) listener.setNumQueued(numBefore);
+    }
+
+    /**
+     * Attempts to start executing the next {@link ImportRun} in {@link #queuedRuns}.
+     */
+    private void startNextRun() {
+        // Don't do anything if we're still executing some other import run.
+        if (currRun != null) return;
+
+        // Try to get and start the next import run.
+        currRun = queuedRuns.poll();
+        if (currRun != null) {
+            if (listener != null) listener.setNumQueued(queuedRuns.size());
+            doCommonPrep();
+        }
     }
 
     /**
@@ -206,12 +263,14 @@ public class Importer {
     private void doCommonPrep() {
         currState = State.PREP;
 
-        // Inform the logger we're about to start an import run. Then log the type of import.
+        // Figure out what type of import run this is, then tell the logger we're about to start a new run.
         logger.prepareNewLog();
+        logger.log(C.getStr(currRun.type == ImportType.FULL ? R.string.fil_starting : R.string.ril_starting));
 
-        // Listener updates.
-        if (listener != null) listener.onImportStateChanged(State.PREP);
-        logger.log(C.getStr(currType == ImportType.FULL ? R.string.fil_starting : R.string.ril_starting));
+        // Create progress subject and update listener
+        createProgressSubject();
+        subscribeListenerToProgressSubject();
+        publishStateUpdate(State.PREP);
         progressSubject.onNext(SET_PROGRESS_INDETERMINATE);
 
         // Get and check currently configured library directory.
@@ -219,8 +278,12 @@ public class Importer {
         if ((currDir = Util.tryResolveDir(libDirPath)) == null) {
             // We don't have a valid library directory.
             logger.error(C.getStr(R.string.il_err_invalid_lib_dir));
-            resetState();
+            doTeardownThenStartNextRun(true);
         }
+
+        // Depending on the type of run this is, do a different sort of preparation.
+        if (currRun.type == ImportType.FULL) doFullImportPrep();
+        else doReImportPrep(currRun.reImportRelPaths);
     }
 
     /**
@@ -232,8 +295,6 @@ public class Importer {
      * files; once that flow produces a list, it will call {@link #onGotFileList(List)}.
      */
     private void doFullImportPrep() {
-        doCommonPrep();
-
         logger.log(C.getStr(R.string.fil_finding_files));
         // Get a list of files in the directory (and its subdirectories) which have certain extensions.
         // This will call through to onGotFileList() once it has the results.
@@ -251,18 +312,15 @@ public class Importer {
     /**
      * Prepare for a re-import.
      * <p>
-     * Try to get files which are associated with the given {@code books} from the library directory.
+     * Try to get files which are at the given {@code relPaths} in the library directory.
      * <p>
      * We use an Rx flow to do that, and once that flow produces a list, it will call {@link #onGotFileList(List)}.
-     * @param books List of {@link RBook}s to re-import.
+     * @param relPaths List of relative paths pulled from {@link RBook}s we wish to re-import.
      */
-    private void doReImportPrep(List<RBook> books) {
-        doCommonPrep();
-
+    private void doReImportPrep(List<String> relPaths) {
         logger.log(C.getStr(R.string.ril_build_file_list));
         fileResolverSubscription = Observable
-                .from(books)
-                .map(book -> book.relPath)
+                .from(relPaths)
                 .map(relPath -> {
                     File file = Util.getFileFromRelPath(currDir, relPath);
                     if (file == null) logger.error(C.getStr(R.string.ril_err_getting_file,
@@ -276,7 +334,7 @@ public class Importer {
                     String s = C.getStr(R.string.ril_err_getting_files);
                     Timber.e(t, s);
                     logger.error("\n" + s + ":\n\"" + t.getMessage() + "\"\n");
-                    cancelFullImport();
+                    cancelImportRun();
                 });
     }
 
@@ -290,8 +348,8 @@ public class Importer {
     private void onGotFileList(List<File> files) {
         logger.log(C.getStr(R.string.il_done));
         // Check if we should stop.
-        if (isIdleOrTryingToBe()) {
-            resetState();
+        if (isReadyOrTryingToBe()) {
+            doTeardownThenStartNextRun(true);
             return;
         }
         // Remove reference to subscription.
@@ -301,7 +359,7 @@ public class Importer {
         if (files.isEmpty()) {
             // We don't have any files.
             logger.log(C.getStr(R.string.il_err_no_files));
-            resetState();
+            doTeardownThenStartNextRun(false);
             return;
         }
 
@@ -328,8 +386,8 @@ public class Importer {
      */
     private void doImportFiles(List<File> files) {
         // Check if we should stop.
-        if (isIdleOrTryingToBe()) {
-            resetState();
+        if (isReadyOrTryingToBe()) {
+            doTeardownThenStartNextRun(true);
             return;
         }
 
@@ -373,8 +431,8 @@ public class Importer {
      */
     private void onImportedBookFile(RBook rBook) {
         // Check if we should stop.
-        if (isIdleOrTryingToBe()) {
-            resetState();
+        if (isReadyOrTryingToBe()) {
+            doTeardownThenStartNextRun(true);
             return;
         }
 
@@ -392,7 +450,7 @@ public class Importer {
         String s = C.getStr(R.string.il_err_generic);
         Timber.e(t, s);
         logger.error("\n" + s + ":\n\"" + t.getMessage() + "\"\n");
-        cancelFullImport();
+        cancelImportRun();
     }
 
     /**
@@ -401,14 +459,14 @@ public class Importer {
     private void onAllFilesImported() {
         logger.log(C.getStr(R.string.il_all_files_read));
         // Check if we should stop.
-        if (isIdleOrTryingToBe()) {
-            resetState();
+        if (isReadyOrTryingToBe()) {
+            doTeardownThenStartNextRun(true);
             return;
         }
 
         // Cancelling isn't allowed from this point until we're done persisting data to Realm.
         currState = State.SAVING;
-        if (listener != null) listener.onImportStateChanged(State.SAVING);
+        publishStateUpdate(State.SAVING);
         logger.log(C.getStr(R.string.il_saving_files));
         progressSubject.onNext(SET_PROGRESS_INDETERMINATE);
 
@@ -433,118 +491,157 @@ public class Importer {
                     String s = C.getStr(R.string.il_err_realm);
                     Timber.e(error, s);
                     logger.error("\n" + s + "\n");
-                    unsafeCancelFullImport();
+                    _cancelImportRun();
                 });
     }
 
     /**
-     * Called when the full import has finished successfully.
+     * Called when an import run has finished successfully.
      */
     private void importFinished() {
-        // TODO global snackbar or something.
         logger.log(C.getStr(R.string.il_done));
-
-        // Final log message depends on the number of errors that occurred.
-        int numErrors = logger.getCurrNumErrors();
-        if (numErrors > 0) logger.log(C.getStr(R.string.il_finished_with_errors, numErrors));
-        else logger.log(C.getStr(R.string.il_finished));
-
-        resetState();
-        progressSubject.onNext(SET_PROGRESS_DETERMINATE_ZERO);
-        logger.finishCurrentLog(numErrors == 0);
-        if (listener != null) listener.onImportStateChanged(State.READY);
+        doTeardownThenStartNextRun(false);
     }
 
     /**
-     * Cancels the currently running full import.
+     * Cancels the current import run, unconditionally. Will then try and start the next queued run.
      * <p>
-     * Note that if the importer has already entered the saving state, or if the importer isn't preparing or running,
-     * this does nothing.
+     * Internal methods should still prefer calling {@link #cancelImportRun()} to this method, unless the checks on that
+     * method prohibit a cancel where it is required.
      */
-    public void cancelFullImport() {
-        if (isIdleOrTryingToBe() || currState == State.SAVING) return;
-        unsafeCancelFullImport();
+    private void _cancelImportRun() {
+        publishStateUpdate(State.CANCELLING);
+        doTeardownThenStartNextRun(true);
     }
 
     /**
-     * Cancels the full import, unconditionally.
-     * <p>
-     * Internal methods should still prefer calling {@link #cancelFullImport()} to this method, unless the checks on
-     * that method prohibit a cancel where it is required.
+     * Sends a Snackbar using {@link SnackKiosk} with the results of the import, unless a listener is attached and
+     * subscribed to the logs, in which case we assume they already know.
+     * @param wasCancelled Whether or not the import was cancelled.
+     * @param numErrors    How many errors occurred during the run.
      */
-    private void unsafeCancelFullImport() {
-        // TODO global snackbar or something.
-        if (listener != null) listener.onImportStateChanged(State.CANCELLING);
-        logger.log(C.getStr(R.string.il_cancelling));
-        resetState();
-        logger.log(C.getStr(R.string.il_done));
+    private void sendFinishedSnackbar(boolean wasCancelled, int numErrors) {
+        StringBuilder builder = new StringBuilder();
 
-        progressSubject.onNext(SET_PROGRESS_DETERMINATE_ZERO);
-        logger.finishCurrentLog(false);
-        if (listener != null) listener.onImportStateChanged(State.READY);
+        // Which type?
+        String part = C.getStr(currRun.type == ImportType.FULL ? R.string.sb_fil : R.string.sb_ril);
+        builder.append(part);
+
+        // Finished, or cancelled?
+        part = C.getStr(wasCancelled ? R.string.sb_result_cancelled : R.string.sb_result_finished);
+        builder.append(part);
+
+        // Processing result.
+        if (numTotal == 0 && numErrors == 0) part = C.getStr(R.string.sb_il_results_zero);
+        else if (numTotal == 0) part = C.getQStr(R.plurals.sb_il_just_error_results, numErrors, numErrors);
+        else part = C.getQStr(R.plurals.sb_il_results, numDone, numDone, numTotal);
+        builder.append(part);
+
+        // Errors result (if errors weren't our sole processing result).
+        if (numTotal != 0 && numErrors != 0) {
+            part = C.getQStr(R.plurals.sb_il_and_error_results, numErrors, numErrors);
+            builder.append(part);
+        }
+
+        // Number of imports queued.
+        int numQueued = queuedRuns.size();
+        if (numQueued != 0) {
+            part = C.getQStr(R.plurals.sb_il_more_queued, numQueued, numQueued);
+            builder.append(part);
+        }
+
+        // Append a period too.
+        builder.append(".");
+
+        // Only send if listener isn't subscribed to the current import log right now.
+        if (!logger.isCurrentRunObserved()) SnackKiosk.snack(builder.toString(), R.string.sb_il_action_details,
+                R.id.sb_action_open_import_activity, Snackbar.LENGTH_LONG);
     }
 
     /**
-     * Resets the importer's state so that it is ready for the next call.
-     * <p>
-     * BE CAREFUL!
+     * Takes care of resetting the importer's state, finishing the log, and updating the listener. Once that's done,
+     * attempts to start executing the next {@link ImportRun} in {@link #queuedRuns}.
+     * @param wasCancelled Whether or not the run was cancelled.
      */
-    private void resetState() {
+    private void doTeardownThenStartNextRun(boolean wasCancelled) {
         // Start resetting, unless we already are resetting.
         if (currState != State.FINISHING && currState != State.READY) currState = State.FINISHING;
         else return;
 
-        // Unsubscribe from the file walker subscription.
+        // Unsubscribe from internal-use subs if they're still active.
         if (fileResolverSubscription != null) fileResolverSubscription.unsubscribe();
-        // Unsubscribe from the file importer subscription.
         if (fileImporterSubscription != null) fileImporterSubscription.unsubscribe();
 
+        // Close Realm if need be.
+        if (realm != null) {
+            realm.close();
+            realm = null;
+        }
+
+        // Try to have the listener clear its progress UI, then destroy the progress subject.
+        progressSubject.onNext(SET_PROGRESS_DETERMINATE_ZERO);
+        destroyProgressSubject();
+
+        // Do a bit more logging.
+        boolean wasSuccess;
+        int numErrors = logger.getCurrNumErrors();
+        if (wasCancelled) {
+            // Final log message notes that the import was cancelled.
+            logger.log(C.getStr(R.string.il_cancelled));
+            wasSuccess = false;
+        } else {
+            // We currently still consider a full import successful even if it had errors.
+            wasSuccess = numErrors == 0 || currRun.type == ImportType.FULL;
+
+            // Final log message depends on the number of errors that occurred.
+            if (numErrors > 0) logger.log(C.getStr(R.string.il_finished_with_errors, numErrors));
+            else logger.log(C.getStr(R.string.il_finished));
+        }
+
+        // Send Snackbar at this point informing the user of results.
+        sendFinishedSnackbar(wasCancelled, numErrors);
+
         // Reset vars.
-        this.currDir = null;
-        this.numDone = 0;
-        this.numTotal = 0;
-        this.bookQueue = new LinkedList<>();
+        currDir = null;
+        numDone = 0;
+        numTotal = 0;
+        currRun = null;
+        bookQueue = new LinkedList<>();
 
-        // Close Realm.
-        if (realm != null) realm.close();
-        realm = null;
-
-        this.currType = null;
+        // Close the log, then inform the listener that we're ready again.
+        logger.finishCurrentLog(wasSuccess);
         this.currState = State.READY;
+        publishStateUpdate(State.READY);
+
+        // Try to start the next queued run.
+        startNextRun();
     }
 
     /**
-     * Recreate subject and subscribe the listener to the new one.
+     * Set the listener. (The listener will be caught up if need be)
+     * <p>
+     * Only one listener may be attached at a time.
+     * @param listener Import state listener.
      */
-    private void resetProgressSubject() {
-        // Unsubscribe listener from old subject.
-        if (listenerProgressSub != null) listenerProgressSub.unsubscribe();
+    public final void startListening(@NonNull ImportStateListener listener) {
+        if (this.listener != null) throw new IllegalStateException("There is already a listener attached.");
+        this.listener = listener;
 
-        // Complete subject, if it exists.
-        if (progressSubject != null) progressSubject.onCompleted();
-
-        // Create new subject.
-        progressSubject = new SerializedSubject<>(BehaviorSubject.create());
-
-        // Subscribe listener to the new subject.
-        if (listener != null) subscribeListenerToProgressSubject();
+        // Catch the listener up to our current state.
+        listener.onImportStateChanged(currState);
+        listener.setNumQueued(queuedRuns.size());
+        listener.setMaxProgress(numTotal);
+        subscribeListenerToProgressSubject();
     }
 
-    /**
-     * Checks the state to determine if the importer is currently idle or is trying to get to an idle state.
-     * @return True if state is ready, cancelling, or finishing; otherwise false.
-     */
-    private boolean isIdleOrTryingToBe() {
-        return currState == State.READY || currState == State.CANCELLING || currState == State.FINISHING;
-    }
 
     /**
-     * Subscribe listener to progress subject.
+     * Unregister the listener.
      */
-    private void subscribeListenerToProgressSubject() {
-        if (progressSubject != null && listenerProgressSub == null)
-            listenerProgressSub = progressSubject.observeOn(AndroidSchedulers.mainThread())
-                                                 .subscribe(listener.getProgressObserver());
+    public final void stopListening() {
+        // Unsubscribe the listener's subscription, if it exists.
+        unsubscribeListenerFromProgressSubject();
+        listener = null;
     }
 
     /**
@@ -557,28 +654,73 @@ public class Importer {
     }
 
     /**
-     * Set the listener. (The listener will be caught up if need be)
+     * Queues a full import run. The importer will import files from the configured library directory.
      * <p>
-     * If there is already a listener registered, this will do nothing.
-     * @param listener Listener.
+     * Calling this when the importer isn't in a ready state will do nothing.
      */
-    public final void startListening(ImportStateListener listener) {
-        if (listener == null || this.listener != null) return;
-        this.listener = listener;
-
-        // Catch the listener up to our current state.
-        listener.onImportStateChanged(currState);
-        listener.setMaxProgress(numTotal);
-        subscribeListenerToProgressSubject();
+    public final void queueFullImport() {
+        queueNewRun(new ImportRun(ImportType.FULL, null));
+        // Show snackbar if we had to queue the import, or if we didn't but our listener isn't attached.
+        if (!queuedRuns.isEmpty()) SnackKiosk.snack(R.string.sb_fil_queued, Snackbar.LENGTH_SHORT);
+        else if (listener == null) SnackKiosk.snack(R.string.sb_fil_started, Snackbar.LENGTH_SHORT);
     }
 
     /**
-     * Unregister the listener.
+     * Queues a re-import run. The importer will re-import files associated with the given {@code books} from the
+     * configured library directory.
+     * <p>
+     * Calling this when the importer isn't in a ready state will do nothing.
+     * @param books List of {@link RBook}s to re-import.
      */
-    public final void stopListening() {
-        if (listenerProgressSub != null) listenerProgressSub.unsubscribe();
-        listener = null;
-        // If the importer is in a ready state, we should go ahead and reset the subject too.
-        if (isReady()) resetProgressSubject();
+    public final void queueReImport(List<RBook> books) {
+        queueNewRun(new ImportRun(ImportType.REDO, books));
+
+        // Show a snackbar saying either that the re-import was started or queued.
+        SnackKiosk.snack(queuedRuns.isEmpty() ? R.string.sb_ril_started : R.string.sb_ril_queued,
+                Snackbar.LENGTH_SHORT);
+    }
+
+    /**
+     * Cancels the current import run. Note that this will automatically cause the next queued run to be started.
+     * <p>
+     * If the importer has already entered the saving state, or if the importer isn't preparing or running, this does
+     * nothing.
+     */
+    public final void cancelImportRun() {
+        if (isReadyOrTryingToBe() || currState == State.SAVING) return;
+        _cancelImportRun();
+    }
+
+    /**
+     * Helper class to hold information about an import run.
+     */
+    private static class ImportRun {
+        /**
+         * The type of import run this is.
+         */
+        public final ImportType type;
+        /**
+         * If {@link #type} is {@link ImportType#REDO}, this will be a list of relative file paths which we need to
+         * re-import from the library directory.
+         */
+        public final List<String> reImportRelPaths;
+
+        private ImportRun(ImportType type, List<RBook> reImportRelPaths) {
+            this.type = type;
+            this.reImportRelPaths = rBooksToRelPaths(reImportRelPaths);
+        }
+
+        /**
+         * Extracts relative paths from a list of {@link RBook}s.
+         * @param books List of {@link RBook}s.
+         * @return List of relative paths.
+         */
+        private List<String> rBooksToRelPaths(List<RBook> books) {
+            return Observable.from(books)
+                             .map(book -> book.relPath)
+                             .toList()
+                             .toBlocking()
+                             .single();
+        }
     }
 }

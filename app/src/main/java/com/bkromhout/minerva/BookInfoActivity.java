@@ -24,7 +24,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.CoverHelper;
-import com.bkromhout.minerva.data.ReImporter;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
@@ -44,7 +43,7 @@ import java.util.List;
 /**
  * Displays information for some {@link com.bkromhout.minerva.realm.RBook}.
  */
-public class BookInfoActivity extends PermCheckingActivity implements ReImporter.IReImportListener, SnackKiosk.Snacker {
+public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk.Snacker {
     /**
      * Part of the information for which views are conditionally shown.
      * @see #togglePart(Part, boolean)
@@ -313,9 +312,7 @@ public class BookInfoActivity extends PermCheckingActivity implements ReImporter
                 break;
             }
             case R.id.action_re_import: {
-                ActionHelper.reImportBook(book, this);
-                // We may have changed things, so we'll need to update the book's card.
-                needsPosUpdate = true;
+                ActionHelper.reImportBook(book);
                 return;
             }
             case R.id.action_delete: {
@@ -491,11 +488,6 @@ public class BookInfoActivity extends PermCheckingActivity implements ReImporter
     @Override
     public Activity getCtx() {
         return this;
-    }
-
-    @Override
-    public void onReImportFinished(boolean wasSuccess) {
-        // Nothing, realm's change listener takes care of updating the UI for us.
     }
 
     @NonNull

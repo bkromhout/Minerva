@@ -3,6 +3,7 @@ package com.bkromhout.minerva;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.support.annotation.ColorInt;
+import android.support.annotation.PluralsRes;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
@@ -142,5 +143,26 @@ public final class C {
      */
     public static String getStr(@StringRes int resId, Object... formatArgs) {
         return Minerva.getAppCtx().getString(resId, formatArgs);
+    }
+
+    /**
+     * Get a quantity string resource using the application context.
+     * @param resId String resource ID.
+     * @param count Quantity.
+     * @return Quantity string.
+     */
+    public static String getQStr(@PluralsRes int resId, int count) {
+        return Minerva.getAppCtx().getResources().getQuantityString(resId, count);
+    }
+
+    /**
+     * Get a formatted quantity string resource using the application context.
+     * @param resId      String resource ID.
+     * @param count      Quantity.
+     * @param formatArgs Format arguments.
+     * @return Formatted quantity string.
+     */
+    public static String getQStr(@PluralsRes int resId, int count, Object... formatArgs) {
+        return Minerva.getAppCtx().getResources().getQuantityString(resId, count, formatArgs);
     }
 }

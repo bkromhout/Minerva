@@ -149,15 +149,17 @@
     <string name="lbl_folder">Folder</string>
     <string name="lbl_last_import_time">Last Successful Import</string>
     <string name="last_import_time_default">Never</string>
-    <string name="lbl_log_from">Log %1$s</string>
     <string name="lbl_choose_log">Choose Log</string>
     <string name="lbl_full_log">Full</string>
     <string name="lbl_errors_only">Errors</string>
 
+    <string name="log_label">Log %1$s</string>
     <string name="log_label_current_import_uc">For current import</string>
     <string name="log_label_current_import_lc">for current import</string>
     <string name="log_label_from_uc">From %1$s</string>
     <string name="log_label_from_lc">from %1$s</string>
+
+    <string name="num_queued">%1$d Queued</string>
 
     <string name="import_red_choose_dir">Choose a library folder first</string>
     <string name="import_red_no_cancel">Saving book info; you can’t cancel now</string>
@@ -165,7 +167,7 @@
     <string name="start_full_import">Start Full Import</string>
     <string name="choose_library_dir">Choose Library Folder</string>
 
-    <!-- Full Importer Log Strings -->
+    <!-- Importer Log Strings -->
     <string name="il_done">Done\n</string>
     <string name="fil_starting">Starting full import\n\n</string>
     <string name="ril_starting">Starting re-import\n\n</string>
@@ -178,7 +180,7 @@
     <string name="il_saving_files">Saving file data…</string>
     <string name="il_finished">\nFinished import.</string>
     <string name="il_finished_with_errors">\nFinished import with %1$d errors.</string>
-    <string name="il_cancelling">\nCancelling…</string>
+    <string name="il_cancelled">\nImport cancelled.</string>
 
     <string name="il_err_generic">Error while importing and converting files</string>
     <string name="il_err_processing_file">Error while importing “%1$s”\n</string>
@@ -187,6 +189,38 @@
     <string name="il_err_invalid_lib_dir">Invalid library folder, cancelling import</string>
     <string name="il_err_no_files">There are no files to import</string>
     <string name="il_err_realm">Realm error</string>
+
+    <!-- Importer Snackbar Strings -->
+    <string name="sb_il_action_details">Details</string>
+    <string name="sb_fil_queued">Full import queued</string>
+    <string name="sb_ril_queued">Re-import queued</string>
+    <string name="sb_fil_started">Full import started</string>
+    <string name="sb_ril_started">Re-import started</string>
+
+    <string name="sb_fil">Full import</string>
+    <string name="sb_ril">Re-import</string>
+    <string name="sb_result_finished"> finished</string>
+    <string name="sb_result_cancelled"> cancelled</string>
+
+    <string name="sb_il_results_zero">; found nothing to import</string>
+    <plurals name="sb_il_results">
+        <item quantity="one">; processed %1$d book out of %2$d</item>
+        <item quantity="other">; processed %1$d books out of %2$d</item>
+    </plurals>
+    <plurals name="sb_il_just_error_results">
+        <item quantity="one">; had %1$d error</item>
+        <item quantity="other">; had %1$d errors</item>
+    </plurals>
+
+    <plurals name="sb_il_and_error_results">
+        <item quantity="one">, and had %1$d error</item>
+        <item quantity="other">, and had %1$d errors</item>
+    </plurals>
+
+    <plurals name="sb_il_more_queued">
+        <item quantity="one">. There is %1$d more import run queued</item>
+        <item quantity="other">. There are %1$d more import runs queued</item>
+    </plurals>
 
     <!-- Re-Import Dialog -->
     <string name="title_dialog_re_import_progress">Re-Import Progress</string>

@@ -54,6 +54,12 @@ public class ImportLogger {
         Observer<String> getErrorLogObserver();
 
         /**
+         * Get whether or not the log should be switched automatically if a new import run starts.
+         * @return True to auto-switch logs when a new import starts, false otherwise.
+         */
+        boolean shouldAutoSwitchWhenStarting();
+
+        /**
          * Inform the listener of the last time an import completed successfully.
          * @param time Most recent time an import run completed successfully in milliseconds.
          */
@@ -261,8 +267,8 @@ public class ImportLogger {
         // Make room for a new log if necessary.
         makeRoomForNewLogIfNeeded();
 
-        // Switch the listener to the current log immediately, if it's attached.
-        switchLogs(CURRENT_OR_LATEST_LOG);
+        // Switch the listener to the current log immediately, if it's attached and wishes for us to do so.
+        if (listener != null && listener.shouldAutoSwitchWhenStarting()) switchLogs(CURRENT_OR_LATEST_LOG);
     }
 
     /**
@@ -322,13 +328,21 @@ public class ImportLogger {
     }
 
     /**
+     * Get whether or not there is a listener present that is listening to updates from the current import run.
+     * @return True if a listener is attached and subscribed to the current import run, otherwise false.
+     */
+    boolean isCurrentRunObserved() {
+        return listener != null && listenerLogSub != null && !listenerLogSub.isUnsubscribed();
+    }
+
+    /**
      * Attaches the given {@code listener} so that it can receive updates for any current logs which start as well as
      * view past logs.
      * <p>
      * Only one listener may be attached at a time.
      * @param listener Import log listener.
      */
-    public final void startListening(ImportLogListener listener) {
+    public final void startListening(@NonNull ImportLogListener listener) {
         if (this.listener != null) throw new IllegalStateException("There is already a listener attached.");
         this.listener = listener;
 
@@ -422,13 +436,5 @@ public class ImportLogger {
             publishSavedFullLog(log.fullLog);
             publishSavedErrorsLog(log.errorLog);
         }
-    }
-
-    /**
-     * Check whether there is currently an import run being logged.
-     * @return True if an import run is being logged, otherwise false.
-     */
-    public final boolean isLogging() {
-        return isLogging;
     }
 }

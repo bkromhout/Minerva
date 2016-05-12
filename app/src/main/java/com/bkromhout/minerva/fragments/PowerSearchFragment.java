@@ -19,7 +19,6 @@ import butterknife.OnClick;
 import com.bkromhout.minerva.*;
 import com.bkromhout.minerva.adapters.*;
 import com.bkromhout.minerva.data.ActionHelper;
-import com.bkromhout.minerva.data.ReImporter;
 import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.enums.ModelType;
 import com.bkromhout.minerva.events.ActionEvent;
@@ -49,8 +48,8 @@ import java.util.List;
 /**
  * Fragment in charge of letting the user power search.
  */
-public class PowerSearchFragment extends Fragment implements ActionMode.Callback, ReImporter.IReImportListener,
-        FastScrollHandleStateListener, SnackKiosk.Snacker {
+public class PowerSearchFragment extends Fragment implements ActionMode.Callback, FastScrollHandleStateListener,
+        SnackKiosk.Snacker {
     private static final String QUERY_TYPE = "QUERY_TYPE";
 
     // Views.
@@ -171,8 +170,6 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        // Reattach to the ReImporter if it's currently running so that it can draw its dialog.
-        ReImporter.reAttachIfExists(this);
     }
 
     @Override
@@ -206,8 +203,6 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
-        // Detach from the ReImporter if it's currently running.
-        ReImporter.detachListener();
         // Finish action mode so that it doesn't leak.
         if (actionMode != null) actionMode.finish();
     }
@@ -315,9 +310,8 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
                 break;
             }
             case R.id.action_re_import: {
-                ActionHelper.reImportBooks(getSelectedBooks(), this);
-                // Don't dismiss action mode yet.
-                return;
+                ActionHelper.reImportBooks(getSelectedBooks());
+                break;
             }
             case R.id.action_delete: {
                 ActionHelper.deleteBooks(getSelectedBooks(), (boolean) event.getData());
@@ -356,14 +350,6 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
                 break;
             }
         }
-    }
-
-    @Override
-    public void onReImportFinished(boolean wasSuccess) {
-        // Notify the adapter that it should refresh the layouts of the selected items.
-        adapter.notifySelectedItemsChanged();
-        // If we finished successfully, finish the action mode.
-        if (wasSuccess) actionMode.finish();
     }
 
     /**

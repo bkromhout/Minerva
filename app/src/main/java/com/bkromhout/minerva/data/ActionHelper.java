@@ -120,11 +120,10 @@ public class ActionHelper {
 
     /**
      * Begin re-import process for the given {@code book}.
-     * @param book     Book to re-import.
-     * @param listener Object to provide a context for drawing a dialog and to call back to when re-import is finished.
+     * @param book Book to re-import.
      */
-    public static void reImportBook(RBook book, ReImporter.IReImportListener listener) {
-        reImportBooks(Lists.newArrayList(book), listener);
+    public static void reImportBook(RBook book) {
+        reImportBooks(Lists.newArrayList(book));
     }
 
     /**
@@ -132,12 +131,11 @@ public class ActionHelper {
      * <p>
      * Checks if we have permission first, and if we don't then will trigger a visual indication to the user that we
      * need the permission.
-     * @param books    Books to re-import.
-     * @param listener Object to provide a context for drawing a dialog and to call back to when re-import is finished.
+     * @param books Books to re-import.
      */
-    public static void reImportBooks(List<RBook> books, ReImporter.IReImportListener listener) {
+    public static void reImportBooks(List<RBook> books) {
         if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
-        ReImporter.reImportBooks(books, listener);
+        Importer.get().queueReImport(books);
     }
 
     /**

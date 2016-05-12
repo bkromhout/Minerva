@@ -24,7 +24,6 @@ import com.bkromhout.minerva.adapters.BookCardAdapter;
 import com.bkromhout.minerva.adapters.BookCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
 import com.bkromhout.minerva.data.ActionHelper;
-import com.bkromhout.minerva.data.ReImporter;
 import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
@@ -51,8 +50,8 @@ import java.util.List;
 /**
  * Fragment in charge of showing recently opened books.
  */
-public class RecentFragment extends Fragment implements ActionMode.Callback, ReImporter.IReImportListener,
-        FastScrollHandleStateListener, SnackKiosk.Snacker {
+public class RecentFragment extends Fragment implements ActionMode.Callback, FastScrollHandleStateListener,
+        SnackKiosk.Snacker {
     // Views.
     @BindView(R.id.coordinator)
     CoordinatorLayout coordinator;
@@ -169,8 +168,6 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        // Reattach to the ReImporter if it's currently running so that it can draw its dialog.
-        ReImporter.reAttachIfExists(this);
     }
 
     @Override
@@ -199,8 +196,6 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
-        // Detach from the ReImporter if it's currently running.
-        ReImporter.detachListener();
         // Finish action mode so that it doesn't leak.
         if (actionMode != null) actionMode.finish();
     }
@@ -321,9 +316,8 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
                 break;
             }
             case R.id.action_re_import: {
-                ActionHelper.reImportBooks(selectedItems, this);
-                // Don't dismiss action mode yet.
-                return;
+                ActionHelper.reImportBooks(selectedItems);
+                break;
             }
             case R.id.action_remove: {
                 realm.executeTransaction(tRealm -> {
@@ -352,14 +346,6 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, ReI
                 break;
             }
         }
-    }
-
-    @Override
-    public void onReImportFinished(boolean wasSuccess) {
-        // Notify the adapter that it should refresh the layouts of the selected items.
-        adapter.notifySelectedItemsChanged();
-        // If we finished successfully, finish the action mode.
-        if (wasSuccess) actionMode.finish();
     }
 
     /**

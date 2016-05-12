@@ -7,4 +7,5 @@
 
     <!-- Snackbar Actions -->
     <item type="id" name="sb_action_retry_perms_check"/>
+    <item type="id" name="sb_action_open_import_activity"/>
 </resources>

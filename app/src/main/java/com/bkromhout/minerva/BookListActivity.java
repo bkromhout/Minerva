@@ -18,7 +18,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.adapters.*;
 import com.bkromhout.minerva.data.ActionHelper;
-import com.bkromhout.minerva.data.ReImporter;
 import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.enums.ModelType;
 import com.bkromhout.minerva.events.ActionEvent;
@@ -46,8 +45,7 @@ import java.util.List;
 /**
  * Activity which displays a list of books based on an {@link RBookList}.
  */
-public class BookListActivity extends PermCheckingActivity implements ActionMode.Callback, SnackKiosk.Snacker,
-        ReImporter.IReImportListener {
+public class BookListActivity extends PermCheckingActivity implements ActionMode.Callback, SnackKiosk.Snacker {
     // Key strings for the bundle passed when this activity is started.
     public static final String LIST_NAME = "LIST_NAME";
     private static final String KEY_IS_REORDER_MODE = "IS_REORDER_MODE";
@@ -245,8 +243,6 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        // Reattach to the ReImporter if it's currently running so that it can draw its dialog.
-        ReImporter.reAttachIfExists(this);
     }
 
     @Override
@@ -278,8 +274,6 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
-        // Detach from the ReImporter if it's currently running.
-        ReImporter.detachListener();
         // Finish action mode so that it doesn't leak.
         if (actionMode != null) actionMode.finish();
     }
@@ -482,9 +476,8 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 break;
             }
             case R.id.action_re_import: {
-                ActionHelper.reImportBooks(getSelectedBooks(), this);
-                // Don't dismiss action mode yet.
-                return;
+                ActionHelper.reImportBooks(getSelectedBooks());
+                break;
             }
             case R.id.action_remove: {
                 srcList.removeBooks(getSelectedBooks());
@@ -524,14 +517,6 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 break;
             }
         }
-    }
-
-    @Override
-    public void onReImportFinished(boolean wasSuccess) {
-        // Notify the adapter that it should refresh the layouts of the selected items.
-        adapter.notifySelectedItemsChanged();
-        // If we finished successfully, finish the action mode.
-        if (wasSuccess) actionMode.finish();
     }
 
     /**

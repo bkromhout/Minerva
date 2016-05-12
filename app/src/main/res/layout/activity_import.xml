@@ -28,15 +28,15 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:textStyle="bold"
-                style="?android:attr/textAppearanceLarge"
-                android:text="@string/import_header_initializing"/>
+                android:text="@string/import_header_initializing"
+                style="?android:attr/textAppearanceLarge"/>
 
         <TextView
                 android:id="@+id/lbl_last_import_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/LabelText"
-                android:text="@string/lbl_last_import_time"/>
+                android:text="@string/lbl_last_import_time"
+                style="@style/LabelText"/>
 
         <TextView
                 android:id="@+id/last_import_time"
@@ -52,12 +52,27 @@
                 android:layout_marginBottom="4dp"
                 style="?android:attr/progressBarStyleHorizontal"/>
 
-        <TextView
-                android:id="@+id/lbl_log"
+        <LinearLayout
+                android:id="@+id/label_and_num_queued"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/LabelText"
-                android:text="@string/lbl_log_from"/>
+                android:orientation="horizontal">
+
+            <TextView
+                    android:id="@+id/lbl_log"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/log_label"
+                    style="@style/LabelText"/>
+
+            <TextView
+                    android:id="@+id/num_queued"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/num_queued"
+                    style="@style/LabelText"/>
+        </LinearLayout>
 
         <FrameLayout
                 android:id="@+id/import_logs_cont"

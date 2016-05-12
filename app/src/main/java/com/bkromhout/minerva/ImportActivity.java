@@ -1,5 +1,6 @@
 package com.bkromhout.minerva;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
@@ -11,20 +12,18 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
+import com.bkromhout.minerva.data.ImportLogger;
 import com.bkromhout.minerva.data.Importer;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
 import org.greenrobot.eventbus.EventBus;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.subjects.Subject;
+import rx.Observer;
 
 import java.io.File;
 
-public class ImportActivity extends PermCheckingActivity implements Importer.ImportListener, SnackKiosk.Snacker,
-        FolderChooserDialog.FolderCallback {
+public class ImportActivity extends PermCheckingActivity implements FolderChooserDialog.FolderCallback,
+        Importer.ImportStateListener, ImportLogger.ImportLogListener, SnackKiosk.Snacker {
     /**
      * States that the header can be in.
      */
@@ -64,6 +63,8 @@ public class ImportActivity extends PermCheckingActivity implements Importer.Imp
     TextView tvLastImportTime;
     @BindView(R.id.import_progress)
     ProgressBar progressBar;
+    @BindView(R.id.num_queued)
+    TextView tvNumQueued;
     @BindView(R.id.lbl_log)
     TextView tvLogLabel;
     @BindView(R.id.import_log_cont)
@@ -133,8 +134,8 @@ public class ImportActivity extends PermCheckingActivity implements Importer.Imp
             setRedTextState(RedTextState.MUST_CHOOSE_FOLDER);
             needsToChooseDir = true;
         } else {
-            // We're good!
-            setReady();
+            // We're good! Pretend this got called with READY.
+            onImportStateChanged(Importer.State.READY);
         }
     }
 
@@ -143,7 +144,8 @@ public class ImportActivity extends PermCheckingActivity implements Importer.Imp
         super.onStart();
         // We don't have any events, but PermCheckingActivity does.
         EventBus.getDefault().register(this);
-        Importer.get().registerListener(this);
+        ImportLogger.get().startListening(this);
+        Importer.get().startListening(this);
     }
 
     @Override
@@ -161,7 +163,8 @@ public class ImportActivity extends PermCheckingActivity implements Importer.Imp
     @Override
     protected void onStop() {
         EventBus.getDefault().unregister(this);
-        Importer.get().unregisterListener();
+        Importer.get().stopListening();
+        ImportLogger.get().stopListening();
         super.onStop();
     }
 
@@ -271,7 +274,7 @@ public class ImportActivity extends PermCheckingActivity implements Importer.Imp
      */
     @OnClick(R.id.choose_log)
     void onChooseLogClicked() {
-
+        // TODO
     }
 
     /**
@@ -282,10 +285,10 @@ public class ImportActivity extends PermCheckingActivity implements Importer.Imp
         switch (currBtnState) {
             case START_IMPORT:
                 if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
-                Importer.get().doFullImport(this);
+                Importer.get().queueFullImport();
                 break;
             case CANCEL_IMPORT:
-                Importer.get().cancelFullImport();
+                Importer.get().cancelImportRun();
                 break;
             case CHOOSE_DIR:
                 if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
@@ -309,7 +312,23 @@ public class ImportActivity extends PermCheckingActivity implements Importer.Imp
         String path = folder.getAbsolutePath();
         DefaultPrefs.get().putLibDir(path);
         needsToChooseDir = false;
-        setReady();
+        // Pretend this got called with READY.
+        onImportStateChanged(Importer.State.READY);
+    }
+
+    @Override
+    public void setLatestSuccessfulRun(long time) {
+        // TODO
+    }
+
+    @Override
+    public void setNumQueued(int numQueued) {
+        // TODO
+    }
+
+    @Override
+    public void setCurrLogLabel(String logLabel) {
+        // TODO
     }
 
     @Override
@@ -318,86 +337,117 @@ public class ImportActivity extends PermCheckingActivity implements Importer.Imp
     }
 
     @Override
-    public Subscription subscribeToLogStream(Subject<String, String> logSubject) {
-        return logSubject.onBackpressureBuffer().observeOn(AndroidSchedulers.mainThread()).subscribe(
-                new Action1<String>() {
-                    @Override
-                    public void call(String s) {
-                        if (s == null) tvLog.setText("");
-                        else {
-                            tvLog.append(s);
-                            // Scroll log down as we append lines.
-                            svLogCont.post(() -> svLogCont.fullScroll(View.FOCUS_DOWN));
-                        }
-                    }
-                });
-    }
-
-    @Override
-    public Subscription subscribeToErrorStream(Subject<String, String> errorSubject) {
-        return errorSubject.onBackpressureBuffer().observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
-            if (s == null) tvELog.setText("");
-            else {
-                tvELog.append(s);
-                // Scroll log down as we append lines.
-                svELogCont.post(() -> svELogCont.fullScroll(View.FOCUS_DOWN));
-            }
-        });
-    }
-
-    @Override
-    public Subscription subscribeToProgressStream(Subject<Integer, Integer> progressSubject) {
-        return progressSubject.observeOn(AndroidSchedulers.mainThread()).subscribe(i -> {
-            if (i < 0) progressBar.setIndeterminate(true);
-            else {
+    public void onImportStateChanged(Importer.State newState) {
+        switch (newState) {
+            case READY:
+                // Don't switch do any of this if the user needs to choose a library directory.
+                if (needsToChooseDir) return;
                 progressBar.setIndeterminate(false);
-                progressBar.setProgress(i);
+                progressBar.setProgress(0);
+                setHeaderState(HeaderState.READY);
+                setButtonState(ButtonState.START_IMPORT, true);
+                setRedTextState(RedTextState.NONE);
+                updateLastImportTime();
+                break;
+            case PREP:
+            case IMPORTING:
+                setHeaderState(HeaderState.IMPORTING);
+                setButtonState(ButtonState.CANCEL_IMPORT, true);
+                setRedTextState(RedTextState.NONE);
+                break;
+            case SAVING:
+                setHeaderState(HeaderState.SAVING);
+                setButtonState(ButtonState.CANCEL_IMPORT, false);
+                setRedTextState(RedTextState.CANCEL_NOT_ALLOWED);
+                break;
+            case CANCELLING:
+            case FINISHING:
+                setHeaderState(HeaderState.CANCELLING);
+                setButtonState(ButtonState.CANCEL_IMPORT, false);
+                setRedTextState(RedTextState.NONE);
+                break;
+        }
+    }
+
+    @NonNull
+    @Override
+    public Observer<String> getFullLogObserver() {
+        return new Observer<String>() {
+            @Override
+            public void onCompleted() {
             }
-        });
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(String s) {
+                if (s == null) tvLog.setText("");
+                else {
+                    tvLog.append(s);
+                    // Scroll log down as we append lines.
+                    svLogCont.post(() -> svLogCont.fullScroll(View.FOCUS_DOWN));
+                }
+            }
+        };
     }
 
+    @NonNull
     @Override
-    public void setReady() {
-        // Don't switch do any of this if the user needs to choose a library directory.
-        if (needsToChooseDir) return;
-        progressBar.setIndeterminate(false);
-        progressBar.setProgress(0);
-        setHeaderState(HeaderState.READY);
-        setButtonState(ButtonState.START_IMPORT, true);
-        setRedTextState(RedTextState.NONE);
-        updateLastImportTime();
+    public Observer<String> getErrorLogObserver() {
+        return new Observer<String>() {
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(String s) {
+                if (s == null) tvELog.setText("");
+                else {
+                    tvELog.append(s);
+                    // Scroll log down as we append lines.
+                    svELogCont.post(() -> svELogCont.fullScroll(View.FOCUS_DOWN));
+                }
+            }
+        };
     }
 
+    @NonNull
     @Override
-    public void setRunning() {
-        setHeaderState(HeaderState.IMPORTING);
-        setButtonState(ButtonState.CANCEL_IMPORT, true);
-        setRedTextState(RedTextState.NONE);
-    }
+    public Observer<Integer> getProgressObserver() {
+        return new Observer<Integer>() {
+            @Override
+            public void onCompleted() {
+            }
 
-    @Override
-    public void setSaving() {
-        setHeaderState(HeaderState.SAVING);
-        setButtonState(ButtonState.CANCEL_IMPORT, false);
-        setRedTextState(RedTextState.CANCEL_NOT_ALLOWED);
-    }
+            @Override
+            public void onError(Throwable e) {
+            }
 
-    @Override
-    public void setCancelling() {
-        setHeaderState(HeaderState.CANCELLING);
-        setButtonState(ButtonState.CANCEL_IMPORT, false);
-        setRedTextState(RedTextState.NONE);
-    }
-
-    @Override
-    public void setCancelled() {
-        // Does the same thing for now.
-        setReady();
+            @Override
+            public void onNext(Integer i) {
+                if (i < 0) progressBar.setIndeterminate(true);
+                else {
+                    progressBar.setIndeterminate(false);
+                    progressBar.setProgress(i);
+                }
+            }
+        };
     }
 
     @NonNull
     @Override
     public View getSnackbarAnchorView() {
         return base;
+    }
+
+    @Override
+    public Activity getCtx() {
+        return this;
     }
 }

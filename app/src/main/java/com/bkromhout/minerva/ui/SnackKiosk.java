@@ -7,22 +7,23 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.ImportActivity;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.events.MissingPermEvent;
+import com.bkromhout.minerva.util.ContextProvider;
+import com.bkromhout.minerva.util.Util;
 import org.greenrobot.eventbus.EventBus;
 
 /**
  * Allows us to show Snackbars from anywhere in the app without regard for how it gets shown.
  * <p>
  * TODO Have this use the builder pattern.
- * <p>
- * TODO Add ability to ignore a snack if we have a certain snacker attached.
  */
 public class SnackKiosk {
     /**
      * Should be implemented throughout the app so that a Snackbar can be shown at any time.
      */
-    public interface Snacker {
+    public interface Snacker extends ContextProvider {
         /**
          * Get a view appropriate to use as the anchor for a Snackbar.
          * @return View to use to anchor Snackbar.
@@ -311,6 +312,10 @@ public class SnackKiosk {
             case R.id.sb_action_retry_perms_check:
                 // Fire an event indicating we wish to retry our permissions check.
                 EventBus.getDefault().post(new MissingPermEvent(Manifest.permission.READ_EXTERNAL_STORAGE));
+                break;
+            case R.id.sb_action_open_import_activity:
+                // Open the import activity.
+                Util.startAct(snacker.getCtx(), ImportActivity.class, null);
                 break;
         }
     }
