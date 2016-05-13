@@ -331,11 +331,11 @@ public class ImportLogger {
     }
 
     /**
-     * Get whether or not there is a listener present that is listening to updates from the current import run.
-     * @return True if a listener is attached and subscribed to the current import run, otherwise false.
+     * Get whether or not there is a listener attached.
+     * @return True if a listener is attached, otherwise false.
      */
-    boolean isCurrentRunObserved() {
-        return listener != null && listenerLogSub != null && !listenerLogSub.isUnsubscribed();
+    boolean isListenerAttached() {
+        return listener != null;
     }
 
     /**

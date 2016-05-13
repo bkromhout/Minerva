@@ -562,8 +562,8 @@ public class Importer {
         // Append a period too.
         builder.append(".");
 
-        // Only send if listener isn't subscribed to the current import log right now.
-        if (!logger.isCurrentRunObserved()) SnackKiosk.snack(builder.toString(), R.string.sb_il_action_details,
+        // Only send if import log listener isn't attached.
+        if (!logger.isListenerAttached()) SnackKiosk.snack(builder.toString(), R.string.sb_il_action_details,
                 R.id.sb_action_open_import_activity, Snackbar.LENGTH_LONG);
     }
 
