@@ -207,8 +207,8 @@
 
     <string name="sb_fil">Full import</string>
     <string name="sb_ril">Re-import</string>
-    <string name="sb_result_finished"> finished</string>
-    <string name="sb_result_cancelled"> cancelled</string>
+    <string name="sb_result_finished">\u0020finished</string>
+    <string name="sb_result_cancelled">\u0020cancelled</string>
 
     <string name="sb_il_results_zero">; found nothing to import</string>
     <plurals name="sb_il_results">
