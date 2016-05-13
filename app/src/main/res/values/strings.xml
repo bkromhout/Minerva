@@ -154,6 +154,7 @@
     <string name="lbl_errors_only">Errors</string>
 
     <string name="log_label">Log %1$s</string>
+    <string name="log_label_none">No Logs</string>
     <string name="log_label_current_import_uc">For current import</string>
     <string name="log_label_current_import_lc">for current import</string>
     <string name="log_label_from_uc">From %1$s</string>
