@@ -161,6 +161,7 @@ public class ImportLogger {
      * Subscribe listener to subjects.
      */
     private void subscribeListenerToSubjects() {
+        if (listener == null) return;
         // Subscribe to full log.
         if (logSubject != null && listenerLogSub == null)
             listenerLogSub = logSubject.onBackpressureBuffer()
