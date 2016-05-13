@@ -715,7 +715,7 @@ public class Importer {
 
         private ImportRun(ImportType type, List<RBook> reImportRelPaths) {
             this.type = type;
-            this.reImportRelPaths = rBooksToRelPaths(reImportRelPaths);
+            this.reImportRelPaths = reImportRelPaths == null ? null : rBooksToRelPaths(reImportRelPaths);
         }
 
         /**
