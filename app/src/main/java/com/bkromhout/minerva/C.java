@@ -22,6 +22,10 @@ public final class C {
      */
     public static final int MAX_LOGS = 5;
     /**
+     * 5 seconds duration for snackbar.
+     */
+    public static final int SB_LENGTH_5_SEC = 5000;
+    /**
      * URL of Minerva's GitHub repository.
      */
     public static final String GITHUB_REPO = "https://github.com/bkromhout/Minerva";

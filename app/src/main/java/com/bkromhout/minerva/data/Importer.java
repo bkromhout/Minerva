@@ -330,6 +330,9 @@ public class Importer {
         logger.log(C.getStr(R.string.ril_build_file_list));
         fileResolverSubscription = Observable
                 .from(relPaths)
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(AndroidSchedulers.mainThread())
+                .doOnUnsubscribe(() -> fileResolverSubscription = null)
                 .map(relPath -> {
                     File file = Util.getFileFromRelPath(currDir, relPath);
                     if (file == null) logger.error(C.getStr(R.string.ril_err_getting_file,
@@ -339,6 +342,7 @@ public class Importer {
                 .filter(file -> file != null)
                 .toList()
                 .single()
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onGotFileList, t -> {
                     String s = C.getStr(R.string.ril_err_getting_files);
                     Timber.e(t, s);
@@ -362,7 +366,10 @@ public class Importer {
             return;
         }
         // Remove reference to subscription.
-        fileResolverSubscription.unsubscribe();
+        if (fileResolverSubscription != null) {
+            fileResolverSubscription.unsubscribe();
+            fileResolverSubscription = null;
+        }
 
         // Check file list.
         if (files.isEmpty()) {
@@ -519,6 +526,7 @@ public class Importer {
      * method prohibit a cancel where it is required.
      */
     private void _cancelImportRun() {
+        currState = State.CANCELLING;
         publishStateUpdate(State.CANCELLING);
         doTeardownThenStartNextRun(true);
     }
@@ -564,7 +572,7 @@ public class Importer {
 
         // Only send if import log listener isn't attached.
         if (!logger.isListenerAttached()) SnackKiosk.snack(builder.toString(), R.string.sb_il_action_details,
-                R.id.sb_action_open_import_activity, Snackbar.LENGTH_LONG);
+                R.id.sb_action_open_import_activity, C.SB_LENGTH_5_SEC);
     }
 
     /**
@@ -578,8 +586,14 @@ public class Importer {
         else return;
 
         // Unsubscribe from internal-use subs if they're still active.
-        if (fileResolverSubscription != null) fileResolverSubscription.unsubscribe();
-        if (fileImporterSubscription != null) fileImporterSubscription.unsubscribe();
+        if (fileResolverSubscription != null) {
+            fileResolverSubscription.unsubscribe();
+            fileResolverSubscription = null;
+        }
+        if (fileImporterSubscription != null) {
+            fileImporterSubscription.unsubscribe();
+            fileImporterSubscription = null;
+        }
 
         // Close Realm if need be.
         if (realm != null) {
