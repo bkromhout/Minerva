@@ -22,6 +22,7 @@ import org.greenrobot.eventbus.EventBus;
 import rx.Observer;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Activity which listens to our {@link Importer} and {@link ImportLogger} and displays the information which they
@@ -271,11 +272,13 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
      */
     @OnClick(R.id.choose_log)
     void onChooseLogClicked() {
+        List<String> logs = ImportLogger.get().getLogList();
+        if (logs.isEmpty()) return;
         // Show a dialog with log names as the options. When one is clicked, the ImportLogger shows it using our UI.
         new MaterialDialog.Builder(this)
                 .title(R.string.lbl_choose_log)
                 .negativeText(R.string.cancel)
-                .items(ImportLogger.get().getLogList())
+                .items(logs)
                 .itemsCallback((dialog, itemView, which, text) -> ImportLogger.get().switchLogs(which))
                 .show();
     }
