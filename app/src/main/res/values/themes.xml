@@ -23,6 +23,5 @@
     <!-- Welcome activity's theme. -->
     <style name="AppTheme.WelcomeActivity" parent="AppTheme">
         <item name="android:statusBarColor">#303030</item>
-        <item name="android:navigationBarColor">#303030</item>
     </style>
 </resources>
