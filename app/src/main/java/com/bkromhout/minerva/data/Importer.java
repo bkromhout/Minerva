@@ -205,6 +205,7 @@ public class Importer {
      * Subscribe listener to progress subject.
      */
     private void subscribeListenerToProgressSubject() {
+        if (listener == null) return;
         // Subscribe to progress updates.
         if (progressSubject != null && listenerProgressSub == null)
             listenerProgressSub = progressSubject.observeOn(AndroidSchedulers.mainThread())
