@@ -55,9 +55,9 @@
                     android:layout_marginBottom="4dp"
                     android:layout_centerHorizontal="true"
                     android:layout_below="@id/about_name"
-                    style="@style/TextAppearance.AppCompat.Medium"
                     android:textStyle="italic"
-                    android:text="@string/tag_line"/>
+                    android:text="@string/tag_line"
+                    style="@style/TextAppearance.AppCompat.Medium"/>
 
             <TextView
                     android:id="@+id/about_app_version"

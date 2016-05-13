@@ -94,12 +94,21 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
             setTitle(savedInstanceState.getString(TITLE));
         }
 
+        // Check to see if we need to show the welcome activity.
+        if (!defaultPrefs.hasFirstImportBeenTriggered())
+            startActivityForResult(new Intent(this, WelcomeActivity.class), C.RC_WELCOME_ACTIVITY);
+
         // Handle permissions. Make sure we continue a request process if applicable.
         initAndContinuePermChecksIfNeeded();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == C.RC_WELCOME_ACTIVITY) {
+            // If we came back from the welcome activity successfully, open the import activity. Otherwise, close.
+            if (resultCode == RESULT_OK) Util.startAct(this, ImportActivity.class, null);
+            else finish();
+        }
         // Pass down to fragments.
         super.onActivityResult(requestCode, resultCode, data);
     }

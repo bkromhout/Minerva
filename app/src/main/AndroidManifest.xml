@@ -79,6 +79,11 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.bkromhout.minerva.MainActivity"/>
         </activity>
+        <activity
+                android:name=".WelcomeActivity"
+                android:label="@string/title_activity_welcome"
+                android:theme="@style/AppTheme.TransparentStatusNavigation">
+        </activity>
 
         <provider
                 android:name="android.support.v4.content.FileProvider"
@@ -93,7 +98,5 @@
         <meta-data
                 android:name="com.bkromhout.minerva.util.GlideConfig"
                 android:value="GlideModule"/>
-
     </application>
-
 </manifest>

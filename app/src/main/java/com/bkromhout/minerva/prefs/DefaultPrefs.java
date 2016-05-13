@@ -16,6 +16,7 @@ public class DefaultPrefs {
     public final static String LIB_DIR = Minerva.getAppCtx().getString(R.string.key_lib_dir);
     private final static String LIB_AUTO_IMPORT = Minerva.getAppCtx().getString(R.string.key_auto_import);
     private final static String LAST_IMPORT_SUCCESS_TIME = "LAST_IMPORT_SUCCESS_TIME";
+    private final static String FIRST_IMPORT_TRIGGERED = "FIRST_IMPORT_TRIGGERED";
 
     /**
      * Static instance.
@@ -76,6 +77,21 @@ public class DefaultPrefs {
      */
     public void putCurrListSel(String currListSel) {
         prefs.edit().putString(CURR_LIST_SEL, currListSel).apply();
+    }
+
+    /**
+     * Check whether or not the first time import has been triggered yet.
+     * @return True if the first time import has been triggered, otherwise false.
+     */
+    public boolean hasFirstImportBeenTriggered() {
+        return prefs.getBoolean(FIRST_IMPORT_TRIGGERED, false);
+    }
+
+    /**
+     * Record that the first time import has been triggered.
+     */
+    public void setFirstImportTriggered() {
+        prefs.edit().putBoolean(FIRST_IMPORT_TRIGGERED, true).apply();
     }
 
     /**

@@ -102,6 +102,14 @@
     <string name="action_sort">Sort</string>
     <string name="action_tag">Tag</string>
 
+    <!-- ******************************** Welcome Activity ******************************** -->
+    <string name="title_activity_welcome">Welcome</string>
+    <string name="welcome_to">Welcome to</string>
+    <string name="choose_library_dir_prompt">Choose your library folder</string>
+    <string name="first_time_import_prompt">If you’re happy with your choice, Minerva can start importing books from
+        your library folder</string>
+    <string name="lbl_folder">Folder</string>
+    <string name="open_folder_chooser">Open Folder Chooser</string>
 
     <!-- ******************************** Main Activity/Nav Drawer/Fragment Titles ******************************** -->
     <string name="nav_item_recent">Recent</string>
@@ -146,7 +154,6 @@
     <string name="import_header_saving">Saving…</string>
     <string name="import_header_cancelling">Cancelling…</string>
 
-    <string name="lbl_folder">Folder</string>
     <string name="lbl_last_import_time">Last Successful Import</string>
     <string name="last_import_time_default">Never</string>
     <string name="lbl_choose_log">Choose Log</string>
@@ -166,7 +173,6 @@
     <string name="import_red_no_cancel">Saving book info; you can’t cancel now</string>
 
     <string name="start_full_import">Start Full Import</string>
-    <string name="choose_library_dir">Choose Library Folder</string>
 
     <!-- Importer Log Strings -->
     <string name="il_done">Done\n</string>

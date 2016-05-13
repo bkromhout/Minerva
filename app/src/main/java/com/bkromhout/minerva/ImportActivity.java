@@ -298,7 +298,7 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
                 break;
             case CHOOSE_DIR:
                 if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
-                // Set up most of dialog. Our SettingsActivity is the only possible host for this fragment.
+                // Set up most of dialog.
                 FolderChooserDialog.Builder builder = new FolderChooserDialog.Builder(this)
                         .chooseButton(R.string.ok)
                         .cancelButton(R.string.cancel);

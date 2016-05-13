@@ -52,8 +52,9 @@ public final class C {
     public static final String RUQ = "realm_user_query";
 
     /* Request codes. */
-    public static final int RC_TAG_ACTIVITY = 1;
-    public static final int RC_QUERY_BUILDER_ACTIVITY = 2;
+    public static final int RC_WELCOME_ACTIVITY = 1;
+    public static final int RC_TAG_ACTIVITY = 2;
+    public static final int RC_QUERY_BUILDER_ACTIVITY = 3;
 
     /*
      * Variables below this cannot be used until init() is called because they must be loaded from resources at
