@@ -51,17 +51,11 @@
             android:id="@+id/about_app_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="2dp"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:layout_gravity="center_horizontal"
             android:textStyle="italic"
             android:text="@string/tag_line"
             style="@style/TextAppearance.AppCompat.Medium"/>
-
-    <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/divider"/>
 
     <TextView
             android:id="@+id/choose_lib_prompt"

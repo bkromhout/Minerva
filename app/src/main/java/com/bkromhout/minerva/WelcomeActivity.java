@@ -41,6 +41,8 @@ public class WelcomeActivity extends PermCheckingActivity implements SnackKiosk.
 
         setContentView(R.layout.activity_welcome);
         ButterKnife.bind(this);
+
+        initAndContinuePermChecksIfNeeded();
     }
 
     @Override
