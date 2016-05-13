@@ -245,6 +245,9 @@ public class Util {
      * @return Concatenated string.
      */
     public static String rxToString(Observable<String> stringObservable) {
-        return stringObservable.reduce(new StringBuilder(), StringBuilder::append).toBlocking().single().toString();
+        return stringObservable.reduce(new StringBuilder(), StringBuilder::append)
+                               .toBlocking()
+                               .single()
+                               .toString();
     }
 }

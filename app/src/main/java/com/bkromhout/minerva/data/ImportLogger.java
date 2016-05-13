@@ -279,19 +279,21 @@ public class ImportLogger {
     void finishCurrentLog(boolean wasSuccess) {
         throwIfNotLogging();
 
+        // Complete our subjects.
+        logSubject.onCompleted();
+        errorSubject.onCompleted();
+
         // Get current time. Persist it if this was a successful finish.
         long endTime = Calendar.getInstance().getTimeInMillis();
         if (wasSuccess) updateLastSuccessTime(endTime);
 
-        // Concatenate logs into strings.
+        // Concatenate logs into strings, then destroy the subjects.
         String fullLog = Util.rxToString(logSubject);
         String errorLog = Util.rxToString(errorSubject);
-
-        // Save new log.
-        saveNewLog(endTime, fullLog, errorLog, wasSuccess);
-
-        // Destroy subjects.
         destroySubjects();
+
+        // Save new log, then destroy the
+        saveNewLog(endTime, fullLog, errorLog, wasSuccess);
 
         // Set isLogging to false.
         isLogging = false;
