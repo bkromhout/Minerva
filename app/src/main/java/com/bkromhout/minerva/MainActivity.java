@@ -95,7 +95,7 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
         }
 
         // Check to see if we need to show the welcome activity.
-        if (!defaultPrefs.hasFirstImportBeenTriggered())
+        if (savedInstanceState == null && !defaultPrefs.hasFirstImportBeenTriggered())
             startActivityForResult(new Intent(this, WelcomeActivity.class), C.RC_WELCOME_ACTIVITY);
 
         // Handle permissions. Make sure we continue a request process if applicable.
