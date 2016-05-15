@@ -143,10 +143,7 @@ public class ActionHelper {
      */
     public static void openBookUsingIntent(RBook book, Context context) {
         if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
-
-        // TODO Realm's bytecode transformer fails our build if we use the field here instead of a getter...
-        //File file = Util.getFileFromRelPath(book.relPath);
-        File file = Util.getFileFromRelPath(book.getRelPath());
+        File file = Util.getFileFromRelPath(book.relPath);
 
         // TODO Make the user aware if the underlying file doesn't exist!
         if (file == null) return;

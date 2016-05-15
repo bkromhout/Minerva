@@ -302,10 +302,6 @@ public class RBook extends RealmObject implements UIDModel {
         return listNames;
     }
 
-    public String getRelPath() {
-        return relPath;
-    }
-
     @Override
     public Object getUID() {
         return relPath;
