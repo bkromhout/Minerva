@@ -109,58 +109,6 @@ public class RTag extends RealmObject implements UIDModel {
                          .single();
     }
 
-    /**
-     * Adds the {@code tags} to the {@code books}.
-     * @param books List of {@link RBook}s to add tags to.
-     * @param tags  List {@link RTag}s.
-     */
-    public static void addTagsToBooks(List<RBook> books, List<RTag> tags) {
-        if (books == null || tags == null) throw new IllegalArgumentException("No nulls allowed.");
-        if (books.isEmpty() || tags.isEmpty()) return;
-
-        try (Realm realm = Realm.getDefaultInstance()) {
-            realm.beginTransaction();
-            // Loop through books and add tags to them.
-            for (RBook book : books) {
-                for (RTag tag : tags) {
-                    // If the book doesn't already have the tag,
-                    if (!book.tags.contains(tag)) {
-                        // add the tag to the book,
-                        book.tags.add(tag);
-                        // and add the book to the tag.
-                        tag.taggedBooks.add(book);
-                    }
-                }
-            }
-            realm.commitTransaction();
-        }
-    }
-
-    /**
-     * Removes the {@code tags} from the {@code books}.
-     * @param books List of {@link RBook}s to remove tags from.
-     * @param tags  List {@link RTag}s.
-     */
-    public static void removeTagsFromBooks(List<RBook> books, List<RTag> tags) {
-        if (books == null || tags == null) throw new IllegalArgumentException("No nulls allowed.");
-        if (books.isEmpty() || tags.isEmpty()) return;
-
-        try (Realm realm = Realm.getDefaultInstance()) {
-            realm.beginTransaction();
-            // Loop through books and remove tags from them.
-            for (RBook book : books) {
-                for (RTag tag : tags) {
-                    // If the book has the tag, remove it,
-                    if (book.tags.remove(tag)) {
-                        // and remove the book from the tag.
-                        tag.taggedBooks.remove(book);
-                    }
-                }
-            }
-            realm.commitTransaction();
-        }
-    }
-
     @Override
     public Object getUID() {
         return name;
