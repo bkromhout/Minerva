@@ -501,6 +501,8 @@ public class Importer {
                         if (existingBook != null) existingBook.updateFromOtherRBook(bgRealm, book);
                         else bgRealm.copyToRealmOrUpdate(book);
                     }
+
+                    // TODO Add tags for new and updated books now.
                 },
                 this::importFinished,
                 error -> {

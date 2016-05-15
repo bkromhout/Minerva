@@ -90,6 +90,7 @@ public class ActionHelper {
         if (books == null || tags == null) throw new IllegalArgumentException("No nulls allowed.");
         if (books.isEmpty() || tags.isEmpty()) return;
 
+        // TODO Handle new/updated tags.
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.beginTransaction();
             // Loop through books and add tags to them.
@@ -117,6 +118,7 @@ public class ActionHelper {
         if (books == null || tags == null) throw new IllegalArgumentException("No nulls allowed.");
         if (books.isEmpty() || tags.isEmpty()) return;
 
+        // TODO Handle new/updated tags.
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.beginTransaction();
             // Loop through books and remove tags from them.
