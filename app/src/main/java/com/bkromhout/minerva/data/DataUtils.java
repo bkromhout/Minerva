@@ -1,8 +1,20 @@
 package com.bkromhout.minerva.data;
 
+import com.google.common.hash.Hashing;
+import com.google.common.hash.HashingInputStream;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Date;
+import nl.siegmann.epublib.epub.EpubReader;
+import rx.Observable;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A collection of methods used when operating on our data sets.
@@ -70,5 +82,64 @@ public class DataUtils {
             return bookDate.getValue();
         }
         return null;
+    }
+
+    /**
+     * Get a {@link SuperBook} object from a file object.
+     * @param file The file to try and read as an ePub
+     * @return Book object, or null if there were issues.
+     */
+    public static SuperBook readEpubFile(File file, String relPath) {
+        if (file == null || !file.exists() || !file.isFile()) return null;
+
+        try (HashingInputStream in = new HashingInputStream(Hashing.sha256(), new FileInputStream(file))) {
+            Book book = new EpubReader().readEpub(in);
+            return new SuperBook(book, relPath, in.hash().asBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Take a list of strings and concatenate them, separated by {@code separator}.
+     * @param list      List of strings.
+     * @param separator What string to use as separators in the output string.
+     * @return Concatenated string, or null if the list is null or empty.
+     */
+    public static String listToString(List<String> list, String separator) {
+        if (list == null || list.isEmpty()) return null;
+        StringBuilder builder = new StringBuilder();
+        Iterator<String> iterator = list.iterator();
+        while (iterator.hasNext()) {
+            builder.append(iterator.next());
+            if (iterator.hasNext()) builder.append(separator);
+        }
+        return builder.toString();
+    }
+
+    /**
+     * Take a string and split it into a list of strings, splitting after each {@code separator}.
+     * @param string    String to split.
+     * @param separator Separator to split on.
+     * @return List of strings, might be empty.
+     */
+    public static List<String> stringToList(String string, String separator) {
+        List<String> strings = Arrays.asList(string.split("\\Q" + separator + "\\E"));
+        if (strings.size() == 1 && strings.get(0).trim().equals("")) return new ArrayList<>();
+        return strings;
+    }
+
+    /**
+     * Takes a String Observable and concatenates its emissions into a single String using StringBuilder, then returns
+     * that String.
+     * @param stringObservable String observable.
+     * @return Concatenated string.
+     */
+    public static String rxToString(Observable<String> stringObservable) {
+        return stringObservable.reduce(new StringBuilder(), StringBuilder::append)
+                               .toBlocking()
+                               .single()
+                               .toString();
     }
 }

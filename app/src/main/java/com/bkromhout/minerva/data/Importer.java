@@ -432,7 +432,7 @@ public class Importer {
     private SuperBook convertFileToSuperBook(File file) {
         String relPath = file.getAbsolutePath().replace(currDir.getAbsolutePath(), "");
         try {
-            return Util.readEpubFile(file, relPath);
+            return DataUtils.readEpubFile(file, relPath);
         } catch (IllegalArgumentException e) {
             logger.error(C.getStr(R.string.il_err_processing_file, e.getMessage()));
             return null;

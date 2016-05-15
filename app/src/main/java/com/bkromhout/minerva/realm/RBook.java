@@ -4,7 +4,6 @@ import com.bkromhout.minerva.data.CoverHelper;
 import com.bkromhout.minerva.data.DataUtils;
 import com.bkromhout.minerva.data.SuperBook;
 import com.bkromhout.minerva.enums.ModelType;
-import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.UIDModel;
 import com.bkromhout.ruqus.Hide;
 import com.bkromhout.ruqus.Queryable;
@@ -186,8 +185,8 @@ public class RBook extends RealmObject implements UIDModel {
         this.title = book.getTitle();
         this.author = DataUtils.getFirstAuthor(book);
         this.desc = DataUtils.getFirstDesc(book);
-        this.subjects = Util.listToString(book.getMetadata().getSubjects(), SUBJECT_STR_SEP);
-        this.types = Util.listToString(book.getMetadata().getTypes(), TYPE_STR_SEP);
+        this.subjects = DataUtils.listToString(book.getMetadata().getSubjects(), SUBJECT_STR_SEP);
+        this.types = DataUtils.listToString(book.getMetadata().getTypes(), TYPE_STR_SEP);
         this.format = book.getMetadata().getFormat();
         this.language = book.getMetadata().getLanguage();
         this.publisher = DataUtils.getFirstPublisher(book);

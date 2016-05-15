@@ -288,8 +288,8 @@ public class ImportLogger {
         if (wasSuccess) updateLastSuccessTime(endTime);
 
         // Concatenate logs into strings, then destroy the subjects.
-        String fullLog = Util.rxToString(logSubject);
-        String errorLog = Util.rxToString(errorSubject);
+        String fullLog = DataUtils.rxToString(logSubject);
+        String errorLog = DataUtils.rxToString(errorSubject);
         destroySubjects();
 
         // Save new log, then destroy the

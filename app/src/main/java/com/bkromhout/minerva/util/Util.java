@@ -19,25 +19,13 @@ import android.text.format.DateUtils;
 import android.view.Menu;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
-import com.bkromhout.minerva.data.SuperBook;
 import com.bkromhout.minerva.events.MissingPermEvent;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
-import com.google.common.hash.Hashing;
-import com.google.common.hash.HashingInputStream;
-import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.epub.EpubReader;
 import org.greenrobot.eventbus.EventBus;
-import rx.Observable;
 import timber.log.Timber;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Utility functions class.
@@ -106,6 +94,18 @@ public class Util {
     }
 
     /**
+     * Opens the system app settings activity. Usually used so that the user can grant permissions.
+     * @param context The context to use to build the intent.
+     */
+    public static void openAppInfo(Context context) {
+        Intent myAppSettings = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.parse("package:" + context.getPackageName()));
+        myAppSettings.addCategory(Intent.CATEGORY_DEFAULT);
+        myAppSettings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(myAppSettings);
+    }
+
+    /**
      * Checks to see if the app currently holds the READ_EXTERNAL_STORAGE permissions, and fires a {@link
      * MissingPermEvent} if it doesn't.
      * @return False if we had to fire the event because we don't have the permission. True if we have the permission.
@@ -127,18 +127,6 @@ public class Util {
     }
 
     /**
-     * Opens the system app settings activity. Usually used so that the user can grant permissions.
-     * @param context The context to use to build the intent.
-     */
-    public static void openAppInfo(Context context) {
-        Intent myAppSettings = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                Uri.parse("package:" + context.getPackageName()));
-        myAppSettings.addCategory(Intent.CATEGORY_DEFAULT);
-        myAppSettings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(myAppSettings);
-    }
-
-    /**
      * Checks whether there is a present, valid library directory set.
      * @return True if there is a path set and the path points to a valid folder that is readable.
      */
@@ -156,23 +144,6 @@ public class Util {
         // Check that the directory exists and that we can read it.
         File dir = new File(dirPath);
         return (dir.exists() && dir.isDirectory() && dir.canRead()) ? dir : null;
-    }
-
-    /**
-     * Get a {@link SuperBook} object from a file object.
-     * @param file The file to try and read as an ePub
-     * @return Book object, or null if there were issues.
-     */
-    public static SuperBook readEpubFile(File file, String relPath) {
-        if (file == null || !file.exists() || !file.isFile()) return null;
-
-        try (HashingInputStream in = new HashingInputStream(Hashing.sha256(), new FileInputStream(file))) {
-            Book book = new EpubReader().readEpub(in);
-            return new SuperBook(book, relPath, in.hash().asBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     /**
@@ -207,47 +178,5 @@ public class Util {
         if (baseDir == null || !baseDir.exists() || relPath == null || relPath.isEmpty()) return null;
         File file = new File(baseDir, relPath);
         return file.exists() ? file : null;
-    }
-
-    /**
-     * Take a list of strings and concatenate them, separated by {@code separator}.
-     * @param list      List of strings.
-     * @param separator What string to use as separators in the output string.
-     * @return Concatenated string, or null if the list is null or empty.
-     */
-    public static String listToString(List<String> list, String separator) {
-        if (list == null || list.isEmpty()) return null;
-        StringBuilder builder = new StringBuilder();
-        Iterator<String> iterator = list.iterator();
-        while (iterator.hasNext()) {
-            builder.append(iterator.next());
-            if (iterator.hasNext()) builder.append(separator);
-        }
-        return builder.toString();
-    }
-
-    /**
-     * Take a string and split it into a list of strings, splitting after each {@code separator}.
-     * @param string    String to split.
-     * @param separator Separator to split on.
-     * @return List of strings, might be empty.
-     */
-    public static List<String> stringToList(String string, String separator) {
-        List<String> strings = Arrays.asList(string.split("\\Q" + separator + "\\E"));
-        if (strings.size() == 1 && strings.get(0).trim().equals("")) return new ArrayList<>();
-        return strings;
-    }
-
-    /**
-     * Takes a String Observable and concatenates its emissions into a single String using StringBuilder, then returns
-     * that String.
-     * @param stringObservable String observable.
-     * @return Concatenated string.
-     */
-    public static String rxToString(Observable<String> stringObservable) {
-        return stringObservable.reduce(new StringBuilder(), StringBuilder::append)
-                               .toBlocking()
-                               .single()
-                               .toString();
     }
 }

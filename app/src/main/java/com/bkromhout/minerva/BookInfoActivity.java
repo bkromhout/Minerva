@@ -24,6 +24,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.CoverHelper;
+import com.bkromhout.minerva.data.DataUtils;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
@@ -389,7 +390,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         if (listNames.isEmpty()) togglePart(Part.LISTS, false);
         else {
             togglePart(Part.LISTS, true);
-            lists.setText(Util.listToString(listNames, ", "));
+            lists.setText(DataUtils.listToString(listNames, ", "));
         }
 
         // Fill in or hide conditional views using book data.
