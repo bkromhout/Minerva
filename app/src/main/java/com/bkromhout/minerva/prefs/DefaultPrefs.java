@@ -32,7 +32,6 @@ public class DefaultPrefs {
     private DefaultPrefs() {
         // Get shared preferences.
         this.prefs = PreferenceManager.getDefaultSharedPreferences(Minerva.getAppCtx());
-
     }
 
     /**
@@ -45,8 +44,7 @@ public class DefaultPrefs {
     }
 
     /**
-     * Get the int which specifies the fragment that is currently being shown in {@link
-     * MainActivity}.
+     * Get the int which specifies the fragment that is currently being shown in {@link MainActivity}.
      * @param defValue The default value to return if nothing is set.
      * @return Frag int.
      */
@@ -55,8 +53,7 @@ public class DefaultPrefs {
     }
 
     /**
-     * Put the int which specifies the fragment that is currently being shown in {@link
-     * MainActivity}.
+     * Put the int which specifies the fragment that is currently being shown in {@link MainActivity}.
      * @param currFrag Frag int.
      */
     public void putCurrFrag(int currFrag) {
