@@ -387,7 +387,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
                 TextView.BufferType.SPANNABLE);
 
         // Fill in lists or show empty view.
-        List<String> listNames = RBook.listsBookIsIn(book, realm);
+        List<String> listNames = DataUtils.listsBookIsIn(book, realm);
         if (listNames.isEmpty()) togglePart(Part.LISTS, false);
         else {
             togglePart(Part.LISTS, true);

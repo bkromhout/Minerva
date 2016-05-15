@@ -3,16 +3,13 @@ package com.bkromhout.minerva.realm;
 import com.bkromhout.minerva.data.DataUtils;
 import com.bkromhout.minerva.data.SuperBook;
 import com.bkromhout.minerva.data.UniqueIdFactory;
-import com.bkromhout.minerva.enums.ModelType;
 import com.bkromhout.rrvl.UIDModel;
 import com.bkromhout.ruqus.Hide;
 import com.bkromhout.ruqus.Queryable;
-import com.bkromhout.ruqus.RealmUserQuery;
 import com.bkromhout.ruqus.VisibleAs;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
-import io.realm.RealmResults;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -20,7 +17,9 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Identifier;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Represents a book in Realm.
@@ -259,47 +258,6 @@ public class RBook extends RealmObject implements UIDModel {
 
         this.lastImportDate = otherBook.lastImportDate;
         this.lastModifiedDate = otherBook.lastModifiedDate;
-    }
-
-    /**
-     * Get names of {@link RBookList}s which {@code book} is in.
-     * @param book  Book to search for.
-     * @param realm Instance of Realm to use.
-     * @return List of list names.
-     */
-    public static List<String> listsBookIsIn(RBook book, Realm realm) {
-        List<String> listNames = new ArrayList<>();
-        if (book != null) {
-            // Check all list items which contain this book (only the set of all normal lists will be represented here).
-            RealmResults<RBookListItem> listItems = realm.where(RBookListItem.class)
-                                                         .equalTo("book.relPath", book.relPath)
-                                                         .findAll();
-            // For each RBookListItem, add the name of the owning RBookList.
-            for (int i = listItems.size() - 1; i >= 0; i--) listNames.add(listItems.get(i).owningList.name);
-
-            // Search through smart lists too, but do it a bit differently.
-            RealmResults<RBookList> smartLists = realm.where(RBookList.class)
-                                                      .equalTo("isSmartList", true)
-                                                      .findAllSorted("name");
-            // For each smart list:
-            for (RBookList smartList : smartLists) {
-                if (smartList.smartListRuqString == null || smartList.smartListRuqString.isEmpty()) continue;
-                // Get the query and its type.
-                RealmUserQuery ruq = new RealmUserQuery(smartList.smartListRuqString);
-                ModelType at = ModelType.fromRealmClass(ruq.getQueryClass());
-
-                if (at == ModelType.BOOK) {
-                    // For RBook-type queries, we can simply check if the results contain the book.
-                    if (ruq.execute(realm).contains(book)) listNames.add(smartList.name);
-                } else if (at == ModelType.BOOK_LIST_ITEM) {
-                    // For RBookListItem-type queries, we have to do another Realm query to see if there's an
-                    // RBookListItem for the book.
-                    if (ruq.execute(realm).where().equalTo("book.relPath", book.relPath).findFirst() != null)
-                        listNames.add(smartList.name);
-                }
-            }
-        }
-        return listNames;
     }
 
     @Override

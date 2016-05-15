@@ -1,11 +1,19 @@
 package com.bkromhout.minerva.data;
 
 import com.bkromhout.minerva.Minerva;
+import com.bkromhout.minerva.enums.ModelType;
+import com.bkromhout.minerva.realm.RBook;
+import com.bkromhout.minerva.realm.RBookList;
+import com.bkromhout.minerva.realm.RBookListItem;
+import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.util.Util;
+import com.bkromhout.ruqus.RealmUserQuery;
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashingInputStream;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
+import io.realm.Realm;
+import io.realm.RealmResults;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Date;
@@ -143,6 +151,99 @@ public class DataUtils {
      */
     public static File getCoverImageFile(String relPath) {
         return Util.getFileFromRelPath(Minerva.getAppCtx().getFilesDir(), relPath + COVER_EXT);
+    }
+
+    /**
+     * Get names of {@link RBookList}s which {@code book} is in.
+     * @param book  Book to search for.
+     * @param realm Instance of Realm to use.
+     * @return List of list names.
+     */
+    public static List<String> listsBookIsIn(RBook book, Realm realm) {
+        List<String> listNames = new ArrayList<>();
+        if (book != null) {
+            // Check all list items which contain this book (only the set of all normal lists will be represented here).
+            RealmResults<RBookListItem> listItems = realm.where(RBookListItem.class)
+                                                         .equalTo("book.relPath", book.relPath)
+                                                         .findAll();
+            // For each RBookListItem, add the name of the owning RBookList.
+            for (int i = listItems.size() - 1; i >= 0; i--) listNames.add(listItems.get(i).owningList.name);
+
+            // Search through smart lists too, but do it a bit differently.
+            RealmResults<RBookList> smartLists = realm.where(RBookList.class)
+                                                      .equalTo("isSmartList", true)
+                                                      .findAllSorted("name");
+            // For each smart list:
+            for (RBookList smartList : smartLists) {
+                if (smartList.smartListRuqString == null || smartList.smartListRuqString.isEmpty()) continue;
+                // Get the query and its type.
+                RealmUserQuery ruq = new RealmUserQuery(smartList.smartListRuqString);
+                ModelType at = ModelType.fromRealmClass(ruq.getQueryClass());
+
+                if (at == ModelType.BOOK) {
+                    // For RBook-type queries, we can simply check if the results contain the book.
+                    if (ruq.execute(realm).contains(book)) listNames.add(smartList.name);
+                } else if (at == ModelType.BOOK_LIST_ITEM) {
+                    // For RBookListItem-type queries, we have to do another Realm query to see if there's an
+                    // RBookListItem for the book.
+                    if (ruq.execute(realm).where().equalTo("book.relPath", book.relPath).findFirst() != null)
+                        listNames.add(smartList.name);
+                }
+            }
+        }
+        return listNames;
+    }
+
+    /**
+     * Convert the given {@code listItems} to a list of {@link RBook}s.
+     * @param listItems A list of {@link RBookListItem}s.
+     * @return List of {@link RBook}s.
+     */
+    public static List<RBook> booksFromBookListItems(List<RBookListItem> listItems) {
+        if (listItems == null) throw new IllegalArgumentException("listItems may not be null.");
+        if (listItems.isEmpty()) return new ArrayList<>();
+
+        ArrayList<RBook> books = new ArrayList<>(listItems.size());
+        for (RBookListItem listItem : listItems) books.add(listItem.book);
+        return books;
+    }
+
+    /**
+     * Gets an {@link RTag} with the given {@code name}.
+     * @param name            Tag name.
+     * @param makeNonexistent If true, an {@link RTag} will be made if one doesn't exist with the given {@code name}.
+     * @return {@link RTag} with {@code name}, or null if there isn't one and {@code makeNonexistent} is false.
+     */
+    public static RTag getRTag(String name, boolean makeNonexistent) {
+        if (name == null || name.isEmpty()) throw new IllegalArgumentException("Name must not be null or empty.");
+        try (Realm realm = Realm.getDefaultInstance()) {
+            // Try to find existing tag with name.
+            RTag tag = realm.where(RTag.class).equalTo("name", name).findFirst();
+            if (tag != null || !makeNonexistent) return tag;
+
+            // If we didn't have an existing tag, we'll need to create a new one.
+            realm.beginTransaction();
+            tag = realm.copyToRealm(new RTag(name));
+            realm.commitTransaction();
+            return tag;
+        }
+    }
+
+    /**
+     * Creates a list of {@link RTag}s from a list of strings.
+     * @param strings         List of strings.
+     * @param makeNonexistent If true, strings which aren't the name of any existing {@link RTag}s will cause new {@link
+     *                        RTag}s to be made.
+     * @return List of {@link RTag}s, or {@code null} if {@code strings} is null.
+     */
+    public static List<RTag> stringListToTagList(List<String> strings, boolean makeNonexistent) {
+        if (strings == null) return null;
+        return Observable.from(strings)
+                         .map(string -> getRTag(string, makeNonexistent))
+                         .filter(tag -> tag != null)
+                         .toList()
+                         .toBlocking()
+                         .single();
     }
 
     /**

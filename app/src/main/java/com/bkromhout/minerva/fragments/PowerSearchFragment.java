@@ -22,6 +22,7 @@ import com.bkromhout.minerva.activities.QueryBuilderActivity;
 import com.bkromhout.minerva.activities.TaggingActivity;
 import com.bkromhout.minerva.adapters.*;
 import com.bkromhout.minerva.data.ActionHelper;
+import com.bkromhout.minerva.data.DataUtils;
 import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.enums.ModelType;
 import com.bkromhout.minerva.events.ActionEvent;
@@ -428,7 +429,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     private List<RBook> getSelectedBooks() {
         if (queryType == ModelType.BOOK)
             return adapter.getSelectedRealmObjects();
-        else if (queryType == ModelType.BOOK_LIST_ITEM) return RBookListItem.booksFromBookListItems(
+        else if (queryType == ModelType.BOOK_LIST_ITEM) return DataUtils.booksFromBookListItems(
                 adapter.getSelectedRealmObjects());
         else throw new IllegalArgumentException("Invalid type.");
     }

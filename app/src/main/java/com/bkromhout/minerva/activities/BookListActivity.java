@@ -20,6 +20,7 @@ import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.adapters.*;
 import com.bkromhout.minerva.data.ActionHelper;
+import com.bkromhout.minerva.data.DataUtils;
 import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.enums.ModelType;
 import com.bkromhout.minerva.events.ActionEvent;
@@ -546,7 +547,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
     private List<RBook> getSelectedBooks() {
         if (modelType == ModelType.BOOK)
             return adapter.getSelectedRealmObjects();
-        else if (modelType == ModelType.BOOK_LIST_ITEM) return RBookListItem.booksFromBookListItems(
+        else if (modelType == ModelType.BOOK_LIST_ITEM) return DataUtils.booksFromBookListItems(
                 adapter.getSelectedRealmObjects());
         else throw new IllegalArgumentException("Invalid type.");
     }

@@ -25,6 +25,7 @@ import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.adapters.TagCardAdapter;
 import com.bkromhout.minerva.data.ActionHelper;
+import com.bkromhout.minerva.data.DataUtils;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.TagCardClickEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
@@ -390,9 +391,10 @@ public class TaggingActivity extends AppCompatActivity implements SnackKiosk.Sna
         boolean removedAny = !removedTagNames.isEmpty(), addedAny = !addedTagNames.isEmpty();
         // Remove and add the applicable tags.
         if (removedAny)
-            ActionHelper.removeTagsFromBooks(taggingHelper.selectedBooks, RTag.stringListToTagList(removedTagNames, false));
+            ActionHelper.removeTagsFromBooks(taggingHelper.selectedBooks, DataUtils
+                    .stringListToTagList(removedTagNames, false));
         if (addedAny)
-            ActionHelper.addTagsToBooks(taggingHelper.selectedBooks, RTag.stringListToTagList(addedTagNames, true));
+            ActionHelper.addTagsToBooks(taggingHelper.selectedBooks, DataUtils.stringListToTagList(addedTagNames, true));
         // If we actually removed and/or added any tags, indicate that we may need an explicit update.
         if (removedAny || addedAny) taggingHelper.markForExplicitUpdateIfNecessary();
 

@@ -10,9 +10,6 @@ import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Represents an item in a book list in Realm.
  */
@@ -71,33 +68,6 @@ public class RBookListItem extends RealmObject implements UIDModel {
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.executeTransaction(tRealm -> owningList.nextPos = this.pos + C.LIST_ITEM_GAP);
         }
-    }
-
-    /**
-     * Checks whether two {@link RBookListItem}s are in the same {@link RBookList}.
-     * @param item1 An item.
-     * @param item2 Another item.
-     * @return True if items are from the same list, otherwise false.
-     */
-    static boolean areFromSameList(RBookListItem item1, RBookListItem item2) {
-        // Check for nulls.
-        if (item1 == null || item2 == null) return false;
-        // Check if from same list.
-        return item1.owningList.equals(item2.owningList);
-    }
-
-    /**
-     * Convert the given {@code listItems} to a list of {@link RBook}s.
-     * @param listItems A list of {@link RBookListItem}s.
-     * @return List of {@link RBook}s.
-     */
-    public static List<RBook> booksFromBookListItems(List<RBookListItem> listItems) {
-        if (listItems == null) throw new IllegalArgumentException("listItems may not be null.");
-        if (listItems.isEmpty()) return new ArrayList<>();
-
-        ArrayList<RBook> books = new ArrayList<>(listItems.size());
-        for (RBookListItem listItem : listItems) books.add(listItem.book);
-        return books;
     }
 
     @Override
