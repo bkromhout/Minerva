@@ -1,15 +1,13 @@
-package com.bkromhout.minerva.util;
+package com.bkromhout.minerva.data;
 
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Date;
 
 /**
- * Utility methods for working with {@link nl.siegmann.epublib.domain.Book} objects.
- * @see Book
+ * A collection of methods used when operating on our data sets.
  */
-public class BookUtils {
-
+public class DataUtils {
     /**
      * Get the first non-empty author from the given {@link Book}.
      * @param book Book.

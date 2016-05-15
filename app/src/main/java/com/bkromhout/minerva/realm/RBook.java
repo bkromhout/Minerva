@@ -1,9 +1,9 @@
 package com.bkromhout.minerva.realm;
 
 import com.bkromhout.minerva.data.CoverHelper;
+import com.bkromhout.minerva.data.DataUtils;
 import com.bkromhout.minerva.data.SuperBook;
 import com.bkromhout.minerva.enums.ModelType;
-import com.bkromhout.minerva.util.BookUtils;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.UIDModel;
 import com.bkromhout.ruqus.Hide;
@@ -184,18 +184,18 @@ public class RBook extends RealmObject implements UIDModel {
         // Fill in data from Book file.
         Book book = superBook.getBook();
         this.title = book.getTitle();
-        this.author = BookUtils.getFirstAuthor(book);
-        this.desc = BookUtils.getFirstDesc(book);
+        this.author = DataUtils.getFirstAuthor(book);
+        this.desc = DataUtils.getFirstDesc(book);
         this.subjects = Util.listToString(book.getMetadata().getSubjects(), SUBJECT_STR_SEP);
         this.types = Util.listToString(book.getMetadata().getTypes(), TYPE_STR_SEP);
         this.format = book.getMetadata().getFormat();
         this.language = book.getMetadata().getLanguage();
-        this.publisher = BookUtils.getFirstPublisher(book);
+        this.publisher = DataUtils.getFirstPublisher(book);
         Identifier identifier = Identifier.getBookIdIdentifier(book.getMetadata().getIdentifiers());
         this.bookId = identifier == null ? null : identifier.toString();
-        this.createDate = BookUtils.getFirstBookDate(book, nl.siegmann.epublib.domain.Date.Event.CREATION);
-        this.pubDate = BookUtils.getFirstBookDate(book, nl.siegmann.epublib.domain.Date.Event.PUBLICATION);
-        this.modDate = BookUtils.getFirstBookDate(book, nl.siegmann.epublib.domain.Date.Event.MODIFICATION);
+        this.createDate = DataUtils.getFirstBookDate(book, nl.siegmann.epublib.domain.Date.Event.CREATION);
+        this.pubDate = DataUtils.getFirstBookDate(book, nl.siegmann.epublib.domain.Date.Event.PUBLICATION);
+        this.modDate = DataUtils.getFirstBookDate(book, nl.siegmann.epublib.domain.Date.Event.MODIFICATION);
         this.numChaps = book.getTableOfContents().getAllUniqueResources().size();
         if (book.getCoverImage() != null) {
             try {

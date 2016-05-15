@@ -1,6 +1,5 @@
 package com.bkromhout.minerva.data;
 
-import com.bkromhout.minerva.util.BookUtils;
 import nl.siegmann.epublib.domain.Book;
 
 /**
@@ -19,7 +18,7 @@ public class SuperBook {
      */
     public SuperBook(Book book, String path, byte[] hash) {
         if (book == null || book.getTitle() == null || book.getTitle().isEmpty() ||
-                BookUtils.getFirstAuthor(book) == null || path == null || path.isEmpty())
+                DataUtils.getFirstAuthor(book) == null || path == null || path.isEmpty())
             throw new IllegalArgumentException(path);
 
         this.book = book;
