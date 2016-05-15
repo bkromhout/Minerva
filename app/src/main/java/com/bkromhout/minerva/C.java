@@ -17,10 +17,8 @@ import java.util.List;
 public final class C {
     /**
      * Maximum number of past logs to keep.
-     * <p>
-     * TODO Set this back to 30 after done testing!
      */
-    public static final int MAX_LOGS = 5;
+    public static final int MAX_LOGS = 30;
     /**
      * 5 seconds duration for snackbar.
      */
