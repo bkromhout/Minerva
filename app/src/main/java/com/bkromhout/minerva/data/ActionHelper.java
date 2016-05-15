@@ -229,7 +229,7 @@ public class ActionHelper {
                     String relPath = book.relPath;
                     relPaths.add(relPath);
                     // Be sure to delete the cover file, if we have one.
-                    if (book.hasCoverImage) CoverHelper.get().deleteCoverImage(relPath);
+                    if (book.hasCoverImage) DataUtils.deleteCoverImage(relPath);
                     // Delete the actual RBook from Realm.
                     book.deleteFromRealm();
                 }

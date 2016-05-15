@@ -1,16 +1,18 @@
 package com.bkromhout.minerva.data;
 
+import com.bkromhout.minerva.Minerva;
+import com.bkromhout.minerva.util.Util;
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashingInputStream;
+import com.google.common.io.ByteStreams;
+import com.google.common.io.Files;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Date;
 import nl.siegmann.epublib.epub.EpubReader;
 import rx.Observable;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -20,6 +22,28 @@ import java.util.List;
  * A collection of methods used when operating on our data sets.
  */
 public class DataUtils {
+    /**
+     * Extension to append to cover image files.
+     */
+    private static final String COVER_EXT = ".cover";
+
+    /**
+     * Get a {@link SuperBook} object from a file object.
+     * @param file The file to try and read as an ePub
+     * @return Book object, or null if there were issues.
+     */
+    public static SuperBook readEpubFile(File file, String relPath) {
+        if (file == null || !file.exists() || !file.isFile()) return null;
+
+        try (HashingInputStream in = new HashingInputStream(Hashing.sha256(), new FileInputStream(file))) {
+            Book book = new EpubReader().readEpub(in);
+            return new SuperBook(book, relPath, in.hash().asBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * Get the first non-empty author from the given {@link Book}.
      * @param book Book.
@@ -85,20 +109,40 @@ public class DataUtils {
     }
 
     /**
-     * Get a {@link SuperBook} object from a file object.
-     * @param file The file to try and read as an ePub
-     * @return Book object, or null if there were issues.
+     * Save an input stream to a file with the ".cover" extension.
+     * @param in      Input stream.
+     * @param relPath Relative path to use to create cover file path.
      */
-    public static SuperBook readEpubFile(File file, String relPath) {
-        if (file == null || !file.exists() || !file.isFile()) return null;
-
-        try (HashingInputStream in = new HashingInputStream(Hashing.sha256(), new FileInputStream(file))) {
-            Book book = new EpubReader().readEpub(in);
-            return new SuperBook(book, relPath, in.hash().asBytes());
+    public static void saveStreamAsCoverImage(InputStream in, String relPath) {
+        File coverFile = new File(Minerva.getAppCtx().getFilesDir(), relPath + COVER_EXT);
+        try {
+            Files.createParentDirs(coverFile);
+            try (FileOutputStream out = new FileOutputStream(coverFile)) {
+                ByteStreams.copy(in, out);
+            }
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
         }
+    }
+
+    /**
+     * Delete the cover image saved using the given relative path, if there is one.
+     * @param relPath Relative path which was used to create cover file path.
+     */
+    public static void deleteCoverImage(String relPath) {
+        File coverFile = Util.getFileFromRelPath(Minerva.getAppCtx().getFilesDir(), relPath + COVER_EXT);
+        if (coverFile == null || !coverFile.exists()) return;
+        //noinspection ResultOfMethodCallIgnored
+        coverFile.delete();
+    }
+
+    /**
+     * Get the cover file saved using the given relative path, if there is one.
+     * @param relPath Relative path which was used to create cover file path.
+     * @return Cover file, or null.
+     */
+    public static File getCoverImageFile(String relPath) {
+        return Util.getFileFromRelPath(Minerva.getAppCtx().getFilesDir(), relPath + COVER_EXT);
     }
 
     /**

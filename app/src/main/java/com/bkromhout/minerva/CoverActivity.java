@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import com.bkromhout.minerva.data.CoverHelper;
+import com.bkromhout.minerva.data.DataUtils;
 import com.bkromhout.minerva.realm.RBook;
 import com.bumptech.glide.Glide;
 import uk.co.senab.photoview.PhotoView;
@@ -33,7 +33,7 @@ public class CoverActivity extends AppCompatActivity {
         if (coverImage == null) throw new IllegalStateException("Couldn't get PhotoView.");
 
         // Get cover image file.
-        File coverImageFile = CoverHelper.get().getCoverImageFile(getIntent().getStringExtra(C.REL_PATH));
+        File coverImageFile = DataUtils.getCoverImageFile(getIntent().getStringExtra(C.REL_PATH));
         if (coverImageFile == null) throw new IllegalStateException("Couldn't get cover image file.");
 
         // Load image into PhotoView.

@@ -23,7 +23,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.data.ActionHelper;
-import com.bkromhout.minerva.data.CoverHelper;
 import com.bkromhout.minerva.data.DataUtils;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
@@ -185,7 +184,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         // Set cover image (we do this separately since we don't want flickering if the change listener fires).
         if (book.hasCoverImage) {
             Glide.with(this)
-                 .load(CoverHelper.get().getCoverImageFile(book.relPath))
+                 .load(DataUtils.getCoverImageFile(book.relPath))
                  .centerCrop()
                  .into(coverImage);
         } else coverImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.epub_logo_color));

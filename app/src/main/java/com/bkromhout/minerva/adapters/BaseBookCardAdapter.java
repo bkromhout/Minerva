@@ -13,9 +13,9 @@ import butterknife.ButterKnife;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
-import com.bkromhout.minerva.data.CoverHelper;
-import com.bkromhout.minerva.events.BookCardClickEvent;
+import com.bkromhout.minerva.data.DataUtils;
 import com.bkromhout.minerva.data.ListItemPositionHelper;
+import com.bkromhout.minerva.events.BookCardClickEvent;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookListItem;
 import com.bkromhout.minerva.ui.RippleForegroundListener;
@@ -166,7 +166,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
     private void bindNormalBookCard(NormalCardVH resolvedVH, RBook book) {
         // Set cover image.
         if (book.hasCoverImage) Glide.with(activity)
-                                     .load(CoverHelper.get().getCoverImageFile(book.relPath))
+                                     .load(DataUtils.getCoverImageFile(book.relPath))
                                      .centerCrop()
                                      .into(resolvedVH.ivCoverImage);
         else resolvedVH.ivCoverImage.setImageDrawable(ContextCompat.getDrawable(Minerva.getAppCtx(),

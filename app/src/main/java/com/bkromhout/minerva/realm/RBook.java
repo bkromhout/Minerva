@@ -1,6 +1,5 @@
 package com.bkromhout.minerva.realm;
 
-import com.bkromhout.minerva.data.CoverHelper;
 import com.bkromhout.minerva.data.DataUtils;
 import com.bkromhout.minerva.data.SuperBook;
 import com.bkromhout.minerva.data.UniqueIdFactory;
@@ -200,7 +199,7 @@ public class RBook extends RealmObject implements UIDModel {
         if (book.getCoverImage() != null) {
             try {
                 // Get the cover image and store it.
-                CoverHelper.get().saveStreamAsCoverImage(book.getCoverImage().getInputStream(), relPath);
+                DataUtils.saveStreamAsCoverImage(book.getCoverImage().getInputStream(), relPath);
                 hasCoverImage = true;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -251,7 +250,7 @@ public class RBook extends RealmObject implements UIDModel {
         this.modDate = otherBook.modDate;
         this.numChaps = otherBook.numChaps;
         // Delete the cover image if the other book doesn't have one.
-        if (this.hasCoverImage && !otherBook.hasCoverImage) CoverHelper.get().deleteCoverImage(this.relPath);
+        if (this.hasCoverImage && !otherBook.hasCoverImage) DataUtils.deleteCoverImage(this.relPath);
         // We would have already gotten/replaced the cover image file if the other book has one, so just set the flag.
         this.hasCoverImage = otherBook.hasCoverImage;
 
