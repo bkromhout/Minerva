@@ -333,7 +333,7 @@
     <string name="title_lib_dir">Library Folder</string>
     <string name="title_auto_import">Auto Import</string>
 
-    <string name="summary_auto_import">If enabled, Minerva checks the library folder each time it starts</string>
+    <string name="summary_auto_import">Run a full import when the app starts</string>
 
     <!-- ******************************** About Activity ******************************** -->
     <string name="title_activity_about">@string/nav_item_about</string>
