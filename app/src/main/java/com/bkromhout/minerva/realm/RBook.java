@@ -21,10 +21,7 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Identifier;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Represents a book in Realm.
@@ -121,7 +118,6 @@ public class RBook extends RealmObject implements UIDModel {
     /**
      * Hash of file from the last time it was imported.
      */
-    @Hide
     public byte[] hash;
     /**
      * Date that the data for this book was last modified.
@@ -148,6 +144,15 @@ public class RBook extends RealmObject implements UIDModel {
      */
     @Index
     public int rating;
+    /**
+     * Whether or not this book is marked as "new". A book is automatically marked as new the first time it's imported.
+     */
+    public boolean isNew;
+    /**
+     * Whether or not this book is marked as "updated". A book is automatically marked as updated if its hash changes
+     * after being re-imported.
+     */
+    public boolean isUpdated;
 
     /**
      * Create a default {@link RBook}.
@@ -209,6 +214,8 @@ public class RBook extends RealmObject implements UIDModel {
         this.lastReadDate = null;
         this.isInRecents = false;
         this.rating = 0;
+        this.isNew = true;
+        this.isUpdated = false;
         this.uniqueId = UniqueIdFactory.getInstance().nextId(RBook.class);
     }
 
@@ -226,7 +233,8 @@ public class RBook extends RealmObject implements UIDModel {
         if (!realm.isInTransaction())
             throw new IllegalStateException("You must call this method from within a Realm transaction.");
 
-        // TODO Check if the hashes are different here, and if they aren't then we're done.
+        // Check if the hashes are different, and if they aren't then we're done. If they are, copy the new one.
+        if (Arrays.equals(this.hash, otherBook.hash)) return;
         this.hash = otherBook.hash;
 
         this.title = otherBook.title;
@@ -244,7 +252,11 @@ public class RBook extends RealmObject implements UIDModel {
         this.numChaps = otherBook.numChaps;
         // Delete the cover image if the other book doesn't have one.
         if (this.hasCoverImage && !otherBook.hasCoverImage) CoverHelper.get().deleteCoverImage(this.relPath);
+        // We would have already gotten/replaced the cover image file if the other book has one, so just set the flag.
         this.hasCoverImage = otherBook.hasCoverImage;
+
+        // As long as this book isn't still marked as new, mark it as updated.
+        if (!this.isNew) this.isUpdated = true;
 
         this.lastImportDate = otherBook.lastImportDate;
         this.lastModifiedDate = otherBook.lastModifiedDate;
