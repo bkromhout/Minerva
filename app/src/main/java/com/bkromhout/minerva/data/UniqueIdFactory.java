@@ -1,4 +1,4 @@
-package com.bkromhout.minerva.realm;
+package com.bkromhout.minerva.data;
 
 import io.realm.*;
 import timber.log.Timber;

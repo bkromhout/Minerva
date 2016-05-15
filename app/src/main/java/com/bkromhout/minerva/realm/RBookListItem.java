@@ -1,6 +1,7 @@
 package com.bkromhout.minerva.realm;
 
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.data.UniqueIdFactory;
 import com.bkromhout.rrvl.UIDModel;
 import com.bkromhout.ruqus.Hide;
 import com.bkromhout.ruqus.Queryable;

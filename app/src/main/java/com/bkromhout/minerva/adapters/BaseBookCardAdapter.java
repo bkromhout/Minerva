@@ -15,7 +15,7 @@ import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.CoverHelper;
 import com.bkromhout.minerva.events.BookCardClickEvent;
-import com.bkromhout.minerva.realm.ListItemPositionHelper;
+import com.bkromhout.minerva.data.ListItemPositionHelper;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookListItem;
 import com.bkromhout.minerva.ui.RippleForegroundListener;

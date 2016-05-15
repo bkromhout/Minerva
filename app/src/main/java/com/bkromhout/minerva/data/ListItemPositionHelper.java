@@ -1,6 +1,8 @@
-package com.bkromhout.minerva.realm;
+package com.bkromhout.minerva.data;
 
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.realm.RBookList;
+import com.bkromhout.minerva.realm.RBookListItem;
 import com.google.common.math.LongMath;
 import io.realm.Realm;
 import io.realm.RealmResults;

@@ -2,7 +2,7 @@ package com.bkromhout.minerva;
 
 import android.app.Application;
 import android.content.Context;
-import com.bkromhout.minerva.realm.UniqueIdFactory;
+import com.bkromhout.minerva.data.UniqueIdFactory;
 import com.bkromhout.ruqus.Ruqus;
 import com.karumi.dexter.Dexter;
 import io.realm.Realm;
