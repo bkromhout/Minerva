@@ -1,9 +1,11 @@
-package com.bkromhout.minerva;
+package com.bkromhout.minerva.activities;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.DataUtils;
 import com.bkromhout.minerva.realm.RBook;
 import com.bumptech.glide.Glide;

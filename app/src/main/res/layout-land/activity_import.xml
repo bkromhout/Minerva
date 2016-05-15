@@ -6,7 +6,7 @@
         android:id="@+id/base"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ImportActivity">
+        tools:context=".activities.ImportActivity">
 
     <include
             layout="@layout/toolbar"

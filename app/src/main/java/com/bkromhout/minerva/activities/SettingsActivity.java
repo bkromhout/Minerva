@@ -1,4 +1,4 @@
-package com.bkromhout.minerva;
+package com.bkromhout.minerva.activities;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import butterknife.ButterKnife;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
+import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;

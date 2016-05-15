@@ -1,4 +1,4 @@
-package com.bkromhout.minerva;
+package com.bkromhout.minerva.activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,6 +11,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.ruqus.RealmQueryView;
 import com.bkromhout.ruqus.RealmUserQuery;

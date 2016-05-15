@@ -1,4 +1,4 @@
-package com.bkromhout.minerva;
+package com.bkromhout.minerva.activities;
 
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -13,6 +13,8 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.R;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.aboutlibraries.ui.LibsSupportFragment;
 import timber.log.Timber;

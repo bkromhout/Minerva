@@ -17,6 +17,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.*;
+import com.bkromhout.minerva.activities.BookInfoActivity;
+import com.bkromhout.minerva.activities.QueryBuilderActivity;
+import com.bkromhout.minerva.activities.TaggingActivity;
 import com.bkromhout.minerva.adapters.*;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.enums.BookCardType;
@@ -400,7 +403,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     }
 
     /**
-     * Show the {@link com.bkromhout.minerva.QueryBuilderActivity} when the FAB is clicked.
+     * Show the {@link QueryBuilderActivity} when the FAB is clicked.
      */
     @OnClick(R.id.fab)
     void onFabClick() {

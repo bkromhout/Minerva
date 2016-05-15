@@ -7,7 +7,7 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 import com.bkromhout.minerva.C;
-import com.bkromhout.minerva.ImportActivity;
+import com.bkromhout.minerva.activities.ImportActivity;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.events.MissingPermEvent;
 import com.bkromhout.minerva.util.ContextProvider;

@@ -12,7 +12,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity
-                android:name=".MainActivity"
+                android:name=".activities.MainActivity"
                 android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -21,66 +21,66 @@
             </intent-filter>
         </activity>
         <activity
-                android:name=".AboutActivity"
+                android:name=".activities.AboutActivity"
                 android:label="@string/title_activity_about"
-                android:parentActivityName=".MainActivity">
+                android:parentActivityName=".activities.MainActivity">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value="MainActivity"/>
+                    android:value=".activities.MainActivity"/>
         </activity>
         <activity
-                android:name=".BookListActivity"
+                android:name=".activities.BookListActivity"
                 android:label="@string/title_activity_book_list"
-                android:parentActivityName=".MainActivity"
+                android:parentActivityName=".activities.MainActivity"
                 android:theme="@style/AppTheme">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.bkromhout.minerva.MainActivity"/>
+                    android:value=".activities.MainActivity"/>
         </activity>
         <activity
-                android:name=".TaggingActivity"
+                android:name=".activities.TaggingActivity"
                 android:label="@string/title_activity_tagging"
                 android:theme="@style/AppTheme">
         </activity>
         <activity
-                android:name=".BookInfoActivity"
+                android:name=".activities.BookInfoActivity"
                 android:label="@string/title_activity_info"
                 android:theme="@style/AppTheme.TransparentStatus">
         </activity>
         <activity
-                android:name=".CoverActivity"
+                android:name=".activities.CoverActivity"
                 android:label="@string/acc_book_cover"
-                android:parentActivityName=".BookInfoActivity"
+                android:parentActivityName=".activities.BookInfoActivity"
                 android:theme="@style/AppTheme.TransparentStatus">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.bkromhout.minerva.BookInfoActivity"/>
+                    android:value=".activities.BookInfoActivity"/>
         </activity>
         <activity
-                android:name=".QueryBuilderActivity"
+                android:name=".activities.QueryBuilderActivity"
                 android:label="@string/title_activity_query_builder"
                 android:theme="@style/AppTheme">
         </activity>
         <activity
-                android:name=".SettingsActivity"
+                android:name=".activities.SettingsActivity"
                 android:label="@string/title_activity_settings"
-                android:parentActivityName=".MainActivity"
+                android:parentActivityName=".activities.MainActivity"
                 android:theme="@style/AppTheme">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.bkromhout.minerva.MainActivity"/>
+                    android:value=".activities.MainActivity"/>
         </activity>
         <activity
-                android:name=".ImportActivity"
+                android:name=".activities.ImportActivity"
                 android:label="@string/title_activity_import"
-                android:parentActivityName=".MainActivity"
+                android:parentActivityName=".activities.MainActivity"
                 android:theme="@style/AppTheme">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.bkromhout.minerva.MainActivity"/>
+                    android:value=".activities.MainActivity"/>
         </activity>
         <activity
-                android:name=".WelcomeActivity"
+                android:name=".activities.WelcomeActivity"
                 android:label="@string/title_activity_welcome"
                 android:theme="@style/AppTheme.WelcomeActivity">
         </activity>

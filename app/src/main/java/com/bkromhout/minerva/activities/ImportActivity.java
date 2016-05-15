@@ -1,4 +1,4 @@
-package com.bkromhout.minerva;
+package com.bkromhout.minerva.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -13,6 +13,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
+import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.ImportLogger;
 import com.bkromhout.minerva.data.Importer;
 import com.bkromhout.minerva.prefs.DefaultPrefs;

@@ -1,4 +1,4 @@
-package com.bkromhout.minerva;
+package com.bkromhout.minerva.activities;
 
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -18,6 +18,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.fragments.AllListsFragment;
 import com.bkromhout.minerva.fragments.LibraryFragment;
 import com.bkromhout.minerva.fragments.PowerSearchFragment;

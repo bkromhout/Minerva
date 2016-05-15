@@ -17,7 +17,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
-import com.bkromhout.minerva.TaggingActivity;
+import com.bkromhout.minerva.activities.TaggingActivity;
 import com.bkromhout.minerva.events.TagCardClickEvent;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.ui.RippleForegroundListener;

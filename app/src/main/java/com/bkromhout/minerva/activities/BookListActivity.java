@@ -1,4 +1,4 @@
-package com.bkromhout.minerva;
+package com.bkromhout.minerva.activities;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,6 +16,8 @@ import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.adapters.*;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.enums.BookCardType;

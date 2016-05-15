@@ -1,4 +1,4 @@
-package com.bkromhout.minerva;
+package com.bkromhout.minerva.activities;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -22,6 +22,8 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.DataUtils;
 import com.bkromhout.minerva.events.ActionEvent;

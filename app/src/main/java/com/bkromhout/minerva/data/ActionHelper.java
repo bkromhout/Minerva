@@ -9,7 +9,7 @@ import android.support.v4.content.FileProvider;
 import android.webkit.MimeTypeMap;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
-import com.bkromhout.minerva.TaggingActivity.TaggingHelper;
+import com.bkromhout.minerva.activities.TaggingActivity.TaggingHelper;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
