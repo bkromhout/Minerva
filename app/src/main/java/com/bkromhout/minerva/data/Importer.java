@@ -424,6 +424,7 @@ public class Importer {
                 .map(this::convertFileToSuperBook) // Create a SuperBook from the file.
                 .filter(sb -> sb != null)
                 .map(RBook::new) // Create an RBook from the SuperBook.
+                .onBackpressureBuffer()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onImportedBookFile, this::onFileImporterError, this::onAllFilesImported);
     }
