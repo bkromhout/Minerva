@@ -91,7 +91,10 @@ public class ActionHelper {
         if (books == null || tags == null) throw new IllegalArgumentException("No nulls allowed.");
         if (books.isEmpty() || tags.isEmpty()) return;
 
-        // TODO Handle new/updated tags.
+        // Get names of new/updated book tags.
+        String newBookTagName = DefaultPrefs.get().getNewBookTag(null);
+        String updatedBookTagName = DefaultPrefs.get().getUpdatedBookTag(null);
+
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.beginTransaction();
             // Loop through books and add tags to them.
@@ -104,6 +107,9 @@ public class ActionHelper {
                         // and add the book to the tag.
                         tag.taggedBooks.add(book);
                     }
+                    // Make sure that we new/updated state if we had those tags added.
+                    if (newBookTagName != null && newBookTagName.equals(tag.name)) book.isNew = true;
+                    if (updatedBookTagName != null && updatedBookTagName.equals(tag.name)) book.isUpdated = true;
                 }
             }
             realm.commitTransaction();
@@ -119,7 +125,10 @@ public class ActionHelper {
         if (books == null || tags == null) throw new IllegalArgumentException("No nulls allowed.");
         if (books.isEmpty() || tags.isEmpty()) return;
 
-        // TODO Handle new/updated tags.
+        // Get names of new/updated book tags.
+        String newBookTagName = DefaultPrefs.get().getNewBookTag(null);
+        String updatedBookTagName = DefaultPrefs.get().getUpdatedBookTag(null);
+
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.beginTransaction();
             // Loop through books and remove tags from them.
@@ -130,6 +139,9 @@ public class ActionHelper {
                         // and remove the book from the tag.
                         tag.taggedBooks.remove(book);
                     }
+                    // Make sure that we new/updated state if we had those tags removed.
+                    if (newBookTagName != null && newBookTagName.equals(tag.name)) book.isNew = false;
+                    if (updatedBookTagName != null && updatedBookTagName.equals(tag.name)) book.isUpdated = false;
                 }
             }
             realm.commitTransaction();
