@@ -168,7 +168,7 @@ public class ActionHelper {
         try (Realm realm = Realm.getDefaultInstance()) {
             // Get a list of books whose given mark type is set to true.
             RealmResults<RBook> books = realm.where(RBook.class)
-                                             .equalTo(markType == MarkType.NEW ? "isNew" : "isUpdated", true)
+                                             .equalTo(markType.getFieldName(), true)
                                              .findAll();
 
             // Get tags.
@@ -196,7 +196,7 @@ public class ActionHelper {
             if (newTag != null) {
                 // Get a list of such books.
                 books = newTag.taggedBooks.where()
-                                          .equalTo(markType == MarkType.NEW ? "isNew" : "isUpdated", false)
+                                          .equalTo(markType.getFieldName(), false)
                                           .findAll();
 
                 // Loop backwards over list and set given mark's value to true.
@@ -228,12 +228,11 @@ public class ActionHelper {
      */
     public static void markBooks(List<RBook> books, MarkType markType, boolean marked) {
         // Get the associated tag's name, or null if there isn't one.
-        String tagName = markType == MarkType.NEW ? DefaultPrefs.get().getNewBookTag(null) :
-                DefaultPrefs.get().getUpdatedBookTag(null);
+        String tagName = markType.getTagName();
 
         try (Realm realm = Realm.getDefaultInstance()) {
             // If we have an associated tag, we can just use our add/remove tags methods to help us do this, since they
-            // handle updating the marks for us as well.
+            // handle updating the mark for us as well.
             if (tagName != null) {
                 RTag tag = realm.where(RTag.class).equalTo("name", tagName).findFirst();
                 if (marked) addTagsToBooks(books, Lists.newArrayList(tag));
@@ -241,7 +240,7 @@ public class ActionHelper {
                 return;
             }
 
-            // Otherwise, loop through the books and just set the marks new values.
+            // Otherwise, loop through the books and just set the mark's new value.
             realm.beginTransaction();
             for (RBook book : books) {
                 if (markType == MarkType.NEW) book.isNew = marked;
