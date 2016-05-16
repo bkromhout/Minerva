@@ -10,6 +10,7 @@ import android.webkit.MimeTypeMap;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.activities.TaggingActivity.TaggingHelper;
+import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
@@ -451,6 +452,12 @@ public class ActionHelper {
         // Delete the tag from Realm.
         String tagName = tag.name;
         realm.executeTransaction(tRealm -> tag.deleteFromRealm());
+
+        // If this was one of the new/updated book tags, be sure that we null that preference's value.
+        String prefVal = DefaultPrefs.get().getNewBookTag(null);
+        if (prefVal != null && prefVal.equals(tagName)) DefaultPrefs.get().putNewBookTag(null);
+        prefVal = DefaultPrefs.get().getUpdatedBookTag(null);
+        if (prefVal != null && prefVal.equals(tagName)) DefaultPrefs.get().putUpdatedBookTag(null);
 
         // Remove tag name from the lists (if present).
         th.oldCheckedItems.remove(tagName);
