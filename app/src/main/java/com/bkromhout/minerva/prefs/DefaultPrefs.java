@@ -2,6 +2,7 @@ package com.bkromhout.minerva.prefs;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.activities.MainActivity;
@@ -13,11 +14,12 @@ public class DefaultPrefs {
     // Key strings.
     private final static String CURR_FRAG = "CURR_FRAG";
     private final static String CURR_LIST_SEL = "CURR_LIST_UNIQUE_SEL";
-
-    public final static String LIB_DIR = Minerva.getAppCtx().getString(R.string.key_lib_dir);
-    private final static String LIB_AUTO_IMPORT = Minerva.getAppCtx().getString(R.string.key_auto_import);
+    public final static String LIB_DIR = C.getStr(R.string.key_lib_dir);
+    private final static String LIB_AUTO_IMPORT = C.getStr(R.string.key_auto_import);
     private final static String LAST_IMPORT_SUCCESS_TIME = "LAST_IMPORT_SUCCESS_TIME";
     private final static String FIRST_IMPORT_TRIGGERED = "FIRST_IMPORT_TRIGGERED";
+    public final static String NEW_BOOK_TAG = C.getStr(R.string.key_new_tag);
+    public final static String UPDATED_BOOK_TAG = C.getStr(R.string.key_updated_tag);
 
     /**
      * Static instance.
@@ -93,6 +95,23 @@ public class DefaultPrefs {
     }
 
     /**
+     * Get the last time an import run completed successfully.
+     * @param defValue The default value to return if nothing is set.
+     * @return Last import success time.
+     */
+    public long getLastImportSuccessTime(long defValue) {
+        return prefs.getLong(LAST_IMPORT_SUCCESS_TIME, defValue);
+    }
+
+    /**
+     * Set the last time an import run completed successfully.
+     * @param lastImportSuccessTime Last import success time.
+     */
+    public void putLastImportSuccessTime(long lastImportSuccessTime) {
+        prefs.edit().putLong(LAST_IMPORT_SUCCESS_TIME, lastImportSuccessTime).apply();
+    }
+
+    /**
      * Get the library directory path.
      * @param defValue The default value to return if nothing is set.
      * @return Library directory path.
@@ -127,19 +146,36 @@ public class DefaultPrefs {
     }
 
     /**
-     * Get the last time an import run completed successfully.
+     * Get the name of the tag to tag new books with.
      * @param defValue The default value to return if nothing is set.
-     * @return Last import success time.
+     * @return New book tag name.
      */
-    public long getLastImportSuccessTime(long defValue) {
-        return prefs.getLong(LAST_IMPORT_SUCCESS_TIME, defValue);
+    public String getNewBookTag(String defValue) {
+        return prefs.getString(NEW_BOOK_TAG, defValue);
     }
 
     /**
-     * Set the last time an import run completed successfully.
-     * @param lastImportSuccessTime Last import success time.
+     * Put the name of the tag to tag new books with.
+     * @param newBookTag New book tag name.
      */
-    public void putLastImportSuccessTime(long lastImportSuccessTime) {
-        prefs.edit().putLong(LAST_IMPORT_SUCCESS_TIME, lastImportSuccessTime).apply();
+    public void putNewBookTag(String newBookTag) {
+        prefs.edit().putString(NEW_BOOK_TAG, newBookTag).apply();
+    }
+
+    /**
+     * Get the name of the tag to tag updated books with.
+     * @param defValue The default value to return if nothing is set.
+     * @return Updated book tag name.
+     */
+    public String getUpdatedBookTag(String defValue) {
+        return prefs.getString(UPDATED_BOOK_TAG, defValue);
+    }
+
+    /**
+     * Put the name of the tag to tag updated books with.
+     * @param updatedBookTag Updated book tag name.
+     */
+    public void putUpdatedBookTag(String updatedBookTag) {
+        prefs.edit().putString(UPDATED_BOOK_TAG, updatedBookTag).apply();
     }
 }

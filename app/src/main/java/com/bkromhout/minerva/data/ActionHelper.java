@@ -165,7 +165,7 @@ public class ActionHelper {
             });
         } catch (ActivityNotFoundException e) {
             // Tell the user there aren't any apps which advertise the ability to handle the book's file type.
-            SnackKiosk.snack(R.string.toast_err_no_apps, R.string.dismiss, Snackbar.LENGTH_LONG);
+            SnackKiosk.snack(R.string.sb_err_no_apps, R.string.dismiss, Snackbar.LENGTH_LONG);
         }
     }
 

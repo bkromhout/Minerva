@@ -31,8 +31,8 @@
 
     <!-- Common error strings -->
     <string name="err_name_taken">Name already in use</string>
-    <string name="toast_err_no_apps">You have no apps which can open this book’s file</string>
-    <string name="toast_err_invalid_query">Invalid Query</string>
+    <string name="sb_err_no_apps">You have no apps which can open this book’s file</string>
+    <string name="sb_err_invalid_query">Invalid Query</string>
 
     <!-- Permissions -->
     <string name="storage_permission">Storage Permission</string>
@@ -141,7 +141,7 @@
 
     <string name="prompt_empty_library">Your library is empty and sad</string>
     <string name="action_open_importer">Open Importer</string>
-    <string name="toast_no_lists">You have no lists</string>
+    <string name="sb_no_lists">You have no lists</string>
 
 
     <!-- ******************************** Importing Process ******************************** -->
@@ -312,6 +312,7 @@
 
     <!-- ******************************** Tagging Activity ******************************** -->
     <string name="title_activity_tagging">Choose Tags</string>
+    <string name="title_dialog_choose_tag">Choose Tag</string>
     <string name="title_tag_text_color">Tag Text Color</string>
     <string name="title_tag_bg_color">Tag Background Color</string>
     <string name="title_rename_tag">Rename Tag</string>
@@ -324,16 +325,24 @@
     <string name="prompt_rename_tag">Enter a new name for the tag</string>
     <string name="prompt_delete_tag">Delete “%1$s”?\n\nThis is permanent, even if you leave the tagging screen
         without saving.</string>
-
     <string name="tag_name_hint">Tag Name</string>
+
+    <string name="default_new_book_tag">New</string>
+    <string name="default_updated_book_tag">Updated</string>
+    <string name="sb_no_available_tags">You have no available tags</string>
 
     <!-- ******************************** Settings Activity ******************************** -->
     <string name="title_activity_settings">@string/settings</string>
-    <string name="cat_title_lib_dir">Library Folder Settings</string>
-    <string name="title_lib_dir">Library Folder</string>
-    <string name="title_auto_import">Auto Import</string>
 
+    <string name="cat_title_library">Library</string>
+    <string name="title_lib_dir">Library Folder</string>
+    <string name="title_auto_import">Auto-Import</string>
     <string name="summary_auto_import">Run a full import when the app starts</string>
+
+    <string name="cat_title_tagging">Tagging</string>
+    <string name="title_auto_tag_new">Auto-Tag New Books</string>
+    <string name="title_auto_tag_updated">Auto-Tag Updated Books</string>
+    <string name="summary_tag_as">Tag as “%1$s”</string>
 
     <!-- ******************************** About Activity ******************************** -->
     <string name="title_activity_about">@string/nav_item_about</string>

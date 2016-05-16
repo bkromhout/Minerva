@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="@string/cat_title_lib_dir">
+    <PreferenceCategory android:title="@string/cat_title_library">
 
         <Preference
                 android:title="@string/title_lib_dir"
@@ -10,5 +10,17 @@
                 android:title="@string/title_auto_import"
                 android:summary="@string/summary_auto_import"
                 android:key="@string/key_auto_import"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/cat_title_tagging">
+
+        <Preference
+                android:title="@string/title_auto_tag_new"
+                android:key="@string/key_new_tag"
+                android:defaultValue="@string/default_new_book_tag"/>
+
+        <Preference
+                android:title="@string/title_auto_tag_updated"
+                android:key="@string/key_updated_tag"/>
     </PreferenceCategory>
 </PreferenceScreen>

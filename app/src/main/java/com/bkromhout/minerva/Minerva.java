@@ -3,11 +3,14 @@ package com.bkromhout.minerva;
 import android.app.Application;
 import android.content.Context;
 import com.bkromhout.minerva.data.UniqueIdFactory;
+import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.ruqus.Ruqus;
 import com.karumi.dexter.Dexter;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import org.greenrobot.eventbus.EventBus;
+
+import java.util.ArrayList;
 
 /**
  * Custom Application class.
@@ -55,7 +58,21 @@ public class Minerva extends Application {
         Realm.setDefaultConfiguration(new RealmConfiguration.Builder(this)
                 .name(REALM_FILE_NAME)
                 .schemaVersion(REALM_SCHEMA_VERSION)
+                .initialData(this::initialRealmData)
                 .build());
+    }
+
+    /**
+     * Add initial data to Realm. Only runs on first app run (or after data has been cleared).
+     * @param realm Instance of Realm to use to add data.
+     */
+    private void initialRealmData(Realm realm) {
+        // Create default tags for new and updated books.
+        ArrayList<RTag> defaultTags = new ArrayList<RTag>() {{
+            new RTag(C.getStr(R.string.default_new_book_tag));
+            new RTag(C.getStr(R.string.default_updated_book_tag));
+        }};
+        realm.copyToRealm(defaultTags);
     }
 
     /**

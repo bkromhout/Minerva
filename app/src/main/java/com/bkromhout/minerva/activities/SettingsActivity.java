@@ -7,18 +7,26 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import butterknife.ButterKnife;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
+import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
+import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
+import io.realm.Realm;
+import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Settings activity, just loads a custom PreferenceFragment.
@@ -128,6 +136,20 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
             Preference libDir = getPreferenceScreen().findPreference(DefaultPrefs.LIB_DIR);
             libDir.setOnPreferenceClickListener(this::onLibDirPrefClick);
             libDir.setSummary(DefaultPrefs.get().getLibDir(""));
+
+            // Set up the new book tag preference.
+            Preference newBookTag = getPreferenceScreen().findPreference(DefaultPrefs.NEW_BOOK_TAG);
+            newBookTag.setOnPreferenceClickListener(this::onNewBookTagPrefClick);
+            String newBookTagVal = DefaultPrefs.get().getNewBookTag(C.getStr(R.string.default_new_book_tag));
+            newBookTag.setSummary(newBookTagVal == null ? "" : C.getStr(R.string.summary_tag_as, newBookTagVal));
+
+            // Set up the updated book tag preference.
+            Preference updatedBookTag = getPreferenceScreen().findPreference(DefaultPrefs.UPDATED_BOOK_TAG);
+            updatedBookTag.setOnPreferenceClickListener(this::onUpdatedBookTagPrefClick);
+            String updatedBookTagVal = DefaultPrefs.get().getUpdatedBookTag(
+                    C.getStr(R.string.default_updated_book_tag));
+            updatedBookTag.setSummary(updatedBookTagVal == null ? "" :
+                    C.getStr(R.string.summary_tag_as, updatedBookTagVal));
         }
 
         @Override
@@ -152,9 +174,19 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             if (key.equals(DefaultPrefs.LIB_DIR)) {
-                // Update the summary for the library directory fragment to be the path.
+                // Update the summary for the library directory.
                 getPreferenceScreen().findPreference(DefaultPrefs.LIB_DIR)
                                      .setSummary(sharedPreferences.getString(key, ""));
+            } else if (key.equals(DefaultPrefs.NEW_BOOK_TAG)) {
+                String value = sharedPreferences.getString(key, null);
+                // Update the summary for the new book tag.
+                getPreferenceScreen().findPreference(DefaultPrefs.NEW_BOOK_TAG)
+                                     .setSummary(value != null ? C.getStr(R.string.summary_tag_as, value) : "");
+            } else if (key.equals(DefaultPrefs.UPDATED_BOOK_TAG)) {
+                String value = sharedPreferences.getString(key, null);
+                // Updated the summary for the updated book tag.
+                getPreferenceScreen().findPreference(DefaultPrefs.UPDATED_BOOK_TAG)
+                                     .setSummary(value != null ? C.getStr(R.string.summary_tag_as, value) : "");
             }
         }
 
@@ -178,6 +210,62 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
             // Show the folder chooser dialog.
             builder.show();
             return true;
+        }
+
+        /**
+         * Click handler for the new book tag preference.
+         * @param preference The actual preference.
+         * @return Always true, since we always handle the click.
+         */
+        private boolean onNewBookTagPrefClick(Preference preference) {
+            showTagChooserOrSnackbar(true);
+            return true;
+        }
+
+        /**
+         * Click handler for the updated book tag preference.
+         * @param preference The actual preference.
+         * @return Always true, since we always handle the click.
+         */
+        private boolean onUpdatedBookTagPrefClick(Preference preference) {
+            showTagChooserOrSnackbar(false);
+            return true;
+        }
+
+        /**
+         * Show a dialog with a list of tags, or a snackbar stating that no tags exist.
+         * @param isForNew True if the selected tag should be used for new books, false if it should be used for updated
+         *                 books.
+         */
+        private void showTagChooserOrSnackbar(boolean isForNew) {
+            // Get list of tag names.
+            List<String> tagNames = new ArrayList<>();
+            try (Realm realm = Realm.getDefaultInstance()) {
+                RealmResults<RTag> tags = realm.where(RTag.class).findAllSorted("sortName");
+                for (RTag tag : tags) tagNames.add(tag.name);
+            }
+
+            // Remove the name of the tag which is in use as the updated tag (if we're picking the new tag), or the
+            // new tag (if we're picking the updated tag).
+            String rm = isForNew ? DefaultPrefs.get().getUpdatedBookTag(null) : DefaultPrefs.get().getNewBookTag(null);
+            if (rm != null) tagNames.remove(rm);
+
+            // If we don't have any names, show a snackbar saying that, then return.
+            if (tagNames.isEmpty()) {
+                SnackKiosk.snack(R.string.sb_no_available_tags, Snackbar.LENGTH_SHORT);
+                return;
+            }
+
+            // Create dialog to let user pick a new tag to use.
+            new MaterialDialog.Builder(getActivity())
+                    .title(R.string.title_dialog_choose_tag)
+                    .negativeText(R.string.cancel)
+                    .items(tagNames)
+                    .itemsCallback((dialog, itemView, which, text) -> {
+                        if (isForNew) DefaultPrefs.get().putNewBookTag(text.toString());
+                        else DefaultPrefs.get().putUpdatedBookTag(text.toString());
+                    })
+                    .show();
         }
     }
 }

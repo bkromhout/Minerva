@@ -390,11 +390,10 @@ public class TaggingActivity extends AppCompatActivity implements SnackKiosk.Sna
 
         boolean removedAny = !removedTagNames.isEmpty(), addedAny = !addedTagNames.isEmpty();
         // Remove and add the applicable tags.
-        if (removedAny)
-            ActionHelper.removeTagsFromBooks(taggingHelper.selectedBooks, DataUtils
-                    .stringListToTagList(removedTagNames, false));
-        if (addedAny)
-            ActionHelper.addTagsToBooks(taggingHelper.selectedBooks, DataUtils.stringListToTagList(addedTagNames, true));
+        if (removedAny) ActionHelper.removeTagsFromBooks(taggingHelper.selectedBooks,
+                DataUtils.stringListToTagList(removedTagNames, false));
+        if (addedAny) ActionHelper.addTagsToBooks(taggingHelper.selectedBooks,
+                DataUtils.stringListToTagList(addedTagNames, true));
         // If we actually removed and/or added any tags, indicate that we may need an explicit update.
         if (removedAny || addedAny) taggingHelper.markForExplicitUpdateIfNecessary();
 

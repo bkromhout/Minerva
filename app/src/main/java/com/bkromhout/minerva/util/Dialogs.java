@@ -168,7 +168,7 @@ public class Dialogs {
 
         if (lists.size() == 0) {
             // If we don't have any lists, just show a snackbar.
-            SnackKiosk.snack(R.string.toast_no_lists, Snackbar.LENGTH_SHORT);
+            SnackKiosk.snack(R.string.sb_no_lists, Snackbar.LENGTH_SHORT);
         } else {
             // Create a material dialog.
             new MaterialDialog.Builder(ctx)

@@ -8,4 +8,6 @@
     <!-- Preference keys. -->
     <string name="key_lib_dir">LIB_DIR</string>
     <string name="key_auto_import">AUTO_IMPORT</string>
+    <string name="key_new_tag">NEW_BOOK_TAG</string>
+    <string name="key_updated_tag">UPDATED_BOOK_TAG</string>
 </resources>

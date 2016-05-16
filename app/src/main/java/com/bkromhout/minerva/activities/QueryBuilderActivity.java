@@ -99,7 +99,7 @@ public class QueryBuilderActivity extends AppCompatActivity implements RealmQuer
                 return true;
             case R.id.action_save:
                 if (!rqv.isQueryValid())
-                    Toast.makeText(this, R.string.toast_err_invalid_query, Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, R.string.sb_err_invalid_query, Toast.LENGTH_LONG).show();
                 else {
                     setResult(RESULT_OK, new Intent().putExtra(C.RUQ, rqv.getRealmUserQuery()));
                     finish();
