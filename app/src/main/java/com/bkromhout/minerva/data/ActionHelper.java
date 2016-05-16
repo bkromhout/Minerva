@@ -98,7 +98,10 @@ public class ActionHelper {
         String updatedBookTagName = DefaultPrefs.get().getUpdatedBookTag(null);
 
         try (Realm realm = Realm.getDefaultInstance()) {
-            realm.beginTransaction();
+            // Sometimes this method is called when we're already in a transaction. We can't nest them.
+            boolean isInXactAlready = realm.isInTransaction();
+            if (!isInXactAlready) realm.beginTransaction();
+
             // Loop through books and add tags to them.
             for (int i = books.size() - 1; i >= 0; i--) {
                 RBook book = books.get(i);
@@ -117,7 +120,8 @@ public class ActionHelper {
                         book.isUpdated = true;
                 }
             }
-            realm.commitTransaction();
+            // Again, if there's an outer transaction already ongoing, don't finish it here.
+            if (!isInXactAlready) realm.commitTransaction();
         }
     }
 
