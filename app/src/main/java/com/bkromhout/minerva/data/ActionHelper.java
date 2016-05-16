@@ -182,14 +182,24 @@ public class ActionHelper {
      * @param marked   Whether the mark should be true or false.
      */
     public static void markBooks(List<RBook> books, MarkType markType, boolean marked) {
+        // Get the associated tag's name, or null if there isn't one.
+        String tagName = markType == MarkType.NEW ? DefaultPrefs.get().getNewBookTag(null) :
+                DefaultPrefs.get().getUpdatedBookTag(null);
+
         try (Realm realm = Realm.getDefaultInstance()) {
-            // Loop through the books.
+            // If we have an associated tag, we can just use our add/remove tags methods to help us do this, since they
+            // handle updating the marks for us as well.
+            if (tagName != null) {
+                RTag tag = realm.where(RTag.class).equalTo("name", tagName).findFirst();
+                if (marked) addTagsToBooks(books, Lists.newArrayList(tag));
+                else removeTagsFromBooks(books, Lists.newArrayList(tag));
+                return;
+            }
+
+            // Otherwise, loop through the books and just set the marks new values.
             for (RBook book : books) {
-                if (markType == MarkType.NEW) {
-                    // TODO
-                } else if (markType == MarkType.UPDATED) {
-                    // TODO
-                }
+                if (markType == MarkType.NEW) book.isNew = marked;
+                else if (markType == MarkType.UPDATED) book.isUpdated = marked;
             }
         }
     }
