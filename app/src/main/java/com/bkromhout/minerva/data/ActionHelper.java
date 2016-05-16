@@ -150,6 +150,22 @@ public class ActionHelper {
     }
 
     /**
+     * Replaces an {@link RTag} whose name is {@code oldTagName} with an {@link RTag} whose name is {@code newTagName}
+     * on any {@link RBook}s for which the given {@code markType} is set to {@code true}.
+     * <p>
+     * Any books already tagged with {@code newTagName} but whose value for the given {@code markType} isn't set to
+     * {@code true} will be changed so that it is set to {@code true} in order to stay in sync.
+     * @param markType   The mark whose associated tag is being replaced.
+     * @param oldTagName Name of the tag to replace.
+     * @param newTagName Name of the replacement tag.
+     */
+    public static void replaceMarkTagOnBooks(MarkType markType, String oldTagName, String newTagName) {
+        // TODO.
+
+        //TODO Update marks on books already tagged with the new tag but not marked accordingly so that we stay in sync.
+    }
+
+    /**
      * Mark the given {@code book}.
      * @param book     {@link RBook} to mark.
      * @param markType Type of mark.

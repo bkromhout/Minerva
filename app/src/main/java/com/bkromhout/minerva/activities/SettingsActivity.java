@@ -16,6 +16,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
+import com.bkromhout.minerva.data.ActionHelper;
+import com.bkromhout.minerva.enums.MarkType;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.ui.SnackKiosk;
@@ -217,7 +219,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
          * @return Always true, since we always handle the click.
          */
         private boolean onNewBookTagPrefClick(Preference preference) {
-            showTagChooserOrSnackbar(true);
+            showTagChooserOrSnackbar(MarkType.NEW);
             return true;
         }
 
@@ -227,16 +229,15 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
          * @return Always true, since we always handle the click.
          */
         private boolean onUpdatedBookTagPrefClick(Preference preference) {
-            showTagChooserOrSnackbar(false);
+            showTagChooserOrSnackbar(MarkType.UPDATED);
             return true;
         }
 
         /**
          * Show a dialog with a list of tags, or a snackbar stating that no tags exist.
-         * @param isForNew True if the selected tag should be used for new books, false if it should be used for updated
-         *                 books.
+         * @param markType Which mark to choose a tag for.
          */
-        private void showTagChooserOrSnackbar(boolean isForNew) {
+        private void showTagChooserOrSnackbar(MarkType markType) {
             // Get list of tag names.
             List<String> tagNames = new ArrayList<>();
             try (Realm realm = Realm.getDefaultInstance()) {
@@ -244,10 +245,11 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
                 for (RTag tag : tags) tagNames.add(tag.name);
             }
 
-            // Remove the name of the tag which is in use as the updated tag (if we're picking the new tag), or the
+            // Remove the name of the tag which is in use as the updated tag (if we're picking the new tag), or as the
             // new tag (if we're picking the updated tag).
-            String rm = isForNew ? DefaultPrefs.get().getUpdatedBookTag(null) : DefaultPrefs.get().getNewBookTag(null);
-            if (rm != null) tagNames.remove(rm);
+            String remove = markType == MarkType.NEW ? DefaultPrefs.get().getUpdatedBookTag(null) :
+                    DefaultPrefs.get().getNewBookTag(null);
+            if (remove != null) tagNames.remove(remove);
 
             // If we don't have any names, show a snackbar saying that, then return.
             if (tagNames.isEmpty()) {
@@ -259,10 +261,33 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
             new MaterialDialog.Builder(getActivity())
                     .title(R.string.title_dialog_choose_tag)
                     .negativeText(R.string.cancel)
+                    .neutralText(R.string.clear)
                     .items(tagNames)
+                    .onNeutral((dialog, which) -> {
+                        String oldTagName = null;
+                        // Change preference.
+                        if (markType == MarkType.NEW) {
+                            oldTagName = DefaultPrefs.get().getNewBookTag(null);
+                            DefaultPrefs.get().putNewBookTag(null);
+                        } else if (markType == MarkType.UPDATED) {
+                            oldTagName = DefaultPrefs.get().getUpdatedBookTag(null);
+                            DefaultPrefs.get().putUpdatedBookTag(null);
+                        }
+                        // Remove tag from books.
+                        ActionHelper.replaceMarkTagOnBooks(markType, oldTagName, null);
+                    })
                     .itemsCallback((dialog, itemView, which, text) -> {
-                        if (isForNew) DefaultPrefs.get().putNewBookTag(text.toString());
-                        else DefaultPrefs.get().putUpdatedBookTag(text.toString());
+                        String oldTagName = null;
+                        // Change preference.
+                        if (markType == MarkType.NEW) {
+                            oldTagName = DefaultPrefs.get().getNewBookTag(null);
+                            DefaultPrefs.get().putNewBookTag(text.toString());
+                        } else if (markType == MarkType.UPDATED) {
+                            oldTagName = DefaultPrefs.get().getUpdatedBookTag(null);
+                            DefaultPrefs.get().putUpdatedBookTag(text.toString());
+                        }
+                        // Replace tag on books.
+                        ActionHelper.replaceMarkTagOnBooks(markType, oldTagName, text.toString());
                     })
                     .show();
         }
