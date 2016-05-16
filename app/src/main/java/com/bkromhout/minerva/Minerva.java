@@ -6,12 +6,11 @@ import com.bkromhout.minerva.data.UniqueIdFactory;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.ruqus.Ruqus;
+import com.google.common.collect.Lists;
 import com.karumi.dexter.Dexter;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import org.greenrobot.eventbus.EventBus;
-
-import java.util.ArrayList;
 
 /**
  * Custom Application class.
@@ -82,11 +81,8 @@ public class Minerva extends Application {
      */
     private void initialRealmData(Realm realm) {
         // Create default tags for new and updated books.
-        ArrayList<RTag> defaultTags = new ArrayList<RTag>() {{
-            new RTag(C.getStr(R.string.default_new_book_tag));
-            new RTag(C.getStr(R.string.default_updated_book_tag));
-        }};
-        realm.copyToRealm(defaultTags);
+        realm.copyToRealm(Lists.newArrayList(new RTag(C.getStr(R.string.default_new_book_tag)),
+                new RTag(C.getStr(R.string.default_updated_book_tag))));
     }
 
     /**
