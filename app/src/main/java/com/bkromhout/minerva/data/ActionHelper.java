@@ -10,6 +10,7 @@ import android.webkit.MimeTypeMap;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.activities.TaggingActivity.TaggingHelper;
+import com.bkromhout.minerva.enums.MarkType;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
@@ -145,6 +146,35 @@ public class ActionHelper {
                 }
             }
             realm.commitTransaction();
+        }
+    }
+
+    /**
+     * Mark the given {@code book}.
+     * @param book     {@link RBook} to mark.
+     * @param markType Type of mark.
+     * @param marked   Whether the mark should be true or false.
+     */
+    public static void markBook(RBook book, MarkType markType, boolean marked) {
+        markBooks(Lists.newArrayList(book), markType, marked);
+    }
+
+    /**
+     * Mark the given {@code books}.
+     * @param books    List of {@link RBook}s to mark.
+     * @param markType Type of mark.
+     * @param marked   Whether the mark should be true or false.
+     */
+    public static void markBooks(List<RBook> books, MarkType markType, boolean marked) {
+        try (Realm realm = Realm.getDefaultInstance()) {
+            // Loop through the books.
+            for (RBook book : books) {
+                if (markType == MarkType.NEW) {
+                    // TODO
+                } else if (markType == MarkType.UPDATED) {
+                    // TODO
+                }
+            }
         }
     }
 
