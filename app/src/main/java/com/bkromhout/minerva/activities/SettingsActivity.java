@@ -140,16 +140,15 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
             // Set up the new book tag preference.
             Preference newBookTag = getPreferenceScreen().findPreference(DefaultPrefs.NEW_BOOK_TAG);
             newBookTag.setOnPreferenceClickListener(this::onNewBookTagPrefClick);
-            String newBookTagVal = DefaultPrefs.get().getNewBookTag(C.getStr(R.string.default_new_book_tag));
-            newBookTag.setSummary(newBookTagVal == null ? "" : C.getStr(R.string.summary_tag_as, newBookTagVal));
+            String newBookTagVal = DefaultPrefs.get().getNewBookTag(null);
+            newBookTag.setSummary(newBookTagVal != null ? C.getStr(R.string.summary_tag_as, newBookTagVal) : "");
 
             // Set up the updated book tag preference.
             Preference updatedBookTag = getPreferenceScreen().findPreference(DefaultPrefs.UPDATED_BOOK_TAG);
             updatedBookTag.setOnPreferenceClickListener(this::onUpdatedBookTagPrefClick);
-            String updatedBookTagVal = DefaultPrefs.get().getUpdatedBookTag(
-                    C.getStr(R.string.default_updated_book_tag));
-            updatedBookTag.setSummary(updatedBookTagVal == null ? "" :
-                    C.getStr(R.string.summary_tag_as, updatedBookTagVal));
+            String updatedBookTagVal = DefaultPrefs.get().getUpdatedBookTag(null);
+            updatedBookTag.setSummary(updatedBookTagVal != null ? C.getStr(R.string.summary_tag_as, updatedBookTagVal) :
+                    "");
         }
 
         @Override

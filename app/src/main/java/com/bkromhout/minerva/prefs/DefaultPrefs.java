@@ -12,6 +12,7 @@ import com.bkromhout.minerva.activities.MainActivity;
  */
 public class DefaultPrefs {
     // Key strings.
+    private static final String FIRST_TIME_INIT = "FIRST_TIME_INIT";
     private final static String CURR_FRAG = "CURR_FRAG";
     private final static String CURR_LIST_SEL = "CURR_LIST_UNIQUE_SEL";
     public final static String LIB_DIR = C.getStr(R.string.key_lib_dir);
@@ -43,6 +44,21 @@ public class DefaultPrefs {
     public static DefaultPrefs get() {
         if (INSTANCE == null) INSTANCE = new DefaultPrefs();
         return INSTANCE;
+    }
+
+    /**
+     * Check whether we've done first time init.
+     * @return True if we've done first time init, otherwise false.
+     */
+    public boolean doneFirstTimeInit() {
+        return prefs.getBoolean(FIRST_TIME_INIT, false);
+    }
+
+    /**
+     * Mark first time init as done.
+     */
+    public void setFirstTimeInitDone() {
+        prefs.edit().putBoolean(FIRST_TIME_INIT, true).apply();
     }
 
     /**

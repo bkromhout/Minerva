@@ -3,6 +3,7 @@ package com.bkromhout.minerva;
 import android.app.Application;
 import android.content.Context;
 import com.bkromhout.minerva.data.UniqueIdFactory;
+import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.ruqus.Ruqus;
 import com.karumi.dexter.Dexter;
@@ -41,6 +42,8 @@ public class Minerva extends Application {
         EventBus.builder().addIndex(new EventBusIndex()).installDefaultEventBus();
         // Init Dexter.
         Dexter.initialize(this);
+        // Do first time init if needed.
+        doFirstTimeInitIfNeeded();
         // Set up Realm.
         setupRealm();
         // Initialize UniqueIdFactory.
@@ -49,6 +52,17 @@ public class Minerva extends Application {
         }
         // Init Ruqus.
         Ruqus.init(this);
+    }
+
+    /**
+     * Initializes some default data for the app the first time it runs.
+     */
+    private void doFirstTimeInitIfNeeded() {
+        if (DefaultPrefs.get().doneFirstTimeInit()) return;
+
+        // Put default new/updated book tag names.
+        DefaultPrefs.get().putNewBookTag(C.getStr(R.string.default_new_book_tag));
+        DefaultPrefs.get().putUpdatedBookTag(C.getStr(R.string.default_updated_book_tag));
     }
 
     /**

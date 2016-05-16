@@ -16,8 +16,7 @@
 
         <Preference
                 android:title="@string/title_auto_tag_new"
-                android:key="@string/key_new_tag"
-                android:defaultValue="@string/default_new_book_tag"/>
+                android:key="@string/key_new_tag"/>
 
         <Preference
                 android:title="@string/title_auto_tag_updated"
