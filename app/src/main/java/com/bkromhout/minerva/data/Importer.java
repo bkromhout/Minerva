@@ -4,12 +4,16 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
+import com.bkromhout.minerva.enums.MarkType;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.realm.RBook;
+import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.rx.RxFileWalker;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
+import com.google.common.collect.Lists;
 import io.realm.Realm;
+import io.realm.RealmResults;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -502,7 +506,45 @@ public class Importer {
                         else bgRealm.copyToRealmOrUpdate(book);
                     }
 
-                    // TODO Add tags for new and updated books now.
+                    // Check to see if we have new/updated tags set. If so, we need to ensure that any books whose marks
+                    // were just set to true have the appropriate tags added to them.
+                    String tagName = MarkType.NEW.getTagName();
+                    if (tagName != null) {
+                        // Get the new tag and a list of books with isNew = true that lack that tag.
+                        RTag tag = bgRealm.where(RTag.class)
+                                          .equalTo("name", tagName)
+                                          .findFirst();
+                        RealmResults<RBook> books = bgRealm.where(RBook.class)
+                                                           .equalTo("isNew", true)
+                                                           .beginGroup()
+                                                           .isEmpty("tags")
+                                                           .or()
+                                                           .not()
+                                                           .equalTo("tags.name", tagName)
+                                                           .endGroup()
+                                                           .findAll();
+                        // Add the new tag to those books.
+                        ActionHelper.addTagsToBooks(books, Lists.newArrayList(tag));
+                    }
+
+                    tagName = MarkType.UPDATED.getTagName();
+                    if (tagName != null) {
+                        // Get the updated tag and a list of books with isUpdated = true that lack that tag.
+                        RTag tag = bgRealm.where(RTag.class)
+                                          .equalTo("name", tagName)
+                                          .findFirst();
+                        RealmResults<RBook> books = bgRealm.where(RBook.class)
+                                                           .equalTo("isUpdated", true)
+                                                           .beginGroup()
+                                                           .isEmpty("tags")
+                                                           .or()
+                                                           .not()
+                                                           .equalTo("tags.name", tagName)
+                                                           .endGroup()
+                                                           .findAll();
+                        // Add the updated tag to those books.
+                        ActionHelper.addTagsToBooks(books, Lists.newArrayList(tag));
+                    }
                 },
                 this::importFinished,
                 error -> {

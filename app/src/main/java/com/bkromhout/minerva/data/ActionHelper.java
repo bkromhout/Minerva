@@ -100,7 +100,8 @@ public class ActionHelper {
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.beginTransaction();
             // Loop through books and add tags to them.
-            for (RBook book : books) {
+            for (int i = books.size() - 1; i >= 0; i--) {
+                RBook book = books.get(i);
                 for (RTag tag : tags) {
                     // If the book doesn't already have the tag,
                     if (!book.tags.contains(tag)) {
@@ -109,9 +110,11 @@ public class ActionHelper {
                         // and add the book to the tag.
                         tag.taggedBooks.add(book);
                     }
-                    // Make sure that we new/updated state if we had those tags added.
-                    if (newBookTagName != null && newBookTagName.equals(tag.name)) book.isNew = true;
-                    if (updatedBookTagName != null && updatedBookTagName.equals(tag.name)) book.isUpdated = true;
+                    // Make sure that we set new/updated state to true if those tags were added (and it wasn't already).
+                    if (newBookTagName != null && newBookTagName.equals(tag.name) && !book.isNew)
+                        book.isNew = true;
+                    if (updatedBookTagName != null && updatedBookTagName.equals(tag.name) && !book.isUpdated)
+                        book.isUpdated = true;
                 }
             }
             realm.commitTransaction();
@@ -134,7 +137,8 @@ public class ActionHelper {
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.beginTransaction();
             // Loop through books and remove tags from them.
-            for (RBook book : books) {
+            for (int i = books.size() - 1; i >= 0; i--) {
+                RBook book = books.get(i);
                 for (RTag tag : tags) {
                     // If the book has the tag, remove it,
                     if (book.tags.remove(tag)) {
