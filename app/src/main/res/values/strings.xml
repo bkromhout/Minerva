@@ -331,6 +331,17 @@
     <string name="default_updated_book_tag">Updated</string>
     <string name="sb_no_available_tags">You have no available tags</string>
 
+    <!-- ******************************** Marking ******************************** -->
+    <string name="title_dialog_mark_as">Mark As…</string>
+    <string name="action_mark_as">Mark As</string>
+
+    <string-array name="mark_choices">
+        <item>New</item>
+        <item>Not New</item>
+        <item>Updated</item>
+        <item>Not Updated</item>
+    </string-array>
+
     <!-- ******************************** Settings Activity ******************************** -->
     <string name="title_activity_settings">@string/settings</string>
 
