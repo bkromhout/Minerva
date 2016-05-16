@@ -21,6 +21,7 @@ import com.bkromhout.minerva.util.Util;
 import com.bkromhout.ruqus.RealmUserQuery;
 import com.google.common.collect.Lists;
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -160,9 +161,53 @@ public class ActionHelper {
      * @param newTagName Name of the replacement tag.
      */
     public static void replaceMarkTagOnBooks(MarkType markType, String oldTagName, String newTagName) {
-        // TODO.
+        // At least one of the tag names can't be null.
+        if (oldTagName == null && newTagName == null)
+            throw new IllegalArgumentException("At least one of oldTagName, newTagName must not be null.");
 
-        //TODO Update marks on books already tagged with the new tag but not marked accordingly so that we stay in sync.
+        try (Realm realm = Realm.getDefaultInstance()) {
+            // Get a list of books whose given mark type is set to true.
+            RealmResults<RBook> books = realm.where(RBook.class)
+                                             .equalTo(markType == MarkType.NEW ? "isNew" : "isUpdated", true)
+                                             .findAll();
+
+            // Get tags.
+            RTag oldTag = oldTagName != null ? realm.where(RTag.class).equalTo("name", oldTagName).findFirst() : null;
+            RTag newTag = newTagName != null ? realm.where(RTag.class).equalTo("name", newTagName).findFirst() : null;
+
+            realm.beginTransaction();
+            // Loop through the books whose given mark type is set to true.
+            for (RBook book : books) {
+                // First, remove the old tag (if there is one).
+                if (oldTag != null) {
+                    book.tags.remove(oldTag);
+                    oldTag.taggedBooks.remove(book);
+                }
+
+                // Then, add the new tag (if there is one, and if it isn't already).
+                if (newTag != null && !book.tags.contains(newTag)) {
+                    book.tags.add(newTag);
+                    newTag.taggedBooks.add(book);
+                }
+            }
+
+            // If we have a new tag, update the given mark's value on books already tagged with the new tag but not
+            // marked accordingly so that we stay in sync.
+            if (newTag != null) {
+                // Get a list of such books.
+                books = newTag.taggedBooks.where()
+                                          .equalTo(markType == MarkType.NEW ? "isNew" : "isUpdated", false)
+                                          .findAll();
+
+                // Loop backwards over list and set given mark's value to true.
+                for (int i = books.size() - 1; i >= 0; i--) {
+                    if (markType == MarkType.NEW) books.get(i).isNew = true;
+                    else if (markType == MarkType.UPDATED) books.get(i).isUpdated = true;
+                }
+            }
+
+            realm.commitTransaction();
+        }
     }
 
     /**
@@ -197,10 +242,12 @@ public class ActionHelper {
             }
 
             // Otherwise, loop through the books and just set the marks new values.
+            realm.beginTransaction();
             for (RBook book : books) {
                 if (markType == MarkType.NEW) book.isNew = marked;
                 else if (markType == MarkType.UPDATED) book.isUpdated = marked;
             }
+            realm.commitTransaction();
         }
     }
 
