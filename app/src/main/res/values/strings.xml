@@ -32,7 +32,6 @@
     <!-- Common error strings -->
     <string name="err_name_taken">Name already in use</string>
     <string name="sb_err_no_apps">You have no apps which can open this book’s file</string>
-    <string name="sb_err_invalid_query">Invalid Query</string>
 
     <!-- Permissions -->
     <string name="storage_permission">Storage Permission</string>
@@ -45,9 +44,6 @@
     <string name="storage_permission_rationale_long">Minerva uses the Storage permission to read book files in a
         folder you specify.\n\nSince you permanently denied the Storage permission, you need to grant it from the App
         Info screen.</string>
-
-    <!-- Query Builder Activity -->
-    <string name="title_activity_query_builder">Query Builder</string>
 
 
     <!-- ******************************** Action Strings (Alphabetical order). ******************************** -->
@@ -94,13 +90,13 @@
 
     <!-- Actions name strings for actions without many associated strings (i.e., they're more "standalone"), or whose
          associated strings are contained to one area of the app and thus are in another part of this file. -->
-    <string name="action_open_query_builder">Open Query Builder</string>
     <string name="action_resume_reading">Resume Reading</string>
     <string name="action_search">Search</string>
     <string name="action_select_all">Select All</string>
     <string name="action_select_none">Select None</string>
     <string name="action_sort">Sort</string>
     <string name="action_tag">Tag</string>
+
 
     <!-- ******************************** Welcome Activity ******************************** -->
     <string name="title_activity_welcome">Welcome</string>
@@ -110,6 +106,7 @@
         your library folder</string>
     <string name="lbl_folder">Folder</string>
     <string name="open_folder_chooser">Open Folder Chooser</string>
+
 
     <!-- ******************************** Main Activity/Nav Drawer/Fragment Titles ******************************** -->
     <string name="nav_item_recent">Recent</string>
@@ -252,11 +249,10 @@
 
     <!-- Smart Lists -->
     <string name="action_new_smart_list">New Smart List</string>
-    <string name="action_show_query">Show Query</string>
     <string name="action_convert">Convert</string>
     <string name="action_to_normal_list">To Normal List</string>
 
-    <string name="title_smart_list_query">Smart List Query</string>
+
     <string name="title_rename_smart_list">Rename Smart List</string>
     <string name="title_edit_smart_list">Edit Smart List</string>
     <string name="title_convert_to_normal_list">Convert to Normal List</string>
@@ -268,10 +264,20 @@
         \n\nYou cannot undo this action.</string>
     <string name="prompt_delete_smart_list">Delete this smart list?</string>
 
-    <string name="no_query_for_smart_list">You haven’t entered a query for this smart list.</string>
-    <string name="no_query_for_smart_list_n">You haven’t entered a query\nfor this smart list.</string>
     <string name="smart_list_created">Smart List Created</string>
 
+    <!-- ******************************** Queries ******************************** -->
+    <string name="title_activity_query_builder">Query Builder</string>
+    <string name="title_curr_query">Current Query</string>
+    <string name="title_smart_list_query">Smart List Query</string>
+
+    <string name="action_show_query">Show Query</string>
+    <string name="action_open_query_builder">Open Query Builder</string>
+
+    <string name="no_query">You haven’t built a query yet.</string>
+    <string name="no_query_for_smart_list">You haven’t built a query for this smart list.</string>
+    <string name="no_query_for_smart_list_n">You haven’t built a query\nfor this smart list.</string>
+    <string name="sb_err_invalid_query">Invalid Query</string>
 
     <!-- ******************************** Book Card/Book Info Activity ******************************** -->
     <string name="title_activity_info">Book Information</string>

@@ -16,7 +16,8 @@ import android.view.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.bkromhout.minerva.*;
+import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.activities.BookInfoActivity;
 import com.bkromhout.minerva.activities.QueryBuilderActivity;
 import com.bkromhout.minerva.activities.TaggingActivity;
@@ -246,15 +247,17 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_card_type:
-                Dialogs.cardStyleDialog(getContext(), powerSearchPrefs);
+            case R.id.action_show_query:
+                Dialogs.queryDialog(getActivity(), R.string.title_curr_query, R.string.no_query,
+                        ruq != null ? ruq.toString() : null, false, -1);
                 return true;
             case R.id.action_save_as_smart_list:
                 if (ruq == null) return true;
                 Dialogs.uniqueNameDialog(getActivity(), RBookList.class, R.string.action_new_smart_list,
-                        R.string.prompt_new_smart_list,
-
-                        R.string.list_name_hint, null, R.id.action_new_smart_list, -1);
+                        R.string.prompt_new_smart_list, R.string.list_name_hint, null, R.id.action_new_smart_list, -1);
+                return true;
+            case R.id.action_card_type:
+                Dialogs.cardStyleDialog(getContext(), powerSearchPrefs);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

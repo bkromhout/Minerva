@@ -43,6 +43,11 @@ public class QueryBuilderActivity extends AppCompatActivity implements RealmQuer
         fragment.startActivityForResult(intent, C.RC_QUERY_BUILDER_ACTIVITY);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
     /**
      * Convenience method to start this activity from an activity.
      * @param activity The activity to return a result to.

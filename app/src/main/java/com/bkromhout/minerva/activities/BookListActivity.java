@@ -341,7 +341,8 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 startActionMode();
                 return true;
             case R.id.action_show_query:
-                Dialogs.smartListQueryDialog(this, smartListRuq == null ? null : smartListRuq.toString(), -1);
+                Dialogs.queryDialog(this, R.string.title_smart_list_query, R.string.no_query_for_smart_list,
+                        smartListRuq != null ? smartListRuq.toString() : null, true, -1);
                 return true;
             case R.id.action_card_type:
                 Dialogs.cardStyleDialog(this, listsPrefs);

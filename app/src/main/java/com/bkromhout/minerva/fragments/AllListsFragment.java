@@ -300,9 +300,9 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
         // Do something based on the menu item ID.
         switch (actionId) {
             case R.id.action_show_query:
-                Dialogs.smartListQueryDialog(getActivity(),
-                        tempList.smartListRuqString == null || tempList.smartListRuqString.isEmpty() ? null :
-                                new RealmUserQuery(tempList.smartListRuqString).toString(), position);
+                Dialogs.queryDialog(getActivity(), R.string.title_smart_list_query, R.string.no_query_for_smart_list,
+                        tempList.smartListRuqString != null && !tempList.smartListRuqString.isEmpty() ?
+                                new RealmUserQuery(tempList.smartListRuqString).toString() : null, true, position);
                 break;
             case R.id.action_rename_list:
                 Dialogs.uniqueNameDialog(getActivity(), RBookList.class, R.string.title_rename_list,
@@ -344,43 +344,36 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
     @Subscribe
     public void onActionEvent(ActionEvent event) {
         switch (event.getActionId()) {
-            case R.id.action_new_list: {
+            case R.id.action_new_list:
                 ActionHelper.createNewList(realm, (String) event.getData());
                 break;
-            }
-            case R.id.action_new_smart_list: {
+            case R.id.action_new_smart_list:
                 BookListActivity.start(getActivity(), (String) event.getData(), new ArrayList<>(lists).indexOf(
                         ActionHelper.createNewSmartList(realm, (String) event.getData(), null)));
                 break;
-            }
-            case R.id.action_open_query_builder: {
+            case R.id.action_open_query_builder:
                 String ruqString = tempList.smartListRuqString;
                 QueryBuilderActivity.start(this, ruqString == null || ruqString.isEmpty()
                         ? null : new RealmUserQuery(ruqString));
                 break;
-            }
             case R.id.action_rename_list:
-            case R.id.action_rename_smart_list: {
+            case R.id.action_rename_smart_list:
                 ActionHelper.renameList(realm, tempList, (String) event.getData());
                 if (event.getPosToUpdate() != -1) adapter.notifyItemChanged(event.getPosToUpdate());
                 break;
-            }
-            case R.id.action_convert_to_normal_list: {
+            case R.id.action_convert_to_normal_list:
                 tempList.convertToNormalList();
                 if (event.getPosToUpdate() != -1) adapter.notifyItemChanged(event.getPosToUpdate());
                 break;
-            }
             case R.id.action_delete_list:
-            case R.id.action_delete_smart_list: {
+            case R.id.action_delete_smart_list:
                 // Delete the list currently being shown, then finish the activity.
                 ActionHelper.deleteList(realm, tempList);
                 break;
-            }
-            case R.id.action_delete_lists: {
+            case R.id.action_delete_lists:
                 //noinspection unchecked
                 ActionHelper.deleteLists(realm, adapter.getSelectedRealmObjects());
                 break;
-            }
         }
         if (actionMode != null) actionMode.finish();
     }

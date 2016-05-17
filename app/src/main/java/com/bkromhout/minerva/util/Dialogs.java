@@ -250,22 +250,28 @@ public class Dialogs {
     }
 
     /**
-     * Shows a dialog which will either display {@code queryString} or a message about not having a query for a smart
-     * list. Also has a button to open the query builder which will fire an {@link ActionEvent} to do just that.
-     * @param ctx         Context to use.
-     * @param queryString Query string to display, or null to show "no query string" message.
-     * @param posToUpdate If not -1, the position to put into a {@link UpdatePosEvent} which will be fired if the {@link
-     *                    ActionEvent} is fired.
+     * Shows a dialog which will either display {@code queryString} or a message about not having a query. Can also have
+     * a button to open the query builder (which will fire an {@link ActionEvent}).
+     * @param ctx            Context to use.
+     * @param title          String resource to use for title.
+     * @param emptyText      String resource to use for content if {@code queryString} is {@code null} or empty.
+     * @param queryString    Query string to use as content (if not {@code null} or empty).
+     * @param showBuilderBtn If true, show a button with the text "Open Query Builder"
+     * @param posToUpdate    If not -1, the position to put into a {@link UpdatePosEvent} which will be fired if the
+     *                       {@link ActionEvent} is fired.
      */
-    public static void smartListQueryDialog(final Context ctx, final String queryString, final int posToUpdate) {
-        new MaterialDialog.Builder(ctx)
-                .title(R.string.title_smart_list_query)
-                .content(queryString == null || queryString.isEmpty()
-                        ? C.getStr(R.string.no_query_for_smart_list) : queryString)
-                .positiveText(R.string.dismiss)
-                .neutralText(R.string.action_open_query_builder)
-                .onNeutral((dialog, which) ->
-                        EventBus.getDefault().post(new ActionEvent(R.id.action_open_query_builder, null, posToUpdate)))
-                .show();
+    public static void queryDialog(final Context ctx, @StringRes final int title, @StringRes final int emptyText,
+                                   final String queryString, final boolean showBuilderBtn, final int posToUpdate) {
+        // Build base dialog.
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(ctx)
+                .title(title)
+                .content(queryString != null && !queryString.isEmpty() ? queryString : C.getStr(emptyText))
+                .positiveText(R.string.dismiss);
+        // Conditionally show the "Open Query Builder" button.
+        if (showBuilderBtn) builder.neutralText(R.string.action_open_query_builder)
+                                   .onNeutral((dialog, which) -> EventBus.getDefault().post(
+                                           new ActionEvent(R.id.action_open_query_builder, null, posToUpdate)));
+        // Show the dialog.
+        builder.show();
     }
 }
