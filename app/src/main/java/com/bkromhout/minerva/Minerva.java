@@ -2,6 +2,7 @@ package com.bkromhout.minerva;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import com.bkromhout.minerva.data.UniqueIdFactory;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.realm.RTag;
@@ -80,9 +81,12 @@ public class Minerva extends Application {
      * @param realm Instance of Realm to use to add data.
      */
     private void initialRealmData(Realm realm) {
+        int newBgColor = ContextCompat.getColor(this, R.color.green700);
+        int updatedBgColor = ContextCompat.getColor(this, R.color.blue700);
         // Create default tags for new and updated books.
-        realm.copyToRealm(Lists.newArrayList(new RTag(C.getStr(R.string.default_new_book_tag)),
-                new RTag(C.getStr(R.string.default_updated_book_tag))));
+        realm.copyToRealm(Lists.newArrayList(
+                new RTag(C.getStr(R.string.default_new_book_tag), C.DEFAULT_TAG_TEXT_COLOR, newBgColor),
+                new RTag(C.getStr(R.string.default_updated_book_tag), C.DEFAULT_TAG_TEXT_COLOR, updatedBgColor)));
     }
 
     /**

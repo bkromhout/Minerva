@@ -1,5 +1,6 @@
 package com.bkromhout.minerva.realm;
 
+import android.support.annotation.ColorInt;
 import com.bkromhout.minerva.C;
 import com.bkromhout.rrvl.UIDModel;
 import com.bkromhout.ruqus.Hide;
@@ -60,11 +61,21 @@ public class RTag extends RealmObject implements UIDModel {
      * @param name Name of the tag.
      */
     public RTag(String name) {
+        this(name, C.DEFAULT_TAG_TEXT_COLOR, C.DEFAULT_TAG_BG_COLOR);
+    }
+
+    /**
+     * Create a new {@link RTag} with the given {@code name} and {@code bgColor}.
+     * @param name      Name of the tag.
+     * @param textColor Text color of the tag.
+     * @param bgColor   Background color of the tag.
+     */
+    public RTag(String name, @ColorInt int textColor, @ColorInt int bgColor) {
         this.name = name;
         this.sortName = name.toLowerCase();
         this.taggedBooks = null;
-        this.textColor = C.DEFAULT_TAG_TEXT_COLOR;
-        this.bgColor = C.DEFAULT_TAG_BG_COLOR;
+        this.textColor = textColor;
+        this.bgColor = bgColor;
     }
 
     @Override
