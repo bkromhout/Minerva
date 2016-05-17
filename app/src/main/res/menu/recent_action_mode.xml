@@ -15,6 +15,12 @@
             android:title="@string/action_rate"/>
 
     <item
+            android:id="@+id/action_mark_as"
+            app:showAsAction="ifRoom"
+            android:icon="@drawable/ic_mark"
+            android:title="@string/action_mark_as"/>
+
+    <item
             android:id="@+id/action_add_to_list"
             app:showAsAction="ifRoom"
             android:icon="@drawable/ic_list_add"

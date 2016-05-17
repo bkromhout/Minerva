@@ -27,6 +27,12 @@
             android:title="@string/action_rate"/>
 
     <item
+            android:id="@+id/action_mark_as"
+            app:showAsAction="never"
+            android:icon="@drawable/ic_mark"
+            android:title="@string/action_mark_as"/>
+
+    <item
             android:id="@+id/action_re_import"
             app:showAsAction="never"
             android:icon="@drawable/ic_import"

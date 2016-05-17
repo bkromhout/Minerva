@@ -24,6 +24,7 @@ import com.bkromhout.minerva.adapters.*;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.DataUtils;
 import com.bkromhout.minerva.enums.BookCardType;
+import com.bkromhout.minerva.enums.MarkType;
 import com.bkromhout.minerva.enums.ModelType;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
@@ -284,6 +285,9 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
                 int initialRating = adapter.getSelectedItemCount() == 1 ? getSelectedBooks().get(0).rating : 0;
                 Dialogs.ratingDialog(getContext(), initialRating);
                 return true;
+            case R.id.action_mark_as:
+                Dialogs.markAsDialog(getActivity());
+                return true;
             case R.id.action_re_import:
                 Dialogs.simpleConfirmDialog(getContext(), R.string.title_re_import_books,
                         R.string.prompt_re_import_books, R.string.action_re_import, R.id.action_re_import);
@@ -305,27 +309,27 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     @Subscribe
     public void onActionEvent(ActionEvent event) {
         switch (event.getActionId()) {
-            case R.id.action_add_to_list: {
+            case R.id.action_add_to_list:
                 ActionHelper.addBooksToList(realm, getSelectedBooks(), (String) event.getData());
                 break;
-            }
-            case R.id.action_rate: {
+            case R.id.action_rate:
                 ActionHelper.rateBooks(realm, getSelectedBooks(), (Integer) event.getData());
                 break;
-            }
-            case R.id.action_re_import: {
+            case R.id.action_mark_as:
+                int whichMark = (int) event.getData();
+                ActionHelper.markBooks(getSelectedBooks(), whichMark < 2 ? MarkType.NEW : MarkType.UPDATED,
+                        whichMark % 2 == 0);
+                break;
+            case R.id.action_re_import:
                 ActionHelper.reImportBooks(getSelectedBooks());
                 break;
-            }
-            case R.id.action_delete: {
+            case R.id.action_delete:
                 ActionHelper.deleteBooks(getSelectedBooks(), (boolean) event.getData());
                 break;
-            }
-            case R.id.action_new_smart_list: {
+            case R.id.action_new_smart_list:
                 ActionHelper.createNewSmartList(realm, (String) event.getData(), ruq);
                 Snackbar.make(recyclerView, R.string.smart_list_created, Snackbar.LENGTH_SHORT).show();
                 break;
-            }
         }
         if (actionMode != null) actionMode.finish();
     }
@@ -333,7 +337,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case C.RC_QUERY_BUILDER_ACTIVITY: {
+            case C.RC_QUERY_BUILDER_ACTIVITY:
                 // Came back from QueryBuilderActivity.
                 if (resultCode == Activity.RESULT_OK) {
                     // We've changed our query. Get the RealmUserQuery.
@@ -344,15 +348,13 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
                     updateUi();
                 }
                 break;
-            }
-            case C.RC_TAG_ACTIVITY: {
+            case C.RC_TAG_ACTIVITY:
                 // Came back from TaggingActivity.
                 if (resultCode == Activity.RESULT_OK) {
                     // We've changed the tags on some books.
                     if (actionMode != null) actionMode.finish();
                 }
                 break;
-            }
         }
     }
 

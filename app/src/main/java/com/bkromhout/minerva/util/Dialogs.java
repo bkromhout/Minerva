@@ -156,6 +156,20 @@ public class Dialogs {
     }
 
     /**
+     * Show the "Mark As..." dialog.
+     * @param ctx Context to use.
+     */
+    public static void markAsDialog(final Context ctx) {
+        new MaterialDialog.Builder(ctx)
+                .title(R.string.title_dialog_mark_as)
+                .negativeText(R.string.cancel)
+                .items(R.array.mark_choices)
+                .itemsCallback((dialog, itemView, which, text) ->
+                        EventBus.getDefault().post(new ActionEvent(R.id.action_mark_as, which)))
+                .show();
+    }
+
+    /**
      * Shows a dialog to let user choose a list.
      * @param ctx   Context to use.
      * @param realm Realm instance to use.

@@ -23,7 +23,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.bkromhout.minerva.*;
+import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.activities.BookInfoActivity;
 import com.bkromhout.minerva.activities.ImportActivity;
 import com.bkromhout.minerva.activities.TaggingActivity;
@@ -33,6 +34,7 @@ import com.bkromhout.minerva.adapters.BookCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.enums.BookCardType;
+import com.bkromhout.minerva.enums.MarkType;
 import com.bkromhout.minerva.enums.SortDir;
 import com.bkromhout.minerva.enums.SortType;
 import com.bkromhout.minerva.events.ActionEvent;
@@ -333,6 +335,9 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
                         ? ((RBook) adapter.getSelectedRealmObjects().get(0)).rating : 0;
                 Dialogs.ratingDialog(getContext(), initialRating);
                 return true;
+            case R.id.action_mark_as:
+                Dialogs.markAsDialog(getActivity());
+                return true;
             case R.id.action_re_import:
                 Dialogs.simpleConfirmDialog(getContext(), R.string.title_re_import_books,
                         R.string.prompt_re_import_books, R.string.action_re_import, R.id.action_re_import);
@@ -357,22 +362,23 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
         List<RBook> selectedItems = adapter.getSelectedRealmObjects();
 
         switch (event.getActionId()) {
-            case R.id.action_add_to_list: {
+            case R.id.action_add_to_list:
                 ActionHelper.addBooksToList(realm, selectedItems, (String) event.getData());
                 break;
-            }
-            case R.id.action_rate: {
+            case R.id.action_rate:
                 ActionHelper.rateBooks(realm, selectedItems, (Integer) event.getData());
                 break;
-            }
-            case R.id.action_re_import: {
+            case R.id.action_mark_as:
+                int whichMark = (int) event.getData();
+                ActionHelper.markBooks(selectedItems, whichMark < 2 ? MarkType.NEW : MarkType.UPDATED,
+                        whichMark % 2 == 0);
+                break;
+            case R.id.action_re_import:
                 ActionHelper.reImportBooks(selectedItems);
                 break;
-            }
-            case R.id.action_delete: {
+            case R.id.action_delete:
                 ActionHelper.deleteBooks(selectedItems, (boolean) event.getData());
                 break;
-            }
         }
         if (actionMode != null) actionMode.finish();
     }
@@ -380,14 +386,13 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case C.RC_TAG_ACTIVITY: {
+            case C.RC_TAG_ACTIVITY:
                 // Came back from TaggingActivity.
                 if (resultCode == Activity.RESULT_OK) {
                     // We've changed the tags on some books.
                     if (actionMode != null) actionMode.finish();
                 }
                 break;
-            }
         }
     }
 

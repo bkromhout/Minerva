@@ -25,6 +25,7 @@ import com.bkromhout.minerva.adapters.BookCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.enums.BookCardType;
+import com.bkromhout.minerva.enums.MarkType;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
 import com.bkromhout.minerva.events.PrefChangeEvent;
@@ -268,6 +269,9 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
                         ? ((RBook) adapter.getSelectedRealmObjects().get(0)).rating : 0;
                 Dialogs.ratingDialog(getContext(), initialRating);
                 return true;
+            case R.id.action_mark_as:
+                Dialogs.markAsDialog(getActivity());
+                return true;
             case R.id.action_add_to_list:
                 Dialogs.addToListDialogOrToast(getActivity(), realm);
                 return true;
@@ -299,37 +303,36 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
         List<RBook> selectedItems = adapter.getSelectedRealmObjects();
 
         switch (event.getActionId()) {
-            case R.id.action_clear: {
+            case R.id.action_clear:
                 realm.executeTransaction(tRealm -> {
                     // Set isInRecents to false for all RBooks which currently have it set to true.
                     RealmResults<RBook> recentBooks = tRealm.where(RBook.class).equalTo("isInRecents", true).findAll();
                     for (int i = recentBooks.size() - 1; i >= 0; i--) recentBooks.get(i).isInRecents = false;
                 });
                 break;
-            }
-            case R.id.action_rate: {
+            case R.id.action_rate:
                 ActionHelper.rateBooks(realm, selectedItems, (Integer) event.getData());
                 break;
-            }
-            case R.id.action_add_to_list: {
+            case R.id.action_mark_as:
+                int whichMark = (int) event.getData();
+                ActionHelper.markBooks(selectedItems, whichMark < 2 ? MarkType.NEW : MarkType.UPDATED,
+                        whichMark % 2 == 0);
+                break;
+            case R.id.action_add_to_list:
                 ActionHelper.addBooksToList(realm, selectedItems, (String) event.getData());
                 break;
-            }
-            case R.id.action_re_import: {
+            case R.id.action_re_import:
                 ActionHelper.reImportBooks(selectedItems);
                 break;
-            }
-            case R.id.action_remove: {
+            case R.id.action_remove:
                 realm.executeTransaction(tRealm -> {
                     // Set isInRecents to false for all selected RBooks.
                     for (RBook book : selectedItems) book.isInRecents = false;
                 });
                 break;
-            }
-            case R.id.action_delete: {
+            case R.id.action_delete:
                 ActionHelper.deleteBooks(selectedItems, (boolean) event.getData());
                 break;
-            }
         }
         if (actionMode != null) actionMode.finish();
     }
@@ -337,14 +340,13 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case C.RC_TAG_ACTIVITY: {
+            case C.RC_TAG_ACTIVITY:
                 // Came back from TaggingActivity.
                 if (resultCode == Activity.RESULT_OK) {
                     // We've changed the tags on some books.
                     if (actionMode != null) actionMode.finish();
                 }
                 break;
-            }
         }
     }
 

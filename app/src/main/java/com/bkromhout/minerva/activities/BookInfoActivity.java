@@ -26,6 +26,7 @@ import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.DataUtils;
+import com.bkromhout.minerva.enums.MarkType;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.prefs.DefaultPrefs;
@@ -279,6 +280,9 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
             case R.id.action_rate:
                 Dialogs.ratingDialog(this, book.rating);
                 return true;
+            case R.id.action_mark_as:
+                Dialogs.markAsDialog(this);
+                return true;
             case R.id.action_re_import:
                 Dialogs.simpleConfirmDialog(this, R.string.title_re_import_book, R.string.prompt_re_import_book,
                         R.string.action_re_import, R.id.action_re_import);
@@ -303,25 +307,25 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
     @Subscribe
     public void onActionEvent(ActionEvent event) {
         switch (event.getActionId()) {
-            case R.id.action_rate: {
+            case R.id.action_add_to_list:
+                ActionHelper.addBookToList(realm, book, (String) event.getData());
+                break;
+            case R.id.action_rate:
                 ActionHelper.rateBook(realm, book, (Integer) event.getData());
                 // The rating changed, so we'll need to update the book's card.
                 needsPosUpdate = true;
                 break;
-            }
-            case R.id.action_add_to_list: {
-                ActionHelper.addBookToList(realm, book, (String) event.getData());
+            case R.id.action_mark_as:
+                int whichMark = (int) event.getData();
+                ActionHelper.markBook(book, whichMark < 2 ? MarkType.NEW : MarkType.UPDATED, whichMark % 2 == 0);
                 break;
-            }
-            case R.id.action_re_import: {
+            case R.id.action_re_import:
                 ActionHelper.reImportBook(book);
-                return;
-            }
-            case R.id.action_delete: {
+                break;
+            case R.id.action_delete:
                 ActionHelper.deleteBook(book, (boolean) event.getData());
                 finish();
                 break;
-            }
         }
     }
 

@@ -22,6 +22,7 @@ import com.bkromhout.minerva.adapters.*;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.DataUtils;
 import com.bkromhout.minerva.enums.BookCardType;
+import com.bkromhout.minerva.enums.MarkType;
 import com.bkromhout.minerva.enums.ModelType;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
@@ -400,6 +401,9 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 int initialRating = adapter.getSelectedItemCount() == 1 ? getSelectedBooks().get(0).rating : 0;
                 Dialogs.ratingDialog(this, initialRating);
                 return true;
+            case R.id.action_mark_as:
+                Dialogs.markAsDialog(this);
+                return true;
             case R.id.action_move_to_top:
                 //noinspection unchecked
                 ActionHelper.moveItemsToStart(srcList, adapter.getSelectedRealmObjects());
@@ -434,23 +438,20 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
     @Subscribe
     public void onActionEvent(ActionEvent event) {
         switch (event.getActionId()) {
-            case R.id.action_clear: {
+            case R.id.action_clear:
                 realm.executeTransaction(tRealm -> srcList.listItems.deleteAllFromRealm());
                 break;
-            }
-            case R.id.action_open_query_builder: {
+            case R.id.action_open_query_builder:
                 QueryBuilderActivity.start(this, smartListRuq);
                 break;
-            }
             case R.id.action_rename_list:
-            case R.id.action_rename_smart_list: {
+            case R.id.action_rename_smart_list:
                 ActionHelper.renameList(realm, srcList, (String) event.getData());
                 setTitle((String) event.getData());
                 // Update intent used to start activity so that we don't crash if we rotate or something.
                 getIntent().putExtra(LIST_NAME, (String) event.getData());
                 break;
-            }
-            case R.id.action_convert_to_normal_list: {
+            case R.id.action_convert_to_normal_list:
                 if (smartListRuq != null) {
                     srcList.convertToNormalListUsingRuq(realm, smartListRuq);
                     smartListRuq = null;
@@ -460,36 +461,34 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                     needsPosUpdate = true;
                 }
                 break;
-            }
             case R.id.action_delete_list:
-            case R.id.action_delete_smart_list: {
+            case R.id.action_delete_smart_list:
                 // Delete the list currently being shown, then finish the activity.
                 ActionHelper.deleteList(realm, srcList);
                 finish();
                 break;
-            }
-            case R.id.action_rate: {
+            case R.id.action_rate:
                 ActionHelper.rateBooks(realm, getSelectedBooks(), (Integer) event.getData());
                 break;
-            }
-            case R.id.action_add_to_list: {
+            case R.id.action_mark_as:
+                int whichMark = (int) event.getData();
+                ActionHelper.markBooks(getSelectedBooks(), whichMark < 2 ? MarkType.NEW : MarkType.UPDATED,
+                        whichMark % 2 == 0);
+                break;
+            case R.id.action_add_to_list:
                 // TODO actually implement a move/copy to other lists feature???
                 //RBookList list = realm.where(RBookList.class).equalTo("name", (String) event.getData()).findFirst();
                 //RBookList.addBooks(list, selectedItems);
                 break;
-            }
-            case R.id.action_re_import: {
+            case R.id.action_re_import:
                 ActionHelper.reImportBooks(getSelectedBooks());
                 break;
-            }
-            case R.id.action_remove: {
+            case R.id.action_remove:
                 srcList.removeBooks(getSelectedBooks());
                 break;
-            }
-            case R.id.action_delete: {
+            case R.id.action_delete:
                 ActionHelper.deleteBooks(getSelectedBooks(), (boolean) event.getData());
                 break;
-            }
         }
         if (actionMode != null) actionMode.finish();
     }
@@ -497,15 +496,14 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case C.RC_TAG_ACTIVITY: {
+            case C.RC_TAG_ACTIVITY:
                 // Came back from TaggingActivity.
                 if (resultCode == Activity.RESULT_OK) {
                     // We've changed the tags on some books.
                     if (actionMode != null) actionMode.finish();
                 }
                 break;
-            }
-            case C.RC_QUERY_BUILDER_ACTIVITY: {
+            case C.RC_QUERY_BUILDER_ACTIVITY:
                 // Came back from QueryBuilderActivity.
                 if (resultCode == RESULT_OK) {
                     // There's a valid RUQ in the extras.
@@ -518,7 +516,6 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 // Update the UI.
                 updateUi();
                 break;
-            }
         }
     }
 
