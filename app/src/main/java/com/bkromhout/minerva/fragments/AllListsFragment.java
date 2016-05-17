@@ -14,10 +14,10 @@ import android.view.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.bkromhout.minerva.activities.BookListActivity;
 import com.bkromhout.minerva.C;
-import com.bkromhout.minerva.activities.QueryBuilderActivity;
 import com.bkromhout.minerva.R;
+import com.bkromhout.minerva.activities.BookListActivity;
+import com.bkromhout.minerva.activities.QueryBuilderActivity;
 import com.bkromhout.minerva.adapters.BookListCardAdapter;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.events.ActionEvent;
@@ -299,50 +299,41 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
 
         // Do something based on the menu item ID.
         switch (actionId) {
-            case R.id.action_show_query: {
+            case R.id.action_show_query:
                 Dialogs.smartListQueryDialog(getActivity(),
                         tempList.smartListRuqString == null || tempList.smartListRuqString.isEmpty() ? null :
                                 new RealmUserQuery(tempList.smartListRuqString).toString(), position);
                 break;
-            }
-            case R.id.action_rename_list: {
+            case R.id.action_rename_list:
                 Dialogs.uniqueNameDialog(getActivity(), RBookList.class, R.string.title_rename_list,
-                        R.string.prompt_rename_list,
-
-                        R.string.list_name_hint, listName,
-                        R.id.action_rename_list, position);
+                        R.string.prompt_rename_list, R.string.list_name_hint, listName, R.id.action_rename_list,
+                        position);
                 break;
-            }
-            case R.id.action_rename_smart_list: {
+            case R.id.action_rename_smart_list:
                 Dialogs.uniqueNameDialog(getActivity(), RBookList.class, R.string.title_rename_smart_list,
                         R.string.prompt_rename_smart_list, R.string.list_name_hint, listName,
                         R.id.action_rename_smart_list, position
                 );
                 break;
-            }
-            case R.id.action_edit_smart_list: {
+            case R.id.action_edit_smart_list:
                 String ruqString = tempList.smartListRuqString;
                 QueryBuilderActivity.start(this, ruqString == null || ruqString.isEmpty()
                         ? null : new RealmUserQuery(ruqString));
                 break;
-            }
-            case R.id.action_convert_to_normal_list: {
+            case R.id.action_convert_to_normal_list:
                 Dialogs.simpleConfirmDialog(getActivity(), R.string.title_convert_to_normal_list,
                         R.string.prompt_convert_to_normal_list, R.string.action_convert,
                         R.id.action_convert_to_normal_list);
 
                 break;
-            }
-            case R.id.action_delete_list: {
+            case R.id.action_delete_list:
                 Dialogs.simpleConfirmDialog(getActivity(), R.string.title_delete_list, R.string.prompt_delete_list,
                         R.string.action_delete, R.id.action_delete_list);
                 break;
-            }
-            case R.id.action_delete_smart_list: {
+            case R.id.action_delete_smart_list:
                 Dialogs.simpleConfirmDialog(getActivity(), R.string.title_delete_smart_list,
                         R.string.prompt_delete_smart_list, R.string.action_delete, R.id.action_delete_list);
                 break;
-            }
         }
     }
 
