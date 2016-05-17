@@ -1,5 +1,7 @@
 package com.bkromhout.minerva.events;
 
+import android.support.annotation.IdRes;
+
 /**
  * Fired from various places to make an activity or fragment follow-up on some intent to execute an action.
  */
@@ -23,7 +25,7 @@ public class ActionEvent {
      * @param data        Extra data.
      * @param posToUpdate Position to update, or -1 if none.
      */
-    public ActionEvent(int actionId, Object data, int posToUpdate) {
+    public ActionEvent(@IdRes int actionId, Object data, int posToUpdate) {
         this.actionId = actionId;
         this.data = data;
         this.posToUpdate = posToUpdate;
@@ -34,7 +36,7 @@ public class ActionEvent {
      * @param actionId Action to take.
      * @param data     Extra data.
      */
-    public ActionEvent(int actionId, Object data) {
+    public ActionEvent(@IdRes int actionId, Object data) {
         this(actionId, data, -1);
     }
 
