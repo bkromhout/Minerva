@@ -14,10 +14,10 @@ import butterknife.OnClick;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.ImportLogger;
 import com.bkromhout.minerva.data.Importer;
-import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
 import org.greenrobot.eventbus.EventBus;
@@ -137,7 +137,7 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
 
         // The importer isn't running, so we need to do a bit of work first, starting with checking if we have a
         // library directory set.
-        File libDir = Util.tryResolveDir(DefaultPrefs.get().getLibDir(null));
+        File libDir = Util.tryResolveDir(Prefs.get().getLibDir(null));
         if (libDir == null) {
             // We don't have a library directory set, so we'll change the UI to have the user choose one.
             setButtonState(ButtonState.CHOOSE_DIR, true);
@@ -306,7 +306,7 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
                         .cancelButton(R.string.cancel);
 
                 // Check to see if the current value is a valid folder.
-                String folderPath = DefaultPrefs.get().getLibDir(null);
+                String folderPath = Prefs.get().getLibDir(null);
                 if (folderPath != null && new File(folderPath).exists()) builder.initialPath(folderPath);
 
                 // Show the folder chooser dialog.
@@ -318,7 +318,7 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
     @Override
     public void onFolderSelection(@NonNull FolderChooserDialog dialog, @NonNull File folder) {
         String path = folder.getAbsolutePath();
-        DefaultPrefs.get().putLibDir(path);
+        Prefs.get().putLibDir(path);
         needsToChooseDir = false;
         // Pretend this got called with READY.
         onImportStateChanged(Importer.State.READY);

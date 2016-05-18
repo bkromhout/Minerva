@@ -3,7 +3,6 @@ package com.bkromhout.minerva.activities;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -19,12 +18,13 @@ import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
+import com.bkromhout.minerva.enums.MainFrag;
 import com.bkromhout.minerva.fragments.AllListsFragment;
 import com.bkromhout.minerva.fragments.LibraryFragment;
 import com.bkromhout.minerva.fragments.PowerSearchFragment;
 import com.bkromhout.minerva.fragments.RecentFragment;
-import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.util.Util;
 import io.realm.Realm;
 import org.greenrobot.eventbus.EventBus;
@@ -34,11 +34,6 @@ import org.greenrobot.eventbus.EventBus;
  */
 public class MainActivity extends PermCheckingActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TITLE = "TITLE";
-    // Represents the various fragments that this activity can show.
-    public static final int FRAG_RECENT = 0;
-    public static final int FRAG_LIBRARY = 1;
-    public static final int FRAG_ALL_LISTS = 2;
-    public static final int FRAG_POWER_SEARCH = 3;
 
     // Views.
     @BindView(R.id.drawer_layout)
@@ -53,7 +48,7 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
     /**
      * Instance of the default preferences.
      */
-    private DefaultPrefs defaultPrefs;
+    private Prefs prefs;
     /**
      * Instance of Realm.
      */
@@ -68,7 +63,7 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
         super.onCreate(savedInstanceState);
 
         // Get prefs and Realm.
-        defaultPrefs = DefaultPrefs.get();
+        prefs = Prefs.get();
         realm = Realm.getDefaultInstance();
 
         // Set theme, create and bind views.
@@ -88,16 +83,16 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
         if (savedInstanceState == null) {
             // Make sure we show the library fragment if we don't have a saved instance state, don't have a saved
             // current fragment, or if the saved current fragment would need some bundle to help populate it.
-            int frag = defaultPrefs.getCurrFrag(-1);
-            switchFragments(frag != -1 ? frag : FRAG_LIBRARY);
-            navigationView.setCheckedItem(navIdFromFragConst(frag));
+            MainFrag frag = prefs.getCurrFrag(MainFrag.LIBRARY);
+            switchFragments(frag);
+            navigationView.setCheckedItem(frag.getIdRes());
         } else {
             // Make sure we set the title back to what it was otherwise.
             setTitle(savedInstanceState.getString(TITLE));
         }
 
         // Check to see if we need to show the welcome activity.
-        if (savedInstanceState == null && !defaultPrefs.hasFirstImportBeenTriggered())
+        if (savedInstanceState == null && !prefs.hasFirstImportBeenTriggered())
             startActivityForResult(new Intent(this, WelcomeActivity.class), C.RC_WELCOME_ACTIVITY);
 
         // Handle permissions. Make sure we continue a request process if applicable.
@@ -217,16 +212,16 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_recent:
-                switchFragments(FRAG_RECENT);
+                switchFragments(MainFrag.RECENT);
                 break;
             case R.id.nav_library:
-                switchFragments(FRAG_LIBRARY);
+                switchFragments(MainFrag.LIBRARY);
                 break;
             case R.id.nav_all_lists:
-                switchFragments(FRAG_ALL_LISTS);
+                switchFragments(MainFrag.ALL_LISTS);
                 break;
             case R.id.nav_power_search:
-                switchFragments(FRAG_POWER_SEARCH);
+                switchFragments(MainFrag.POWER_SEARCH);
                 break;
             case R.id.nav_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
@@ -243,23 +238,23 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
      * Switch fragments based on the id of the item that was clicked in the nav drawer.
      * @param frag Which fragment to switch to.
      */
-    private void switchFragments(int frag) {
+    private void switchFragments(MainFrag frag) {
         // Figure out which fragment to switch to.
         Fragment fragment = null;
         switch (frag) {
-            case FRAG_RECENT:
+            case RECENT:
                 fragment = RecentFragment.newInstance();
                 setTitle(R.string.nav_item_recent);
                 break;
-            case FRAG_LIBRARY:
+            case LIBRARY:
                 fragment = LibraryFragment.newInstance();
                 setTitle(R.string.nav_item_library);
                 break;
-            case FRAG_ALL_LISTS:
+            case ALL_LISTS:
                 fragment = AllListsFragment.newInstance();
-                setTitle(R.string.nav_item_lists);
+                setTitle(R.string.nav_item_all_lists);
                 break;
-            case FRAG_POWER_SEARCH:
+            case POWER_SEARCH:
                 fragment = PowerSearchFragment.newInstance();
                 setTitle(R.string.nav_item_power_search);
                 break;
@@ -272,29 +267,7 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
         }
 
         // Save things to prefs.
-        defaultPrefs.putCurrFrag(frag);
-    }
-
-    /**
-     * Takes a fragment constant integer (see the top of {@link MainActivity}) and returns the Android resource ID for
-     * the item in the nav drawer which corresponds to that fragment.
-     * @param frag Fragment integer constant.
-     * @return Nav drawer item resource ID.
-     */
-    @IdRes
-    private static int navIdFromFragConst(int frag) {
-        switch (frag) {
-            case FRAG_RECENT:
-                return R.id.nav_recent;
-            case FRAG_LIBRARY:
-                return R.id.nav_library;
-            case FRAG_ALL_LISTS:
-                return R.id.nav_all_lists;
-            case FRAG_POWER_SEARCH:
-                return R.id.nav_power_search;
-            default:
-                return -1;
-        }
+        prefs.putCurrFrag(frag);
     }
 
     /**

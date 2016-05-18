@@ -17,6 +17,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.activities.BookInfoActivity;
 import com.bkromhout.minerva.activities.QueryBuilderActivity;
@@ -25,14 +26,13 @@ import com.bkromhout.minerva.adapters.*;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.DataUtils;
 import com.bkromhout.minerva.enums.BookCardType;
+import com.bkromhout.minerva.enums.MainFrag;
 import com.bkromhout.minerva.enums.MarkType;
 import com.bkromhout.minerva.enums.ModelType;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
 import com.bkromhout.minerva.events.PrefChangeEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
-import com.bkromhout.minerva.prefs.PowerSearchPrefs;
-import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
@@ -69,7 +69,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     /**
      * Preferences.
      */
-    private PowerSearchPrefs powerSearchPrefs;
+    private Prefs prefs;
     /**
      * Which type of card to use.
      */
@@ -130,7 +130,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
         super.onActivityCreated(savedInstanceState);
 
         // Read prefs to fill in vars.
-        powerSearchPrefs = PowerSearchPrefs.get();
+        prefs = Prefs.get();
         readPrefs();
 
         // Get Realm.
@@ -157,7 +157,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
      * Read preferences into variables.
      */
     private void readPrefs() {
-        cardType = powerSearchPrefs.getCardType(BookCardType.NORMAL);
+        cardType = prefs.getPowerSearchCardType(BookCardType.NORMAL);
     }
 
     @Override
@@ -257,7 +257,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
                         R.string.prompt_new_smart_list, R.string.list_name_hint, null, R.id.action_new_smart_list, -1);
                 return true;
             case R.id.action_card_type:
-                Dialogs.cardStyleDialog(getContext(), powerSearchPrefs);
+                Dialogs.cardStyleDialog(getContext(), MainFrag.POWER_SEARCH);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -496,8 +496,8 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     public void onPrefChangeEvent(PrefChangeEvent event) {
         // Do something different based on name of changed preference.
         switch (event.getPrefName()) {
-            case BCTPref.CARD_TYPE:
-                cardType = powerSearchPrefs.getCardType(cardType);
+            case Prefs.POWER_SEARCH_CARD_TYPE:
+                cardType = prefs.getPowerSearchCardType(cardType);
                 changeCardType();
                 break;
         }

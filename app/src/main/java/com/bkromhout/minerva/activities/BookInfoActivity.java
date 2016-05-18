@@ -23,13 +23,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.DataUtils;
 import com.bkromhout.minerva.enums.MarkType;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
-import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.ui.TagBackgroundSpan;
@@ -376,7 +376,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         desc.setText(book.desc);
         chapCount.setText(String.valueOf(book.numChaps));
         rating.setRating(book.rating);
-        path.setText(DefaultPrefs.get().getLibDir("") + book.relPath);
+        path.setText(Prefs.get().getLibDir("") + book.relPath);
 
         lastReadDate.setText(book.lastReadDate == null ? C.getStr(R.string.never)
                 : DateUtils.getRelativeDateTimeString(this, book.lastReadDate.getTime(),

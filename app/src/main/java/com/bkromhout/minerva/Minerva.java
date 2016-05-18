@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import com.bkromhout.minerva.data.UniqueIdFactory;
-import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.ruqus.Ruqus;
 import com.google.common.collect.Lists;
@@ -58,11 +57,13 @@ public class Minerva extends Application {
      * Initializes some default data for the app the first time it runs.
      */
     private void doFirstTimeInitIfNeeded() {
-        if (DefaultPrefs.get().doneFirstTimeInit()) return;
+        if (Prefs.get().doneFirstTimeInit()) return;
 
         // Put default new/updated book tag names.
-        DefaultPrefs.get().putNewBookTag(C.getStr(R.string.default_new_book_tag));
-        DefaultPrefs.get().putUpdatedBookTag(C.getStr(R.string.default_updated_book_tag));
+        Prefs.get().putNewBookTag(C.getStr(R.string.default_new_book_tag));
+        Prefs.get().putUpdatedBookTag(C.getStr(R.string.default_updated_book_tag));
+
+        Prefs.get().setFirstTimeInitDone();
     }
 
     /**

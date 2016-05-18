@@ -17,19 +17,19 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.adapters.*;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.DataUtils;
 import com.bkromhout.minerva.enums.BookCardType;
+import com.bkromhout.minerva.enums.MainFrag;
 import com.bkromhout.minerva.enums.MarkType;
 import com.bkromhout.minerva.enums.ModelType;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
 import com.bkromhout.minerva.events.PrefChangeEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
-import com.bkromhout.minerva.prefs.ListsPrefs;
-import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
@@ -67,7 +67,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
     /**
      * Preferences.
      */
-    private ListsPrefs listsPrefs;
+    private Prefs prefs;
     /**
      * Unique string to help find the correct list to display from the DB.
      */
@@ -143,7 +143,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
         readExtras(getIntent().getExtras());
 
         // Get and read preferences.
-        listsPrefs = ListsPrefs.get();
+        prefs = Prefs.get();
         readPrefs();
 
         // Get Realm, then get the RBookList which we will get items from.
@@ -189,7 +189,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
      * Read preferences into variables.
      */
     private void readPrefs() {
-        cardType = listsPrefs.getCardType(BookCardType.NORMAL);
+        cardType = prefs.getListCardType(BookCardType.NORMAL);
     }
 
     /**
@@ -345,7 +345,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                         smartListRuq != null ? smartListRuq.toString() : null, true, -1);
                 return true;
             case R.id.action_card_type:
-                Dialogs.cardStyleDialog(this, listsPrefs);
+                Dialogs.cardStyleDialog(this, MainFrag.ALL_LISTS);
                 return true;
             case R.id.action_rename_list:
                 Dialogs.uniqueNameDialog(this, RBookList.class, R.string.title_rename_list, R.string.prompt_rename_list,
@@ -647,8 +647,8 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
     public void onPrefChangeEvent(PrefChangeEvent event) {
         // Do something different based on name of changed preference.
         switch (event.getPrefName()) {
-            case BCTPref.CARD_TYPE:
-                cardType = listsPrefs.getCardType(cardType);
+            case Prefs.LIST_CARD_TYPE:
+                cardType = prefs.getListCardType(cardType);
                 changeCardType();
                 break;
         }

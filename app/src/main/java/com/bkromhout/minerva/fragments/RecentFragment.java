@@ -15,9 +15,10 @@ import android.view.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.bkromhout.minerva.activities.BookInfoActivity;
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
+import com.bkromhout.minerva.activities.BookInfoActivity;
 import com.bkromhout.minerva.activities.TaggingActivity;
 import com.bkromhout.minerva.adapters.BaseBookCardAdapter;
 import com.bkromhout.minerva.adapters.BookCardAdapter;
@@ -25,13 +26,12 @@ import com.bkromhout.minerva.adapters.BookCardCompactAdapter;
 import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.enums.BookCardType;
+import com.bkromhout.minerva.enums.MainFrag;
 import com.bkromhout.minerva.enums.MarkType;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
 import com.bkromhout.minerva.events.PrefChangeEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
-import com.bkromhout.minerva.prefs.RecentPrefs;
-import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Dialogs;
@@ -64,7 +64,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
     /**
      * Preferences.
      */
-    private RecentPrefs recentPrefs;
+    private Prefs prefs;
     /**
      * Which type of card to use.
      */
@@ -117,7 +117,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
         super.onActivityCreated(savedInstanceState);
 
         // Read prefs to fill in vars.
-        recentPrefs = RecentPrefs.get();
+        prefs = Prefs.get();
         readPrefs();
 
         // Get Realm.
@@ -137,7 +137,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
      * Read preferences into variables.
      */
     private void readPrefs() {
-        cardType = recentPrefs.getCardType(BookCardType.NORMAL);
+        cardType = prefs.getRecentsCardType(BookCardType.NORMAL);
     }
 
     /**
@@ -236,7 +236,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_card_type:
-                Dialogs.cardStyleDialog(getContext(), recentPrefs);
+                Dialogs.cardStyleDialog(getContext(), MainFrag.RECENT);
                 return true;
             case R.id.action_clear:
                 Dialogs.simpleConfirmDialog(getContext(), R.string.action_clear_recents, R.string.prompt_clear_recents,
@@ -447,8 +447,8 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
     public void onPrefChangeEvent(PrefChangeEvent event) {
         // Do something different based on name of changed preference.
         switch (event.getPrefName()) {
-            case BCTPref.CARD_TYPE:
-                cardType = recentPrefs.getCardType(cardType);
+            case Prefs.RECENTS_CARD_TYPE:
+                cardType = prefs.getRecentsCardType(cardType);
                 changeCardType();
                 break;
         }

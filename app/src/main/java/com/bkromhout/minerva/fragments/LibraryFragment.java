@@ -24,6 +24,7 @@ import butterknife.OnClick;
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.activities.BookInfoActivity;
 import com.bkromhout.minerva.activities.ImportActivity;
@@ -40,7 +41,6 @@ import com.bkromhout.minerva.enums.SortType;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
-import com.bkromhout.minerva.prefs.LibraryPrefs;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Dialogs;
@@ -81,7 +81,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
     /**
      * Preferences.
      */
-    private LibraryPrefs libraryPrefs;
+    private Prefs prefs;
     /**
      * The current sort type.
      */
@@ -155,7 +155,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
         super.onActivityCreated(savedInstanceState);
 
         // Read prefs to fill in vars.
-        libraryPrefs = LibraryPrefs.get();
+        prefs = Prefs.get();
         readPrefs();
 
         // Get Realm.
@@ -179,9 +179,9 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
      * Read preferences into variables.
      */
     private void readPrefs() {
-        sortType = libraryPrefs.getSortType(SortType.TITLE);
-        sortDir = libraryPrefs.getSortDir(SortDir.ASC);
-        cardType = libraryPrefs.getCardType(BookCardType.NORMAL);
+        sortType = prefs.getLibrarySortType(SortType.TITLE);
+        sortDir = prefs.getLibrarySortDir(SortDir.ASC);
+        cardType = prefs.getLibraryCardType(BookCardType.NORMAL);
     }
 
     /**
@@ -493,7 +493,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
                     if (sortTypeChanged) sortType = SortType.fromResId(rgSortType.getCheckedRadioButtonId());
                     if (sortDirChanged) sortDir = SortDir.fromResId(rgSortDir.getCheckedRadioButtonId());
                     if (cardTypeChanged) cardType = BookCardType.fromResId(rgCardType.getCheckedRadioButtonId());
-                    libraryPrefs.putLibraryViewOpts(sortType, sortDir, cardType);
+                    prefs.putLibraryViewOpts(sortType, sortDir, cardType);
 
                     // Re-sort data if necessary.
                     if (sortTypeChanged || sortDirChanged) sortRealmResults();

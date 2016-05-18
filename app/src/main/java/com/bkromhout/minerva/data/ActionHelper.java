@@ -8,10 +8,10 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
 import android.webkit.MimeTypeMap;
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.activities.TaggingActivity.TaggingHelper;
 import com.bkromhout.minerva.enums.MarkType;
-import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
@@ -94,8 +94,8 @@ public class ActionHelper {
         if (books.isEmpty() || tags.isEmpty()) return;
 
         // Get names of new/updated book tags.
-        String newBookTagName = DefaultPrefs.get().getNewBookTag(null);
-        String updatedBookTagName = DefaultPrefs.get().getUpdatedBookTag(null);
+        String newBookTagName = Prefs.get().getNewBookTag(null);
+        String updatedBookTagName = Prefs.get().getUpdatedBookTag(null);
 
         try (Realm realm = Realm.getDefaultInstance()) {
             // Sometimes this method is called when we're already in a transaction. We can't nest them.
@@ -135,8 +135,8 @@ public class ActionHelper {
         if (books.isEmpty() || tags.isEmpty()) return;
 
         // Get names of new/updated book tags.
-        String newBookTagName = DefaultPrefs.get().getNewBookTag(null);
-        String updatedBookTagName = DefaultPrefs.get().getUpdatedBookTag(null);
+        String newBookTagName = Prefs.get().getNewBookTag(null);
+        String updatedBookTagName = Prefs.get().getUpdatedBookTag(null);
 
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.beginTransaction();
@@ -576,10 +576,10 @@ public class ActionHelper {
         realm.executeTransaction(tRealm -> tag.deleteFromRealm());
 
         // If this was one of the new/updated book tags, be sure that we null that preference's value.
-        String prefVal = DefaultPrefs.get().getNewBookTag(null);
-        if (prefVal != null && prefVal.equals(tagName)) DefaultPrefs.get().putNewBookTag(null);
-        prefVal = DefaultPrefs.get().getUpdatedBookTag(null);
-        if (prefVal != null && prefVal.equals(tagName)) DefaultPrefs.get().putUpdatedBookTag(null);
+        String prefVal = Prefs.get().getNewBookTag(null);
+        if (prefVal != null && prefVal.equals(tagName)) Prefs.get().putNewBookTag(null);
+        prefVal = Prefs.get().getUpdatedBookTag(null);
+        if (prefVal != null && prefVal.equals(tagName)) Prefs.get().putUpdatedBookTag(null);
 
         // Remove tag name from the lists (if present).
         th.oldCheckedItems.remove(tagName);

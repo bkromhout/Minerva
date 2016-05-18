@@ -15,10 +15,10 @@ import butterknife.ButterKnife;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.enums.MarkType;
-import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
@@ -102,7 +102,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
     public void onFolderSelection(@NonNull FolderChooserDialog dialog, @NonNull File folder) {
         // Updating this preference cause the fragment to notice and update the summary for the library directory
         // preference, since the fragment implements OnSharedPreferenceChangeListener.
-        DefaultPrefs.get().putLibDir(folder.getAbsolutePath());
+        Prefs.get().putLibDir(folder.getAbsolutePath());
     }
 
     @NonNull
@@ -135,20 +135,20 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
          */
         private void initUi() {
             // Set up the library directory preference.
-            Preference libDir = getPreferenceScreen().findPreference(DefaultPrefs.LIB_DIR);
+            Preference libDir = getPreferenceScreen().findPreference(Prefs.LIB_DIR);
             libDir.setOnPreferenceClickListener(this::onLibDirPrefClick);
-            libDir.setSummary(DefaultPrefs.get().getLibDir(""));
+            libDir.setSummary(Prefs.get().getLibDir(""));
 
             // Set up the new book tag preference.
-            Preference newBookTag = getPreferenceScreen().findPreference(DefaultPrefs.NEW_BOOK_TAG);
+            Preference newBookTag = getPreferenceScreen().findPreference(Prefs.NEW_BOOK_TAG);
             newBookTag.setOnPreferenceClickListener(this::onNewBookTagPrefClick);
-            String newBookTagVal = DefaultPrefs.get().getNewBookTag(null);
+            String newBookTagVal = Prefs.get().getNewBookTag(null);
             newBookTag.setSummary(newBookTagVal != null ? C.getStr(R.string.summary_tag_as, newBookTagVal) : "");
 
             // Set up the updated book tag preference.
-            Preference updatedBookTag = getPreferenceScreen().findPreference(DefaultPrefs.UPDATED_BOOK_TAG);
+            Preference updatedBookTag = getPreferenceScreen().findPreference(Prefs.UPDATED_BOOK_TAG);
             updatedBookTag.setOnPreferenceClickListener(this::onUpdatedBookTagPrefClick);
-            String updatedBookTagVal = DefaultPrefs.get().getUpdatedBookTag(null);
+            String updatedBookTagVal = Prefs.get().getUpdatedBookTag(null);
             updatedBookTag.setSummary(updatedBookTagVal != null ? C.getStr(R.string.summary_tag_as, updatedBookTagVal) :
                     "");
         }
@@ -174,19 +174,19 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
          */
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            if (key.equals(DefaultPrefs.LIB_DIR)) {
+            if (key.equals(Prefs.LIB_DIR)) {
                 // Update the summary for the library directory.
-                getPreferenceScreen().findPreference(DefaultPrefs.LIB_DIR)
+                getPreferenceScreen().findPreference(Prefs.LIB_DIR)
                                      .setSummary(sharedPreferences.getString(key, ""));
-            } else if (key.equals(DefaultPrefs.NEW_BOOK_TAG)) {
+            } else if (key.equals(Prefs.NEW_BOOK_TAG)) {
                 String value = sharedPreferences.getString(key, null);
                 // Update the summary for the new book tag.
-                getPreferenceScreen().findPreference(DefaultPrefs.NEW_BOOK_TAG)
+                getPreferenceScreen().findPreference(Prefs.NEW_BOOK_TAG)
                                      .setSummary(value != null ? C.getStr(R.string.summary_tag_as, value) : "");
-            } else if (key.equals(DefaultPrefs.UPDATED_BOOK_TAG)) {
+            } else if (key.equals(Prefs.UPDATED_BOOK_TAG)) {
                 String value = sharedPreferences.getString(key, null);
                 // Updated the summary for the updated book tag.
-                getPreferenceScreen().findPreference(DefaultPrefs.UPDATED_BOOK_TAG)
+                getPreferenceScreen().findPreference(Prefs.UPDATED_BOOK_TAG)
                                      .setSummary(value != null ? C.getStr(R.string.summary_tag_as, value) : "");
             }
         }
@@ -205,7 +205,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
                     .cancelButton(R.string.cancel);
 
             // Check to see if the current value is a valid folder.
-            String folderPath = DefaultPrefs.get().getLibDir(null);
+            String folderPath = Prefs.get().getLibDir(null);
             if (folderPath != null && new File(folderPath).exists()) builder.initialPath(folderPath);
 
             // Show the folder chooser dialog.
@@ -247,8 +247,8 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
 
             // Remove the name of the tag which is in use as the updated tag (if we're picking the new tag), or as the
             // new tag (if we're picking the updated tag).
-            String remove = markType == MarkType.NEW ? DefaultPrefs.get().getUpdatedBookTag(null) :
-                    DefaultPrefs.get().getNewBookTag(null);
+            String remove = markType == MarkType.NEW ? Prefs.get().getUpdatedBookTag(null) :
+                    Prefs.get().getNewBookTag(null);
             if (remove != null) tagNames.remove(remove);
 
             // If we don't have any names, show a snackbar saying that, then return.
@@ -267,11 +267,11 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
                         String oldTagName = null;
                         // Change preference.
                         if (markType == MarkType.NEW) {
-                            oldTagName = DefaultPrefs.get().getNewBookTag(null);
-                            DefaultPrefs.get().putNewBookTag(null);
+                            oldTagName = Prefs.get().getNewBookTag(null);
+                            Prefs.get().putNewBookTag(null);
                         } else if (markType == MarkType.UPDATED) {
-                            oldTagName = DefaultPrefs.get().getUpdatedBookTag(null);
-                            DefaultPrefs.get().putUpdatedBookTag(null);
+                            oldTagName = Prefs.get().getUpdatedBookTag(null);
+                            Prefs.get().putUpdatedBookTag(null);
                         }
                         // Remove tag from books.
                         ActionHelper.replaceMarkTagOnBooks(markType, oldTagName, null);
@@ -280,11 +280,11 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
                         String oldTagName = null;
                         // Change preference.
                         if (markType == MarkType.NEW) {
-                            oldTagName = DefaultPrefs.get().getNewBookTag(null);
-                            DefaultPrefs.get().putNewBookTag(text.toString());
+                            oldTagName = Prefs.get().getNewBookTag(null);
+                            Prefs.get().putNewBookTag(text.toString());
                         } else if (markType == MarkType.UPDATED) {
-                            oldTagName = DefaultPrefs.get().getUpdatedBookTag(null);
-                            DefaultPrefs.get().putUpdatedBookTag(text.toString());
+                            oldTagName = Prefs.get().getUpdatedBookTag(null);
+                            Prefs.get().putUpdatedBookTag(text.toString());
                         }
                         // Replace tag on books.
                         ActionHelper.replaceMarkTagOnBooks(markType, oldTagName, text.toString());

@@ -11,9 +11,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
+import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.Importer;
-import com.bkromhout.minerva.prefs.DefaultPrefs;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
 import org.greenrobot.eventbus.EventBus;
@@ -74,7 +74,7 @@ public class WelcomeActivity extends PermCheckingActivity implements SnackKiosk.
     @Override
     public void onFolderSelection(@NonNull FolderChooserDialog dialog, @NonNull File folder) {
         String path = folder.getAbsolutePath();
-        DefaultPrefs.get().putLibDir(path);
+        Prefs.get().putLibDir(path);
 
         // Set the path of the folder to the textview.
         tvFolder.setText(path);
@@ -98,7 +98,7 @@ public class WelcomeActivity extends PermCheckingActivity implements SnackKiosk.
                 .cancelButton(R.string.cancel);
 
         // Check to see if the current value is a valid folder.
-        String folderPath = DefaultPrefs.get().getLibDir(null);
+        String folderPath = Prefs.get().getLibDir(null);
         if (folderPath != null && new File(folderPath).exists()) builder.initialPath(folderPath);
 
         // Show the folder chooser dialog.
@@ -112,7 +112,7 @@ public class WelcomeActivity extends PermCheckingActivity implements SnackKiosk.
     void onStartFullImportClicked() {
         if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
         Importer.get().queueFullImport();
-        DefaultPrefs.get().setFirstImportTriggered();
+        Prefs.get().setFirstImportTriggered();
         setResult(RESULT_OK);
         finish();
     }

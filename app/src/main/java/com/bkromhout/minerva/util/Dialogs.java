@@ -13,12 +13,13 @@ import android.widget.TextView;
 import butterknife.ButterKnife;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.enums.BookCardType;
+import com.bkromhout.minerva.enums.MainFrag;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.PrefChangeEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
-import com.bkromhout.minerva.prefs.interfaces.BCTPref;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import io.realm.Realm;
@@ -104,13 +105,12 @@ public class Dialogs {
 
     /**
      * Show a simple book card style chooser dialog.
-     * @param ctx   Context to use.
-     * @param prefs Some *Prefs object which implements {@link BCTPref} so that we may get/put the current/new
-     *              preference.
+     * @param ctx       Context to use.
+     * @param whichFrag Which fragment this preference should be persisted for.
      */
-    public static void cardStyleDialog(final Context ctx, final BCTPref prefs) {
+    public static void cardStyleDialog(final Context ctx, final MainFrag whichFrag) {
         // Get current card type from prefs.
-        final BookCardType cardType = prefs.getCardType(BookCardType.NORMAL);
+        final BookCardType cardType = Prefs.get().getBookCardType(BookCardType.NORMAL, whichFrag);
         // Show dialog.
         new MaterialDialog.Builder(ctx)
                 .title(R.string.action_card_type)
@@ -121,8 +121,8 @@ public class Dialogs {
                     if (cardType.getNum() == which) return true;
 
                     // Persist the new card style and fire event to let caller know.
-                    prefs.putCardType(BookCardType.fromNumber(which));
-                    EventBus.getDefault().post(new PrefChangeEvent(BCTPref.CARD_TYPE));
+                    String changedKey = Prefs.get().putBookCardType(BookCardType.fromNumber(which), whichFrag);
+                    EventBus.getDefault().post(new PrefChangeEvent(changedKey));
                     return true;
                 })
                 .show();
