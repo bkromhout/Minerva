@@ -68,7 +68,7 @@ public class Minerva extends Application {
     /**
      * Set up Realm's default configuration.
      */
-    private void setupRealm() {
+    protected void setupRealm() {
         Realm.setDefaultConfiguration(new RealmConfiguration.Builder(this)
                 .name(REALM_FILE_NAME)
                 .schemaVersion(REALM_SCHEMA_VERSION)
