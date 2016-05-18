@@ -62,7 +62,7 @@ public class SortTypeTest {
      * Current {@link SortType}.
      */
     @Parameterized.Parameter(4)
-    private SortType type;
+    public SortType type;
 
     /**
      * Tests that the current {@link #type}'s getters will returns the correct values.

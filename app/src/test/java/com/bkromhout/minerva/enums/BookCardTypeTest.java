@@ -56,7 +56,7 @@ public class BookCardTypeTest {
      * Current {@link BookCardType}.
      */
     @Parameterized.Parameter(3)
-    private BookCardType type;
+    public BookCardType type;
 
     /**
      * Tests that the current {@link #type}'s getters will returns the correct values.

@@ -61,7 +61,7 @@ public class SortDirTest {
      * Current {@link SortDir}.
      */
     @Parameterized.Parameter(4)
-    private SortDir type;
+    public SortDir type;
 
     /**
      * Tests that the current {@link #type}'s getters will returns the correct values.
