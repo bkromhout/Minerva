@@ -1,7 +1,6 @@
 package com.bkromhout.minerva;
 
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import com.bkromhout.minerva.activities.MainActivity;
 import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.enums.MainFrag;
@@ -38,27 +37,12 @@ public class Prefs {
     public static final String POWER_SEARCH_CARD_TYPE = "power_search_card_type";
 
     /**
-     * Static instance.
-     */
-    private static Prefs INSTANCE = null;
-    /**
      * Shared Preferences.
      */
     private SharedPreferences prefs;
 
-    // No public construction allowed.
-    private Prefs() {
-        // Get shared preferences.
-        this.prefs = PreferenceManager.getDefaultSharedPreferences(Minerva.getAppCtx());
-    }
-
-    /**
-     * Get an instance.
-     * @return {@link Prefs}.
-     */
-    public static Prefs get() {
-        if (INSTANCE == null) INSTANCE = new Prefs();
-        return INSTANCE;
+    public Prefs(SharedPreferences prefs) {
+        this.prefs = prefs;
     }
 
     /*

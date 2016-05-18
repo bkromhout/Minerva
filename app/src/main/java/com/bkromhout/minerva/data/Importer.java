@@ -3,7 +3,7 @@ package com.bkromhout.minerva.data;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import com.bkromhout.minerva.C;
-import com.bkromhout.minerva.Prefs;
+import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.enums.MarkType;
 import com.bkromhout.minerva.realm.RBook;
@@ -287,7 +287,7 @@ public class Importer {
         if (listener != null) listener.onProgressFlag(SET_PROGRESS_INDETERMINATE);
 
         // Get and check currently configured library directory.
-        String libDirPath = Prefs.get().getLibDir(null);
+        String libDirPath = Minerva.getPrefs().getLibDir(null);
         if ((currDir = Util.tryResolveDir(libDirPath)) == null) {
             // We don't have a valid library directory.
             logger.error(C.getStr(R.string.il_err_invalid_lib_dir));

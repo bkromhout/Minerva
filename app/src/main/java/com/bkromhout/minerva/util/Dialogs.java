@@ -13,7 +13,7 @@ import android.widget.TextView;
 import butterknife.ButterKnife;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkromhout.minerva.C;
-import com.bkromhout.minerva.Prefs;
+import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.enums.MainFrag;
@@ -110,7 +110,7 @@ public class Dialogs {
      */
     public static void cardStyleDialog(final Context ctx, final MainFrag whichFrag) {
         // Get current card type from prefs.
-        final BookCardType cardType = Prefs.get().getBookCardType(BookCardType.NORMAL, whichFrag);
+        final BookCardType cardType = Minerva.getPrefs().getBookCardType(BookCardType.NORMAL, whichFrag);
         // Show dialog.
         new MaterialDialog.Builder(ctx)
                 .title(R.string.action_card_type)
@@ -121,7 +121,7 @@ public class Dialogs {
                     if (cardType.getNum() == which) return true;
 
                     // Persist the new card style and fire event to let caller know.
-                    String changedKey = Prefs.get().putBookCardType(BookCardType.fromNumber(which), whichFrag);
+                    String changedKey = Minerva.getPrefs().putBookCardType(BookCardType.fromNumber(which), whichFrag);
                     EventBus.getDefault().post(new PrefChangeEvent(changedKey));
                     return true;
                 })

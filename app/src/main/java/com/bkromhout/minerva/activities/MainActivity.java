@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.enums.MainFrag;
@@ -28,6 +29,8 @@ import com.bkromhout.minerva.fragments.RecentFragment;
 import com.bkromhout.minerva.util.Util;
 import io.realm.Realm;
 import org.greenrobot.eventbus.EventBus;
+
+import javax.inject.Inject;
 
 /**
  * Main activity, responsible for hosting fragments.
@@ -48,7 +51,8 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
     /**
      * Instance of the default preferences.
      */
-    private Prefs prefs;
+    @Inject
+    Prefs prefs;
     /**
      * Instance of Realm.
      */
@@ -63,12 +67,12 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
         super.onCreate(savedInstanceState);
 
         // Get prefs and Realm.
-        prefs = Prefs.get();
         realm = Realm.getDefaultInstance();
 
         // Set theme, create and bind views.
         setTheme(R.style.AppTheme);
         setContentView(R.layout.activity_main);
+        Minerva.get().getUtilComponent().inject(this);
         ButterKnife.bind(this);
 
         // Set up toolbar.

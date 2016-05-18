@@ -2,7 +2,7 @@ package com.bkromhout.minerva.data;
 
 import android.support.annotation.NonNull;
 import com.bkromhout.minerva.C;
-import com.bkromhout.minerva.Prefs;
+import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.realm.RImportLog;
 import com.bkromhout.minerva.util.Util;
@@ -208,7 +208,7 @@ public class ImportLogger {
      * @param endTime Time the last successful import ended.
      */
     private void updateLastSuccessTime(long endTime) {
-        Prefs.get().putLastImportSuccessTime(endTime);
+        Minerva.getPrefs().putLastImportSuccessTime(endTime);
         if (listener != null) listener.setLatestSuccessfulRun(endTime);
     }
 
@@ -350,7 +350,7 @@ public class ImportLogger {
         this.listener = listener;
 
         // Push the latest data to the listener immediately.
-        listener.setLatestSuccessfulRun(Prefs.get().getLastImportSuccessTime(-1));
+        listener.setLatestSuccessfulRun(Minerva.getPrefs().getLastImportSuccessTime(-1));
         switchLogs(CURRENT_OR_LATEST_LOG);
     }
 

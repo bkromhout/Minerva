@@ -18,7 +18,6 @@ import android.support.v7.view.menu.MenuBuilder;
 import android.text.format.DateUtils;
 import android.view.Menu;
 import com.bkromhout.minerva.Minerva;
-import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.events.MissingPermEvent;
 import org.greenrobot.eventbus.EventBus;
@@ -131,7 +130,7 @@ public class Util {
      * @return True if there is a path set and the path points to a valid folder that is readable.
      */
     public static boolean hasValidLibDir() {
-        return tryResolveDir(Prefs.get().getLibDir(null)) != null;
+        return tryResolveDir(Minerva.getPrefs().getLibDir(null)) != null;
     }
 
     /**
@@ -162,7 +161,7 @@ public class Util {
      * @return A File, or null.
      */
     public static File getFileFromRelPath(String relPath) {
-        String libDir = Prefs.get().getLibDir(null);
+        String libDir = Minerva.getPrefs().getLibDir(null);
         if (libDir == null || libDir.isEmpty() || relPath == null || relPath.isEmpty()) return null;
         File file = new File(libDir, relPath);
         return file.exists() ? file : null;

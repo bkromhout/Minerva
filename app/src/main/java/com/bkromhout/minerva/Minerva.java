@@ -12,6 +12,8 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import org.greenrobot.eventbus.EventBus;
 
+import javax.inject.Inject;
+
 /**
  * Custom Application class.
  */
@@ -30,11 +32,25 @@ public class Minerva extends Application {
      */
     private static Minerva instance;
 
+    private UtilComponent utilComponent;
+
+    @Inject
+    Prefs prefs;
+
     @Override
     public void onCreate() {
         super.onCreate();
         // Stash application context.
         instance = this;
+
+        // Init components.
+        utilComponent = DaggerUtilComponent.builder()
+                                           .appModule(new AppModule(this))
+                                           .utilModule(new UtilModule())
+                                           .build();
+
+        utilComponent.inject(this);
+
         // Load certain resources into memory for fast access.
         C.init(this);
         // Set up EventBus to use the generated index.
@@ -57,13 +73,13 @@ public class Minerva extends Application {
      * Initializes some default data for the app the first time it runs.
      */
     private void doFirstTimeInitIfNeeded() {
-        if (Prefs.get().doneFirstTimeInit()) return;
+        if (prefs.doneFirstTimeInit()) return;
 
         // Put default new/updated book tag names.
-        Prefs.get().putNewBookTag(C.getStr(R.string.default_new_book_tag));
-        Prefs.get().putUpdatedBookTag(C.getStr(R.string.default_updated_book_tag));
+        prefs.putNewBookTag(C.getStr(R.string.default_new_book_tag));
+        prefs.putUpdatedBookTag(C.getStr(R.string.default_updated_book_tag));
 
-        Prefs.get().setFirstTimeInitDone();
+        prefs.setFirstTimeInitDone();
     }
 
     /**
@@ -98,5 +114,22 @@ public class Minerva extends Application {
     public static Context getAppCtx() {
         if (instance == null) throw new IllegalStateException("The application context isn't available yet.");
         return instance.getApplicationContext();
+    }
+
+    public static Minerva get() {
+        if (instance == null) throw new IllegalStateException("The application isn't available yet.");
+        return instance;
+    }
+
+    public UtilComponent getUtilComponent() {
+        return utilComponent;
+    }
+
+    /**
+     * Return {@link Prefs}. This should only be used from static contexts.
+     * @return {@link Prefs}.
+     */
+    public static Prefs getPrefs() {
+        return get().prefs;
     }
 }

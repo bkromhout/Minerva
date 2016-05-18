@@ -17,6 +17,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.activities.BookInfoActivity;
@@ -49,6 +50,7 @@ import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -69,7 +71,8 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     /**
      * Preferences.
      */
-    private Prefs prefs;
+    @Inject
+    Prefs prefs;
     /**
      * Which type of card to use.
      */
@@ -128,9 +131,9 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Minerva.get().getUtilComponent().inject(this);
 
         // Read prefs to fill in vars.
-        prefs = Prefs.get();
         readPrefs();
 
         // Get Realm.

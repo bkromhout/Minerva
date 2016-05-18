@@ -17,6 +17,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.adapters.*;
@@ -44,6 +45,7 @@ import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -67,7 +69,8 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
     /**
      * Preferences.
      */
-    private Prefs prefs;
+    @Inject
+    Prefs prefs;
     /**
      * Unique string to help find the correct list to display from the DB.
      */
@@ -132,6 +135,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
 
         // Create and bind views.
         setContentView(R.layout.activity_book_list);
+        Minerva.get().getUtilComponent().inject(this);
         ButterKnife.bind(this);
 
         // Set up toolbar.
@@ -143,7 +147,6 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
         readExtras(getIntent().getExtras());
 
         // Get and read preferences.
-        prefs = Prefs.get();
         readPrefs();
 
         // Get Realm, then get the RBookList which we will get items from.

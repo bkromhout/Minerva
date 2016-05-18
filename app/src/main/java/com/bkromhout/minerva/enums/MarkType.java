@@ -1,6 +1,6 @@
 package com.bkromhout.minerva.enums;
 
-import com.bkromhout.minerva.Prefs;
+import com.bkromhout.minerva.Minerva;
 
 /**
  * Different types of marks an {@link com.bkromhout.minerva.realm.RBook} can have on it.
@@ -30,9 +30,9 @@ public enum MarkType {
     public final String getTagName() {
         switch (fieldName) {
             case "isNew":
-                return Prefs.get().getNewBookTag(null);
+                return Minerva.getPrefs().getNewBookTag(null);
             case "isUpdated":
-                return Prefs.get().getUpdatedBookTag(null);
+                return Minerva.getPrefs().getUpdatedBookTag(null);
             default:
                 return null;
         }
