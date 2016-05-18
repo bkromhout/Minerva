@@ -6,9 +6,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.view.View;
-import com.bkromhout.minerva.C;
-import com.bkromhout.minerva.activities.ImportActivity;
+import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
+import com.bkromhout.minerva.activities.ImportActivity;
 import com.bkromhout.minerva.events.MissingPermEvent;
 import com.bkromhout.minerva.util.ContextProvider;
 import com.bkromhout.minerva.util.Util;
@@ -92,7 +92,7 @@ public class SnackKiosk {
      * @param duration   How long to show the Snackbar for.
      */
     public static void snack(@StringRes final int messageRes, final int duration) {
-        snack(C.getStr(messageRes), -1, -1, duration);
+        snack(Minerva.get().getString(messageRes), -1, -1, duration);
     }
 
     /**
@@ -120,7 +120,7 @@ public class SnackKiosk {
      * @param duration   How long to show the Snackbar for.
      */
     public static void snack(@StringRes final int messageRes, @StringRes final int actionRes, final int duration) {
-        snack(C.getStr(messageRes), actionRes, -1, duration);
+        snack(Minerva.get().getString(messageRes), actionRes, -1, duration);
     }
 
     /**
@@ -153,7 +153,7 @@ public class SnackKiosk {
      */
     public static void snack(@StringRes final int messageRes, @StringRes final int actionRes,
                              @IdRes final int actionId, final int duration) {
-        snack(C.getStr(messageRes), actionRes, actionId, duration);
+        snack(Minerva.get().getString(messageRes), actionRes, actionId, duration);
     }
 
     /**

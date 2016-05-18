@@ -159,13 +159,13 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
             Preference newBookTag = getPreferenceScreen().findPreference(Prefs.NEW_BOOK_TAG);
             newBookTag.setOnPreferenceClickListener(this::onNewBookTagPrefClick);
             String newBookTagVal = prefs.getNewBookTag(null);
-            newBookTag.setSummary(newBookTagVal != null ? C.getStr(R.string.summary_tag_as, newBookTagVal) : "");
+            newBookTag.setSummary(newBookTagVal != null ? Minerva.get().getString(R.string.summary_tag_as, newBookTagVal) : "");
 
             // Set up the updated book tag preference.
             Preference updatedBookTag = getPreferenceScreen().findPreference(Prefs.UPDATED_BOOK_TAG);
             updatedBookTag.setOnPreferenceClickListener(this::onUpdatedBookTagPrefClick);
             String updatedBookTagVal = prefs.getUpdatedBookTag(null);
-            updatedBookTag.setSummary(updatedBookTagVal != null ? C.getStr(R.string.summary_tag_as, updatedBookTagVal) :
+            updatedBookTag.setSummary(updatedBookTagVal != null ? Minerva.get().getString(R.string.summary_tag_as, updatedBookTagVal) :
                     "");
         }
 
@@ -198,12 +198,12 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
                 String value = sharedPreferences.getString(key, null);
                 // Update the summary for the new book tag.
                 getPreferenceScreen().findPreference(Prefs.NEW_BOOK_TAG)
-                                     .setSummary(value != null ? C.getStr(R.string.summary_tag_as, value) : "");
+                                     .setSummary(value != null ? Minerva.get().getString(R.string.summary_tag_as, value) : "");
             } else if (key.equals(Prefs.UPDATED_BOOK_TAG)) {
                 String value = sharedPreferences.getString(key, null);
                 // Updated the summary for the updated book tag.
                 getPreferenceScreen().findPreference(Prefs.UPDATED_BOOK_TAG)
-                                     .setSummary(value != null ? C.getStr(R.string.summary_tag_as, value) : "");
+                                     .setSummary(value != null ? Minerva.get().getString(R.string.summary_tag_as, value) : "");
             }
         }
 

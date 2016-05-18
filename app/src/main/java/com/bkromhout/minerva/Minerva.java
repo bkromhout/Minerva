@@ -2,6 +2,7 @@ package com.bkromhout.minerva;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.annotation.PluralsRes;
 import android.support.v4.content.ContextCompat;
 import com.bkromhout.minerva.data.UniqueIdFactory;
 import com.bkromhout.minerva.realm.RTag;
@@ -32,27 +33,35 @@ public class Minerva extends Application {
      */
     private static Minerva instance;
 
+    /**
+     * Utility component.
+     */
     private UtilComponent utilComponent;
 
+    /**
+     * Dynamically loaded constants.
+     */
+    public D d;
+    /**
+     * Preferences.
+     */
     @Inject
-    Prefs prefs;
+    public Prefs prefs;
 
     @Override
     public void onCreate() {
         super.onCreate();
         // Stash application context.
         instance = this;
+        d = new D(this);
 
         // Init components.
         utilComponent = DaggerUtilComponent.builder()
                                            .appModule(new AppModule(this))
                                            .utilModule(new UtilModule())
                                            .build();
-
         utilComponent.inject(this);
 
-        // Load certain resources into memory for fast access.
-        C.init(this);
         // Set up EventBus to use the generated index.
         EventBus.builder().addIndex(new EventBusIndex()).installDefaultEventBus();
         // Init Dexter.
@@ -76,8 +85,8 @@ public class Minerva extends Application {
         if (prefs.doneFirstTimeInit()) return;
 
         // Put default new/updated book tag names.
-        prefs.putNewBookTag(C.getStr(R.string.default_new_book_tag));
-        prefs.putUpdatedBookTag(C.getStr(R.string.default_updated_book_tag));
+        prefs.putNewBookTag(getString(R.string.default_new_book_tag));
+        prefs.putUpdatedBookTag(getString(R.string.default_updated_book_tag));
 
         prefs.setFirstTimeInitDone();
     }
@@ -102,8 +111,8 @@ public class Minerva extends Application {
         int updatedBgColor = ContextCompat.getColor(this, R.color.blue700);
         // Create default tags for new and updated books.
         realm.copyToRealm(Lists.newArrayList(
-                new RTag(C.getStr(R.string.default_new_book_tag), C.DEFAULT_TAG_TEXT_COLOR, newBgColor),
-                new RTag(C.getStr(R.string.default_updated_book_tag), C.DEFAULT_TAG_TEXT_COLOR, updatedBgColor)));
+                new RTag(getString(R.string.default_new_book_tag), d.DEFAULT_TAG_TEXT_COLOR, newBgColor),
+                new RTag(getString(R.string.default_updated_book_tag), d.DEFAULT_TAG_TEXT_COLOR, updatedBgColor)));
     }
 
     /**
@@ -126,10 +135,23 @@ public class Minerva extends Application {
     }
 
     /**
-     * Return {@link Prefs}. This should only be used from static contexts.
-     * @return {@link Prefs}.
+     * Get a quantity string resource using the application context.
+     * @param resId String resource ID.
+     * @param count Quantity.
+     * @return Quantity string.
      */
-    public static Prefs getPrefs() {
-        return get().prefs;
+    public String getQString(@PluralsRes int resId, int count) {
+        return getResources().getQuantityString(resId, count);
+    }
+
+    /**
+     * Get a formatted quantity string resource using the application context.
+     * @param resId      String resource ID.
+     * @param count      Quantity.
+     * @param formatArgs Format arguments.
+     * @return Formatted quantity string.
+     */
+    public String getQString(@PluralsRes int resId, int count, Object... formatArgs) {
+        return getResources().getQuantityString(resId, count, formatArgs);
     }
 }

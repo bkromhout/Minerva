@@ -13,7 +13,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
-import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
@@ -342,7 +341,7 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
     @Override
     public void setNumQueued(int numQueued) {
         // Either "# Queued" or empty.
-        tvNumQueued.setText(numQueued > 0 ? C.getStr(R.string.num_queued, numQueued) : null);
+        tvNumQueued.setText(numQueued > 0 ? Minerva.get().getString(R.string.num_queued, numQueued) : null);
     }
 
     /**
@@ -351,7 +350,7 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
      * @return Log label string.
      */
     private String makeLogLabel(String part) {
-        return C.getStr(R.string.log_label, part);
+        return Minerva.get().getString(R.string.log_label, part);
     }
 
     @Override
@@ -405,8 +404,8 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
     @Override
     public boolean shouldAutoSwitchWhenStarting() {
         // If we're currently viewing the real-time log, we would like to switch when a new run starts.
-        return makeLogLabel(C.getStr(R.string.log_label_current_import_lc)).equals(tvLogLabel.getText()) ||
-                C.getStr(R.string.log_label_none).equals(tvLogLabel.getText());
+        return makeLogLabel(Minerva.get().getString(R.string.log_label_current_import_lc)).equals(tvLogLabel.getText()) ||
+                Minerva.get().getString(R.string.log_label_none).equals(tvLogLabel.getText());
     }
 
     @NonNull

@@ -22,7 +22,10 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.bkromhout.minerva.*;
+import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.Minerva;
+import com.bkromhout.minerva.Prefs;
+import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.DataUtils;
 import com.bkromhout.minerva.enums.MarkType;
@@ -383,7 +386,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         rating.setRating(book.rating);
         path.setText(prefs.getLibDir("") + book.relPath);
 
-        lastReadDate.setText(book.lastReadDate == null ? C.getStr(R.string.never)
+        lastReadDate.setText(book.lastReadDate == null ? Minerva.get().getString(R.string.never)
                 : DateUtils.getRelativeDateTimeString(this, book.lastReadDate.getTime(),
                 DateUtils.SECOND_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_SHOW_TIME));
 

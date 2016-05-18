@@ -45,7 +45,7 @@ public class Dialogs {
      */
     public static void simpleConfirmDialog(final Context ctx, @StringRes final int title, @StringRes final int text,
                                            @StringRes final int posText, @IdRes final int actionId) {
-        simpleConfirmDialog(ctx, title, C.getStr(text), posText, actionId);
+        simpleConfirmDialog(ctx, title, Minerva.get().getString(text), posText, actionId);
     }
 
     /**
@@ -110,7 +110,7 @@ public class Dialogs {
      */
     public static void cardStyleDialog(final Context ctx, final MainFrag whichFrag) {
         // Get current card type from prefs.
-        final BookCardType cardType = Minerva.getPrefs().getBookCardType(BookCardType.NORMAL, whichFrag);
+        final BookCardType cardType = Minerva.get().prefs.getBookCardType(BookCardType.NORMAL, whichFrag);
         // Show dialog.
         new MaterialDialog.Builder(ctx)
                 .title(R.string.action_card_type)
@@ -121,7 +121,7 @@ public class Dialogs {
                     if (cardType.getNum() == which) return true;
 
                     // Persist the new card style and fire event to let caller know.
-                    String changedKey = Minerva.getPrefs().putBookCardType(BookCardType.fromNumber(which), whichFrag);
+                    String changedKey = Minerva.get().prefs.putBookCardType(BookCardType.fromNumber(which), whichFrag);
                     EventBus.getDefault().post(new PrefChangeEvent(changedKey));
                     return true;
                 })
@@ -225,7 +225,7 @@ public class Dialogs {
                 .positiveText(R.string.save)
                 .negativeText(R.string.cancel)
                 .onNegative((dialog, which) -> dialog.dismiss())
-                .input(C.getStr(hint), preFill, false, (dialog, input) -> {
+                .input(Minerva.get().getString(hint), preFill, false, (dialog, input) -> {
                     // If it's the same value, do nothing.
                     String newName = input.toString().trim();
                     if (preFill != null && preFill.equals(newName)) {
@@ -239,7 +239,7 @@ public class Dialogs {
                         // edit text. If it doesn't, fire an event off and dismiss the dialog.
                         if (innerRealm.where(modelClass).equalTo("name", newName).findFirst() != null) {
                             //noinspection ConstantConditions
-                            dialog.getInputEditText().setError(C.getStr(R.string.err_name_taken));
+                            dialog.getInputEditText().setError(Minerva.get().getString(R.string.err_name_taken));
                         } else {
                             EventBus.getDefault().post(new ActionEvent(actionId, newName, posToUpdate));
                             dialog.dismiss();
@@ -265,7 +265,7 @@ public class Dialogs {
         // Build base dialog.
         MaterialDialog.Builder builder = new MaterialDialog.Builder(ctx)
                 .title(title)
-                .content(queryString != null && !queryString.isEmpty() ? queryString : C.getStr(emptyText))
+                .content(queryString != null && !queryString.isEmpty() ? queryString : Minerva.get().getString(emptyText))
                 .positiveText(R.string.dismiss);
         // Conditionally show the "Open Query Builder" button.
         if (showBuilderBtn) builder.neutralText(R.string.action_open_query_builder)

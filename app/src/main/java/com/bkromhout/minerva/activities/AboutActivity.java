@@ -14,6 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.aboutlibraries.ui.LibsSupportFragment;
@@ -50,7 +51,7 @@ public class AboutActivity extends AppCompatActivity {
         // Set version text.
         try {
             PackageInfo pkgInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            version.setText(C.getStr(R.string.version_string, pkgInfo.versionName, pkgInfo.versionCode));
+            version.setText(Minerva.get().getString(R.string.version_string, pkgInfo.versionName, pkgInfo.versionCode));
         } catch (PackageManager.NameNotFoundException e) {
             Timber.e(e, "Couldn't get our package information.");
         }

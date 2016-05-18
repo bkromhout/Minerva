@@ -10,7 +10,7 @@ import dagger.Component;
 import javax.inject.Singleton;
 
 /**
- * Created by bkromhout on 5/18/16.
+ * Component which injects utility-related objects.
  */
 @Singleton
 @Component(modules = {AppModule.class, UtilModule.class})

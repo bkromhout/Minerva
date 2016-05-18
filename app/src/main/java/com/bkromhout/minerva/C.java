@@ -1,12 +1,7 @@
 package com.bkromhout.minerva;
 
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
-import android.support.annotation.ColorInt;
-import android.support.annotation.PluralsRes;
-import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
-import android.view.View;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
@@ -57,115 +52,4 @@ public final class C {
     public static final int RC_WELCOME_ACTIVITY = 1;
     public static final int RC_TAG_ACTIVITY = 2;
     public static final int RC_QUERY_BUILDER_ACTIVITY = 3;
-
-    /*
-     * Variables below this cannot be used until init() is called because they must be loaded from resources at
-     * runtime. They are kept in memory for fast access.
-     */
-    /**
-     * Whether {@link #init(Minerva)} has been called yet.
-     */
-    private static boolean initDone = false;
-    /**
-     * Default tag text color.
-     */
-    @ColorInt
-    public static int DEFAULT_TAG_TEXT_COLOR;
-    /**
-     * Default tag background color.
-     */
-    @ColorInt
-    public static int DEFAULT_TAG_BG_COLOR;
-    /**
-     * How much padding to use on the bottom of the tag.
-     */
-    public static float TAG_BOTTOM_PADDING;
-    /**
-     * Radius to use for rounded tag corners.
-     */
-    public static float TAG_CORNER_RADIUS;
-    /**
-     * Corner radii values for all corners.
-     */
-    public static float[] ALL_CORNERS;
-    /**
-     * Corner radii values for start corners only.
-     */
-    public static float[] START_CORNERS_ONLY;
-    /**
-     * Corner radii values for end corners only.
-     */
-    public static float[] END_CORNERS_ONLY;
-
-    /**
-     * Initialize static vars which we must load from resources.
-     * @param appCtx Application context.
-     */
-    public static void init(Minerva appCtx) {
-        if (initDone) return;
-        Resources resources = appCtx.getResources();
-
-        DEFAULT_TAG_TEXT_COLOR = ContextCompat.getColor(appCtx, R.color.grey200);
-        DEFAULT_TAG_BG_COLOR = ContextCompat.getColor(appCtx, R.color.grey700);
-        TAG_BOTTOM_PADDING = resources.getDimension(R.dimen.tag_bottom_padding);
-        TAG_CORNER_RADIUS = resources.getDimension(R.dimen.tag_corner_radius);
-        ALL_CORNERS = new float[] {TAG_CORNER_RADIUS, TAG_CORNER_RADIUS,  // Top left.
-                                   TAG_CORNER_RADIUS, TAG_CORNER_RADIUS,  // Top right.
-                                   TAG_CORNER_RADIUS, TAG_CORNER_RADIUS,  // Bottom right.
-                                   TAG_CORNER_RADIUS, TAG_CORNER_RADIUS}; // Bottom left.
-        float[] leftCornersOnly = new float[] {TAG_CORNER_RADIUS, TAG_CORNER_RADIUS,
-                                               -1f, -1f,
-                                               -1f, -1f,
-                                               TAG_CORNER_RADIUS, TAG_CORNER_RADIUS};
-        float[] rightCornersOnly = new float[] {0f, 0f,
-                                                TAG_CORNER_RADIUS, TAG_CORNER_RADIUS,
-                                                TAG_CORNER_RADIUS, TAG_CORNER_RADIUS,
-                                                0f, 0f};
-
-        boolean isLtr = resources.getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_LTR;
-        START_CORNERS_ONLY = isLtr ? leftCornersOnly : rightCornersOnly;
-        END_CORNERS_ONLY = isLtr ? rightCornersOnly : leftCornersOnly;
-
-        initDone = true;
-    }
-
-    /**
-     * Get a string resource using the application context.
-     * @param resId String resource ID.
-     * @return String.
-     */
-    public static String getStr(@StringRes int resId) {
-        return Minerva.getAppCtx().getString(resId);
-    }
-
-    /**
-     * Get a formatted string resource using the application context.
-     * @param resId      String resource ID.
-     * @param formatArgs Format arguments.
-     * @return Formatted string.
-     */
-    public static String getStr(@StringRes int resId, Object... formatArgs) {
-        return Minerva.getAppCtx().getString(resId, formatArgs);
-    }
-
-    /**
-     * Get a quantity string resource using the application context.
-     * @param resId String resource ID.
-     * @param count Quantity.
-     * @return Quantity string.
-     */
-    public static String getQStr(@PluralsRes int resId, int count) {
-        return Minerva.getAppCtx().getResources().getQuantityString(resId, count);
-    }
-
-    /**
-     * Get a formatted quantity string resource using the application context.
-     * @param resId      String resource ID.
-     * @param count      Quantity.
-     * @param formatArgs Format arguments.
-     * @return Formatted quantity string.
-     */
-    public static String getQStr(@PluralsRes int resId, int count, Object... formatArgs) {
-        return Minerva.getAppCtx().getResources().getQuantityString(resId, count, formatArgs);
-    }
 }

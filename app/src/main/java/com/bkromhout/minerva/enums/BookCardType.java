@@ -3,7 +3,7 @@ package com.bkromhout.minerva.enums;
 import android.support.annotation.IdRes;
 import android.support.annotation.IntRange;
 import android.support.annotation.StringRes;
-import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 
 /**
@@ -16,7 +16,7 @@ public enum BookCardType {
 
     private final int num;
     private final int id;
-    private final String name;
+    private final int name;
 
     /**
      * Create a new {@link BookCardType}.
@@ -27,7 +27,7 @@ public enum BookCardType {
     BookCardType(int num, @IdRes int id, @StringRes int name) {
         this.num = num;
         this.id = id;
-        this.name = C.getStr(name);
+        this.name = name;
     }
 
     /**
@@ -51,7 +51,8 @@ public enum BookCardType {
      * Get the associated name.
      * @return Name.
      */
-    public final String getName() {
+    @StringRes
+    public final int getName() {
         return this.name;
     }
 
@@ -61,7 +62,8 @@ public enum BookCardType {
      */
     public static String[] names() {
         String[] names = new String[BookCardType.values().length];
-        for (int i = 0; i < BookCardType.values().length; i++) names[i] = BookCardType.values()[i].getName();
+        for (int i = 0; i < BookCardType.values().length; i++)
+            names[i] = Minerva.get().getString(BookCardType.values()[i].getName());
         return names;
     }
 
@@ -90,8 +92,8 @@ public enum BookCardType {
      * @param name Name.
      * @return BookCardType, or null if not a valid name.
      */
-    public static BookCardType fromName(String name) {
-        for (BookCardType type : BookCardType.values()) if (type.getName().equals(name)) return type;
+    public static BookCardType fromName(@StringRes int name) {
+        for (BookCardType type : BookCardType.values()) if (type.getName() == name) return type;
         return null;
     }
 }

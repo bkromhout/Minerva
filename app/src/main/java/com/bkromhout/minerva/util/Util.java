@@ -126,14 +126,6 @@ public class Util {
     }
 
     /**
-     * Checks whether there is a present, valid library directory set.
-     * @return True if there is a path set and the path points to a valid folder that is readable.
-     */
-    public static boolean hasValidLibDir() {
-        return tryResolveDir(Minerva.getPrefs().getLibDir(null)) != null;
-    }
-
-    /**
      * Try to resolve the given path to a File object representing a valid, readable directory.
      * @param dirPath The path to the directory.
      * @return The File object for the directory, or null if we had issues.
@@ -161,7 +153,7 @@ public class Util {
      * @return A File, or null.
      */
     public static File getFileFromRelPath(String relPath) {
-        String libDir = Minerva.getPrefs().getLibDir(null);
+        String libDir = Minerva.get().prefs.getLibDir(null);
         if (libDir == null || libDir.isEmpty() || relPath == null || relPath.isEmpty()) return null;
         File file = new File(libDir, relPath);
         return file.exists() ? file : null;

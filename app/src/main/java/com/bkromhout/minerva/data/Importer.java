@@ -278,7 +278,7 @@ public class Importer {
 
         // Figure out what type of import run this is, then tell the logger we're about to start a new run.
         logger.prepareNewLog();
-        logger.log(C.getStr(currRun.type == ImportType.FULL ? R.string.fil_starting : R.string.ril_starting));
+        logger.log(Minerva.get().getString(currRun.type == ImportType.FULL ? R.string.fil_starting : R.string.ril_starting));
 
         // Create progress subject and update listener
         createProgressSubject();
@@ -287,10 +287,10 @@ public class Importer {
         if (listener != null) listener.onProgressFlag(SET_PROGRESS_INDETERMINATE);
 
         // Get and check currently configured library directory.
-        String libDirPath = Minerva.getPrefs().getLibDir(null);
+        String libDirPath = Minerva.get().prefs.getLibDir(null);
         if ((currDir = Util.tryResolveDir(libDirPath)) == null) {
             // We don't have a valid library directory.
-            logger.error(C.getStr(R.string.il_err_invalid_lib_dir));
+            logger.error(Minerva.get().getString(R.string.il_err_invalid_lib_dir));
             doTeardownThenStartNextRun(true);
         }
 
@@ -308,7 +308,7 @@ public class Importer {
      * files; once that flow produces a list, it will call {@link #onGotFileList(List)}.
      */
     private void doFullImportPrep() {
-        logger.log(C.getStr(R.string.fil_finding_files));
+        logger.log(Minerva.get().getString(R.string.fil_finding_files));
         // Get a list of files in the directory (and its subdirectories) which have certain extensions.
         // This will call through to onGotFileList() once it has the results.
         fileResolverSubscription = Observable
@@ -331,7 +331,7 @@ public class Importer {
      * @param relPaths List of relative paths pulled from {@link RBook}s we wish to re-import.
      */
     private void doReImportPrep(List<String> relPaths) {
-        logger.log(C.getStr(R.string.ril_build_file_list));
+        logger.log(Minerva.get().getString(R.string.ril_build_file_list));
         fileResolverSubscription = Observable
                 .from(relPaths)
                 .subscribeOn(Schedulers.io())
@@ -339,7 +339,7 @@ public class Importer {
                 .doOnUnsubscribe(() -> fileResolverSubscription = null)
                 .map(relPath -> {
                     File file = Util.getFileFromRelPath(currDir, relPath);
-                    if (file == null) logger.error(C.getStr(R.string.ril_err_getting_file,
+                    if (file == null) logger.error(Minerva.get().getString(R.string.ril_err_getting_file,
                             currDir.getAbsolutePath() + relPath));
                     return file;
                 })
@@ -348,7 +348,7 @@ public class Importer {
                 .single()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onGotFileList, t -> {
-                    String s = C.getStr(R.string.ril_err_getting_files);
+                    String s = Minerva.get().getString(R.string.ril_err_getting_files);
                     Timber.e(t, s);
                     logger.error("\n" + s + ":\n\"" + t.getMessage() + "\"\n");
                     cancelImportRun();
@@ -363,7 +363,7 @@ public class Importer {
      *              try to import.
      */
     private void onGotFileList(List<File> files) {
-        logger.log(C.getStr(R.string.il_done));
+        logger.log(Minerva.get().getString(R.string.il_done));
         // Check if we should stop.
         if (isReadyOrTryingToBe()) {
             doTeardownThenStartNextRun(true);
@@ -378,7 +378,7 @@ public class Importer {
         // Check file list.
         if (files.isEmpty()) {
             // We don't have any files.
-            logger.log(C.getStr(R.string.il_err_no_files));
+            logger.log(Minerva.get().getString(R.string.il_err_no_files));
             doTeardownThenStartNextRun(false);
             return;
         }
@@ -388,7 +388,7 @@ public class Importer {
         numTotal = files.size();
 
         // Update listener.
-        logger.log(C.getStr(R.string.il_found_files, numTotal));
+        logger.log(Minerva.get().getString(R.string.il_found_files, numTotal));
         if (listener != null) listener.onProgressFlag(numTotal);
         progressSubject.onNext(numDone);
 
@@ -413,7 +413,7 @@ public class Importer {
 
         // Change state to running.
         currState = State.IMPORTING;
-        logger.log(C.getStr(R.string.il_reading_files));
+        logger.log(Minerva.get().getString(R.string.il_reading_files));
 
         // Do importer flow.
         fileImporterSubscription = Observable
@@ -439,7 +439,7 @@ public class Importer {
         try {
             return DataUtils.readEpubFile(file, relPath);
         } catch (IllegalArgumentException e) {
-            logger.error(C.getStr(R.string.il_err_processing_file, e.getMessage()));
+            logger.error(Minerva.get().getString(R.string.il_err_processing_file, e.getMessage()));
             return null;
         }
     }
@@ -459,7 +459,7 @@ public class Importer {
 
         // Add RBook to queue and emit file path.
         bookQueue.add(rBook);
-        logger.log(C.getStr(R.string.il_read_file, rBook.relPath));
+        logger.log(Minerva.get().getString(R.string.il_read_file, rBook.relPath));
         progressSubject.onNext(numDone++);
     }
 
@@ -468,7 +468,7 @@ public class Importer {
      * @param t Throwable.
      */
     private void onFileImporterError(Throwable t) {
-        String s = C.getStr(R.string.il_err_generic);
+        String s = Minerva.get().getString(R.string.il_err_generic);
         Timber.e(t, s);
         logger.error("\n" + s + ":\n\"" + t.getMessage() + "\"\n");
         cancelImportRun();
@@ -478,7 +478,7 @@ public class Importer {
      * What to do after we've finished importing all books.
      */
     private void onAllFilesImported() {
-        logger.log(C.getStr(R.string.il_all_files_read));
+        logger.log(Minerva.get().getString(R.string.il_all_files_read));
         // Check if we should stop.
         if (isReadyOrTryingToBe()) {
             doTeardownThenStartNextRun(true);
@@ -488,7 +488,7 @@ public class Importer {
         // Cancelling isn't allowed from this point until we're done persisting data to Realm.
         currState = State.SAVING;
         publishStateUpdate(State.SAVING);
-        logger.log(C.getStr(R.string.il_saving_files));
+        logger.log(Minerva.get().getString(R.string.il_saving_files));
         if (listener != null) listener.onProgressFlag(SET_PROGRESS_INDETERMINATE);
 
         // We've finished importing all books, now we'll persist them to Realm.
@@ -549,7 +549,7 @@ public class Importer {
                 },
                 this::importFinished,
                 error -> {
-                    String s = C.getStr(R.string.il_err_realm);
+                    String s = Minerva.get().getString(R.string.il_err_realm);
                     Timber.e(error, s);
                     logger.error("\n" + s + "\n");
                     _cancelImportRun();
@@ -560,7 +560,7 @@ public class Importer {
      * Called when an import run has finished successfully.
      */
     private void importFinished() {
-        logger.log(C.getStr(R.string.il_done));
+        logger.log(Minerva.get().getString(R.string.il_done));
         doTeardownThenStartNextRun(false);
     }
 
@@ -586,29 +586,29 @@ public class Importer {
         StringBuilder builder = new StringBuilder();
 
         // Which type?
-        String part = C.getStr(currRun.type == ImportType.FULL ? R.string.sb_fil : R.string.sb_ril);
+        String part = Minerva.get().getString(currRun.type == ImportType.FULL ? R.string.sb_fil : R.string.sb_ril);
         builder.append(part);
 
         // Finished, or cancelled?
-        part = C.getStr(wasCancelled ? R.string.sb_result_cancelled : R.string.sb_result_finished);
+        part = Minerva.get().getString(wasCancelled ? R.string.sb_result_cancelled : R.string.sb_result_finished);
         builder.append(part);
 
         // Processing result.
-        if (numTotal == 0 && numErrors == 0) part = C.getStr(R.string.sb_il_results_zero);
-        else if (numTotal == 0) part = C.getQStr(R.plurals.sb_il_just_error_results, numErrors, numErrors);
-        else part = C.getQStr(R.plurals.sb_il_results, numDone, numDone, numTotal);
+        if (numTotal == 0 && numErrors == 0) part = Minerva.get().getString(R.string.sb_il_results_zero);
+        else if (numTotal == 0) part = Minerva.get().getQString(R.plurals.sb_il_just_error_results, numErrors, numErrors);
+        else part = Minerva.get().getQString(R.plurals.sb_il_results, numDone, numDone, numTotal);
         builder.append(part);
 
         // Errors result (if errors weren't our sole processing result).
         if (numTotal != 0 && numErrors != 0) {
-            part = C.getQStr(R.plurals.sb_il_and_error_results, numErrors, numErrors);
+            part = Minerva.get().getQString(R.plurals.sb_il_and_error_results, numErrors, numErrors);
             builder.append(part);
         }
 
         // Number of imports queued.
         int numQueued = queuedRuns.size();
         if (numQueued != 0) {
-            part = C.getQStr(R.plurals.sb_il_more_queued, numQueued, numQueued);
+            part = Minerva.get().getQString(R.plurals.sb_il_more_queued, numQueued, numQueued);
             builder.append(part);
         }
 
@@ -655,15 +655,15 @@ public class Importer {
         int numErrors = logger.getCurrNumErrors();
         if (wasCancelled) {
             // Final log message notes that the import was cancelled.
-            logger.log(C.getStr(R.string.il_cancelled));
+            logger.log(Minerva.get().getString(R.string.il_cancelled));
             wasSuccess = false;
         } else {
             // We currently still consider a full import successful even if it had errors.
             wasSuccess = numErrors == 0 || currRun.type == ImportType.FULL;
 
             // Final log message depends on the number of errors that occurred.
-            if (numErrors > 0) logger.log(C.getStr(R.string.il_finished_with_errors, numErrors));
-            else logger.log(C.getStr(R.string.il_finished));
+            if (numErrors > 0) logger.log(Minerva.get().getString(R.string.il_finished_with_errors, numErrors));
+            else logger.log(Minerva.get().getString(R.string.il_finished));
         }
 
         // Send Snackbar at this point informing the user of results.

@@ -22,6 +22,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.afollestad.materialdialogs.color.ColorChooserDialog;
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.adapters.TagCardAdapter;
 import com.bkromhout.minerva.data.ActionHelper;
@@ -284,7 +285,7 @@ public class TaggingActivity extends AppCompatActivity implements SnackKiosk.Sna
             case R.id.action_delete_tag:
                 // Show delete confirm dialog.
                 Dialogs.simpleConfirmDialog(this, R.string.title_delete_tag,
-                        C.getStr(R.string.prompt_delete_tag, tagName), R.string.action_delete,
+                        Minerva.get().getString(R.string.prompt_delete_tag, tagName), R.string.action_delete,
                         R.id.action_delete_tag);
                 break;
         }

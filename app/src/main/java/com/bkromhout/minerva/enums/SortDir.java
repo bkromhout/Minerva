@@ -3,7 +3,7 @@ package com.bkromhout.minerva.enums;
 import android.support.annotation.IdRes;
 import android.support.annotation.IntRange;
 import android.support.annotation.StringRes;
-import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import io.realm.Sort;
 
@@ -16,7 +16,7 @@ public enum SortDir {
 
     private final int num;
     private final int id;
-    private final String name;
+    private final int name;
     private final Sort realmSort;
 
     /**
@@ -29,7 +29,7 @@ public enum SortDir {
     SortDir(int num, @IdRes int id, @StringRes int name, Sort realmSort) {
         this.num = num;
         this.id = id;
-        this.name = C.getStr(name);
+        this.name = name;
         this.realmSort = realmSort;
     }
 
@@ -54,7 +54,8 @@ public enum SortDir {
      * Get the associated name.
      * @return Name.
      */
-    public final String getName() {
+    @StringRes
+    public final int getName() {
         return name;
     }
 
@@ -72,7 +73,8 @@ public enum SortDir {
      */
     public static String[] names() {
         String[] names = new String[SortDir.values().length];
-        for (int i = 0; i < SortDir.values().length; i++) names[i] = SortDir.values()[i].getName();
+        for (int i = 0; i < SortDir.values().length; i++)
+            names[i] = Minerva.get().getString(SortDir.values()[i].getName());
         return names;
     }
 
@@ -101,8 +103,8 @@ public enum SortDir {
      * @param name Name.
      * @return SortDir, or null if not a valid name.
      */
-    public static SortDir fromName(String name) {
-        for (SortDir dir : SortDir.values()) if (dir.getName().equals(name)) return dir;
+    public static SortDir fromName(@StringRes int name) {
+        for (SortDir dir : SortDir.values()) if (dir.getName() == name) return dir;
         return null;
     }
 }

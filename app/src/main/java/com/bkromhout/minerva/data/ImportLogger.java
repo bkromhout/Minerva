@@ -208,7 +208,7 @@ public class ImportLogger {
      * @param endTime Time the last successful import ended.
      */
     private void updateLastSuccessTime(long endTime) {
-        Minerva.getPrefs().putLastImportSuccessTime(endTime);
+        Minerva.get().prefs.putLastImportSuccessTime(endTime);
         if (listener != null) listener.setLatestSuccessfulRun(endTime);
     }
 
@@ -350,7 +350,7 @@ public class ImportLogger {
         this.listener = listener;
 
         // Push the latest data to the listener immediately.
-        listener.setLatestSuccessfulRun(Minerva.getPrefs().getLastImportSuccessTime(-1));
+        listener.setLatestSuccessfulRun(Minerva.get().prefs.getLastImportSuccessTime(-1));
         switchLogs(CURRENT_OR_LATEST_LOG);
     }
 
@@ -372,7 +372,7 @@ public class ImportLogger {
         ArrayList<String> logList = new ArrayList<>();
 
         // Add the current log if we're logging.
-        if (isLogging) logList.add(C.getStr(R.string.log_label_current_import_uc));
+        if (isLogging) logList.add(Minerva.get().getString(R.string.log_label_current_import_uc));
 
         // Add all past logs.
         try (Realm realm = Realm.getDefaultInstance()) {
@@ -382,7 +382,7 @@ public class ImportLogger {
 
             // Create and add their labels.
             for (RImportLog log : logs)
-                logList.add(C.getStr(R.string.log_label_from_uc, Util.getRelTimeString(log.endTime)));
+                logList.add(Minerva.get().getString(R.string.log_label_from_uc, Util.getRelTimeString(log.endTime)));
         }
 
         return logList;
@@ -413,7 +413,7 @@ public class ImportLogger {
                 errorSubject.onNext(null);
 
                 // Then set the log label, and we're done.
-                listener.setCurrLogLabel(C.getStr(R.string.log_label_current_import_lc));
+                listener.setCurrLogLabel(Minerva.get().getString(R.string.log_label_current_import_lc));
                 return;
             } else // If we're logging and didn't pass 0, we want a past log; translate to proper index now.
                 whichLog--;
@@ -429,7 +429,7 @@ public class ImportLogger {
             // Get the requested log.
             RImportLog log = logs.get(whichLog);
             // Make a log label for it.
-            String label = C.getStr(R.string.log_label_from_lc, Util.getRelTimeString(log.endTime));
+            String label = Minerva.get().getString(R.string.log_label_from_lc, Util.getRelTimeString(log.endTime));
 
             // Make sure that the listener isn't subscribed currently.
             unsubscribeListenerFromSubjects();

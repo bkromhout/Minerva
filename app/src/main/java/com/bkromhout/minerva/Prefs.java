@@ -18,10 +18,10 @@ public class Prefs {
     private static final String FIRST_TIME_INIT = "first_time_init_done";
     private final static String CURR_FRAG = "current_fragment";
     // Settings
-    public final static String LIB_DIR = C.getStr(R.string.key_lib_dir);
-    private final static String LIB_AUTO_IMPORT = C.getStr(R.string.key_auto_import);
-    public final static String NEW_BOOK_TAG = C.getStr(R.string.key_new_tag);
-    public final static String UPDATED_BOOK_TAG = C.getStr(R.string.key_updated_tag);
+    public static String LIB_DIR = Minerva.get().getString(R.string.key_lib_dir);
+    private static String LIB_AUTO_IMPORT = Minerva.get().getString(R.string.key_auto_import);
+    public static String NEW_BOOK_TAG = Minerva.get().getString(R.string.key_new_tag);
+    public static String UPDATED_BOOK_TAG = Minerva.get().getString(R.string.key_updated_tag);
     // Importing
     private final static String LAST_IMPORT_SUCCESS_TIME = "most_recent_import_success";
     private final static String FIRST_IMPORT_TRIGGERED = "first_import_triggered";
@@ -250,7 +250,7 @@ public class Prefs {
      * @return Card type.
      */
     public BookCardType getRecentsCardType(BookCardType defValue) {
-        BookCardType type = BookCardType.fromName(prefs.getString(RECENTS_CARD_TYPE, null));
+        BookCardType type = BookCardType.fromNumber(prefs.getInt(RECENTS_CARD_TYPE, -1));
         return type != null ? type : defValue;
     }
 
@@ -259,7 +259,7 @@ public class Prefs {
      * @param cardType Card type.
      */
     public void putRecentsCardType(BookCardType cardType) {
-        prefs.edit().putString(RECENTS_CARD_TYPE, cardType.getName()).apply();
+        prefs.edit().putInt(RECENTS_CARD_TYPE, cardType.getNum()).apply();
     }
 
     /*
@@ -272,7 +272,7 @@ public class Prefs {
      * @return Card type.
      */
     public BookCardType getLibraryCardType(BookCardType defValue) {
-        BookCardType type = BookCardType.fromName(prefs.getString(LIBRARY_CARD_TYPE, null));
+        BookCardType type = BookCardType.fromNumber(prefs.getInt(LIBRARY_CARD_TYPE, -1));
         return type != null ? type : defValue;
     }
 
@@ -281,7 +281,7 @@ public class Prefs {
      * @param cardType Card type.
      */
     public void putLibraryCardType(BookCardType cardType) {
-        prefs.edit().putString(LIBRARY_CARD_TYPE, cardType.getName()).apply();
+        prefs.edit().putInt(LIBRARY_CARD_TYPE, cardType.getNum()).apply();
     }
 
     /**
@@ -290,7 +290,7 @@ public class Prefs {
      * @return Sort type.
      */
     public SortType getLibrarySortType(SortType defValue) {
-        SortType sortType = SortType.fromName(prefs.getString(LIBRARY_SORT_TYPE, null));
+        SortType sortType = SortType.fromNumber(prefs.getInt(LIBRARY_SORT_TYPE, -1));
         return sortType != null ? sortType : defValue;
     }
 
@@ -299,7 +299,7 @@ public class Prefs {
      * @param sortType Sort type.
      */
     public void putLibrarySortType(SortType sortType) {
-        prefs.edit().putString(LIBRARY_SORT_TYPE, sortType.getName()).apply();
+        prefs.edit().putInt(LIBRARY_SORT_TYPE, sortType.getNum()).apply();
     }
 
     /**
@@ -308,7 +308,7 @@ public class Prefs {
      * @return Sort direction.
      */
     public SortDir getLibrarySortDir(SortDir defValue) {
-        SortDir sortDir = SortDir.fromName(prefs.getString(LIBRARY_SORT_DIR, null));
+        SortDir sortDir = SortDir.fromNumber(prefs.getInt(LIBRARY_SORT_DIR, -1));
         return sortDir != null ? sortDir : defValue;
     }
 
@@ -317,7 +317,7 @@ public class Prefs {
      * @param sortDir Sort direction.
      */
     public void putLibrarySortDir(SortDir sortDir) {
-        prefs.edit().putString(LIBRARY_SORT_DIR, sortDir.getName()).apply();
+        prefs.edit().putInt(LIBRARY_SORT_DIR, sortDir.getNum()).apply();
     }
 
     /**
@@ -328,9 +328,9 @@ public class Prefs {
      */
     public void putLibraryViewOpts(SortType sortType, SortDir sortDir, BookCardType cardType) {
         prefs.edit()
-             .putString(LIBRARY_SORT_TYPE, sortType.getName())
-             .putString(LIBRARY_SORT_DIR, sortDir.getName())
-             .putString(LIBRARY_CARD_TYPE, cardType.getName())
+             .putInt(LIBRARY_SORT_TYPE, sortType.getNum())
+             .putInt(LIBRARY_SORT_DIR, sortDir.getNum())
+             .putInt(LIBRARY_CARD_TYPE, cardType.getNum())
              .apply();
     }
 
@@ -344,7 +344,7 @@ public class Prefs {
      * @return Card type.
      */
     public BookCardType getListCardType(BookCardType defValue) {
-        BookCardType type = BookCardType.fromName(prefs.getString(LIST_CARD_TYPE, null));
+        BookCardType type = BookCardType.fromNumber(prefs.getInt(LIST_CARD_TYPE, -1));
         return type != null ? type : defValue;
     }
 
@@ -353,7 +353,7 @@ public class Prefs {
      * @param cardType Card type.
      */
     public void putListCardType(BookCardType cardType) {
-        prefs.edit().putString(LIST_CARD_TYPE, cardType.getName()).apply();
+        prefs.edit().putInt(LIST_CARD_TYPE, cardType.getNum()).apply();
     }
 
     /*
@@ -366,7 +366,7 @@ public class Prefs {
      * @return Card type.
      */
     public BookCardType getPowerSearchCardType(BookCardType defValue) {
-        BookCardType type = BookCardType.fromName(prefs.getString(POWER_SEARCH_CARD_TYPE, null));
+        BookCardType type = BookCardType.fromNumber(prefs.getInt(POWER_SEARCH_CARD_TYPE, -1));
         return type != null ? type : defValue;
     }
 
@@ -375,6 +375,6 @@ public class Prefs {
      * @param cardType Card type.
      */
     public void putPowerSearchCardType(BookCardType cardType) {
-        prefs.edit().putString(POWER_SEARCH_CARD_TYPE, cardType.getName()).apply();
+        prefs.edit().putInt(POWER_SEARCH_CARD_TYPE, cardType.getNum()).apply();
     }
 }

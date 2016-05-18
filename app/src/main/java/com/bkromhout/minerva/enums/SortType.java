@@ -3,7 +3,7 @@ package com.bkromhout.minerva.enums;
 import android.support.annotation.IdRes;
 import android.support.annotation.IntRange;
 import android.support.annotation.StringRes;
-import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 
 /**
@@ -17,7 +17,7 @@ public enum SortType {
 
     private final int num;
     private final int id;
-    private final String name;
+    private final int name;
     private final String realmField;
 
     /**
@@ -30,7 +30,7 @@ public enum SortType {
     SortType(int num, @IdRes int id, @StringRes int name, String realmField) {
         this.num = num;
         this.id = id;
-        this.name = C.getStr(name);
+        this.name = name;
         this.realmField = realmField;
     }
 
@@ -55,7 +55,8 @@ public enum SortType {
      * Get the associated name.
      * @return Name.
      */
-    public final String getName() {
+    @StringRes
+    public final int getName() {
         return name;
     }
 
@@ -73,7 +74,8 @@ public enum SortType {
      */
     public static String[] names() {
         String[] names = new String[SortType.values().length];
-        for (int i = 0; i < SortType.values().length; i++) names[i] = SortType.values()[i].getName();
+        for (int i = 0; i < SortType.values().length; i++)
+            names[i] = Minerva.get().getString(SortType.values()[i].getName());
         return names;
     }
 
@@ -102,8 +104,8 @@ public enum SortType {
      * @param name Name.
      * @return SortType, or null if not a valid name.
      */
-    public static SortType fromName(String name) {
-        for (SortType sortType : SortType.values()) if (sortType.getName().equals(name)) return sortType;
+    public static SortType fromName(@StringRes int name) {
+        for (SortType sortType : SortType.values()) if (sortType.getName() == name) return sortType;
         return null;
     }
 }

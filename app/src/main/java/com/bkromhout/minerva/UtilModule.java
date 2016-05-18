@@ -12,7 +12,11 @@ import javax.inject.Singleton;
  */
 @Module
 public class UtilModule {
-
+    /**
+     * Provide {@link Prefs}.
+     * @param application Application context to use to create {@link Prefs}.
+     * @return {@link Prefs}
+     */
     @Provides
     @Singleton
     Prefs providesPrefs(Application application) {
