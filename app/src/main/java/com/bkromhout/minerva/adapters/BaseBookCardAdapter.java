@@ -251,7 +251,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
             ButterKnife.bind(this, itemView);
             // Make sure background responds to changes in "activated" state.
             cardView.getBackground().setTintMode(PorterDuff.Mode.SRC);
-            cardView.getBackground().setTintList(C.CARD_BG_COLORS);
+            cardView.getBackground().setTintList(Minerva.get().d.CARD_BG_COLORS);
 
             // Make the card ripple when touched.
             content.setOnTouchListener(rippleFgListener);

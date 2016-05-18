@@ -1,6 +1,7 @@
 package com.bkromhout.minerva;
 
 import android.app.Application;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.support.annotation.ColorInt;
 import android.support.v4.content.ContextCompat;
@@ -21,6 +22,10 @@ public class D {
     @ColorInt
     public int DEFAULT_TAG_BG_COLOR;
     /**
+     * Color selector for card view backgrounds.
+     */
+    public ColorStateList CARD_BG_COLORS;
+    /**
      * How much padding to use on the bottom of the tag.
      */
     public float TAG_BOTTOM_PADDING;
@@ -36,6 +41,8 @@ public class D {
      * Corner radii values for start corners only.
      */
     public float[] START_CORNERS_ONLY;
+
+
     /**
      * Corner radii values for end corners only.
      */
@@ -50,6 +57,7 @@ public class D {
 
         DEFAULT_TAG_TEXT_COLOR = ContextCompat.getColor(application, R.color.grey200);
         DEFAULT_TAG_BG_COLOR = ContextCompat.getColor(application, R.color.grey700);
+        CARD_BG_COLORS = ContextCompat.getColorStateList(application, R.color.card_bg_color);
         TAG_BOTTOM_PADDING = resources.getDimension(R.dimen.tag_bottom_padding);
         TAG_CORNER_RADIUS = resources.getDimension(R.dimen.tag_corner_radius);
         ALL_CORNERS = new float[] {TAG_CORNER_RADIUS, TAG_CORNER_RADIUS,  // Top left.
