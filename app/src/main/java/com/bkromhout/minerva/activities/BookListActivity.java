@@ -502,10 +502,6 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
             case R.id.action_delete:
                 ActionHelper.deleteBooks(getSelectedBooks(), (boolean) event.getData());
                 break;
-            case R.id.action_open_activity:
-                //noinspection unchecked
-                Util.startAct(this, (Class<? extends Activity>) event.getData(), null);
-                return;
         }
         if (actionMode != null) actionMode.finish();
     }

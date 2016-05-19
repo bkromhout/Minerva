@@ -9,8 +9,8 @@ import android.view.View;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.activities.ImportActivity;
-import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.MissingPermEvent;
+import com.bkromhout.minerva.util.Util;
 import org.greenrobot.eventbus.EventBus;
 
 /**
@@ -295,7 +295,7 @@ public class SnackKiosk {
 
         // Add an action button if necessary.
         if (snack.actionRes != -1) snackbar.setAction(snack.actionRes, v -> {
-            handleAction(snack.actionId);
+            handleAction(v, snack.actionId);
         });
 
         // Show the snackbar.
@@ -307,7 +307,7 @@ public class SnackKiosk {
      * Called when the action button on a Snackbar is clicked.
      * @param actionId The ID of some action to take, or {@code -1} to just have the Snackbar dismiss itself.
      */
-    private void handleAction(@IdRes int actionId) {
+    private void handleAction(View v, @IdRes int actionId) {
         switch (actionId) {
             case R.id.sb_action_retry_perms_check:
                 // Fire an event indicating we wish to retry our permissions check.
@@ -315,7 +315,7 @@ public class SnackKiosk {
                 break;
             case R.id.sb_action_open_import_activity:
                 // Open the import activity.
-                EventBus.getDefault().post(new ActionEvent(R.id.action_open_activity, ImportActivity.class));
+                Util.startAct(v.getContext(), ImportActivity.class, null);
                 break;
         }
     }

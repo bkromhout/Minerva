@@ -333,10 +333,6 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
                 ActionHelper.createNewSmartList(realm, (String) event.getData(), ruq);
                 Snackbar.make(recyclerView, R.string.smart_list_created, Snackbar.LENGTH_SHORT).show();
                 break;
-            case R.id.action_open_activity:
-                //noinspection unchecked
-                Util.startAct(getActivity(), (Class<? extends Activity>) event.getData(), null);
-                return;
         }
         if (actionMode != null) actionMode.finish();
     }

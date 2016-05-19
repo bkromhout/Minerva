@@ -379,10 +379,6 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
             case R.id.action_delete:
                 ActionHelper.deleteBooks(selectedItems, (boolean) event.getData());
                 break;
-            case R.id.action_open_activity:
-                //noinspection unchecked
-                Util.startAct(getActivity(), (Class<? extends Activity>) event.getData(), null);
-                return;
         }
         if (actionMode != null) actionMode.finish();
     }

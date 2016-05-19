@@ -1,7 +1,6 @@
 package com.bkromhout.minerva.activities;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -343,10 +342,6 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
             case R.id.action_delete:
                 ActionHelper.deleteBooks(Collections.singletonList(book), (boolean) event.getData());
                 finish();
-                break;
-            case R.id.action_open_activity:
-                //noinspection unchecked
-                Util.startAct(this, (Class<? extends Activity>) event.getData(), null);
                 break;
         }
     }

@@ -316,10 +316,6 @@ public class TaggingActivity extends AppCompatActivity implements SnackKiosk.Sna
             case R.id.action_delete_tag:
                 ActionHelper.deleteTag(realm, tempTag);
                 break;
-            case R.id.action_open_activity:
-                //noinspection unchecked
-                Util.startAct(this, (Class<? extends Activity>) event.getData(), null);
-                break;
         }
     }
 

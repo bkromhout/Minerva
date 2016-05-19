@@ -1,7 +1,6 @@
 package com.bkromhout.minerva.fragments;
 
 import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -375,10 +374,6 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
                 //noinspection unchecked
                 ActionHelper.deleteLists(realm, adapter.getSelectedRealmObjects());
                 break;
-            case R.id.action_open_activity:
-                //noinspection unchecked
-                Util.startAct(getActivity(), (Class<? extends Activity>) event.getData(), null);
-                return;
         }
         if (actionMode != null) actionMode.finish();
     }
