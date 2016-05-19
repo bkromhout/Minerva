@@ -46,6 +46,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import javax.inject.Inject;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -476,7 +477,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
             case R.id.action_delete_list:
             case R.id.action_delete_smart_list:
                 // Delete the list currently being shown, then finish the activity.
-                ActionHelper.deleteList(realm, srcList);
+                ActionHelper.deleteLists(realm, Collections.singletonList(srcList));
                 finish();
                 break;
             case R.id.action_rate:

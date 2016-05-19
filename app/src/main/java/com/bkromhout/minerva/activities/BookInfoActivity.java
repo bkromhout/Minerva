@@ -43,6 +43,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import javax.inject.Inject;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -324,22 +325,23 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
     public void onActionEvent(ActionEvent event) {
         switch (event.getActionId()) {
             case R.id.action_add_to_list:
-                ActionHelper.addBookToList(realm, book, (String) event.getData());
+                ActionHelper.addBooksToList(realm, Collections.singletonList(book), (String) event.getData());
                 break;
             case R.id.action_rate:
-                ActionHelper.rateBook(realm, book, (Integer) event.getData());
+                ActionHelper.rateBooks(realm, Collections.singletonList(book), (Integer) event.getData());
                 // The rating changed, so we'll need to update the book's card.
                 needsPosUpdate = true;
                 break;
             case R.id.action_mark_as:
                 int whichMark = (int) event.getData();
-                ActionHelper.markBook(book, whichMark < 2 ? MarkType.NEW : MarkType.UPDATED, whichMark % 2 == 0);
+                ActionHelper.markBooks(Collections.singletonList(book), whichMark < 2 ? MarkType.NEW : MarkType.UPDATED,
+                        whichMark % 2 == 0);
                 break;
             case R.id.action_re_import:
-                ActionHelper.reImportBook(book);
+                ActionHelper.reImportBooks(Collections.singletonList(book));
                 break;
             case R.id.action_delete:
-                ActionHelper.deleteBook(book, (boolean) event.getData());
+                ActionHelper.deleteBooks(Collections.singletonList(book), (boolean) event.getData());
                 finish();
                 break;
             case R.id.action_open_activity:

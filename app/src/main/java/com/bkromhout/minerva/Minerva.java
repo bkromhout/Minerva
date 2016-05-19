@@ -6,13 +6,13 @@ import android.support.v4.content.ContextCompat;
 import com.bkromhout.minerva.data.UniqueIdFactory;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.ruqus.Ruqus;
-import com.google.common.collect.Lists;
 import com.karumi.dexter.Dexter;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import org.greenrobot.eventbus.EventBus;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 
 /**
  * Custom Application class.
@@ -108,7 +108,7 @@ public class Minerva extends Application {
         int newBgColor = ContextCompat.getColor(this, R.color.green700);
         int updatedBgColor = ContextCompat.getColor(this, R.color.blue700);
         // Create default tags for new and updated books.
-        realm.copyToRealm(Lists.newArrayList(
+        realm.copyToRealm(Arrays.asList(
                 new RTag(getString(R.string.default_new_book_tag), d.DEFAULT_TAG_TEXT_COLOR, newBgColor),
                 new RTag(getString(R.string.default_updated_book_tag), d.DEFAULT_TAG_TEXT_COLOR, updatedBgColor)));
     }

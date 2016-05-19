@@ -11,7 +11,6 @@ import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.rx.RxFileWalker;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
-import com.google.common.collect.Lists;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import rx.Observable;
@@ -25,6 +24,7 @@ import rx.subjects.Subject;
 import timber.log.Timber;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -278,7 +278,8 @@ public class Importer {
 
         // Figure out what type of import run this is, then tell the logger we're about to start a new run.
         logger.prepareNewLog();
-        logger.log(Minerva.get().getString(currRun.type == ImportType.FULL ? R.string.fil_starting : R.string.ril_starting));
+        logger.log(Minerva.get()
+                          .getString(currRun.type == ImportType.FULL ? R.string.fil_starting : R.string.ril_starting));
 
         // Create progress subject and update listener
         createProgressSubject();
@@ -525,7 +526,7 @@ public class Importer {
                                                            .endGroup()
                                                            .findAll();
                         // Add the new tag to those books.
-                        ActionHelper.addTagsToBooks(books, Lists.newArrayList(tag));
+                        ActionHelper.addTagsToBooks(books, Collections.singletonList(tag));
                     }
 
                     tagName = MarkType.UPDATED.getTagName();
@@ -544,7 +545,7 @@ public class Importer {
                                                            .endGroup()
                                                            .findAll();
                         // Add the updated tag to those books.
-                        ActionHelper.addTagsToBooks(books, Lists.newArrayList(tag));
+                        ActionHelper.addTagsToBooks(books, Collections.singletonList(tag));
                     }
                 },
                 this::importFinished,
@@ -595,7 +596,8 @@ public class Importer {
 
         // Processing result.
         if (numTotal == 0 && numErrors == 0) part = Minerva.get().getString(R.string.sb_il_results_zero);
-        else if (numTotal == 0) part = Minerva.get().getQString(R.plurals.sb_il_just_error_results, numErrors, numErrors);
+        else if (numTotal == 0) part = Minerva.get().getQString(R.plurals.sb_il_just_error_results, numErrors,
+                numErrors);
         else part = Minerva.get().getQString(R.plurals.sb_il_results, numDone, numDone, numTotal);
         builder.append(part);
 
@@ -740,7 +742,7 @@ public class Importer {
      * Calling this when the importer isn't in a ready state will do nothing.
      * @param books List of {@link RBook}s to re-import.
      */
-    public final void queueReImport(List<RBook> books) {
+    public final void queueReImport(Iterable<RBook> books) {
         queueNewRun(new ImportRun(ImportType.REDO, books));
 
         // Show a snackbar saying either that the re-import was started or queued.
@@ -768,14 +770,14 @@ public class Importer {
          */
         public final ImportType type;
         /**
-         * If {@link #type} is {@link ImportType#REDO}, this will be a list of relative file paths which we need to
-         * re-import from the library directory.
+         * If {@link #type} is {@link ImportType#REDO}, this will be a list of {@link RBook}s from which we will obtain
+         * relative paths to use when finding files to re-import.
          */
         public final List<String> reImportRelPaths;
 
-        private ImportRun(ImportType type, List<RBook> reImportRelPaths) {
+        private ImportRun(ImportType type, Iterable<RBook> reImportBooks) {
             this.type = type;
-            this.reImportRelPaths = reImportRelPaths == null ? null : rBooksToRelPaths(reImportRelPaths);
+            this.reImportRelPaths = reImportBooks == null ? null : rBooksToRelPaths(reImportBooks);
         }
 
         /**
@@ -783,7 +785,7 @@ public class Importer {
          * @param books List of {@link RBook}s.
          * @return List of relative paths.
          */
-        private List<String> rBooksToRelPaths(List<RBook> books) {
+        private List<String> rBooksToRelPaths(Iterable<RBook> books) {
             return Observable.from(books)
                              .map(book -> book.relPath)
                              .toList()

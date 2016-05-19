@@ -18,35 +18,22 @@ import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.ruqus.RealmUserQuery;
-import com.google.common.collect.Lists;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 /**
  * Convenience class which provides static methods to execute actions, preventing the need for duplicate code.
  */
 public class ActionHelper {
+
+    //public static void handleActionEvent(ActionEvent event, Realm realm, )
+
     /*
      * Book Actions.
      */
-
-    /**
-     * Add {@code book} to the list named {@code listName}.
-     * @param realm    Instance of Realm to use.
-     * @param book     Book to add to list called {@code listName}.
-     * @param listName Name of list to add {@code book} to.
-     */
-    public static void addBookToList(Realm realm, RBook book, String listName) {
-        realm.where(RBookList.class)
-             .equalTo("name", listName)
-             .findFirst()
-             .addBook(book);
-    }
 
     /**
      * Add {@code books} to the list named {@code listName}.
@@ -54,21 +41,11 @@ public class ActionHelper {
      * @param books    Books to add to list called {@code listName}.
      * @param listName Name of list to add {@code books} to.
      */
-    public static void addBooksToList(Realm realm, List<RBook> books, String listName) {
+    public static void addBooksToList(Realm realm, Iterable<RBook> books, String listName) {
         realm.where(RBookList.class)
              .equalTo("name", listName)
              .findFirst()
              .addBooks(books);
-    }
-
-    /**
-     * Apply {@code rating} to the given {@code book}.
-     * @param realm  Instance of Realm to use.
-     * @param book   Book to apply {@code rating} to.
-     * @param rating Rating to apply to {@code book}.
-     */
-    public static void rateBook(Realm realm, RBook book, int rating) {
-        rateBooks(realm, Lists.newArrayList(book), rating);
     }
 
     /**
@@ -77,7 +54,7 @@ public class ActionHelper {
      * @param books  Books to apply {@code rating} to.
      * @param rating Rating to apply to {@code books}.
      */
-    public static void rateBooks(Realm realm, List<RBook> books, int rating) {
+    public static void rateBooks(Realm realm, Iterable<RBook> books, int rating) {
         realm.executeTransaction(tRealm -> {
             for (RBook book : books) book.rating = rating;
         });
@@ -218,16 +195,6 @@ public class ActionHelper {
     }
 
     /**
-     * Mark the given {@code book}.
-     * @param book     {@link RBook} to mark.
-     * @param markType Type of mark.
-     * @param marked   Whether the mark should be true or false.
-     */
-    public static void markBook(RBook book, MarkType markType, boolean marked) {
-        markBooks(Lists.newArrayList(book), markType, marked);
-    }
-
-    /**
      * Mark the given {@code books}.
      * @param books    List of {@link RBook}s to mark.
      * @param markType Type of mark.
@@ -242,8 +209,8 @@ public class ActionHelper {
             // handle updating the mark for us as well.
             if (tagName != null) {
                 RTag tag = realm.where(RTag.class).equalTo("name", tagName).findFirst();
-                if (marked) addTagsToBooks(books, Lists.newArrayList(tag));
-                else removeTagsFromBooks(books, Lists.newArrayList(tag));
+                if (marked) addTagsToBooks(books, Collections.singletonList(tag));
+                else removeTagsFromBooks(books, Collections.singletonList(tag));
                 return;
             }
 
@@ -260,7 +227,7 @@ public class ActionHelper {
     /**
      * Open the book's real file in an application which will allow the user to read it. This will also put the book at
      * the top of the recents list.
-     * @param book    Book to open.
+     * @param book Book to open.
      */
     public static void openBookUsingIntent(RBook book) {
         if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
@@ -291,33 +258,15 @@ public class ActionHelper {
     }
 
     /**
-     * Begin re-import process for the given {@code book}.
-     * @param book Book to re-import.
-     */
-    public static void reImportBook(RBook book) {
-        reImportBooks(Lists.newArrayList(book));
-    }
-
-    /**
      * Begin re-import process for the given {@code books}.
      * <p>
      * Checks if we have permission first, and if we don't then will trigger a visual indication to the user that we
      * need the permission.
      * @param books Books to re-import.
      */
-    public static void reImportBooks(List<RBook> books) {
+    public static void reImportBooks(Iterable<RBook> books) {
         if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
         Importer.get().queueReImport(books);
-    }
-
-    /**
-     * Delete {@code book} from Realm, along with any {@link RBookListItem}s which may exist for it, and its cover image
-     * if it has one. Optionally delete the real file it was imported from as well.
-     * @param book           Book to delete.
-     * @param deleteRealFile If true, also delete the book's corresponding file.
-     */
-    public static void deleteBook(RBook book, boolean deleteRealFile) {
-        deleteBooks(Lists.newArrayList(book), deleteRealFile);
     }
 
     /**
@@ -326,7 +275,7 @@ public class ActionHelper {
      * @param books           Books to delete.
      * @param deleteRealFiles If true, also delete the books' corresponding files.
      */
-    public static void deleteBooks(List<RBook> books, boolean deleteRealFiles) {
+    public static void deleteBooks(Collection<RBook> books, boolean deleteRealFiles) {
         // Null checks.
         if (books == null || books.isEmpty()) return;
 
@@ -409,40 +358,21 @@ public class ActionHelper {
     }
 
     /**
-     * Deletes the {@code list}, and all of its {@link RBookListItem}s, from Realm.
-     * @param realm Instance of Realm to use.
-     * @param list  List to delete.
-     */
-    public static void deleteList(Realm realm, RBookList list) {
-        if (list != null) {
-            realm.executeTransaction(tRealm -> _deleteList(list));
-        }
-    }
-
-    /**
      * Deletes the {@code lists}, and all of their {@link RBookListItem}s, from Realm.
      * @param realm Instance of Realm to use.
      * @param lists Lists to delete.
      */
-    public static void deleteLists(Realm realm, List<RBookList> lists) {
+    public static void deleteLists(Realm realm, Collection<RBookList> lists) {
         if (lists != null && !lists.isEmpty()) {
             realm.executeTransaction(tRealm -> {
-                for (RBookList list : lists) _deleteList(list);
+                for (RBookList list : lists) {
+                    // First, delete the list items (unless this is a smart list).
+                    if (!list.isSmartList) list.listItems.deleteAllFromRealm();
+                    // Then, delete the book list.
+                    list.deleteFromRealm();
+                }
             });
         }
-    }
-
-    /**
-     * Deletes all {@link RBookListItem}s owned by {@code list} from Realm, then deletes {@code list} from Realm.
-     * <p>
-     * This MUST be called while inside of a Realm transaction!
-     * @param list List to delete.
-     */
-    private static void _deleteList(RBookList list) {
-        // First, delete the list items (unless this is a smart list).
-        if (!list.isSmartList) list.listItems.deleteAllFromRealm();
-        // Then, delete the book list.
-        list.deleteFromRealm();
     }
 
     /**

@@ -38,6 +38,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Fragment in charge of showing all of the book lists.
@@ -368,7 +369,7 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
             case R.id.action_delete_list:
             case R.id.action_delete_smart_list:
                 // Delete the list currently being shown, then finish the activity.
-                ActionHelper.deleteList(realm, tempList);
+                ActionHelper.deleteLists(realm, Collections.singletonList(tempList));
                 break;
             case R.id.action_delete_lists:
                 //noinspection unchecked
