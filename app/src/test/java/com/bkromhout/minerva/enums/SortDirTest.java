@@ -22,12 +22,7 @@ import static org.hamcrest.Matchers.not;
 @PowerMockRunnerDelegate(Parameterized.class)
 public class SortDirTest {
     /**
-     * Parameters to test with. The last one in each group is the index, used to set the correct enum member as the
-     * value of {@link #type} at test runtime.
-     * <p>
-     * This is necessary because our enums use string resources in their constructors. This leads to an issue where we
-     * can't actually _get_ to the resources at the time this method is called, and thus cannot directly use the enum
-     * members in our params here.
+     * Parameters to test with.
      */
     @Parameterized.Parameters(name = "{4}")
     public static Collection<Object[]> params() {
