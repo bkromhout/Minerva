@@ -84,6 +84,7 @@ dependencies {
     apt 'com.google.dagger:dagger-compiler:2.2'
     compile 'com.google.dagger:dagger:2.2'
     provided 'javax.annotation:jsr250-api:1.0'
+    compile 'com.google.auto.factory:auto-factory:1.0-beta3'
 
     compile 'io.reactivex:rxjava:1.1.5'
     compile 'io.reactivex:rxandroid:1.2.0'
@@ -139,4 +140,5 @@ dependencies {
     androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
     // Needed to resolve version conflict for test APK.
     androidTestCompile 'com.google.code.findbugs:jsr305:3.0.0'
+    androidTestCompile 'com.squareup:javawriter:2.5.1'
 }

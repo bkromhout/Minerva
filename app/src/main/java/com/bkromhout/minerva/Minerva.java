@@ -1,7 +1,6 @@
 package com.bkromhout.minerva;
 
 import android.app.Application;
-import android.content.Context;
 import android.support.annotation.PluralsRes;
 import android.support.v4.content.ContextCompat;
 import com.bkromhout.minerva.data.UniqueIdFactory;
@@ -112,16 +111,6 @@ public class Minerva extends Application {
         realm.copyToRealm(Lists.newArrayList(
                 new RTag(getString(R.string.default_new_book_tag), d.DEFAULT_TAG_TEXT_COLOR, newBgColor),
                 new RTag(getString(R.string.default_updated_book_tag), d.DEFAULT_TAG_TEXT_COLOR, updatedBgColor)));
-    }
-
-    /**
-     * Get the application context. DO NOT use the context returned by this method in methods which affect the UI (such
-     * as when inflating a layout, for example).
-     * @return Application context.
-     */
-    public static Context getAppCtx() {
-        if (instance == null) throw new IllegalStateException("The application context isn't available yet.");
-        return instance.getApplicationContext();
     }
 
     public static Minerva get() {

@@ -122,7 +122,7 @@ public class DataUtils {
      * @param relPath Relative path to use to create cover file path.
      */
     public static void saveStreamAsCoverImage(InputStream in, String relPath) {
-        File coverFile = new File(Minerva.getAppCtx().getFilesDir(), relPath + COVER_EXT);
+        File coverFile = new File(Minerva.get().getFilesDir(), relPath + COVER_EXT);
         try {
             Files.createParentDirs(coverFile);
             try (FileOutputStream out = new FileOutputStream(coverFile)) {
@@ -138,7 +138,7 @@ public class DataUtils {
      * @param relPath Relative path which was used to create cover file path.
      */
     public static void deleteCoverImage(String relPath) {
-        File coverFile = Util.getFileFromRelPath(Minerva.getAppCtx().getFilesDir(), relPath + COVER_EXT);
+        File coverFile = Util.getFileFromRelPath(Minerva.get().getFilesDir(), relPath + COVER_EXT);
         if (coverFile == null || !coverFile.exists()) return;
         //noinspection ResultOfMethodCallIgnored
         coverFile.delete();
@@ -150,7 +150,7 @@ public class DataUtils {
      * @return Cover file, or null.
      */
     public static File getCoverImageFile(String relPath) {
-        return Util.getFileFromRelPath(Minerva.getAppCtx().getFilesDir(), relPath + COVER_EXT);
+        return Util.getFileFromRelPath(Minerva.get().getFilesDir(), relPath + COVER_EXT);
     }
 
     /**

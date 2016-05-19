@@ -169,8 +169,8 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
                                      .load(DataUtils.getCoverImageFile(book.relPath))
                                      .centerCrop()
                                      .into(resolvedVH.ivCoverImage);
-        else resolvedVH.ivCoverImage.setImageDrawable(ContextCompat.getDrawable(Minerva.getAppCtx(),
-                R.drawable.epub_logo_color));
+        else resolvedVH.ivCoverImage.setImageDrawable(
+                ContextCompat.getDrawable(Minerva.get(), R.drawable.epub_logo_color));
     }
 
     /**

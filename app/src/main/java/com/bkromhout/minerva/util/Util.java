@@ -63,7 +63,7 @@ public class Util {
      * @return Date time string.
      */
     public static String getRelTimeString(long time) {
-        return DateUtils.getRelativeDateTimeString(Minerva.getAppCtx(), time, DateUtils.SECOND_IN_MILLIS,
+        return DateUtils.getRelativeDateTimeString(Minerva.get(), time, DateUtils.SECOND_IN_MILLIS,
                 DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_SHOW_TIME).toString();
     }
 
@@ -122,7 +122,7 @@ public class Util {
      * @return True if we currently have been granted the permission, otherwise false.
      */
     public static boolean hasPerm(String permission) {
-        return ContextCompat.checkSelfPermission(Minerva.getAppCtx(), permission) == PackageManager.PERMISSION_GRANTED;
+        return ContextCompat.checkSelfPermission(Minerva.get(), permission) == PackageManager.PERMISSION_GRANTED;
     }
 
     /**

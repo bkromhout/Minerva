@@ -142,6 +142,7 @@ public class TaggingActivity extends AppCompatActivity implements SnackKiosk.Sna
 
         // Create and bind views.
         setContentView(R.layout.activity_tagging);
+        initInjector();
         ButterKnife.bind(this);
 
         // Set up toolbar.
@@ -155,6 +156,14 @@ public class TaggingActivity extends AppCompatActivity implements SnackKiosk.Sna
         taggingHelper = TaggingHelper.get();
         realm = Realm.getDefaultInstance();
         initUi();
+    }
+
+    private void initInjector() {
+        DaggerActivityComponent.builder()
+                               .appComponent(Minerva.get().getAppComponent())
+                               .activityModule(new ActivityModule(this))
+                               .build()
+                               .inject(this);
     }
 
     /**
