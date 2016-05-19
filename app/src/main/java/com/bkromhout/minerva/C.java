@@ -1,25 +1,13 @@
 package com.bkromhout.minerva;
 
-import com.google.common.collect.ImmutableList;
-
-import java.util.List;
-
 /**
  * Constants.
  */
 public final class C {
     /**
-     * Maximum number of past logs to keep.
-     */
-    public static final int MAX_LOGS = 30;
-    /**
      * 5 seconds duration for snackbar.
      */
     public static final int SB_LENGTH_5_SEC = 5000;
-    /**
-     * URL of Minerva's GitHub repository.
-     */
-    public static final String GITHUB_REPO = "https://github.com/bkromhout/Minerva";
     /**
      * This is the item type integer we supply to a recycler view for our empty footer item.
      */
@@ -28,10 +16,6 @@ public final class C {
      * The initial number of position numbers between each item in a book list.
      */
     public static final long LIST_ITEM_GAP = 100L;
-    /**
-     * Valid file extensions.
-     */
-    public static final List<String> VALID_EXTENSIONS = ImmutableList.of("epub");
 
     /* Keys */
     public static final String POS_TO_UPDATE = "position_to_update";

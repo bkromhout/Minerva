@@ -13,7 +13,6 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.mikepenz.aboutlibraries.LibsBuilder;
@@ -75,6 +74,6 @@ public class AboutActivity extends AppCompatActivity {
     @OnClick(R.id.github)
     void onGitHubLogoClicked() {
         // Open Minerva's GitHub repo in browser.
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(C.GITHUB_REPO)));
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/bkromhout/Minerva")));
     }
 }

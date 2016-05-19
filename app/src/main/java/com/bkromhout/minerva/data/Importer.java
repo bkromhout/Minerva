@@ -11,6 +11,7 @@ import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.rx.RxFileWalker;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
+import com.google.common.collect.ImmutableList;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import rx.Observable;
@@ -41,6 +42,10 @@ public class Importer {
      * Clear the progress UI to a determinate, empty state.
      */
     public static final int SET_PROGRESS_DETERMINATE_ZERO = -2;
+    /**
+     * File extensions which we support importing.
+     */
+    public static final List<String> VALID_EXTENSIONS = ImmutableList.of("epub");
 
     /**
      * Implemented by classes which wish to listen to events from the importer.
@@ -313,7 +318,7 @@ public class Importer {
         // Get a list of files in the directory (and its subdirectories) which have certain extensions.
         // This will call through to onGotFileList() once it has the results.
         fileResolverSubscription = Observable
-                .create(new RxFileWalker(currDir, C.VALID_EXTENSIONS))
+                .create(new RxFileWalker(currDir, VALID_EXTENSIONS))
                 .subscribeOn(Schedulers.io()) // Everything above runs on the io thread pool.
                 .unsubscribeOn(AndroidSchedulers.mainThread())
                 .doOnUnsubscribe(() -> fileResolverSubscription = null)

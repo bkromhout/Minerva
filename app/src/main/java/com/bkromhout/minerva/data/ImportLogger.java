@@ -1,7 +1,6 @@
 package com.bkromhout.minerva.data;
 
 import android.support.annotation.NonNull;
-import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.realm.RImportLog;
@@ -24,6 +23,10 @@ import java.util.List;
  * Helper class which handles logging functionality for the {@link Importer}.
  */
 public class ImportLogger {
+    /**
+     * Maximum number of past logs to keep.
+     */
+    public static final int MAX_LOGS = 30;
     /**
      * Represents either the current log (if we're logging), or the most recent log (if we aren't logging).
      */
@@ -189,8 +192,8 @@ public class ImportLogger {
     }
 
     /**
-     * Check the current list of logs, and if we're at the limit defined by {@link C#MAX_LOGS}, remove the earliest
-     * one.
+     * Check the current list of logs, and if we're at the limit defined by {@link ImportLogger#MAX_LOGS}, remove the
+     * earliest one.
      */
     private void makeRoomForNewLogIfNeeded() {
         try (Realm realm = Realm.getDefaultInstance()) {
@@ -199,7 +202,7 @@ public class ImportLogger {
                                                  .findAllSorted("endTime", Sort.DESCENDING);
 
             // Remove earliest log if we're at the limit.
-            if (logs.size() == C.MAX_LOGS) realm.executeTransaction(tRealm -> logs.last().deleteFromRealm());
+            if (logs.size() == MAX_LOGS) realm.executeTransaction(tRealm -> logs.last().deleteFromRealm());
         }
     }
 
@@ -400,7 +403,7 @@ public class ImportLogger {
      */
     public final void switchLogs(int whichLog) {
         // Sanity checks.
-        if (whichLog < 0 || whichLog >= C.MAX_LOGS || listener == null) return;
+        if (whichLog < 0 || whichLog >= MAX_LOGS || listener == null) return;
 
         // Special handling for when we're currently logging.
         if (isLogging) {
