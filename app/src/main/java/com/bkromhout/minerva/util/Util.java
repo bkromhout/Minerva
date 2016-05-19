@@ -150,7 +150,7 @@ public class Util {
      * @return A File, or null.
      */
     public static File getFileFromRelPath(String relPath) {
-        String libDir = Minerva.get().prefs.getLibDir(null);
+        String libDir = Minerva.prefs().getLibDir(null);
         if (libDir == null || libDir.isEmpty() || relPath == null || relPath.isEmpty()) return null;
         File file = new File(libDir, relPath);
         return file.exists() ? file : null;

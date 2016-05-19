@@ -63,10 +63,6 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
     RealmRecyclerView recyclerView;
 
     /**
-     * Preferences.
-     */
-    Prefs prefs = Minerva.get().prefs;
-    /**
      * Which type of card to use.
      */
     private BookCardType cardType;
@@ -137,7 +133,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
      * Read preferences into variables.
      */
     private void readPrefs() {
-        cardType = prefs.getRecentsCardType(BookCardType.NORMAL);
+        cardType = Minerva.prefs().getRecentsCardType(BookCardType.NORMAL);
     }
 
     /**
@@ -448,7 +444,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
         // Do something different based on name of changed preference.
         switch (event.getPrefName()) {
             case Prefs.RECENTS_CARD_TYPE:
-                cardType = prefs.getRecentsCardType(cardType);
+                cardType = Minerva.prefs().getRecentsCardType(cardType);
                 changeCardType();
                 break;
         }

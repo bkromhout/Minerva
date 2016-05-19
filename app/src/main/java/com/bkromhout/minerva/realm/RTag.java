@@ -52,8 +52,8 @@ public class RTag extends RealmObject implements UIDModel {
         this.name = "DEF_TAG_NAME";
         this.sortName = name.toLowerCase();
         this.taggedBooks = null;
-        this.textColor = Minerva.get().d.DEFAULT_TAG_TEXT_COLOR;
-        this.bgColor = Minerva.get().d.DEFAULT_TAG_BG_COLOR;
+        this.textColor = Minerva.d().DEFAULT_TAG_TEXT_COLOR;
+        this.bgColor = Minerva.d().DEFAULT_TAG_BG_COLOR;
     }
 
     /**
@@ -61,7 +61,7 @@ public class RTag extends RealmObject implements UIDModel {
      * @param name Name of the tag.
      */
     public RTag(String name) {
-        this(name, Minerva.get().d.DEFAULT_TAG_TEXT_COLOR, Minerva.get().d.DEFAULT_TAG_BG_COLOR);
+        this(name, Minerva.d().DEFAULT_TAG_TEXT_COLOR, Minerva.d().DEFAULT_TAG_BG_COLOR);
     }
 
     /**

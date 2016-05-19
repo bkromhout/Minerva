@@ -67,8 +67,8 @@ public class ActionHelper {
         if (books.isEmpty() || tags.isEmpty()) return;
 
         // Get names of new/updated book tags.
-        String newBookTagName = Minerva.get().prefs.getNewBookTag(null);
-        String updatedBookTagName = Minerva.get().prefs.getUpdatedBookTag(null);
+        String newBookTagName = Minerva.prefs().getNewBookTag(null);
+        String updatedBookTagName = Minerva.prefs().getUpdatedBookTag(null);
 
         try (Realm realm = Realm.getDefaultInstance()) {
             // Sometimes this method is called when we're already in a transaction. We can't nest them.
@@ -108,8 +108,8 @@ public class ActionHelper {
         if (books.isEmpty() || tags.isEmpty()) return;
 
         // Get names of new/updated book tags.
-        String newBookTagName = Minerva.get().prefs.getNewBookTag(null);
-        String updatedBookTagName = Minerva.get().prefs.getUpdatedBookTag(null);
+        String newBookTagName = Minerva.prefs().getNewBookTag(null);
+        String updatedBookTagName = Minerva.prefs().getUpdatedBookTag(null);
 
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.beginTransaction();
@@ -501,10 +501,10 @@ public class ActionHelper {
         realm.executeTransaction(tRealm -> tag.deleteFromRealm());
 
         // If this was one of the new/updated book tags, be sure that we null that preference's value.
-        String prefVal = Minerva.get().prefs.getNewBookTag(null);
-        if (prefVal != null && prefVal.equals(tagName)) Minerva.get().prefs.putNewBookTag(null);
-        prefVal = Minerva.get().prefs.getUpdatedBookTag(null);
-        if (prefVal != null && prefVal.equals(tagName)) Minerva.get().prefs.putUpdatedBookTag(null);
+        String prefVal = Minerva.prefs().getNewBookTag(null);
+        if (prefVal != null && prefVal.equals(tagName)) Minerva.prefs().putNewBookTag(null);
+        prefVal = Minerva.prefs().getUpdatedBookTag(null);
+        if (prefVal != null && prefVal.equals(tagName)) Minerva.prefs().putUpdatedBookTag(null);
 
         // Remove tag name from the lists (if present).
         th.oldCheckedItems.remove(tagName);

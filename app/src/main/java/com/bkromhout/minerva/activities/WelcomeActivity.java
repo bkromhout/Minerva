@@ -11,14 +11,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
 import com.bkromhout.minerva.Minerva;
-import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.Importer;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
 import org.greenrobot.eventbus.EventBus;
 
-import javax.inject.Inject;
 import java.io.File;
 
 public class WelcomeActivity extends PermCheckingActivity implements SnackKiosk.Snacker,
@@ -36,30 +34,15 @@ public class WelcomeActivity extends PermCheckingActivity implements SnackKiosk.
     @BindView(R.id.start_full_import)
     Button btnStartFullImport;
 
-    /**
-     * Preferences.
-     */
-    @Inject
-    Prefs prefs;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setResult(RESULT_CANCELED);
 
         setContentView(R.layout.activity_welcome);
-        initInjector();
         ButterKnife.bind(this);
 
         initAndContinuePermChecksIfNeeded();
-    }
-
-    private void initInjector() {
-        DaggerActivityComponent.builder()
-                .appComponent(Minerva.get().getAppComponent())
-                .activityModule(new ActivityModule(this))
-                .build()
-                .inject(this);
     }
 
     @Override
@@ -90,7 +73,7 @@ public class WelcomeActivity extends PermCheckingActivity implements SnackKiosk.
     @Override
     public void onFolderSelection(@NonNull FolderChooserDialog dialog, @NonNull File folder) {
         String path = folder.getAbsolutePath();
-        prefs.putLibDir(path);
+        Minerva.prefs().putLibDir(path);
 
         // Set the path of the folder to the textview.
         tvFolder.setText(path);
@@ -114,7 +97,7 @@ public class WelcomeActivity extends PermCheckingActivity implements SnackKiosk.
                 .cancelButton(R.string.cancel);
 
         // Check to see if the current value is a valid folder.
-        String folderPath = prefs.getLibDir(null);
+        String folderPath = Minerva.prefs().getLibDir(null);
         if (folderPath != null && new File(folderPath).exists()) builder.initialPath(folderPath);
 
         // Show the folder chooser dialog.
@@ -128,7 +111,7 @@ public class WelcomeActivity extends PermCheckingActivity implements SnackKiosk.
     void onStartFullImportClicked() {
         if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
         Importer.get().queueFullImport();
-        prefs.setFirstImportTriggered();
+        Minerva.prefs().setFirstImportTriggered();
         setResult(RESULT_OK);
         finish();
     }

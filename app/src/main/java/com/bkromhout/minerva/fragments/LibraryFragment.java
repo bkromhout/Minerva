@@ -80,10 +80,6 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
     PercentRelativeLayout emptyLibraryView;
 
     /**
-     * Preferences.
-     */
-    Prefs prefs = Minerva.get().prefs;
-    /**
      * The current sort type.
      */
     private SortType sortType;
@@ -179,6 +175,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
      * Read preferences into variables.
      */
     private void readPrefs() {
+        Prefs prefs = Minerva.prefs();
         sortType = prefs.getLibrarySortType(SortType.TITLE);
         sortDir = prefs.getLibrarySortDir(SortDir.ASC);
         cardType = prefs.getLibraryCardType(BookCardType.NORMAL);
@@ -493,7 +490,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
                     if (sortTypeChanged) sortType = SortType.fromResId(rgSortType.getCheckedRadioButtonId());
                     if (sortDirChanged) sortDir = SortDir.fromResId(rgSortDir.getCheckedRadioButtonId());
                     if (cardTypeChanged) cardType = BookCardType.fromResId(rgCardType.getCheckedRadioButtonId());
-                    prefs.putLibraryViewOpts(sortType, sortDir, cardType);
+                    Minerva.prefs().putLibraryViewOpts(sortType, sortDir, cardType);
 
                     // Re-sort data if necessary.
                     if (sortTypeChanged || sortDirChanged) sortRealmResults();

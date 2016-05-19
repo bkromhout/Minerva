@@ -41,7 +41,8 @@ public class Prefs {
      */
     private SharedPreferences prefs;
 
-    public Prefs(SharedPreferences prefs) {
+    // Only Minerva should create an instance of this.
+    Prefs(SharedPreferences prefs) {
         this.prefs = prefs;
     }
 

@@ -13,7 +13,6 @@ import butterknife.OnClick;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
 import com.bkromhout.minerva.Minerva;
-import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.ImportLogger;
 import com.bkromhout.minerva.data.Importer;
@@ -22,7 +21,6 @@ import com.bkromhout.minerva.util.Util;
 import org.greenrobot.eventbus.EventBus;
 import rx.Observer;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.util.List;
 
@@ -93,11 +91,6 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
     Button btnMain;
 
     /**
-     * Preferences.
-     */
-    @Inject
-    Prefs prefs;
-    /**
      * What state the button is in currently.
      */
     private ButtonState currBtnState;
@@ -113,7 +106,6 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
         // Set theme, create and bind views.
         setTheme(R.style.AppTheme);
         setContentView(R.layout.activity_import);
-        initInjector();
         ButterKnife.bind(this);
 
         // Set up toolbar.
@@ -125,14 +117,6 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
 
         // Handle permissions. Make sure we continue a request process if applicable.
         initAndContinuePermChecksIfNeeded();
-    }
-
-    private void initInjector() {
-        DaggerActivityComponent.builder()
-                               .appComponent(Minerva.get().getAppComponent())
-                               .activityModule(new ActivityModule(this))
-                               .build()
-                               .inject(this);
     }
 
     /**
@@ -151,7 +135,7 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
 
         // The importer isn't running, so we need to do a bit of work first, starting with checking if we have a
         // library directory set.
-        File libDir = Util.tryResolveDir(prefs.getLibDir(null));
+        File libDir = Util.tryResolveDir(Minerva.prefs().getLibDir(null));
         if (libDir == null) {
             // We don't have a library directory set, so we'll change the UI to have the user choose one.
             setButtonState(ButtonState.CHOOSE_DIR, true);
@@ -320,7 +304,7 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
                         .cancelButton(R.string.cancel);
 
                 // Check to see if the current value is a valid folder.
-                String folderPath = prefs.getLibDir(null);
+                String folderPath = Minerva.prefs().getLibDir(null);
                 if (folderPath != null && new File(folderPath).exists()) builder.initialPath(folderPath);
 
                 // Show the folder chooser dialog.
@@ -332,7 +316,7 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
     @Override
     public void onFolderSelection(@NonNull FolderChooserDialog dialog, @NonNull File folder) {
         String path = folder.getAbsolutePath();
-        prefs.putLibDir(path);
+        Minerva.prefs().putLibDir(path);
         needsToChooseDir = false;
         // Pretend this got called with READY.
         onImportStateChanged(Importer.State.READY);

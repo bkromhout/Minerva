@@ -110,7 +110,7 @@ public class Dialogs {
      */
     public static void cardStyleDialog(final Context ctx, final MainFrag whichFrag) {
         // Get current card type from prefs.
-        final BookCardType cardType = Minerva.get().prefs.getBookCardType(BookCardType.NORMAL, whichFrag);
+        final BookCardType cardType = Minerva.prefs().getBookCardType(BookCardType.NORMAL, whichFrag);
         // Show dialog.
         new MaterialDialog.Builder(ctx)
                 .title(R.string.action_card_type)
@@ -121,7 +121,7 @@ public class Dialogs {
                     if (cardType.getNum() == which) return true;
 
                     // Persist the new card style and fire event to let caller know.
-                    String changedKey = Minerva.get().prefs.putBookCardType(BookCardType.fromNumber(which), whichFrag);
+                    String changedKey = Minerva.prefs().putBookCardType(BookCardType.fromNumber(which), whichFrag);
                     EventBus.getDefault().post(new PrefChangeEvent(changedKey));
                     return true;
                 })

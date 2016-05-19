@@ -134,7 +134,7 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
 
             // Make sure background responds to changes in "activated" state.
             cardView.getBackground().setTintMode(PorterDuff.Mode.SRC);
-            cardView.getBackground().setTintList(Minerva.get().d.CARD_BG_COLORS);
+            cardView.getBackground().setTintList(Minerva.d().CARD_BG_COLORS);
 
             // Make the card ripple when touched.
             content.setOnTouchListener(rippleFgListener);

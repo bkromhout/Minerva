@@ -30,9 +30,9 @@ public enum MarkType {
     public final String getTagName() {
         switch (fieldName) {
             case "isNew":
-                return Minerva.get().prefs.getNewBookTag(null);
+                return Minerva.prefs().getNewBookTag(null);
             case "isUpdated":
-                return Minerva.get().prefs.getUpdatedBookTag(null);
+                return Minerva.prefs().getUpdatedBookTag(null);
             default:
                 return null;
         }

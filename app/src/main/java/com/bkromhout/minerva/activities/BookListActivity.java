@@ -45,7 +45,6 @@ import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 
@@ -67,11 +66,6 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
     @BindView(R.id.smart_list_empty)
     LinearLayout emptySmartList;
 
-    /**
-     * Preferences.
-     */
-    @Inject
-    Prefs prefs;
     /**
      * Unique string to help find the correct list to display from the DB.
      */
@@ -136,7 +130,6 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
 
         // Create and bind views.
         setContentView(R.layout.activity_book_list);
-        initInjector();
         ButterKnife.bind(this);
 
         // Set up toolbar.
@@ -179,14 +172,6 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
         initAndContinuePermChecksIfNeeded();
     }
 
-    private void initInjector() {
-        DaggerActivityComponent.builder()
-                               .appComponent(Minerva.get().getAppComponent())
-                               .activityModule(new ActivityModule(this))
-                               .build()
-                               .inject(this);
-    }
-
     /**
      * Fill in variables using the extras bundle.
      * @param b Extras bundle from intent used to start this activity.
@@ -201,7 +186,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
      * Read preferences into variables.
      */
     private void readPrefs() {
-        cardType = prefs.getListCardType(BookCardType.NORMAL);
+        cardType = Minerva.prefs().getListCardType(BookCardType.NORMAL);
     }
 
     /**
@@ -660,7 +645,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
         // Do something different based on name of changed preference.
         switch (event.getPrefName()) {
             case Prefs.LIST_CARD_TYPE:
-                cardType = prefs.getListCardType(cardType);
+                cardType = Minerva.prefs().getListCardType(cardType);
                 changeCardType();
                 break;
         }

@@ -25,7 +25,6 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,17 +37,10 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
     // Views
     private CoordinatorLayout coordinator;
 
-    /**
-     * Preferences.
-     */
-    @Inject
-    Prefs prefs;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        initInjector();
         coordinator = ButterKnife.findById(this, R.id.coordinator);
 
         // Set up toolbar.
@@ -61,14 +53,6 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
 
         // Handle permissions. Make sure we continue a request process if applicable.
         initAndContinuePermChecksIfNeeded();
-    }
-
-    private void initInjector() {
-        DaggerActivityComponent.builder()
-                               .appComponent(Minerva.get().getAppComponent())
-                               .activityModule(new ActivityModule(this))
-                               .build()
-                               .inject(this);
     }
 
     @Override
@@ -117,7 +101,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
     public void onFolderSelection(@NonNull FolderChooserDialog dialog, @NonNull File folder) {
         // Updating this preference cause the fragment to notice and update the summary for the library directory
         // preference, since the fragment implements OnSharedPreferenceChangeListener.
-        prefs.putLibDir(folder.getAbsolutePath());
+        Minerva.prefs().putLibDir(folder.getAbsolutePath());
     }
 
     @NonNull
@@ -135,7 +119,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
         /**
          * Preferences.
          */
-        Prefs prefs = Minerva.get().prefs;
+        private Prefs prefs = Minerva.prefs();
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -158,14 +142,16 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
             Preference newBookTag = getPreferenceScreen().findPreference(Prefs.NEW_BOOK_TAG);
             newBookTag.setOnPreferenceClickListener(this::onNewBookTagPrefClick);
             String newBookTagVal = prefs.getNewBookTag(null);
-            newBookTag.setSummary(newBookTagVal != null ? Minerva.get().getString(R.string.summary_tag_as, newBookTagVal) : "");
+            newBookTag.setSummary(
+                    newBookTagVal != null ? Minerva.get().getString(R.string.summary_tag_as, newBookTagVal) : "");
 
             // Set up the updated book tag preference.
             Preference updatedBookTag = getPreferenceScreen().findPreference(Prefs.UPDATED_BOOK_TAG);
             updatedBookTag.setOnPreferenceClickListener(this::onUpdatedBookTagPrefClick);
             String updatedBookTagVal = prefs.getUpdatedBookTag(null);
-            updatedBookTag.setSummary(updatedBookTagVal != null ? Minerva.get().getString(R.string.summary_tag_as, updatedBookTagVal) :
-                    "");
+            updatedBookTag.setSummary(
+                    updatedBookTagVal != null ? Minerva.get().getString(R.string.summary_tag_as, updatedBookTagVal) :
+                            "");
         }
 
         @Override
@@ -197,12 +183,16 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
                 String value = sharedPreferences.getString(key, null);
                 // Update the summary for the new book tag.
                 getPreferenceScreen().findPreference(Prefs.NEW_BOOK_TAG)
-                                     .setSummary(value != null ? Minerva.get().getString(R.string.summary_tag_as, value) : "");
+                                     .setSummary(
+                                             value != null ? Minerva.get().getString(R.string.summary_tag_as, value) :
+                                                     "");
             } else if (key.equals(Prefs.UPDATED_BOOK_TAG)) {
                 String value = sharedPreferences.getString(key, null);
                 // Updated the summary for the updated book tag.
                 getPreferenceScreen().findPreference(Prefs.UPDATED_BOOK_TAG)
-                                     .setSummary(value != null ? Minerva.get().getString(R.string.summary_tag_as, value) : "");
+                                     .setSummary(
+                                             value != null ? Minerva.get().getString(R.string.summary_tag_as, value) :
+                                                     "");
             }
         }
 

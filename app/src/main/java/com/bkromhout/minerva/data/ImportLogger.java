@@ -208,7 +208,7 @@ public class ImportLogger {
      * @param endTime Time the last successful import ended.
      */
     private void updateLastSuccessTime(long endTime) {
-        Minerva.get().prefs.putLastImportSuccessTime(endTime);
+        Minerva.prefs().putLastImportSuccessTime(endTime);
         if (listener != null) listener.setLatestSuccessfulRun(endTime);
     }
 
@@ -350,7 +350,7 @@ public class ImportLogger {
         this.listener = listener;
 
         // Push the latest data to the listener immediately.
-        listener.setLatestSuccessfulRun(Minerva.get().prefs.getLastImportSuccessTime(-1));
+        listener.setLatestSuccessfulRun(Minerva.prefs().getLastImportSuccessTime(-1));
         switchLogs(CURRENT_OR_LATEST_LOG);
     }
 

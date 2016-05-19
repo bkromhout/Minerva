@@ -69,7 +69,7 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
             colorMap.put(tag.name, tag.bgColor);
         }
         return Spanny.spanText(spanny,
-                new LeadingMarginSpan.Standard((int) Minerva.get().d.TAG_CORNER_RADIUS),
+                new LeadingMarginSpan.Standard((int) Minerva.d().TAG_CORNER_RADIUS),
                 new TagBackgroundSpan(colorMap, maxLines));
     }
 
@@ -88,7 +88,7 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
         sepTextWidth = p.measureText(TAG_SEP);
         int tempColor = p.getColor();
         // Draw the tag backgrounds for this line of text. Offset things a bit for the first line.
-        drawTagBgs(c, p, left + (int) Minerva.get().d.TAG_CORNER_RADIUS, top, baseline, text.toString(), start, end);
+        drawTagBgs(c, p, left + (int) Minerva.d().TAG_CORNER_RADIUS, top, baseline, text.toString(), start, end);
         p.setColor(tempColor);
     }
 
@@ -140,11 +140,11 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
         // Add a rounded rectangle to the path.
         path.addRoundRect(
                 // Only leave space for round corners at the start if startCorners is true.
-                startCorners ? x - Minerva.get().d.TAG_CORNER_RADIUS : x,
+                startCorners ? x - Minerva.d().TAG_CORNER_RADIUS : x,
                 y,
                 // Only leave space for round corners at the end if endCorners is true.
-                endCorners ? x + textWidth + Minerva.get().d.TAG_CORNER_RADIUS : x + textWidth,
-                baseline + p.descent() + Minerva.get().d.TAG_BOTTOM_PADDING,
+                endCorners ? x + textWidth + Minerva.d().TAG_CORNER_RADIUS : x + textWidth,
+                baseline + p.descent() + Minerva.d().TAG_BOTTOM_PADDING,
                 // Use rounded corners based on the values of startCorners and endCorners.
                 getCornerRadii(startCorners, endCorners),
                 Path.Direction.CW);
@@ -224,9 +224,9 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
      * @return Corner radii array.
      */
     private float[] getCornerRadii(boolean startCorners, boolean endCorners) {
-        if (startCorners && endCorners) return Minerva.get().d.ALL_CORNERS;
-        else if (startCorners) return Minerva.get().d.START_CORNERS_ONLY;
-        else if (endCorners) return Minerva.get().d.END_CORNERS_ONLY;
+        if (startCorners && endCorners) return Minerva.d().ALL_CORNERS;
+        else if (startCorners) return Minerva.d().START_CORNERS_ONLY;
+        else if (endCorners) return Minerva.d().END_CORNERS_ONLY;
         else return NO_CORNERS;
     }
 

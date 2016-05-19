@@ -23,7 +23,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.Minerva;
-import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.DataUtils;
@@ -41,7 +40,6 @@ import io.realm.RealmChangeListener;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 
@@ -128,11 +126,6 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
     TextView modDate;
 
     /**
-     * Preferences.
-     */
-    @Inject
-    Prefs prefs;
-    /**
      * Position to use in any {@link UpdatePosEvent}s which might be sent.
      */
     private int posToUpdate;
@@ -175,7 +168,6 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
 
         // Create and bind views.
         setContentView(R.layout.activity_book_info);
-        initInjector();
         ButterKnife.bind(this);
 
         // Set up toolbar.
@@ -210,14 +202,6 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
 
         // Handle permissions. Make sure we continue a request process if applicable.
         initAndContinuePermChecksIfNeeded();
-    }
-
-    private void initInjector() {
-        DaggerActivityComponent.builder()
-                               .appComponent(Minerva.get().getAppComponent())
-                               .activityModule(new ActivityModule(this))
-                               .build()
-                               .inject(this);
     }
 
     @Override
@@ -393,7 +377,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         desc.setText(book.desc);
         chapCount.setText(String.valueOf(book.numChaps));
         rating.setRating(book.rating);
-        path.setText(prefs.getLibDir("") + book.relPath);
+        path.setText(Minerva.prefs().getLibDir("") + book.relPath);
 
         lastReadDate.setText(book.lastReadDate == null ? Minerva.get().getString(R.string.never)
                 : DateUtils.getRelativeDateTimeString(this, book.lastReadDate.getTime(),

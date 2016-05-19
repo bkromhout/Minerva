@@ -288,7 +288,7 @@ public class Importer {
         if (listener != null) listener.onProgressFlag(SET_PROGRESS_INDETERMINATE);
 
         // Get and check currently configured library directory.
-        String libDirPath = Minerva.get().prefs.getLibDir(null);
+        String libDirPath = Minerva.prefs().getLibDir(null);
         if ((currDir = Util.tryResolveDir(libDirPath)) == null) {
             // We don't have a valid library directory.
             logger.error(Minerva.get().getString(R.string.il_err_invalid_lib_dir));

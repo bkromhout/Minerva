@@ -68,10 +68,6 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     RealmRecyclerView recyclerView;
 
     /**
-     * Preferences.
-     */
-    Prefs prefs = Minerva.get().prefs;
-    /**
      * Which type of card to use.
      */
     private BookCardType cardType;
@@ -157,7 +153,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
      * Read preferences into variables.
      */
     private void readPrefs() {
-        cardType = prefs.getPowerSearchCardType(BookCardType.NORMAL);
+        cardType = Minerva.prefs().getPowerSearchCardType(BookCardType.NORMAL);
     }
 
     @Override
@@ -497,7 +493,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
         // Do something different based on name of changed preference.
         switch (event.getPrefName()) {
             case Prefs.POWER_SEARCH_CARD_TYPE:
-                cardType = prefs.getPowerSearchCardType(cardType);
+                cardType = Minerva.prefs().getPowerSearchCardType(cardType);
                 changeCardType();
                 break;
         }

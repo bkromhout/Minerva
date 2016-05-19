@@ -1,6 +1,7 @@
 package com.bkromhout.minerva;
 
 import android.app.Application;
+import android.preference.PreferenceManager;
 import android.support.annotation.PluralsRes;
 import android.support.v4.content.ContextCompat;
 import com.bkromhout.minerva.data.UniqueIdFactory;
@@ -11,7 +12,6 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import org.greenrobot.eventbus.EventBus;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 
 /**
@@ -28,37 +28,43 @@ public class Minerva extends Application {
     private static final long REALM_SCHEMA_VERSION = 0;
 
     /**
-     * Static instance of application context. Beware, this isn't available before the application starts.
+     * Static INSTANCE of application context. Beware, this isn't available before the application starts.
      */
-    private static Minerva instance;
-
-    /**
-     * Utility component.
-     */
-    private AppComponent appComponent;
+    private static Minerva INSTANCE;
 
     /**
      * Dynamically loaded constants.
      */
-    public D d;
+    private D d;
     /**
      * Preferences.
      */
-    @Inject
-    public Prefs prefs;
+    private Prefs prefs;
+
+    /**
+     * Get a static reference to the application.
+     * @return Static reference to Minerva.
+     */
+    public static Minerva get() {
+        if (INSTANCE == null) throw new IllegalStateException("Minerva isn't available yet.");
+        return INSTANCE;
+    }
+
+    public static Prefs prefs() {
+        return get().prefs;
+    }
+
+    public static D d() {
+        return get().d;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        // Stash application context.
-        instance = this;
-        d = new D(this);
-
-        // Init components.
-        appComponent = DaggerAppComponent.builder()
-                                         .appModule(new AppModule(this))
-                                         .build();
-        appComponent.inject(this);
+        // Stash application context, then init global instances of certain classes.
+        INSTANCE = this;
+        this.prefs = new Prefs(PreferenceManager.getDefaultSharedPreferences(this));
+        this.d = new D(this);
 
         // Set up EventBus to use the generated index.
         EventBus.builder().addIndex(new EventBusIndex()).installDefaultEventBus();
@@ -102,6 +108,8 @@ public class Minerva extends Application {
 
     /**
      * Add initial data to Realm. Only runs on first app run (or after data has been cleared).
+     * <p>
+     * Keep in mind that currently this gets called before our {@link UniqueIdFactory} is ready.
      * @param realm Instance of Realm to use to add data.
      */
     private void initialRealmData(Realm realm) {
@@ -111,25 +119,6 @@ public class Minerva extends Application {
         realm.copyToRealm(Arrays.asList(
                 new RTag(getString(R.string.default_new_book_tag), d.DEFAULT_TAG_TEXT_COLOR, newBgColor),
                 new RTag(getString(R.string.default_updated_book_tag), d.DEFAULT_TAG_TEXT_COLOR, updatedBgColor)));
-    }
-
-    public static Minerva get() {
-        if (instance == null) throw new IllegalStateException("The application isn't available yet.");
-        return instance;
-    }
-
-    public AppComponent getAppComponent() {
-        return appComponent;
-    }
-
-    /**
-     * Get a quantity string resource using the application context.
-     * @param resId String resource ID.
-     * @param count Quantity.
-     * @return Quantity string.
-     */
-    public String getQString(@PluralsRes int resId, int count) {
-        return getResources().getQuantityString(resId, count);
     }
 
     /**

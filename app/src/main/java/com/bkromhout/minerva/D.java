@@ -41,17 +41,12 @@ public class D {
      * Corner radii values for start corners only.
      */
     public float[] START_CORNERS_ONLY;
-
-
     /**
      * Corner radii values for end corners only.
      */
     public float[] END_CORNERS_ONLY;
 
-    /**
-     * Create a new {@link D}.
-     * @param application Application context to use.
-     */
+    // Only Minerva should create an instance of this.
     D(Application application) {
         Resources resources = application.getResources();
 

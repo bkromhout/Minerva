@@ -19,7 +19,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.Minerva;
-import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.enums.MainFrag;
 import com.bkromhout.minerva.fragments.AllListsFragment;
@@ -29,8 +28,6 @@ import com.bkromhout.minerva.fragments.RecentFragment;
 import com.bkromhout.minerva.util.Util;
 import io.realm.Realm;
 import org.greenrobot.eventbus.EventBus;
-
-import javax.inject.Inject;
 
 /**
  * Main activity, responsible for hosting fragments.
@@ -48,11 +45,6 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
     @BindView(R.id.main_frag_cont)
     FrameLayout fragCont;
 
-    /**
-     * Instance of the default preferences.
-     */
-    @Inject
-    Prefs prefs;
     /**
      * Instance of Realm.
      */
@@ -72,7 +64,6 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
         // Set theme, create and bind views.
         setTheme(R.style.AppTheme);
         setContentView(R.layout.activity_main);
-        initInjector();
         ButterKnife.bind(this);
 
         // Set up toolbar.
@@ -87,7 +78,7 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
         if (savedInstanceState == null) {
             // Make sure we show the library fragment if we don't have a saved instance state, don't have a saved
             // current fragment, or if the saved current fragment would need some bundle to help populate it.
-            MainFrag frag = prefs.getCurrFrag(MainFrag.LIBRARY);
+            MainFrag frag = Minerva.prefs().getCurrFrag(MainFrag.LIBRARY);
             switchFragments(frag);
             navigationView.setCheckedItem(frag.getIdRes());
         } else {
@@ -96,19 +87,11 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
         }
 
         // Check to see if we need to show the welcome activity.
-        if (savedInstanceState == null && !prefs.hasFirstImportBeenTriggered())
+        if (savedInstanceState == null && !Minerva.prefs().hasFirstImportBeenTriggered())
             startActivityForResult(new Intent(this, WelcomeActivity.class), C.RC_WELCOME_ACTIVITY);
 
         // Handle permissions. Make sure we continue a request process if applicable.
         initAndContinuePermChecksIfNeeded();
-    }
-
-    private void initInjector() {
-        DaggerActivityComponent.builder()
-                               .appComponent(Minerva.get().getAppComponent())
-                               .activityModule(new ActivityModule(this))
-                               .build()
-                               .inject(this);
     }
 
     @Override
@@ -278,7 +261,7 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
         }
 
         // Save things to prefs.
-        prefs.putCurrFrag(frag);
+        Minerva.prefs().putCurrFrag(frag);
     }
 
     /**
