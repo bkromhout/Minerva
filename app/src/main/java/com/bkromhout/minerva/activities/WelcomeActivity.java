@@ -49,10 +49,18 @@ public class WelcomeActivity extends PermCheckingActivity implements SnackKiosk.
         setResult(RESULT_CANCELED);
 
         setContentView(R.layout.activity_welcome);
-        Minerva.get().getUtilComponent().inject(this);
+        initInjector();
         ButterKnife.bind(this);
 
         initAndContinuePermChecksIfNeeded();
+    }
+
+    private void initInjector() {
+        DaggerActivityComponent.builder()
+                .appComponent(Minerva.get().getAppComponent())
+                .activityModule(new ActivityModule(this))
+                .build()
+                .inject(this);
     }
 
     @Override

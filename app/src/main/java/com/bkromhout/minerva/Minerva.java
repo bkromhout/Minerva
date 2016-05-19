@@ -36,7 +36,7 @@ public class Minerva extends Application {
     /**
      * Utility component.
      */
-    private UtilComponent utilComponent;
+    private AppComponent appComponent;
 
     /**
      * Dynamically loaded constants.
@@ -56,11 +56,10 @@ public class Minerva extends Application {
         d = new D(this);
 
         // Init components.
-        utilComponent = DaggerUtilComponent.builder()
-                                           .appModule(new AppModule(this))
-                                           .utilModule(new UtilModule())
-                                           .build();
-        utilComponent.inject(this);
+        appComponent = DaggerAppComponent.builder()
+                                         .appModule(new AppModule(this))
+                                         .build();
+        appComponent.inject(this);
 
         // Set up EventBus to use the generated index.
         EventBus.builder().addIndex(new EventBusIndex()).installDefaultEventBus();
@@ -130,8 +129,8 @@ public class Minerva extends Application {
         return instance;
     }
 
-    public UtilComponent getUtilComponent() {
-        return utilComponent;
+    public AppComponent getAppComponent() {
+        return appComponent;
     }
 
     /**

@@ -47,7 +47,6 @@ import io.realm.Sort;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -66,8 +65,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
     /**
      * Preferences.
      */
-    @Inject
-    Prefs prefs;
+    Prefs prefs = Minerva.get().prefs;
     /**
      * Which type of card to use.
      */
@@ -118,7 +116,6 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Minerva.get().getUtilComponent().inject(this);
 
         // Read prefs to fill in vars.
         readPrefs();

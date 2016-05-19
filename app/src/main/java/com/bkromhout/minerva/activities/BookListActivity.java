@@ -135,7 +135,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
 
         // Create and bind views.
         setContentView(R.layout.activity_book_list);
-        Minerva.get().getUtilComponent().inject(this);
+        initInjector();
         ButterKnife.bind(this);
 
         // Set up toolbar.
@@ -176,6 +176,14 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
 
         // Handle permissions. Make sure we continue a request process if applicable.
         initAndContinuePermChecksIfNeeded();
+    }
+
+    private void initInjector() {
+        DaggerActivityComponent.builder()
+                               .appComponent(Minerva.get().getAppComponent())
+                               .activityModule(new ActivityModule(this))
+                               .build()
+                               .inject(this);
     }
 
     /**

@@ -61,7 +61,6 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -83,8 +82,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
     /**
      * Preferences.
      */
-    @Inject
-    Prefs prefs;
+    Prefs prefs = Minerva.get().prefs;
     /**
      * The current sort type.
      */
@@ -156,7 +154,6 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Minerva.get().getUtilComponent().inject(this);
 
         // Read prefs to fill in vars.
         readPrefs();

@@ -175,7 +175,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
 
         // Create and bind views.
         setContentView(R.layout.activity_book_info);
-        Minerva.get().getUtilComponent().inject(this);
+        initInjector();
         ButterKnife.bind(this);
 
         // Set up toolbar.
@@ -210,6 +210,14 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
 
         // Handle permissions. Make sure we continue a request process if applicable.
         initAndContinuePermChecksIfNeeded();
+    }
+
+    private void initInjector() {
+        DaggerActivityComponent.builder()
+                               .appComponent(Minerva.get().getAppComponent())
+                               .activityModule(new ActivityModule(this))
+                               .build()
+                               .inject(this);
     }
 
     @Override

@@ -1,22 +1,20 @@
-package com.bkromhout.minerva;
+package com.bkromhout.minerva.activities;
 
-import com.bkromhout.minerva.activities.*;
+import android.support.v7.app.AppCompatActivity;
+import com.bkromhout.minerva.AppComponent;
 import com.bkromhout.minerva.fragments.AllListsFragment;
 import com.bkromhout.minerva.fragments.LibraryFragment;
 import com.bkromhout.minerva.fragments.PowerSearchFragment;
 import com.bkromhout.minerva.fragments.RecentFragment;
+import com.bkromhout.minerva.mvp.PerActivity;
 import dagger.Component;
 
-import javax.inject.Singleton;
-
 /**
- * Component which injects utility-related objects.
+ * Created by bkromhout on 5/18/16.
  */
-@Singleton
-@Component(modules = {AppModule.class, UtilModule.class})
-public interface UtilComponent {
-    void inject(Minerva application);
-
+@PerActivity
+@Component(dependencies = {AppComponent.class}, modules = {ActivityModule.class})
+public interface ActivityComponent {
     void inject(BookInfoActivity activity);
 
     void inject(BookListActivity activity);
@@ -40,4 +38,7 @@ public interface UtilComponent {
     void inject(RecentFragment fragment);
 
     void inject(SettingsActivity.SettingsFragment fragment);
+
+    // Exposed to sub-graphs.
+    AppCompatActivity activity();
 }

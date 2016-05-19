@@ -14,7 +14,6 @@ import android.view.View;
 import butterknife.ButterKnife;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
-import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
@@ -50,7 +49,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        Minerva.get().getUtilComponent().inject(this);
+        initInjector();
         coordinator = ButterKnife.findById(this, R.id.coordinator);
 
         // Set up toolbar.
@@ -63,6 +62,14 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
 
         // Handle permissions. Make sure we continue a request process if applicable.
         initAndContinuePermChecksIfNeeded();
+    }
+
+    private void initInjector() {
+        DaggerActivityComponent.builder()
+                               .appComponent(Minerva.get().getAppComponent())
+                               .activityModule(new ActivityModule(this))
+                               .build()
+                               .inject(this);
     }
 
     @Override
@@ -134,13 +141,11 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
         /**
          * Preferences.
          */
-        @Inject
-        Prefs prefs;
+        Prefs prefs = Minerva.get().prefs;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            Minerva.get().getUtilComponent().inject(this);
             addPreferencesFromResource(R.xml.settings);
             // Init the UI.
             initUi();

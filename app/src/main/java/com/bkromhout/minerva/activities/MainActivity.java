@@ -72,7 +72,7 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
         // Set theme, create and bind views.
         setTheme(R.style.AppTheme);
         setContentView(R.layout.activity_main);
-        Minerva.get().getUtilComponent().inject(this);
+        initInjector();
         ButterKnife.bind(this);
 
         // Set up toolbar.
@@ -101,6 +101,14 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
 
         // Handle permissions. Make sure we continue a request process if applicable.
         initAndContinuePermChecksIfNeeded();
+    }
+
+    private void initInjector() {
+        DaggerActivityComponent.builder()
+                               .appComponent(Minerva.get().getAppComponent())
+                               .activityModule(new ActivityModule(this))
+                               .build()
+                               .inject(this);
     }
 
     @Override
