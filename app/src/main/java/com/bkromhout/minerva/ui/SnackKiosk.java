@@ -9,9 +9,8 @@ import android.view.View;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.activities.ImportActivity;
+import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.MissingPermEvent;
-import com.bkromhout.minerva.util.ContextProvider;
-import com.bkromhout.minerva.util.Util;
 import org.greenrobot.eventbus.EventBus;
 
 /**
@@ -23,7 +22,7 @@ public class SnackKiosk {
     /**
      * Should be implemented throughout the app so that a Snackbar can be shown at any time.
      */
-    public interface Snacker extends ContextProvider {
+    public interface Snacker {
         /**
          * Get a view appropriate to use as the anchor for a Snackbar.
          * @return View to use to anchor Snackbar.
@@ -41,6 +40,7 @@ public class SnackKiosk {
      * Current {@link Snacker} who will help us show a Snackbar.
      */
     private Snacker snacker = null;
+
     /**
      * Current {@link Snack} being used to show a Snackbar.
      */
@@ -315,7 +315,7 @@ public class SnackKiosk {
                 break;
             case R.id.sb_action_open_import_activity:
                 // Open the import activity.
-                Util.startAct(snacker.getCtx(), ImportActivity.class, null);
+                EventBus.getDefault().post(new ActionEvent(R.id.action_open_activity, ImportActivity.class));
                 break;
         }
     }

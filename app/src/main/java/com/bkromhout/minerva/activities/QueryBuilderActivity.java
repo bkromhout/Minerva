@@ -71,7 +71,7 @@ public class QueryBuilderActivity extends AppCompatActivity implements RealmQuer
         // Set up toolbar.
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
-        getSupportActionBar().setHomeAsUpIndicator(Util.getTintedDrawable(this, R.drawable.ic_close,
+        getSupportActionBar().setHomeAsUpIndicator(Util.getTintedDrawable(R.drawable.ic_close,
                 R.color.textColorPrimary));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -84,7 +84,7 @@ public class QueryBuilderActivity extends AppCompatActivity implements RealmQuer
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        Util.forceMenuIcons(menu, this, getClass().getSimpleName());
+        Util.forceMenuIcons(menu, getClass().getSimpleName());
         menu.findItem(R.id.action_save).setVisible(rqvMode == RealmQueryView.Mode.MAIN);
         return super.onPrepareOptionsMenu(menu);
     }

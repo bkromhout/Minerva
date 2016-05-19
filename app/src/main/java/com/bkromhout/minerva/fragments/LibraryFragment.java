@@ -202,7 +202,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        Util.forceMenuIcons(menu, getContext(), getClass().getSimpleName());
+        Util.forceMenuIcons(menu, getClass().getSimpleName());
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -288,7 +288,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
 
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        Util.forceMenuIcons(menu, getContext(), getClass().getSimpleName());
+        Util.forceMenuIcons(menu, getClass().getSimpleName());
         return true;
     }
 
@@ -379,6 +379,10 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
             case R.id.action_delete:
                 ActionHelper.deleteBooks(selectedItems, (boolean) event.getData());
                 break;
+            case R.id.action_open_activity:
+                //noinspection unchecked
+                Util.startAct(getActivity(), (Class<? extends Activity>) event.getData(), null);
+                return;
         }
         if (actionMode != null) actionMode.finish();
     }
@@ -421,7 +425,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
         switch (event.getType()) {
             case NORMAL:
                 // Open the book file.
-                ActionHelper.openBookUsingIntent(book, getContext());
+                ActionHelper.openBookUsingIntent(book);
                 break;
             case LONG:
                 // Start multi-select.
@@ -621,12 +625,6 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
         recyclerView.setVisibility(!isFiltering && showEmptyView ? View.GONE : View.VISIBLE);
         fabViewOpts.setVisibility(!isFiltering && showEmptyView ? View.GONE : View.VISIBLE);
         emptyLibraryView.setVisibility(!isFiltering && showEmptyView ? View.VISIBLE : View.GONE);
-    }
-
-    @Override
-    public Activity getCtx() {
-        // Provide our activity context to the ReImporter so that it can draw its progress dialog.
-        return getActivity();
     }
 
     @Override

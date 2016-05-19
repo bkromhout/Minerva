@@ -149,7 +149,7 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        Util.forceMenuIcons(menu, this, getClass().getSimpleName());
+        Util.forceMenuIcons(menu, getClass().getSimpleName());
         return super.onPrepareOptionsMenu(menu);
     }
 

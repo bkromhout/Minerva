@@ -33,15 +33,14 @@ public class Util {
     /**
      * Uses some clever trickery to make it so that menu items in the popup menu still show their icons. (Very hacky)
      * @param menu            Menu to force icons for.
-     * @param context         Context to use.
      * @param classSimpleName Class name, used for potential logging.
      */
-    public static void forceMenuIcons(Menu menu, Context context, String classSimpleName) {
+    public static void forceMenuIcons(Menu menu, String classSimpleName) {
         if (menu != null) {
             // Make sure all icons are tinted the correct color, including those in the overflow menu.
             for (int i = 0; i < menu.size(); i++)
-                menu.getItem(i).getIcon()
-                    .setColorFilter(ContextCompat.getColor(context, R.color.textColorPrimary), PorterDuff.Mode.SRC_IN);
+                menu.getItem(i).getIcon().setColorFilter(
+                        ContextCompat.getColor(Minerva.get(), R.color.textColorPrimary), PorterDuff.Mode.SRC_IN);
             // And use a bit of reflection to ensure we show icons even in the overflow menu.
             if (menu.getClass().equals(MenuBuilder.class)) {
                 try {
@@ -69,14 +68,13 @@ public class Util {
 
     /**
      * Get a tinted drawable.
-     * @param ctx         The context to use.
      * @param drawableRes The drawable resource to use.
      * @param colorRes    The color resource to use.
      * @return Tinted drawable.
      */
-    public static Drawable getTintedDrawable(Context ctx, @DrawableRes int drawableRes, @ColorRes int colorRes) {
-        Drawable drawable = ContextCompat.getDrawable(ctx, drawableRes);
-        DrawableCompat.setTint(drawable, ContextCompat.getColor(ctx, colorRes));
+    public static Drawable getTintedDrawable(@DrawableRes int drawableRes, @ColorRes int colorRes) {
+        Drawable drawable = ContextCompat.getDrawable(Minerva.get(), drawableRes);
+        DrawableCompat.setTint(drawable, ContextCompat.getColor(Minerva.get(), colorRes));
         return drawable;
     }
 
@@ -94,14 +92,13 @@ public class Util {
 
     /**
      * Opens the system app settings activity. Usually used so that the user can grant permissions.
-     * @param context The context to use to build the intent.
      */
-    public static void openAppInfo(Context context) {
+    public static void openAppInfo() {
         Intent myAppSettings = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                Uri.parse("package:" + context.getPackageName()));
+                Uri.parse("package:" + Minerva.get().getPackageName()));
         myAppSettings.addCategory(Intent.CATEGORY_DEFAULT);
         myAppSettings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(myAppSettings);
+        Minerva.get().startActivity(myAppSettings);
     }
 
     /**

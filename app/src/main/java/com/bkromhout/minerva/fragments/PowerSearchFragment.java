@@ -162,7 +162,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        Util.forceMenuIcons(menu, getContext(), getClass().getSimpleName());
+        Util.forceMenuIcons(menu, getClass().getSimpleName());
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -234,7 +234,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
 
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        Util.forceMenuIcons(menu, getContext(), getClass().getSimpleName());
+        Util.forceMenuIcons(menu, getClass().getSimpleName());
         return true;
     }
 
@@ -333,6 +333,10 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
                 ActionHelper.createNewSmartList(realm, (String) event.getData(), ruq);
                 Snackbar.make(recyclerView, R.string.smart_list_created, Snackbar.LENGTH_SHORT).show();
                 break;
+            case R.id.action_open_activity:
+                //noinspection unchecked
+                Util.startAct(getActivity(), (Class<? extends Activity>) event.getData(), null);
+                return;
         }
         if (actionMode != null) actionMode.finish();
     }
@@ -391,7 +395,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
         switch (event.getType()) {
             case NORMAL:
                 // Open the book file.
-                ActionHelper.openBookUsingIntent(book, getContext());
+                ActionHelper.openBookUsingIntent(book);
                 break;
             case LONG:
                 // Start multi-select.
@@ -515,12 +519,6 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
         // at the position in the event.
         if (event.getPosition() == UpdatePosEvent.ALL_POSITIONS) adapter.notifyDataSetChanged();
         else adapter.notifyItemChanged(event.getPosition());
-    }
-
-    @Override
-    public Activity getCtx() {
-        // Provide our activity context to the ReImporter so that it can draw its progress dialog.
-        return getActivity();
     }
 
     @Override

@@ -222,7 +222,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        Util.forceMenuIcons(menu, this, getClass().getSimpleName());
+        Util.forceMenuIcons(menu, getClass().getSimpleName());
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -284,7 +284,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         switch (item.getItemId()) {
             case R.id.action_read:
                 // Open the book file.
-                ActionHelper.openBookUsingIntent(book, this);
+                ActionHelper.openBookUsingIntent(book);
                 return true;
             case R.id.action_add_to_list:
                 Dialogs.addToListDialogOrToast(this, realm);
@@ -342,6 +342,10 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
                 ActionHelper.deleteBook(book, (boolean) event.getData());
                 finish();
                 break;
+            case R.id.action_open_activity:
+                //noinspection unchecked
+                Util.startAct(this, (Class<? extends Activity>) event.getData(), null);
+                break;
         }
     }
 
@@ -357,7 +361,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
     @OnClick(R.id.fab)
     void onReadFabClicked() {
         // Open the book file.
-        ActionHelper.openBookUsingIntent(book, this);
+        ActionHelper.openBookUsingIntent(book);
     }
 
     /**
@@ -505,11 +509,6 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
                 modDate.setVisibility(show ? View.VISIBLE : View.GONE);
                 break;
         }
-    }
-
-    @Override
-    public Activity getCtx() {
-        return this;
     }
 
     @NonNull

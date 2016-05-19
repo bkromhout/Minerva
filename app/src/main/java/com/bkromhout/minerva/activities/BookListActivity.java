@@ -243,7 +243,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        Util.forceMenuIcons(menu, this, getClass().getSimpleName());
+        Util.forceMenuIcons(menu, getClass().getSimpleName());
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -326,7 +326,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
 
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        Util.forceMenuIcons(menu, this, getClass().getSimpleName());
+        Util.forceMenuIcons(menu, getClass().getSimpleName());
         return true;
     }
 
@@ -501,6 +501,10 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
             case R.id.action_delete:
                 ActionHelper.deleteBooks(getSelectedBooks(), (boolean) event.getData());
                 break;
+            case R.id.action_open_activity:
+                //noinspection unchecked
+                Util.startAct(this, (Class<? extends Activity>) event.getData(), null);
+                return;
         }
         if (actionMode != null) actionMode.finish();
     }
@@ -633,7 +637,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
         switch (event.getType()) {
             case NORMAL:
                 // Open the book file.
-                ActionHelper.openBookUsingIntent(book, this);
+                ActionHelper.openBookUsingIntent(book);
                 break;
             case LONG:
                 // Start multi-select.
@@ -685,12 +689,6 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
     @OnClick(R.id.open_query_builder)
     void onOpenQueryBuilderClicked() {
         QueryBuilderActivity.start(this, null);
-    }
-
-    @Override
-    public Activity getCtx() {
-        // Provide our activity context to the ReImporter so that it can draw its progress dialog.
-        return this;
     }
 
     @NonNull

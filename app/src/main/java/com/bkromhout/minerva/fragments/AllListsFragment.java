@@ -147,7 +147,7 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        Util.forceMenuIcons(menu, getContext(), getClass().getSimpleName());
+        Util.forceMenuIcons(menu, getClass().getSimpleName());
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -213,7 +213,7 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
 
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        Util.forceMenuIcons(menu, getContext(), getClass().getSimpleName());
+        Util.forceMenuIcons(menu, getClass().getSimpleName());
         return true;
     }
 
@@ -374,6 +374,10 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
                 //noinspection unchecked
                 ActionHelper.deleteLists(realm, adapter.getSelectedRealmObjects());
                 break;
+            case R.id.action_open_activity:
+                //noinspection unchecked
+                Util.startAct(getActivity(), (Class<? extends Activity>) event.getData(), null);
+                return;
         }
         if (actionMode != null) actionMode.finish();
     }
@@ -445,10 +449,5 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
     @Override
     public View getSnackbarAnchorView() {
         return coordinator;
-    }
-
-    @Override
-    public Activity getCtx() {
-        return getActivity();
     }
 }

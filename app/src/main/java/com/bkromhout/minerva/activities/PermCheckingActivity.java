@@ -108,7 +108,7 @@ public abstract class PermCheckingActivity extends AppCompatActivity {
             builder.content(R.string.storage_permission_rationale_long)
                    .positiveText(R.string.app_info)
                    .negativeText(R.string.not_now)
-                   .onPositive((dialog, which) -> Util.openAppInfo(this))
+                   .onPositive((dialog, which) -> Util.openAppInfo())
                    .onNegative((dialog, which) -> dialog.cancel())
                    .cancelListener(dialog -> showPermNagSnackbar())
                    .dismissListener(dialog -> rationaleDialog = null);

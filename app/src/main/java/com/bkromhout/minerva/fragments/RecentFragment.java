@@ -155,7 +155,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        Util.forceMenuIcons(menu, getContext(), getClass().getSimpleName());
+        Util.forceMenuIcons(menu, getClass().getSimpleName());
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -222,7 +222,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
 
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        Util.forceMenuIcons(menu, getContext(), getClass().getSimpleName());
+        Util.forceMenuIcons(menu, getClass().getSimpleName());
         return true;
     }
 
@@ -333,6 +333,10 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
             case R.id.action_delete:
                 ActionHelper.deleteBooks(selectedItems, (boolean) event.getData());
                 break;
+            case R.id.action_open_activity:
+                //noinspection unchecked
+                Util.startAct(getActivity(), (Class<? extends Activity>) event.getData(), null);
+                return;
         }
         if (actionMode != null) actionMode.finish();
     }
@@ -375,7 +379,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
         switch (event.getType()) {
             case NORMAL:
                 // Open the book file.
-                ActionHelper.openBookUsingIntent(book, getContext());
+                ActionHelper.openBookUsingIntent(book);
                 break;
             case LONG:
                 // Start multi-select.
@@ -398,7 +402,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
     @OnClick(R.id.fab)
     void onFabClick() {
         if (books != null && books.isValid() && !books.isEmpty())
-            ActionHelper.openBookUsingIntent(books.first(), getContext());
+            ActionHelper.openBookUsingIntent(books.first());
     }
 
     /**
@@ -466,12 +470,6 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
         // at the position in the event.
         if (event.getPosition() == UpdatePosEvent.ALL_POSITIONS) adapter.notifyDataSetChanged();
         else adapter.notifyItemChanged(event.getPosition());
-    }
-
-    @Override
-    public Activity getCtx() {
-        // Provide our activity context to the ReImporter so that it can draw its progress dialog.
-        return getActivity();
     }
 
     @Override

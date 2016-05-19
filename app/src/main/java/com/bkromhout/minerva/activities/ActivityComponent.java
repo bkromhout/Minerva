@@ -10,7 +10,7 @@ import com.bkromhout.minerva.mvp.PerActivity;
 import dagger.Component;
 
 /**
- * Created by bkromhout on 5/18/16.
+ * Component to use for injecting things which rely on the activity lifecycle.
  */
 @PerActivity
 @Component(dependencies = {AppComponent.class}, modules = {ActivityModule.class})

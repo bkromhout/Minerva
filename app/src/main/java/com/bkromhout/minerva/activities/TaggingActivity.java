@@ -148,7 +148,7 @@ public class TaggingActivity extends AppCompatActivity implements SnackKiosk.Sna
         // Set up toolbar.
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
-        getSupportActionBar().setHomeAsUpIndicator(Util.getTintedDrawable(this, R.drawable.ic_close,
+        getSupportActionBar().setHomeAsUpIndicator(Util.getTintedDrawable(R.drawable.ic_close,
                 R.color.textColorPrimary));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -186,7 +186,7 @@ public class TaggingActivity extends AppCompatActivity implements SnackKiosk.Sna
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        Util.forceMenuIcons(menu, this, getClass().getSimpleName());
+        Util.forceMenuIcons(menu, getClass().getSimpleName());
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -315,6 +315,10 @@ public class TaggingActivity extends AppCompatActivity implements SnackKiosk.Sna
                 break;
             case R.id.action_delete_tag:
                 ActionHelper.deleteTag(realm, tempTag);
+                break;
+            case R.id.action_open_activity:
+                //noinspection unchecked
+                Util.startAct(this, (Class<? extends Activity>) event.getData(), null);
                 break;
         }
     }
@@ -451,11 +455,6 @@ public class TaggingActivity extends AppCompatActivity implements SnackKiosk.Sna
     @Override
     public View getSnackbarAnchorView() {
         return coordinator;
-    }
-
-    @Override
-    public Activity getCtx() {
-        return this;
     }
 
     /**

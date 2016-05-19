@@ -1,6 +1,5 @@
 package com.bkromhout.minerva.activities;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -138,10 +137,5 @@ public class WelcomeActivity extends PermCheckingActivity implements SnackKiosk.
     @Override
     public View getSnackbarAnchorView() {
         return base;
-    }
-
-    @Override
-    public Activity getCtx() {
-        return this;
     }
 }

@@ -1,6 +1,5 @@
 package com.bkromhout.minerva.activities;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
@@ -487,10 +486,5 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
     @Override
     public View getSnackbarAnchorView() {
         return base;
-    }
-
-    @Override
-    public Activity getCtx() {
-        return this;
     }
 }

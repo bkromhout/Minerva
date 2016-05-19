@@ -1,6 +1,5 @@
 package com.bkromhout.minerva.activities;
 
-import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -125,11 +124,6 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
     @Override
     public View getSnackbarAnchorView() {
         return coordinator;
-    }
-
-    @Override
-    public Activity getCtx() {
-        return this;
     }
 
     /**

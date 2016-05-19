@@ -1,7 +1,6 @@
 package com.bkromhout.minerva.data;
 
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.ColorInt;
 import android.support.design.widget.Snackbar;
@@ -262,9 +261,8 @@ public class ActionHelper {
      * Open the book's real file in an application which will allow the user to read it. This will also put the book at
      * the top of the recents list.
      * @param book    Book to open.
-     * @param context The context to use to open the file.
      */
-    public static void openBookUsingIntent(RBook book, Context context) {
+    public static void openBookUsingIntent(RBook book) {
         if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
         File file = Util.getFileFromRelPath(book.relPath);
 
@@ -273,14 +271,14 @@ public class ActionHelper {
 
         // Construct intent to use to open the file.
         Intent newIntent = new Intent(Intent.ACTION_VIEW);
-        newIntent.setDataAndType(FileProvider.getUriForFile(context, "com.bkromhout.minerva.Minerva.files", file),
+        newIntent.setDataAndType(FileProvider.getUriForFile(Minerva.get(), "com.bkromhout.minerva.Minerva.files", file),
                 MimeTypeMap.getSingleton().getMimeTypeFromExtension(Util.getExtFromFName(file.getName())));
         newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION |
                 Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
         try (Realm realm = Realm.getDefaultInstance()) {
             // Try to open the book file in the app of the user's choice.
-            context.startActivity(newIntent);
+            Minerva.get().startActivity(newIntent);
             // Put book at the top of the recents list.
             realm.executeTransaction(tRealm -> {
                 book.lastReadDate = Calendar.getInstance().getTime();
