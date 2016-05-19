@@ -28,9 +28,6 @@ import java.util.*;
  * Convenience class which provides static methods to execute actions, preventing the need for duplicate code.
  */
 public class ActionHelper {
-
-    //public static void handleActionEvent(ActionEvent event, Realm realm, )
-
     /*
      * Book Actions.
      */
