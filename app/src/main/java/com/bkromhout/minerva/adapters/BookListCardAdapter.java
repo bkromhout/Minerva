@@ -7,8 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -120,7 +120,7 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
         @BindView(R.id.card)
         public CardView cardView;
         @BindView(R.id.content)
-        public RelativeLayout content;
+        public LinearLayout content;
         @BindView(R.id.list_name)
         public TextView tvListName;
         @BindView(R.id.smart_list_icon)
