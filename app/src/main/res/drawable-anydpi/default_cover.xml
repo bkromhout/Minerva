@@ -11,7 +11,7 @@
 
     <item
             android:id="@+id/shadow1"
-            android:top="236dp"
+            android:top="238dp"
             android:right="-94dp"
             android:height="12dp">
         <rotate
@@ -21,7 +21,7 @@
             <shape android:shape="rectangle">
                 <gradient
                         android:type="linear"
-                        android:endColor="@color/shadow_gradient_color"
+                        android:endColor="@color/shadow_heavy"
                         android:angle="90"/>
             </shape>
         </rotate>
@@ -33,9 +33,9 @@
     <item
             android:id="@+id/shadow2"
             android:top="82dp"
-            android:left="101dp"
+            android:left="100dp"
             android:right="-80dp"
-            android:height="10dp">
+            android:height="8dp">
         <rotate
                 android:pivotX="0"
                 android:pivotY="0"
@@ -43,11 +43,12 @@
             <shape android:shape="rectangle">
                 <gradient
                         android:type="linear"
-                        android:startColor="@color/shadow_gradient_color"
+                        android:startColor="@color/shadow_light"
                         android:angle="90"/>
             </shape>
         </rotate>
     </item>
+
     <item
             android:id="@+id/layer2"
             android:drawable="@drawable/default_cover_layer_2"/>
@@ -65,7 +66,7 @@
             <shape android:shape="rectangle">
                 <gradient
                         android:type="linear"
-                        android:startColor="@color/shadow_gradient_color"
+                        android:startColor="@color/shadow_light"
                         android:angle="90"/>
             </shape>
         </rotate>
@@ -83,7 +84,7 @@
             <shape android:shape="rectangle">
                 <gradient
                         android:type="linear"
-                        android:endColor="@color/shadow_gradient_color"
+                        android:endColor="@color/shadow_light"
                         android:angle="90"/>
             </shape>
         </rotate>
@@ -105,7 +106,7 @@
             <shape android:shape="rectangle">
                 <gradient
                         android:type="linear"
-                        android:endColor="@color/shadow_gradient_color"
+                        android:endColor="@color/shadow_heavy"
                         android:angle="90"/>
             </shape>
         </rotate>
