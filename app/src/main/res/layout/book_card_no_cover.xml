@@ -13,96 +13,86 @@
             android:layout_height="match_parent"
             android:padding="8dp">
 
-        <RelativeLayout
-                android:id="@+id/details"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
-                android:layout_toStartOf="@+id/buttons">
-
-            <TextView
-                    android:id="@+id/title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:textStyle="bold"
-                    style="@style/TextAppearance.AppCompat.Medium"
-                    tools:text="@string/dummy_title"/>
-
-            <TextView
-                    android:id="@+id/author"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/title"
-                    android:layout_toStartOf="@id/rating"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    tools:text="@string/dummy_author"/>
-
-            <RatingBar
-                    android:id="@+id/rating"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_above="@id/sep1"
-                    android:progressTint="@color/grey200"
-                    android:progressBackgroundTint="@color/grey700"
-                    android:numStars="5"
-                    android:rating="3"
-                    style="?android:attr/ratingBarStyleSmall"/>
-
-            <View
-                    android:id="@+id/sep1"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_below="@id/author"
-                    android:background="@color/grey700"/>
-
-            <TextView
-                    android:id="@+id/description"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/sep1"
-                    android:maxLines="3"
-                    android:ellipsize="end"
-                    android:textSize="13sp"
-                    android:textColor="@color/grey500"
-                    tools:text="@string/dummy_desc"/>
-        </RelativeLayout>
-
-        <android.support.v7.widget.ButtonBarLayout
-                android:id="@id/buttons"
+        <ImageButton
+                android:id="@+id/btn_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:orientation="vertical">
+                android:tint="@color/grey200"
+                android:src="@drawable/ic_info_unfilled"
+                android:contentDescription="@string/acc_book_info"
+                style="@style/ImageButtonRippleBg"/>
 
-            <ImageButton
-                    android:id="@+id/btn_info"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:tint="@color/textColorSecondary"
-                    android:src="@drawable/ic_info_unfilled"
-                    android:contentDescription="@string/acc_book_info"
-                    style="@style/ImageButtonRippleBg"/>
+        <ImageButton
+                android:id="@+id/btn_quick_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/btn_info"
+                android:layout_alignParentEnd="true"
+                android:tint="@color/grey200"
+                android:src="@drawable/ic_tags"
+                android:contentDescription="@string/acc_quick_tag"
+                style="@style/ImageButtonRippleBg"/>
 
-            <ImageButton
-                    android:id="@+id/btn_quick_tag"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:tint="@color/textColorSecondary"
-                    android:src="@drawable/ic_tags"
-                    android:contentDescription="@string/acc_quick_tag"
-                    style="@style/ImageButtonRippleBg"/>
-        </android.support.v7.widget.ButtonBarLayout>
+        <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/btn_info"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textStyle="bold"
+                style="@style/TextAppearance.AppCompat.Medium"
+                tools:text="@string/dummy_title"/>
+
+        <TextView
+                android:id="@+id/author"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/title"
+                android:layout_toStartOf="@id/rating"
+                android:maxLines="1"
+                android:ellipsize="end"
+                tools:text="@string/dummy_author"/>
+
+        <RatingBar
+                android:id="@+id/rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/btn_info"
+                android:layout_above="@id/sep1"
+                android:progressTint="@color/grey200"
+                android:progressBackgroundTint="@color/grey700"
+                android:numStars="5"
+                android:rating="3"
+                style="?android:attr/ratingBarStyleSmall"/>
+
+        <View
+                android:id="@+id/sep1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/author"
+                android:layout_toStartOf="@id/btn_info"
+                android:background="@color/grey700"/>
+
+        <TextView
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/sep1"
+                android:layout_toStartOf="@id/btn_quick_tag"
+                android:maxLines="3"
+                android:ellipsize="end"
+                android:textSize="13sp"
+                android:textColor="@color/grey500"
+                tools:text="@string/dummy_desc"/>
 
         <TextView
                 android:id="@+id/tags"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="2dp"
-                android:layout_below="@id/details"
+                android:layout_marginTop="4dp"
+                android:layout_below="@id/description"
                 android:textSize="10sp"
                 android:maxLines="1"/>
     </RelativeLayout>
