@@ -16,12 +16,13 @@
 
         <android.support.percent.PercentRelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:paddingTop="@dimen/activity_vertical_margin"
                 android:paddingBottom="@dimen/activity_vertical_margin"
-                android:layout_gravity="center_vertical">
+                android:elevation="4dp"
+                android:gravity="center_vertical">
 
             <android.support.percent.PercentRelativeLayout
                     android:id="@+id/about_name"

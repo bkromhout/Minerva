@@ -13,6 +13,9 @@ import uk.co.senab.photoview.PhotoView;
 
 import java.io.File;
 
+/**
+ * Very simple activity used to display a book's cover image in full screen.
+ */
 public class CoverActivity extends AppCompatActivity {
     /**
      * Start the {@link CoverActivity} to display the cover image for an {@link RBook}.
