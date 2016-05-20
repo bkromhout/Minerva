@@ -4,10 +4,15 @@
     <color name="green100">#C8E6C9</color>
     <color name="green500">#4CAF50</color>
     <color name="green700">#388E3C</color>
+    <color name="green800">#2E7D32</color>
 
     <color name="redA200">#FF5252</color>
 
     <color name="blue700">#1976D2</color>
+
+    <color name="blueGrey800">#37474F</color>
+
+    <color name="brown900">#3E2723</color>
 
     <color name="white12p">#1FFFFFFF</color>
 
@@ -26,6 +31,8 @@
     <color name="greyDE">#DEDEDE</color>
     <color name="grey66">#666666</color>
     <color name="grey30">#303030</color>
+    <color name="shadow_gradient_color">#80000000</color>
+    <color name="shadow_gradient_color2">#50000000</color>
 
     <!-- Prevalent App Colors -->
     <color name="colorPrimary">@color/green500</color>

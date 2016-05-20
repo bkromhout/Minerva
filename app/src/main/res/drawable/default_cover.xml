@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/base">
+        <shape android:shape="rectangle">
+            <size
+                    android:width="@dimen/default_cover_dimen"
+                    android:height="@dimen/default_cover_dimen"/>
+            <solid android:color="@color/blueGrey800"/>
+        </shape>
+    </item>
+
+    <item
+            android:id="@+id/shadow1"
+            android:top="236dp"
+            android:right="-94dp"
+            android:height="12dp">
+        <rotate
+                android:pivotX="0"
+                android:pivotY="0"
+                android:fromDegrees="-45">
+            <shape android:shape="rectangle">
+                <gradient
+                        android:type="linear"
+                        android:endColor="@color/shadow_gradient_color"
+                        android:angle="90"/>
+            </shape>
+        </rotate>
+    </item>
+    <item
+            android:id="@+id/layer1"
+            android:drawable="@drawable/default_cover_layer_1"/>
+
+    <item
+            android:id="@+id/shadow2"
+            android:top="82dp"
+            android:left="101dp"
+            android:right="-80dp"
+            android:height="10dp">
+        <rotate
+                android:pivotX="0"
+                android:pivotY="0"
+                android:fromDegrees="45">
+            <shape android:shape="rectangle">
+                <gradient
+                        android:type="linear"
+                        android:startColor="@color/shadow_gradient_color"
+                        android:angle="90"/>
+            </shape>
+        </rotate>
+    </item>
+    <item
+            android:id="@+id/layer2"
+            android:drawable="@drawable/default_cover_layer_2"/>
+
+    <item
+            android:id="@+id/shadow3_1"
+            android:top="36.5dp"
+            android:left="10dp"
+            android:right="-74dp"
+            android:height="12dp">
+        <rotate
+                android:pivotX="0"
+                android:pivotY="0"
+                android:fromDegrees="45">
+            <shape android:shape="rectangle">
+                <gradient
+                        android:type="linear"
+                        android:startColor="@color/shadow_gradient_color"
+                        android:angle="90"/>
+            </shape>
+        </rotate>
+    </item>
+    <item
+            android:id="@+id/shadow3_2"
+            android:top="55dp"
+            android:left="-37dp"
+            android:right="8dp"
+            android:height="12dp">
+        <rotate
+                android:pivotX="0"
+                android:pivotY="0"
+                android:fromDegrees="45">
+            <shape android:shape="rectangle">
+                <gradient
+                        android:type="linear"
+                        android:endColor="@color/shadow_gradient_color"
+                        android:angle="90"/>
+            </shape>
+        </rotate>
+    </item>
+    <item
+            android:id="@+id/layer3"
+            android:drawable="@drawable/default_cover_layer_3"/>
+
+    <item
+            android:id="@+id/shadow4"
+            android:top="205dp"
+            android:left="-12dp"
+            android:right="-41dp"
+            android:height="12dp">
+        <rotate
+                android:pivotX="0"
+                android:pivotY="0"
+                android:fromDegrees="-45">
+            <shape android:shape="rectangle">
+                <gradient
+                        android:type="linear"
+                        android:endColor="@color/shadow_gradient_color"
+                        android:angle="90"/>
+            </shape>
+        </rotate>
+    </item>
+    <item
+            android:id="@+id/layer4"
+            android:drawable="@drawable/default_cover_layer_4"/>
+</layer-list>

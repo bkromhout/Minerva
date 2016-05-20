@@ -20,7 +20,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_alignParentStart="true"
                 android:background="@color/grey800"
-                android:src="@drawable/epub_logo_color"
+                android:src="@drawable/default_cover"
+                android:scaleType="centerCrop"
                 android:contentDescription="@string/acc_book_cover"/>
 
         <android.support.v7.widget.ButtonBarLayout

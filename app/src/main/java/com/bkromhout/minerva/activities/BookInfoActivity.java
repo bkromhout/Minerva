@@ -190,7 +190,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
                  .load(DataUtils.getCoverImageFile(book.relPath))
                  .centerCrop()
                  .into(coverImage);
-        } else coverImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.epub_logo_color));
+        } else coverImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.default_cover));
         // Set up the rest of the UI.
         updateUi();
 

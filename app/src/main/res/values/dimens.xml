@@ -45,4 +45,7 @@
 
     <dimen name="list_card_height">56dp</dimen>
     <dimen name="tag_card_height">48dp</dimen>
+
+    <!-- Other -->
+    <dimen name="default_cover_dimen">256dp</dimen>
 </resources>
