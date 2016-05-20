@@ -130,11 +130,6 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
      */
     private int posToUpdate;
     /**
-     * If true, send a {@link UpdatePosEvent} to the {@link com.bkromhout.minerva.fragments.AllListsFragment} when we
-     * exit this activity.
-     */
-    private boolean needsPosUpdate = false;
-    /**
      * Realm instance.
      */
     private Realm realm;
@@ -197,9 +192,6 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         // Add the change listener to the RBook.
         book.addChangeListener(bookListener);
 
-        // If we have a saved instance state, check whether we will still need to send a position update upon finishing.
-        if (savedInstanceState != null && savedInstanceState.getBoolean(C.NEEDS_POS_UPDATE)) needsPosUpdate = true;
-
         // Handle permissions. Make sure we continue a request process if applicable.
         initAndContinuePermChecksIfNeeded();
     }
@@ -236,15 +228,8 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(C.NEEDS_POS_UPDATE, needsPosUpdate);
-    }
-
-    @Override
     public void onStop() {
         super.onStop();
-        EventBus.getDefault().postSticky(new UpdatePosEvent(posToUpdate));
         EventBus.getDefault().unregister(this);
     }
 
@@ -258,9 +243,6 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
             realm.close();
             realm = null;
         }
-        // If we need to update the book's card, send the sticky event now (unless there's already a sticky event.)
-        if (needsPosUpdate && EventBus.getDefault().getStickyEvent(UpdatePosEvent.class) == null)
-            EventBus.getDefault().postSticky(new UpdatePosEvent(posToUpdate));
     }
 
     @Override
@@ -312,8 +294,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
                 break;
             case R.id.action_rate:
                 ActionHelper.rateBooks(realm, Collections.singletonList(book), (Integer) event.getData());
-                // The rating changed, so we'll need to update the book's card.
-                needsPosUpdate = true;
+                EventBus.getDefault().post(new UpdatePosEvent(posToUpdate));
                 break;
             case R.id.action_mark_as:
                 int whichMark = (int) event.getData();
