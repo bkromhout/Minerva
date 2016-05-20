@@ -99,7 +99,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
     /**
      * Type of objects in the adapter.
      */
-    private ModelType modelType = ModelType.BOOK;
+    private ModelType modelType = ModelType.BOOK_LIST_ITEM;
     /**
      * The list of {@link RBookListItem}s being shown.
      */
@@ -221,7 +221,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
         } else {
             // Normal list.
             items = srcList.listItems.where().findAllSorted("pos");
-            modelType = ModelType.BOOK;
+            modelType = ModelType.BOOK_LIST_ITEM;
             adapter = makeAdapter();
             recyclerView.setAdapter(adapter);
         }
@@ -542,8 +542,8 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
     private List<RBook> getSelectedBooks() {
         if (modelType == ModelType.BOOK)
             return adapter.getSelectedRealmObjects();
-        else if (modelType == ModelType.BOOK_LIST_ITEM) return DataUtils.booksFromBookListItems(
-                adapter.getSelectedRealmObjects());
+        else if (modelType == ModelType.BOOK_LIST_ITEM)
+            return DataUtils.booksFromBookListItems(adapter.getSelectedRealmObjects());
         else throw new IllegalArgumentException("Invalid type.");
     }
 
