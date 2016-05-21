@@ -1,5 +1,7 @@
 package com.bkromhout.minerva.fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -424,9 +426,25 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
     }
 
     private void activateFabs(boolean activate) {
-        maskView.setVisibility(activate ? View.VISIBLE : View.GONE);
-        ObjectAnimator.ofFloat(maskView, "alpha", activate ? 0f : 1f, activate ? 1f : 0f)
-                      .setDuration(miniFabAnimDuration).start();
+        ObjectAnimator maskAnimator = ObjectAnimator.ofFloat(maskView, "alpha", activate ? 0f : 1f, activate ? 1f : 0f)
+                                                    .setDuration(miniFabAnimDuration);
+        maskAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                if (activate) maskView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                if (!activate) maskView.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (!activate) maskView.setVisibility(View.GONE);
+            }
+        });
+        maskAnimator.start();
         fabNewList.setActivated(activate);
         // Get the animation which will be used to expand/collapse the mini FAB, then start it.
         ObjectAnimator.ofFloat(fabNewSmartList, "translationY", activate ? 0f : miniFabOffset,
