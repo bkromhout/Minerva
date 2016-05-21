@@ -409,7 +409,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
             language.setText(temp);
         }
 
-        temp = book.language;
+        temp = book.publisher;
         if (temp == null || temp.isEmpty()) togglePart(Part.PUBLISHER, false);
         else {
             togglePart(Part.PUBLISHER, true);
