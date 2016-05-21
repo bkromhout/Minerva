@@ -151,7 +151,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
                 BookCardClickEvent.Type.QUICK_TAG, book.relPath, position)));
 
         // Fill in data.
-        resolvedVH.tvDesc.setText(book.desc);
+        resolvedVH.tvDesc.setText(DataUtils.stripHtmlTags(book.desc)); // Strip HTML tags since we have limited space.
         resolvedVH.rbRating.setRating(book.rating);
         // Create a spannable string for the tag textview.
         resolvedVH.tvTags.setText(TagBackgroundSpan.getSpannedTagString(book, resolvedVH.tvTags.getMaxLines()),

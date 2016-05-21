@@ -1,5 +1,7 @@
 package com.bkromhout.minerva.data;
 
+import android.text.Html;
+import android.text.Spanned;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.enums.ModelType;
 import com.bkromhout.minerva.realm.RBook;
@@ -114,6 +116,28 @@ public class DataUtils {
             return bookDate.getValue();
         }
         return null;
+    }
+
+    /**
+     * Take a string which may or may not contain HTML tags and changes it into a spanned string which respects HTML
+     * tags.
+     * @param s String to convert to a Spanned.
+     * @return Spanned string, or {@code null} if {@code s} is {@code null} or empty.
+     */
+    public static Spanned toSpannedHtml(String s) {
+        if (s == null || s.isEmpty()) return null;
+        return Html.fromHtml(s);
+    }
+
+    /**
+     * Take a string which may or may not contain HTML tags and remove them. Makes no attempts to do any other
+     * cleaning.
+     * @param s String to strip of HTML tags.
+     * @return Stripped string, or {@code null} if {@code s} is {@code null} or empty.
+     */
+    public static String stripHtmlTags(String s) {
+        if (s == null || s.isEmpty()) return null;
+        return Html.fromHtml(s).toString();
     }
 
     /**

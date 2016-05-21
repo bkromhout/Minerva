@@ -11,6 +11,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.method.MovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -186,6 +188,10 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
                  .centerCrop()
                  .into(coverImage);
         } else coverImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.default_cover));
+        // Set the movement methods for the certain TextViews just once.
+        MovementMethod mm = LinkMovementMethod.getInstance();
+        desc.setMovementMethod(mm);
+        publisher.setMovementMethod(mm);
         // Set up the rest of the UI.
         updateUi();
 
@@ -355,7 +361,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         // Fill in common views using book data.
         title.setText(book.title);
         author.setText(book.author);
-        desc.setText(book.desc);
+        desc.setText(DataUtils.toSpannedHtml(book.desc)); // Allow HTML tags in the description.
         chapCount.setText(String.valueOf(book.numChaps));
         rating.setRating(book.rating);
         path.setText(Minerva.prefs().getLibDir("") + book.relPath);
@@ -413,7 +419,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         if (temp == null || temp.isEmpty()) togglePart(Part.PUBLISHER, false);
         else {
             togglePart(Part.PUBLISHER, true);
-            publisher.setText(temp);
+            publisher.setText(DataUtils.toSpannedHtml(temp)); // Allow links in publisher text.
         }
 
         temp = book.pubDate;
