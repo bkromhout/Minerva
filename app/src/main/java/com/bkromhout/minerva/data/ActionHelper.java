@@ -242,6 +242,7 @@ public class ActionHelper {
 
         try (Realm realm = Realm.getDefaultInstance()) {
             // Try to open the book file in the app of the user's choice.
+            // TODO Animate the clicked view to fill the screen as a transition out??
             Minerva.get().startActivity(newIntent);
             // Put book at the top of the recents list.
             realm.executeTransaction(tRealm -> {
