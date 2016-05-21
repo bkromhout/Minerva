@@ -38,9 +38,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
-        debug {
+        // Workaround for https://code.google.com/p/android/issues/detail?id=123771 if we need coverage.
+        instrumented.initWith(buildTypes.debug)
+        instrumented {
             testCoverageEnabled true
         }
+
     }
 
     compileOptions {
