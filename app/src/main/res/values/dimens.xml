@@ -45,5 +45,6 @@
     <dimen name="tag_card_height">48dp</dimen>
 
     <!-- Other -->
-    <dimen name="default_cover_dimen">160dp</dimen>
+    <dimen name="default_cover_dimen">128dp</dimen>
+    <item name="default_cover_viewport_dimen" format="float" type="dimen">128.0</item>
 </resources>

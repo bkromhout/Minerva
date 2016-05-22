@@ -2,9 +2,9 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
         android:width="@dimen/default_cover_dimen"
         android:height="@dimen/default_cover_dimen"
-        android:viewportWidth="160.0"
-        android:viewportHeight="160.0">
+        android:viewportWidth="@dimen/default_cover_viewport_dimen"
+        android:viewportHeight="@dimen/default_cover_viewport_dimen">
     <path
             android:fillColor="@color/grey900"
-            android:pathData="M160 160v-5l-103.125 -103.125 -57.5 62.5V160z"/>
+            android:pathData="@string/def_cover_layer_2"/>
 </vector>

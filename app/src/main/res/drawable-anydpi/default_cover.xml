@@ -11,9 +11,9 @@
 
     <item
             android:id="@+id/shadow1"
-            android:top="148.75dp"
-            android:right="-58.75dp"
-            android:height="7.5dp">
+            android:top="119dp"
+            android:right="-47dp"
+            android:height="6dp">
         <rotate
                 android:pivotX="0"
                 android:pivotY="0"
@@ -32,10 +32,10 @@
 
     <item
             android:id="@+id/shadow2"
-            android:top="51.25dp"
-            android:left="62.5dp"
-            android:right="-50dp"
-            android:height="5dp">
+            android:top="41dp"
+            android:left="50dp"
+            android:right="-40dp"
+            android:height="4dp">
         <rotate
                 android:pivotX="0"
                 android:pivotY="0"
@@ -55,10 +55,10 @@
 
     <item
             android:id="@+id/shadow3_1"
-            android:top="22.8125dp"
-            android:left="6.25dp"
-            android:right="-46.25dp"
-            android:height="7.5dp">
+            android:top="18dp"
+            android:left="5dp"
+            android:right="-32dp"
+            android:height="6dp">
         <rotate
                 android:pivotX="0"
                 android:pivotY="0"
@@ -73,10 +73,10 @@
     </item>
     <item
             android:id="@+id/shadow3_2"
-            android:top="34.375dp"
-            android:left="-23.125dp"
-            android:right="5dp"
-            android:height="7.5dp">
+            android:top="27dp"
+            android:left="-19dp"
+            android:right="4dp"
+            android:height="6dp">
         <rotate
                 android:pivotX="0"
                 android:pivotY="0"
@@ -95,10 +95,10 @@
 
     <item
             android:id="@+id/shadow4"
-            android:top="128.125dp"
-            android:left="-7.5dp"
-            android:right="-25.625dp"
-            android:height="7.5dp">
+            android:top="102dp"
+            android:left="-6dp"
+            android:right="-20dp"
+            android:height="6dp">
         <rotate
                 android:pivotX="0"
                 android:pivotY="0"
