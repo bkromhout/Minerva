@@ -7,6 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
+        android:transitionName="book_info_bg"
         tools:context=".activities.BookInfoActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -37,6 +38,7 @@
                     android:contentDescription="@string/acc_book_cover"
                     android:fitsSystemWindows="true"
                     android:src="@drawable/default_cover"
+                    android:transitionName="cover_image"
                     app:layout_collapseMode="parallax"/>
 
             <android.support.v7.widget.Toolbar
@@ -50,7 +52,6 @@
 
     <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
-            style="@style/Widget.Design.FloatingActionButton"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:layout_margin="@dimen/fab_margin"
@@ -61,14 +62,13 @@
             android:clickable="true"/>
 
     <android.support.v4.widget.NestedScrollView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <RelativeLayout
+                android:id="@+id/slide_in_content"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingStart="@dimen/activity_horizontal_margin"
