@@ -9,11 +9,8 @@ import java.util.ArrayList;
 
 /**
  * Things to help us with animation.
- * <p>
- * Some of the things here are taken from https://github.com/nickbutcher/plaid.
  */
 public class AnimUtils {
-
     /**
      * https://halfthought.wordpress.com/2014/11/07/reveal-transition/
      * <p>
