@@ -60,7 +60,8 @@
             app:layout_anchorGravity="bottom|right|end"
             android:tint="@color/textColorPrimary"
             android:src="@drawable/ic_read"
-            android:clickable="true"/>
+            android:clickable="true"
+            android:visibility="invisible"/>
 
     <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"

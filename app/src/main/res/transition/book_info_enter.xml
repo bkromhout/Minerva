@@ -4,16 +4,6 @@
         android:interpolator="@android:interpolator/fast_out_slow_in"
         android:transitionOrdering="together">
 
-    <!--<transition
-            class="com.bkromhout.minerva.ui.transitions.Pop"
-            android:startDelay="300"
-            android:duration="300"
-            android:interpolator="@android:interpolator/linear_out_slow_in">
-        <targets>
-            <target android:targetId="@id/fab"/>
-        </targets>
-    </transition>-->
-
     <transitionSet android:duration="300">
         <targets>
             <target android:targetId="@id/slide_in_content"/>
@@ -21,6 +11,7 @@
         <fade/>
         <slide
                 android:slideEdge="bottom"
+                android:startDelay="200"
                 android:interpolator="@android:interpolator/linear_out_slow_in"/>
     </transitionSet>
 

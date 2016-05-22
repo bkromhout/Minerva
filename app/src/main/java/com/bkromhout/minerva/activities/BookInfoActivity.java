@@ -1,5 +1,7 @@
 package com.bkromhout.minerva.activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -374,12 +376,38 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         Transition returnTrans = includeCover ? ti.inflateTransition(R.transition.book_info_shared_return_with_cover) :
                 ti.inflateTransition(R.transition.book_info_shared_return);
 
+        // Add listener for shared element enter transition.
+        enterTrans.addListener(new AnimUtils.TransitionListenerAdapter() {
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                super.onTransitionEnd(transition);
+                // Show the FAB once the enter transition finishes.
+                fab.show();
+            }
+        });
+
+        // Add listener for shared element return transition.
         returnTrans.addListener(new AnimUtils.TransitionListenerAdapter() {
             @Override
             public void onTransitionStart(Transition transition) {
                 super.onTransitionStart(transition);
                 // Hide the FAB so that it doesn't flicker-jump its way across the screen.
-                fab.hide();
+                if (fab.getVisibility() == View.VISIBLE) {
+                    //fab.hide();
+                    fab.animate()
+                       .scaleX(0f)
+                       .scaleY(0f)
+                       .alpha(0f)
+                       .setDuration(200)
+                       .setListener(new AnimatorListenerAdapter() {
+                           @Override
+                           public void onAnimationEnd(Animator animation) {
+                               super.onAnimationEnd(animation);
+                               fab.setVisibility(View.INVISIBLE);
+                           }
+                       })
+                       .start();
+                }
             }
         });
 
