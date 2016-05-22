@@ -23,8 +23,7 @@
                 android:background="@color/grey800"
                 android:src="@drawable/default_cover"
                 android:scaleType="centerCrop"
-                android:contentDescription="@string/acc_book_cover"
-                android:transitionName="cover_image"/>
+                android:contentDescription="@string/acc_book_cover"/>
 
         <ImageButton
                 android:id="@+id/btn_info"
