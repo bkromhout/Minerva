@@ -36,6 +36,7 @@ import com.bkromhout.minerva.enums.MarkType;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.realm.RBook;
+import com.bkromhout.minerva.ui.AnimUtils;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.ui.TagBackgroundSpan;
 import com.bkromhout.minerva.util.Dialogs;
@@ -372,6 +373,15 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
                 ti.inflateTransition(R.transition.book_info_shared_enter);
         Transition returnTrans = includeCover ? ti.inflateTransition(R.transition.book_info_shared_return_with_cover) :
                 ti.inflateTransition(R.transition.book_info_shared_return);
+
+        returnTrans.addListener(new AnimUtils.TransitionListenerAdapter() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+                super.onTransitionStart(transition);
+                // Hide the FAB so that it doesn't flicker-jump its way across the screen.
+                fab.hide();
+            }
+        });
 
         Window window = getWindow();
         window.setSharedElementEnterTransition(enterTrans);

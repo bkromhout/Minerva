@@ -2,6 +2,7 @@ package com.bkromhout.minerva.ui;
 
 import android.animation.Animator;
 import android.animation.TimeInterpolator;
+import android.transition.Transition;
 import android.util.ArrayMap;
 
 import java.util.ArrayList;
@@ -172,6 +173,32 @@ public class AnimUtils {
         @Override
         public void onAnimationRepeat(Animator animator) {
             mListener.onAnimationRepeat(mAnimator);
+        }
+    }
+
+    /**
+     * Shim which wraps {@link android.transition.Transition.TransitionListener} so that we can just implement the
+     * methods that we want.
+     */
+    public static class TransitionListenerAdapter implements Transition.TransitionListener {
+        @Override
+        public void onTransitionStart(Transition transition) {
+        }
+
+        @Override
+        public void onTransitionEnd(Transition transition) {
+        }
+
+        @Override
+        public void onTransitionCancel(Transition transition) {
+        }
+
+        @Override
+        public void onTransitionPause(Transition transition) {
+        }
+
+        @Override
+        public void onTransitionResume(Transition transition) {
         }
     }
 }
