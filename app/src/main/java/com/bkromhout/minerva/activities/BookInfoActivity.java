@@ -1,7 +1,5 @@
 package com.bkromhout.minerva.activities;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -392,22 +390,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
             public void onTransitionStart(Transition transition) {
                 super.onTransitionStart(transition);
                 // Hide the FAB so that it doesn't flicker-jump its way across the screen.
-                if (fab.getVisibility() == View.VISIBLE) {
-                    //fab.hide();
-                    fab.animate()
-                       .scaleX(0f)
-                       .scaleY(0f)
-                       .alpha(0f)
-                       .setDuration(200)
-                       .setListener(new AnimatorListenerAdapter() {
-                           @Override
-                           public void onAnimationEnd(Animator animation) {
-                               super.onAnimationEnd(animation);
-                               fab.setVisibility(View.INVISIBLE);
-                           }
-                       })
-                       .start();
-                }
+                fab.setVisibility(View.INVISIBLE);
             }
         });
 
