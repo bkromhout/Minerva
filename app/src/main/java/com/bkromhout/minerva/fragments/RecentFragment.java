@@ -19,7 +19,6 @@ import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
-import com.bkromhout.minerva.activities.BookInfoActivity;
 import com.bkromhout.minerva.activities.TaggingActivity;
 import com.bkromhout.minerva.adapters.BaseBookCardAdapter;
 import com.bkromhout.minerva.adapters.BookCardAdapter;
@@ -377,10 +376,6 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
                 // Start multi-select.
                 adapter.toggleSelected(event.getPosition());
                 startActionMode();
-                break;
-            case INFO:
-                // Open BookInfoActivity.
-                BookInfoActivity.start(getActivity(), event.getRelPath(), event.getPosition());
                 break;
             case QUICK_TAG:
                 TaggingActivity.start(this, book);

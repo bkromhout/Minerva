@@ -626,10 +626,6 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 adapter.toggleSelected(event.getPosition());
                 startActionMode();
                 break;
-            case INFO:
-                // Open BookInfoActivity.
-                BookInfoActivity.start(this, event.getRelPath(), event.getPosition());
-                break;
             case QUICK_TAG:
                 TaggingActivity.start(this, book);
                 break;

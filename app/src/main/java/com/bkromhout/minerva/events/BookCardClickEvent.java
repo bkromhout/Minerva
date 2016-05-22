@@ -8,7 +8,7 @@ public class BookCardClickEvent {
      * The various types of clicks that might have happened.
      */
     public enum Type {
-        NORMAL, LONG, INFO, QUICK_TAG
+        NORMAL, LONG, QUICK_TAG
     }
 
     /**

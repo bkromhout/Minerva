@@ -35,7 +35,7 @@ public class TagCardAdapter extends RealmRecyclerViewAdapter<RTag, RecyclerView.
     /**
      * Help our cards ripple.
      */
-    private static RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.card);
+    private static RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.container);
     /**
      * List of items which are checked. The strings in this list should correspond to names of {@link RTag}s.
      */
@@ -148,7 +148,7 @@ public class TagCardAdapter extends RealmRecyclerViewAdapter<RTag, RecyclerView.
      * TagCardVH class.
      */
     public class TagCardVH extends RecyclerView.ViewHolder {
-        @BindView(R.id.card)
+        @BindView(R.id.container)
         CardView card;
         @BindView(R.id.tag_name)
         TriStateCheckBox tag;

@@ -1,7 +1,8 @@
 package com.bkromhout.minerva.activities;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,6 +14,8 @@ import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
+import android.transition.TransitionInflater;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,6 +52,8 @@ import java.util.List;
  * Displays information for some {@link com.bkromhout.minerva.realm.RBook}.
  */
 public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk.Snacker {
+    private static final String CARDS_HAVE_COVERS = "card_have_covers";
+
     /**
      * Part of the information for which views are conditionally shown.
      * @see #togglePart(Part, boolean)
@@ -60,7 +65,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
     // AppBarLayout views.
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.coordinator)
+    @BindView(R.id.container)
     CoordinatorLayout coordinator;
     @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsibleToolbar;
@@ -146,39 +151,47 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
 
     /**
      * Start the {@link BookInfoActivity} for the {@link RBook} with the given {@code relPath}.
-     * @param context   Context to use to start the activity.
-     * @param relPath   Relative path which will be used to get the {@link RBook}.
-     * @param updatePos Position which should be updated when the activity closes.
+     * @param activity       Context to use to start the activity.
+     * @param relPath        Relative path which will be used to get the {@link RBook}.
+     * @param updatePos      Position which should be updated when the activity closes.
+     * @param includeCover   Whether or not to include the cover image in the shared elements transition.
+     * @param sharedElements Array of shared element names and their associated views.
      */
-    public static void start(Context context, String relPath, int updatePos) {
+    @SafeVarargs
+    public static void startWithTransition(Activity activity, String relPath, int updatePos, boolean includeCover,
+                                           Pair<View, String>... sharedElements) {
         if (relPath == null || relPath.isEmpty())
             throw new IllegalArgumentException("Must supply non-null, non-empty relative path.");
         if (updatePos < 0)
             throw new IllegalArgumentException("Must supply a position >= 0.");
-        context.startActivity(new Intent(context, BookInfoActivity.class).putExtra(C.REL_PATH, relPath)
-                                                                         .putExtra(C.POS_TO_UPDATE, updatePos));
+
+        activity.startActivity(new Intent(activity, BookInfoActivity.class)
+                        .putExtra(C.REL_PATH, relPath)
+                        .putExtra(C.POS_TO_UPDATE, updatePos)
+                        .putExtra(CARDS_HAVE_COVERS, includeCover),
+                ActivityOptions.makeSceneTransitionAnimation(activity, sharedElements).toBundle());
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Create and bind views.
         setContentView(R.layout.activity_book_info);
         ButterKnife.bind(this);
+        realm = Realm.getDefaultInstance();
+        posToUpdate = getIntent().getIntExtra(C.POS_TO_UPDATE, -1);
 
-        // Set up toolbar.
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Get Realm and read extras bundle.
-        String relPath = getIntent().getStringExtra(C.REL_PATH);
-        posToUpdate = getIntent().getIntExtra(C.POS_TO_UPDATE, -1);
-        realm = Realm.getDefaultInstance();
+        // Choose a different shared element enter transition based on whether or not the card we clicked had a cover
+        // image element or not. If it did, we want to include it in the transition.
+        getWindow().setSharedElementEnterTransition(
+                TransitionInflater.from(this).inflateTransition(getIntent().getBooleanExtra(CARDS_HAVE_COVERS, false)
+                        ? R.transition.book_info_shared_enter_with_cover : R.transition.book_info_shared_enter));
 
         // Get RBook.
-        book = realm.where(RBook.class).equalTo("relPath", relPath).findFirst();
+        book = realm.where(RBook.class).equalTo("relPath", getIntent().getStringExtra(C.REL_PATH)).findFirst();
         if (book == null) throw new IllegalArgumentException("Invalid relative path, no matching RBook found.");
 
         // Set cover image (we do this separately since we don't want flickering if the change listener fires).
@@ -188,10 +201,12 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
                  .centerCrop()
                  .into(coverImage);
         } else coverImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.default_cover));
+
         // Set the movement methods for the certain TextViews just once.
         MovementMethod mm = LinkMovementMethod.getInstance();
         desc.setMovementMethod(mm);
         publisher.setMovementMethod(mm);
+
         // Set up the rest of the UI.
         updateUi();
 

@@ -6,6 +6,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Pair;
 import android.view.View;
 import android.widget.*;
 import butterknife.BindView;
@@ -13,6 +14,7 @@ import butterknife.ButterKnife;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
+import com.bkromhout.minerva.activities.BookInfoActivity;
 import com.bkromhout.minerva.data.DataUtils;
 import com.bkromhout.minerva.data.ListItemPositionHelper;
 import com.bkromhout.minerva.events.BookCardClickEvent;
@@ -40,11 +42,11 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
     /**
      * Help our cards ripple.
      */
-    private static RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.card);
+    private static RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.container);
     /**
-     * Activity to pass to Glide so that it will automatically get lifecycle events.
+     * Activity to use for Glide and shared element transitions.
      */
-    private Activity activity;
+    private final Activity activity;
     /**
      * If true, add a footer view which
      */
@@ -112,17 +114,31 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
             return true;
         });
 
-        // Set info button handler.
-        vh.btnInfo.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
-                BookCardClickEvent.Type.INFO, book.relPath, position)));
+        // Set info button click handler.
+        vh.btnInfo.setOnClickListener(view -> {
+            vh.cardView.setTransitionName(vh.cardView.getResources().getString(R.string.trans_book_info_bg));
+            if (vh instanceof NormalCardVH) {
+                ImageView coverImage = ((NormalCardVH) vh).ivCoverImage;
+                String coverTransName = coverImage.getResources().getString(R.string.trans_cover_image);
+                coverImage.setTransitionName(coverTransName);
+                //noinspection unchecked
+                BookInfoActivity.startWithTransition(activity, book.relPath, position, true,
+                        Pair.create(vh.cardView, vh.cardView.getResources().getString(R.string.trans_book_info_bg)),
+                        Pair.create(coverImage, coverTransName));
+            } else {
+                //noinspection unchecked
+                BookInfoActivity.startWithTransition(activity, book.relPath, position, false,
+                        Pair.create(vh.cardView, vh.cardView.getResources().getString(R.string.trans_book_info_bg)));
+            }
+        });
 
-        // Fill in data.
+        // Fill in data and set transition names.
         vh.tvTitle.setText(book.title);
         vh.tvAuthor.setText(book.author);
 
         // Do bindings for the rest of the view holder based on its real type.
         if (vh instanceof CompactCardVH) bindCompactBookCard((CompactCardVH) vh, book);
-        if (vh instanceof NoCoverCardVH) bindNoCoverBookCard((NoCoverCardVH) vh, position, book);
+        else if (vh instanceof NoCoverCardVH) bindNoCoverBookCard((NoCoverCardVH) vh, position, book);
         if (vh instanceof NormalCardVH) bindNormalBookCard((NormalCardVH) vh, book);
 
         // If we have an RBookListItem, store its key on the CardView.
@@ -171,6 +187,8 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
                                      .into(resolvedVH.ivCoverImage);
         else resolvedVH.ivCoverImage.setImageDrawable(
                 ContextCompat.getDrawable(Minerva.get(), R.drawable.default_cover));
+        // Set image view's transition name.
+//        resolvedVH.ivCoverImage.setTransitionName("cover_image_" + book.uniqueId);
     }
 
     /**
@@ -235,7 +253,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
      * A base ViewHolder class for all book cards.
      */
     static class BaseCardVH extends RecyclerView.ViewHolder {
-        @BindView(R.id.card)
+        @BindView(R.id.container)
         public CardView cardView;
         @BindView(R.id.content)
         public RelativeLayout content;

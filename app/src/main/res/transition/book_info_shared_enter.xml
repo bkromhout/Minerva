@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<transitionSet
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:interpolator="@android:interpolator/fast_out_slow_in"
+        android:transitionOrdering="together">
+
+    <transitionSet>
+        <targets>
+            <target android:targetId="@id/container"/>
+        </targets>
+        <fade android:duration="300"/>
+        <changeBounds android:duration="300"/>
+        <transition
+                class="com.bkromhout.minerva.ui.transitions.LiftOff"
+                android:duration="400"
+                android:elevation="@dimen/touch_raise"/>
+    </transitionSet>
+</transitionSet>

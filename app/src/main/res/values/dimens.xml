@@ -5,10 +5,8 @@
 
     <!-- Elevations -->
     <dimen name="button_elevation">2dp</dimen>
-    <dimen name="button_pressed_translationZ">6dp</dimen>
-
     <dimen name="card_elevation">2dp</dimen>
-    <dimen name="card_pressed_translationZ">6dp</dimen>
+    <dimen name="touch_raise">6dp</dimen>
 
     <!-- FABs -->
     <dimen name="fab_margin">16dp</dimen>

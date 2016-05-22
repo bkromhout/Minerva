@@ -34,7 +34,7 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
     /**
      * Help our cards ripple.
      */
-    private static RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.card);
+    private static RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.container);
 
     /**
      * Create a new {@link BookListCardAdapter}.
@@ -117,7 +117,7 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
      * BookListCardVH class.
      */
     public class BookListCardVH extends RecyclerView.ViewHolder {
-        @BindView(R.id.card)
+        @BindView(R.id.container)
         public CardView cardView;
         @BindView(R.id.content)
         public LinearLayout content;

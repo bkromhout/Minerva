@@ -3,11 +3,11 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/coordinator"
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        android:transitionName="book_info_bg"
+        android:transitionName="@string/trans_book_info_bg"
         tools:context=".activities.BookInfoActivity">
 
     <android.support.design.widget.AppBarLayout

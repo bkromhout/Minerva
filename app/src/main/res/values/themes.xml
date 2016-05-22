@@ -20,8 +20,13 @@
         <item name="android:windowTranslucentStatus">true</item>
     </style>
 
-    <!-- Welcome activity's theme. -->
     <style name="AppTheme.WelcomeActivity" parent="AppTheme">
         <item name="android:statusBarColor">#303030</item>
+    </style>
+
+    <style name="AppTheme.BookInfoActivity" parent="AppTheme.TransparentStatus">
+        <item name="android:windowEnterTransition">@transition/book_info_enter</item>
+        <item name="android:windowReturnTransition">@transition/book_info_return</item>
+        <item name="android:windowSharedElementReturnTransition">@transition/book_info_shared_return</item>
     </style>
 </resources>

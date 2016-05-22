@@ -8,7 +8,7 @@
             <objectAnimator
                     android:propertyName="translationZ"
                     android:duration="100"
-                    android:valueTo="@dimen/card_pressed_translationZ"
+                    android:valueTo="@dimen/touch_raise"
                     android:valueType="floatType"/>
             <objectAnimator
                     android:propertyName="elevation"
