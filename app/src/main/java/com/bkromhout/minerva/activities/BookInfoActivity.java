@@ -14,11 +14,13 @@ import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
+import android.transition.Transition;
 import android.transition.TransitionInflater;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -183,12 +185,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        // Choose a different shared element enter transition based on whether or not the card we clicked had a cover
-        // image element or not. If it did, we want to include it in the transition.
-        getWindow().setSharedElementEnterTransition(
-                TransitionInflater.from(this).inflateTransition(getIntent().getBooleanExtra(CARDS_HAVE_COVERS, false)
-                        ? R.transition.book_info_shared_enter_with_cover : R.transition.book_info_shared_enter));
+        setWindowSharedElementTransitions(getIntent().getBooleanExtra(CARDS_HAVE_COVERS, false));
 
         // Get RBook.
         book = realm.where(RBook.class).equalTo("relPath", getIntent().getStringExtra(C.REL_PATH)).findFirst();
@@ -215,6 +212,23 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
 
         // Handle permissions. Make sure we continue a request process if applicable.
         initAndContinuePermChecksIfNeeded();
+    }
+
+    /**
+     * Set the shared element transitions based on whether or not the book card which was clicked to start this activity
+     * had a cover image view. If it did, then we want to include that in the set of shared elements.
+     * @param includeCover Whether or not to include the cover image view.
+     */
+    private void setWindowSharedElementTransitions(boolean includeCover) {
+        TransitionInflater ti = TransitionInflater.from(this);
+        Transition enterTrans = includeCover ? ti.inflateTransition(R.transition.book_info_shared_enter_with_cover) :
+                ti.inflateTransition(R.transition.book_info_shared_enter);
+        Transition returnTrans = includeCover ? ti.inflateTransition(R.transition.book_info_shared_return_with_cover) :
+                ti.inflateTransition(R.transition.book_info_shared_return);
+
+        Window window = getWindow();
+        window.setSharedElementEnterTransition(enterTrans);
+        window.setSharedElementReturnTransition(returnTrans);
     }
 
     @Override
