@@ -116,19 +116,20 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
 
         // Set info button click handler.
         vh.btnInfo.setOnClickListener(view -> {
-            vh.cardView.setTransitionName(vh.cardView.getResources().getString(R.string.trans_book_info_bg));
+            String bgTransName = vh.cardView.getResources().getString(R.string.trans_book_info_bg);
+            vh.cardView.setTransitionName(bgTransName);
             if (vh instanceof NormalCardVH) {
                 ImageView coverImage = ((NormalCardVH) vh).ivCoverImage;
                 String coverTransName = coverImage.getResources().getString(R.string.trans_cover_image);
                 coverImage.setTransitionName(coverTransName);
                 //noinspection unchecked
                 BookInfoActivity.startWithTransition(activity, book.relPath, position, true,
-                        Pair.create(vh.cardView, vh.cardView.getResources().getString(R.string.trans_book_info_bg)),
-                        Pair.create(coverImage, coverTransName));
+                        Pair.create(coverImage, coverTransName),
+                        Pair.create(vh.cardView, bgTransName));
             } else {
                 //noinspection unchecked
                 BookInfoActivity.startWithTransition(activity, book.relPath, position, false,
-                        Pair.create(vh.cardView, vh.cardView.getResources().getString(R.string.trans_book_info_bg)));
+                        Pair.create(vh.cardView, bgTransName));
             }
         });
 
@@ -183,12 +184,10 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
         // Set cover image.
         if (book.hasCoverImage) Glide.with(activity)
                                      .load(DataUtils.getCoverImageFile(book.relPath))
-                                     .centerCrop()
+                                     .dontTransform()
                                      .into(resolvedVH.ivCoverImage);
         else resolvedVH.ivCoverImage.setImageDrawable(
                 ContextCompat.getDrawable(Minerva.get(), R.drawable.default_cover));
-        // Set image view's transition name.
-//        resolvedVH.ivCoverImage.setTransitionName("cover_image_" + book.uniqueId);
     }
 
     /**

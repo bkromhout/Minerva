@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
@@ -16,10 +17,7 @@ import android.text.method.MovementMethod;
 import android.transition.Transition;
 import android.transition.TransitionInflater;
 import android.util.Pair;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
+import android.view.*;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -42,11 +40,15 @@ import com.bkromhout.minerva.ui.TagBackgroundSpan;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
@@ -149,7 +151,10 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
     /**
      * Listen for changes to {@link #book}. Call {@link #updateUi()} when they occur.
      */
-    private RealmChangeListener<RBook> bookListener = newBook -> updateUi();
+    private RealmChangeListener<RBook> bookListener = newBook -> {
+        if (!newBook.title.equals(getTitle().toString())) setTitle(newBook.title);
+        updateUi();
+    };
 
     /**
      * Start the {@link BookInfoActivity} for the {@link RBook} with the given {@code relPath}.
@@ -179,25 +184,46 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_info);
         ButterKnife.bind(this);
+        // Wait to start the enter transition until Glide has loaded the image.
+        postponeEnterTransition();
         realm = Realm.getDefaultInstance();
         posToUpdate = getIntent().getIntExtra(C.POS_TO_UPDATE, -1);
+
+        // Get RBook and set title immediately.
+        book = realm.where(RBook.class).equalTo("relPath", getIntent().getStringExtra(C.REL_PATH)).findFirst();
+        if (book == null) throw new IllegalArgumentException("Invalid relative path, no matching RBook found.");
+        collapsibleToolbar.setTitle(book.title);
 
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setWindowSharedElementTransitions(getIntent().getBooleanExtra(CARDS_HAVE_COVERS, false));
 
-        // Get RBook.
-        book = realm.where(RBook.class).equalTo("relPath", getIntent().getStringExtra(C.REL_PATH)).findFirst();
-        if (book == null) throw new IllegalArgumentException("Invalid relative path, no matching RBook found.");
-
         // Set cover image (we do this separately since we don't want flickering if the change listener fires).
         if (book.hasCoverImage) {
             Glide.with(this)
                  .load(DataUtils.getCoverImageFile(book.relPath))
-                 .centerCrop()
+                 .dontTransform()
+                 .dontAnimate()
+                 .listener(new RequestListener<File, GlideDrawable>() {
+                     @Override
+                     public boolean onException(Exception e, File model, Target<GlideDrawable> target,
+                                                boolean isFirstResource) {
+                         return false;
+                     }
+
+                     @Override
+                     public boolean onResourceReady(GlideDrawable resource, File model, Target<GlideDrawable> target,
+                                                    boolean isFromMemoryCache, boolean isFirstResource) {
+                         addPreDrawListenerToStartTransitions();
+                         return false;
+                     }
+                 })
                  .into(coverImage);
-        } //else coverImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.default_cover));
+        } else {
+            coverImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.default_cover));
+            addPreDrawListenerToStartTransitions();
+        }
 
         // Set the movement methods for the certain TextViews just once.
         MovementMethod mm = LinkMovementMethod.getInstance();
@@ -212,6 +238,17 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
 
         // Handle permissions. Make sure we continue a request process if applicable.
         initAndContinuePermChecksIfNeeded();
+    }
+
+    private void addPreDrawListenerToStartTransitions() {
+        coverImage.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                coverImage.getViewTreeObserver().removeOnPreDrawListener(this);
+                startPostponedEnterTransition();
+                return true;
+            }
+        });
     }
 
     @Override
@@ -404,9 +441,6 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
      */
     @SuppressLint("SetTextI18n")
     private void updateUi() {
-        // Set title.
-        collapsibleToolbar.setTitle(book.title);
-
         // Fill in common views using book data.
         title.setText(book.title);
         author.setText(book.author);

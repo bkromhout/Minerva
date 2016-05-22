@@ -38,7 +38,6 @@
                     android:layout_height="match_parent"
                     android:contentDescription="@string/acc_book_cover"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/default_cover"
                     android:transitionName="cover_image"
                     app:layout_collapseMode="parallax"/>
 
@@ -61,7 +60,8 @@
             android:tint="@color/textColorPrimary"
             android:src="@drawable/ic_read"
             android:clickable="true"
-            android:visibility="invisible"/>
+            android:visibility="invisible"
+            tools:visibility="visible"/>
 
     <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
