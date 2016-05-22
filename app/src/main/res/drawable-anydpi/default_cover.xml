@@ -11,9 +11,9 @@
 
     <item
             android:id="@+id/shadow1"
-            android:top="238dp"
-            android:right="-94dp"
-            android:height="12dp">
+            android:top="148.75dp"
+            android:right="-58.75dp"
+            android:height="7.5dp">
         <rotate
                 android:pivotX="0"
                 android:pivotY="0"
@@ -32,10 +32,10 @@
 
     <item
             android:id="@+id/shadow2"
-            android:top="82dp"
-            android:left="100dp"
-            android:right="-80dp"
-            android:height="8dp">
+            android:top="51.25dp"
+            android:left="62.5dp"
+            android:right="-50dp"
+            android:height="5dp">
         <rotate
                 android:pivotX="0"
                 android:pivotY="0"
@@ -55,10 +55,10 @@
 
     <item
             android:id="@+id/shadow3_1"
-            android:top="36.5dp"
-            android:left="10dp"
-            android:right="-74dp"
-            android:height="12dp">
+            android:top="22.8125dp"
+            android:left="6.25dp"
+            android:right="-46.25dp"
+            android:height="7.5dp">
         <rotate
                 android:pivotX="0"
                 android:pivotY="0"
@@ -73,10 +73,10 @@
     </item>
     <item
             android:id="@+id/shadow3_2"
-            android:top="55dp"
-            android:left="-37dp"
-            android:right="8dp"
-            android:height="12dp">
+            android:top="34.375dp"
+            android:left="-23.125dp"
+            android:right="5dp"
+            android:height="7.5dp">
         <rotate
                 android:pivotX="0"
                 android:pivotY="0"
@@ -95,10 +95,10 @@
 
     <item
             android:id="@+id/shadow4"
-            android:top="205dp"
-            android:left="-12dp"
-            android:right="-41dp"
-            android:height="12dp">
+            android:top="128.125dp"
+            android:left="-7.5dp"
+            android:right="-25.625dp"
+            android:height="7.5dp">
         <rotate
                 android:pivotX="0"
                 android:pivotY="0"

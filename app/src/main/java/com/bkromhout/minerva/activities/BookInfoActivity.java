@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
@@ -197,7 +196,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
                  .load(DataUtils.getCoverImageFile(book.relPath))
                  .centerCrop()
                  .into(coverImage);
-        } else coverImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.default_cover));
+        } //else coverImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.default_cover));
 
         // Set the movement methods for the certain TextViews just once.
         MovementMethod mm = LinkMovementMethod.getInstance();
@@ -212,23 +211,6 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
 
         // Handle permissions. Make sure we continue a request process if applicable.
         initAndContinuePermChecksIfNeeded();
-    }
-
-    /**
-     * Set the shared element transitions based on whether or not the book card which was clicked to start this activity
-     * had a cover image view. If it did, then we want to include that in the set of shared elements.
-     * @param includeCover Whether or not to include the cover image view.
-     */
-    private void setWindowSharedElementTransitions(boolean includeCover) {
-        TransitionInflater ti = TransitionInflater.from(this);
-        Transition enterTrans = includeCover ? ti.inflateTransition(R.transition.book_info_shared_enter_with_cover) :
-                ti.inflateTransition(R.transition.book_info_shared_enter);
-        Transition returnTrans = includeCover ? ti.inflateTransition(R.transition.book_info_shared_return_with_cover) :
-                ti.inflateTransition(R.transition.book_info_shared_return);
-
-        Window window = getWindow();
-        window.setSharedElementEnterTransition(enterTrans);
-        window.setSharedElementReturnTransition(returnTrans);
     }
 
     @Override
@@ -377,6 +359,23 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
     void onEditTagsClicked() {
         // Open the tagging activity.
         TaggingActivity.start(this, book);
+    }
+
+    /**
+     * Set the shared element transitions based on whether or not the book card which was clicked to start this activity
+     * had a cover image view. If it did, then we want to include that in the set of shared elements.
+     * @param includeCover Whether or not to include the cover image view.
+     */
+    private void setWindowSharedElementTransitions(boolean includeCover) {
+        TransitionInflater ti = TransitionInflater.from(this);
+        Transition enterTrans = includeCover ? ti.inflateTransition(R.transition.book_info_shared_enter_with_cover) :
+                ti.inflateTransition(R.transition.book_info_shared_enter);
+        Transition returnTrans = includeCover ? ti.inflateTransition(R.transition.book_info_shared_return_with_cover) :
+                ti.inflateTransition(R.transition.book_info_shared_return);
+
+        Window window = getWindow();
+        window.setSharedElementEnterTransition(enterTrans);
+        window.setSharedElementReturnTransition(returnTrans);
     }
 
     /**
