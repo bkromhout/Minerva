@@ -4,9 +4,9 @@
         android:interpolator="@android:interpolator/linear_out_slow_in"
         android:transitionOrdering="together">
 
-    <!--<slide
+    <slide
             android:slideEdge="bottom"
-            android:startDelay="100"
+            android:startDelay="150"
             android:duration="300">
         <targets>
             <target android:excludeId="@android:id/navigationBarBackground"/>
@@ -15,12 +15,6 @@
             <target android:excludeId="@id/appbar"/>
         </targets>
     </slide>
-
-    <fade android:duration="200">
-        <targets>
-            <target android:targetId="@id/transition_bg"/>
-        </targets>
-    </fade>-->
 
     <fade android:duration="@android:integer/config_mediumAnimTime">
         <targets>

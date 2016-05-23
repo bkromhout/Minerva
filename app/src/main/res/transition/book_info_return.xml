@@ -4,7 +4,7 @@
         android:interpolator="@android:interpolator/fast_out_linear_in"
         android:transitionOrdering="together">
 
-    <!--<slide
+    <slide
             android:slideEdge="bottom"
             android:duration="200">
         <targets>
@@ -14,12 +14,6 @@
             <target android:excludeId="@id/appbar"/>
         </targets>
     </slide>
-
-    <fade android:duration="200">
-        <targets>
-            <target android:targetId="@id/transition_bg"/>
-        </targets>
-    </fade>-->
 
     <fade android:duration="300">
         <targets>

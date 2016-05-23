@@ -70,6 +70,8 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
     }
 
     // General views.
+    @BindView(R.id.transition_bg)
+    View bg;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.coordinator)
@@ -409,27 +411,32 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
             @Override
             public void onTransitionStart(Transition transition) {
                 super.onTransitionStart(transition);
+                // We don't want to see the toolbar's stuff in the background while we're transitioning in.
                 appBar.setVisibility(View.INVISIBLE);
-                content.setVisibility(View.INVISIBLE);
+                // Fade out the dummy background as we transition in so that the content sliding up is visible and
+                // the change from card background color to our background color isn't so jarring.
+                bg.animate()
+                  .alpha(0f)
+                  .setDuration(300)
+                  //.setInterpolator() // TODO needs to come in slow.
+                  .setListener(new AnimatorListenerAdapter() {
+                      @Override
+                      public void onAnimationEnd(Animator animation) {
+                          super.onAnimationEnd(animation);
+                          bg.setAlpha(0f);
+                      }
+                  })
+                  .start();
             }
 
             @Override
             public void onTransitionEnd(Transition transition) {
                 super.onTransitionEnd(transition);
+                // Now we can show the toolbar. TODO Find a way to fade this in, but not affect the cover image.
                 appBar.setVisibility(View.VISIBLE);
                 // Show the FAB once the enter transition finishes.
+                // TODO Make this wait until we've made the toolbar visible, lest it be half obscured by it.
                 fab.show();
-                content.animate()
-                       .alpha(1f)
-                       .setDuration(200)
-                       .setListener(new AnimatorListenerAdapter() {
-                           @Override
-                           public void onAnimationEnd(Animator animation) {
-                               super.onAnimationEnd(animation);
-                               content.setVisibility(View.VISIBLE);
-                           }
-                       })
-                       .start();
             }
         });
 
@@ -438,10 +445,24 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
             @Override
             public void onTransitionStart(Transition transition) {
                 super.onTransitionStart(transition);
+                // We don't want to see the toolbar's stuff in the background while we're transitioning.
+                appBar.setVisibility(View.INVISIBLE);
                 // Hide the FAB so that it doesn't flicker-jump its way across the screen.
                 fab.setVisibility(View.INVISIBLE);
-                appBar.setVisibility(View.INVISIBLE);
-                content.setVisibility(View.INVISIBLE);
+                // Fade in the dummy background as we transition in so that the content sliding down is visible and
+                // the change from our background color back to the card background color isn't so jarring.
+                bg.animate()
+                  .alpha(1f)
+                  .setDuration(300)
+                  //.setInterpolator() // TODO Needs to come in fast.
+                  .setListener(new AnimatorListenerAdapter() {
+                      @Override
+                      public void onAnimationEnd(Animator animation) {
+                          super.onAnimationEnd(animation);
+                          bg.setAlpha(1f);
+                      }
+                  })
+                  .start();
             }
         });
 
