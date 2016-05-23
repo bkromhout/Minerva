@@ -440,7 +440,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
             @Override
             public void onTransitionEnd(Transition transition) {
                 super.onTransitionEnd(transition);
-                // Now we can show the toolbar. TODO Find a way to fade this in, but not affect the cover image.
+                // Now we can show the toolbar.
                 appBar.setVisibility(View.VISIBLE);
             }
         });
