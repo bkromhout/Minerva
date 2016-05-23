@@ -6,6 +6,7 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -18,10 +19,7 @@ import android.transition.Transition;
 import android.transition.TransitionInflater;
 import android.util.Pair;
 import android.view.*;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.RatingBar;
-import android.widget.TextView;
+import android.widget.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -40,15 +38,11 @@ import com.bkromhout.minerva.ui.TagBackgroundSpan;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
@@ -66,17 +60,21 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         LISTS, SUBJECTS, TYPES, FORMAT, LANGUAGE, PUBLISHER, PUBLISH_DATE, MOD_DATE
     }
 
-    // AppBarLayout views.
+    // General views.
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.container)
+    @BindView(R.id.coordinator)
     CoordinatorLayout coordinator;
+    @BindView(R.id.appbar)
+    AppBarLayout appBar;
     @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsibleToolbar;
     @BindView(R.id.cover_image)
     ImageView coverImage;
     @BindView(R.id.fab)
     FloatingActionButton fab;
+    @BindView(R.id.content)
+    RelativeLayout content;
 
     // Views which always are shown.
     @BindView(R.id.title)
@@ -184,8 +182,6 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_info);
         ButterKnife.bind(this);
-        // Wait to start the enter transition until Glide has loaded the image.
-        postponeEnterTransition();
         realm = Realm.getDefaultInstance();
         posToUpdate = getIntent().getIntExtra(C.POS_TO_UPDATE, -1);
 
@@ -205,25 +201,8 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
                  .load(DataUtils.getCoverImageFile(book.relPath))
                  .dontTransform()
                  .dontAnimate()
-                 .listener(new RequestListener<File, GlideDrawable>() {
-                     @Override
-                     public boolean onException(Exception e, File model, Target<GlideDrawable> target,
-                                                boolean isFirstResource) {
-                         return false;
-                     }
-
-                     @Override
-                     public boolean onResourceReady(GlideDrawable resource, File model, Target<GlideDrawable> target,
-                                                    boolean isFromMemoryCache, boolean isFirstResource) {
-                         addPreDrawListenerToStartTransitions();
-                         return false;
-                     }
-                 })
                  .into(coverImage);
-        } else {
-            coverImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.default_cover));
-            addPreDrawListenerToStartTransitions();
-        }
+        } else coverImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.default_cover));
 
         // Set the movement methods for the certain TextViews just once.
         MovementMethod mm = LinkMovementMethod.getInstance();
@@ -238,17 +217,6 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
 
         // Handle permissions. Make sure we continue a request process if applicable.
         initAndContinuePermChecksIfNeeded();
-    }
-
-    private void addPreDrawListenerToStartTransitions() {
-        coverImage.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                coverImage.getViewTreeObserver().removeOnPreDrawListener(this);
-                startPostponedEnterTransition();
-                return true;
-            }
-        });
     }
 
     @Override
@@ -411,11 +379,21 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         Transition returnTrans = includeCover ? ti.inflateTransition(R.transition.book_info_shared_return_with_cover) :
                 ti.inflateTransition(R.transition.book_info_shared_return);
 
+        // TODO?
         // Add listener for shared element enter transition.
         enterTrans.addListener(new AnimUtils.TransitionListenerAdapter() {
             @Override
+            public void onTransitionStart(Transition transition) {
+                super.onTransitionStart(transition);
+                appBar.setVisibility(View.INVISIBLE);
+                content.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
             public void onTransitionEnd(Transition transition) {
                 super.onTransitionEnd(transition);
+                appBar.setVisibility(View.VISIBLE);
+                content.setVisibility(View.VISIBLE);
                 // Show the FAB once the enter transition finishes.
                 fab.show();
             }
@@ -428,6 +406,8 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
                 super.onTransitionStart(transition);
                 // Hide the FAB so that it doesn't flicker-jump its way across the screen.
                 fab.setVisibility(View.INVISIBLE);
+                appBar.setVisibility(View.INVISIBLE);
+                content.setVisibility(View.INVISIBLE);
             }
         });
 

@@ -4,15 +4,11 @@
         android:interpolator="@android:interpolator/fast_out_slow_in"
         android:transitionOrdering="together">
 
-    <transitionSet>
+    <transitionSet android:duration="300">
         <targets>
-            <target android:targetId="@id/container"/>
+            <target android:targetId="@id/transition_bg"/>
+            <target android:targetId="@id/content"/>
         </targets>
-        <fade android:duration="300"/>
-        <changeBounds android:duration="300"/>
-        <transition
-                class="com.bkromhout.minerva.ui.transitions.LiftOff"
-                android:duration="400"
-                android:elevation="@dimen/touch_raise"/>
+        <autoTransition/>
     </transitionSet>
 </transitionSet>

@@ -10,4 +10,5 @@
     <!-- Transition Names -->
     <string name="trans_cover_image">cover_image</string>
     <string name="trans_book_info_bg">book_info_bg</string>
+    <string name="trans_book_info_content">book_info_content</string>
 </resources>
