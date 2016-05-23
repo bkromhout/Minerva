@@ -205,7 +205,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setWindowSharedElementTransitions(getIntent().getBooleanExtra(CARDS_HAVE_COVERS, false));
+        setTransitions(getIntent().getBooleanExtra(CARDS_HAVE_COVERS, false));
 
         // Set cover image (we do this separately since we don't want flickering if the change listener fires).
         if (book.hasCoverImage) {
@@ -403,25 +403,89 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
 
     /**
      * Set the shared element transitions based on whether or not the book card which was clicked to start this activity
-     * had a cover image view. If it did, then we want to include that in the set of shared elements.
-     * @param includeCover Whether or not to include the cover image view.
+     * had a cover image view. If it did, then we want to include the cover image view in the set of shared elements,
+     * but if it didn't we want to include it in the content transitions instead.
+     * @param shareCover If true, use the cover image view in the shared element transitions. If false, include it in
+     *                   the content transitions instead.
      */
-    private void setWindowSharedElementTransitions(boolean includeCover) {
-        TransitionInflater ti = TransitionInflater.from(this);
-        Transition enterTrans = includeCover ? ti.inflateTransition(R.transition.book_info_shared_enter_with_cover) :
-                ti.inflateTransition(R.transition.book_info_shared_enter);
-        Transition returnTrans = includeCover ? ti.inflateTransition(R.transition.book_info_shared_return_with_cover) :
-                ti.inflateTransition(R.transition.book_info_shared_return);
+    private void setTransitions(final boolean shareCover) {
+        if (shareCover) bg.setTransitionName(getString(R.string.trans_book_info_bg));
+        else coordinator.setTransitionName(getString(R.string.trans_book_info_content));
 
-        // Add listener for shared element enter transition.
-        enterTrans.addListener(new AnimUtils.TransitionListenerAdapter() {
+        Window window = getWindow();
+        TransitionInflater ti = TransitionInflater.from(this);
+        // Get/inflate transitions.
+        Transition contentEnter = window.getEnterTransition();
+        Transition contentReturn = window.getReturnTransition();
+        Transition sharedEnter = ti.inflateTransition(
+                shareCover ? R.transition.book_info_shared_enter_with_cover : R.transition.book_info_shared_enter);
+        Transition sharedReturn = ti.inflateTransition(
+                shareCover ? R.transition.book_info_shared_return_with_cover : R.transition.book_info_shared_return);
+
+        // Add listener for content enter transition.
+        contentEnter.addListener(new AnimUtils.TransitionListenerAdapter() {
             @Override
             public void onTransitionStart(Transition transition) {
                 super.onTransitionStart(transition);
-                // We don't want to see the toolbar's stuff in the background while we're transitioning in.
-                appBar.setVisibility(View.INVISIBLE);
-                // Fade out the dummy background as we transition in so that the content sliding up is visible and
-                // the change from card background color to our background color isn't so jarring.
+                // If the cover image is a shared view, hide the app bar now.
+                if (shareCover) appBar.setVisibility(View.INVISIBLE);
+                else {
+                    appBar.setAlpha(0f);
+                    appBar.animate()
+                          .alpha(1f)
+                          .setStartDelay(100)
+                          .setDuration(200)
+                          .setListener(new AnimatorListenerAdapter() {
+                              @Override
+                              public void onAnimationEnd(Animator animation) {
+                                  super.onAnimationEnd(animation);
+                                  appBar.setAlpha(1f);
+                              }
+                          })
+                          .start();
+                }
+            }
+
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                super.onTransitionEnd(transition);
+                // Show the FAB once the content enter transition finishes.
+                fab.show();
+            }
+        });
+
+        // Add listener for content return transition.
+        contentReturn.addListener(new AnimUtils.TransitionListenerAdapter() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+                super.onTransitionStart(transition);
+                // If the cover image is a shared view, hide the app bar now.
+                if (shareCover) appBar.setVisibility(View.INVISIBLE);
+                else appBar.animate()
+                           .alpha(0f)
+                           .setDuration(200)
+                           .setListener(new AnimatorListenerAdapter() {
+                               @Override
+                               public void onAnimationEnd(Animator animation) {
+                                   super.onAnimationEnd(animation);
+                                   appBar.setAlpha(0f);
+                                   appBar.setVisibility(View.INVISIBLE);
+                               }
+                           })
+                           .start();
+                // Hide the FAB so that it doesn't flicker-jump its way across the screen.
+                fab.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        // Add listener for shared element enter transition.
+        sharedEnter.addListener(new AnimUtils.TransitionListenerAdapter() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+                super.onTransitionStart(transition);
+                // Fade out the dummy background as we transition the shared elements so that the content
+                // transition's effects are visible and the change from card background color to our background color
+                // isn't so jarring.
                 bg.animate()
                   .alpha(0f)
                   .setDuration(300)
@@ -440,18 +504,19 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
             @Override
             public void onTransitionEnd(Transition transition) {
                 super.onTransitionEnd(transition);
-                // Now we can show the toolbar.
-                appBar.setVisibility(View.VISIBLE);
+                // If the cover image is a shared view, show the app bar now.
+                if (shareCover) appBar.setVisibility(View.VISIBLE);
             }
         });
 
         // Add listener for shared element return transition.
-        returnTrans.addListener(new AnimUtils.TransitionListenerAdapter() {
+        sharedReturn.addListener(new AnimUtils.TransitionListenerAdapter() {
             @Override
             public void onTransitionStart(Transition transition) {
                 super.onTransitionStart(transition);
-                // Fade in the dummy background as we transition in so that the content sliding down is visible and
-                // the change from our background color back to the card background color isn't so jarring.
+                // Fade in the dummy background as we transition the shared elements so that the content transition's
+                // effects are visible and the change from our background color back to the card background color
+                // isn't so jarring.
                 bg.animate()
                   .alpha(1f)
                   .setDuration(250)
@@ -468,31 +533,9 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
             }
         });
 
-        Window window = getWindow();
-        // Add listener for content enter transition.
-        window.getEnterTransition().addListener(new AnimUtils.TransitionListenerAdapter() {
-            @Override
-            public void onTransitionEnd(Transition transition) {
-                super.onTransitionEnd(transition);
-                // Show the FAB once the enter transition finishes.
-                fab.show();
-            }
-        });
-
-        // Add listener for content return transition.
-        window.getReturnTransition().addListener(new AnimUtils.TransitionListenerAdapter() {
-            @Override
-            public void onTransitionStart(Transition transition) {
-                super.onTransitionStart(transition);
-                // We don't want to see the toolbar's stuff in the background while we're transitioning.
-                appBar.setVisibility(View.INVISIBLE);
-                // Hide the FAB so that it doesn't flicker-jump its way across the screen.
-                fab.setVisibility(View.INVISIBLE);
-            }
-        });
-
-        window.setSharedElementEnterTransition(enterTrans);
-        window.setSharedElementReturnTransition(returnTrans);
+        // Set transitions.
+        window.setSharedElementEnterTransition(sharedEnter);
+        window.setSharedElementReturnTransition(sharedReturn);
     }
 
     /**

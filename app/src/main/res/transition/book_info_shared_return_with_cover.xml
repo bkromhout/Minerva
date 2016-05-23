@@ -2,16 +2,17 @@
 <transitionSet
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:interpolator="@android:interpolator/fast_out_slow_in"
-        android:transitionOrdering="together">
+        android:transitionOrdering="together"
+        android:duration="300">
 
-    <transitionSet android:duration="300">
+    <transitionSet>
         <targets>
             <target android:targetId="@id/transition_bg"/>
         </targets>
         <changeBounds/>
     </transitionSet>
 
-    <transitionSet android:duration="300">
+    <transitionSet>
         <targets>
             <target android:targetId="@id/cover_image"/>
         </targets>

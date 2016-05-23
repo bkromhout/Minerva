@@ -2,9 +2,10 @@
 <transitionSet
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:interpolator="@android:interpolator/fast_out_linear_in"
-        android:transitionOrdering="together">
+        android:transitionOrdering="together"
+        android:duration="200">
 
-    <transitionSet android:duration="200">
+    <transitionSet>
         <targets>
             <target android:excludeId="@android:id/navigationBarBackground"/>
             <target android:excludeId="@android:id/statusBarBackground"/>
@@ -15,7 +16,7 @@
         <fade/>
     </transitionSet>
 
-    <fade android:duration="300">
+    <fade>
         <targets>
             <target android:targetId="@android:id/navigationBarBackground"/>
             <target android:targetId="@android:id/statusBarBackground"/>
