@@ -6,7 +6,7 @@
 
     <slide
             android:slideEdge="bottom"
-            android:startDelay="150"
+            android:startDelay="50"
             android:duration="300">
         <targets>
             <target android:excludeId="@android:id/navigationBarBackground"/>

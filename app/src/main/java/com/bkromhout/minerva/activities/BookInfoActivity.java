@@ -24,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.AnimationUtils;
 import android.widget.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -418,7 +419,8 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
                 bg.animate()
                   .alpha(0f)
                   .setDuration(300)
-                  //.setInterpolator() // TODO needs to come in slow.
+                  .setInterpolator(AnimationUtils.loadInterpolator(BookInfoActivity.this,
+                          android.R.interpolator.accelerate_cubic))
                   .setListener(new AnimatorListenerAdapter() {
                       @Override
                       public void onAnimationEnd(Animator animation) {
@@ -453,8 +455,9 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
                 // the change from our background color back to the card background color isn't so jarring.
                 bg.animate()
                   .alpha(1f)
-                  .setDuration(300)
-                  //.setInterpolator() // TODO Needs to come in fast.
+                  .setDuration(250)
+                  .setInterpolator(AnimationUtils.loadInterpolator(BookInfoActivity.this,
+                          android.R.interpolator.decelerate_cubic))
                   .setListener(new AnimatorListenerAdapter() {
                       @Override
                       public void onAnimationEnd(Animator animation) {

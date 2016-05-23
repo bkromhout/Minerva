@@ -4,16 +4,16 @@
         android:interpolator="@android:interpolator/fast_out_linear_in"
         android:transitionOrdering="together">
 
-    <slide
-            android:slideEdge="bottom"
-            android:duration="200">
+    <transitionSet android:duration="200">
         <targets>
             <target android:excludeId="@android:id/navigationBarBackground"/>
             <target android:excludeId="@android:id/statusBarBackground"/>
             <target android:excludeId="@id/transition_bg"/>
             <target android:excludeId="@id/appbar"/>
         </targets>
-    </slide>
+        <slide android:slideEdge="bottom"/>
+        <fade/>
+    </transitionSet>
 
     <fade android:duration="300">
         <targets>
