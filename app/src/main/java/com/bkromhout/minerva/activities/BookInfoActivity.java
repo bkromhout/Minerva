@@ -436,9 +436,6 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
                 super.onTransitionEnd(transition);
                 // Now we can show the toolbar. TODO Find a way to fade this in, but not affect the cover image.
                 appBar.setVisibility(View.VISIBLE);
-                // Show the FAB once the enter transition finishes.
-                // TODO Make this wait until we've made the toolbar visible, lest it be half obscured by it.
-                fab.show();
             }
         });
 
@@ -447,10 +444,6 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
             @Override
             public void onTransitionStart(Transition transition) {
                 super.onTransitionStart(transition);
-                // We don't want to see the toolbar's stuff in the background while we're transitioning.
-                appBar.setVisibility(View.INVISIBLE);
-                // Hide the FAB so that it doesn't flicker-jump its way across the screen.
-                fab.setVisibility(View.INVISIBLE);
                 // Fade in the dummy background as we transition in so that the content sliding down is visible and
                 // the change from our background color back to the card background color isn't so jarring.
                 bg.animate()
@@ -470,6 +463,28 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         });
 
         Window window = getWindow();
+        // Add listener for content enter transition.
+        window.getEnterTransition().addListener(new AnimUtils.TransitionListenerAdapter() {
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                super.onTransitionEnd(transition);
+                // Show the FAB once the enter transition finishes.
+                fab.show();
+            }
+        });
+
+        // Add listener for content return transition.
+        window.getReturnTransition().addListener(new AnimUtils.TransitionListenerAdapter() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+                super.onTransitionStart(transition);
+                // We don't want to see the toolbar's stuff in the background while we're transitioning.
+                appBar.setVisibility(View.INVISIBLE);
+                // Hide the FAB so that it doesn't flicker-jump its way across the screen.
+                fab.setVisibility(View.INVISIBLE);
+            }
+        });
+
         window.setSharedElementEnterTransition(enterTrans);
         window.setSharedElementReturnTransition(returnTrans);
     }
