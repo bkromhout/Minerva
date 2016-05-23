@@ -7,8 +7,7 @@
     <transitionSet android:duration="300">
         <targets>
             <target android:targetId="@id/transition_bg"/>
-            <target android:targetId="@id/content"/>
         </targets>
-        <autoTransition/>
+        <changeBounds/>
     </transitionSet>
 </transitionSet>

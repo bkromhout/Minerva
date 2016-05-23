@@ -1,5 +1,7 @@
 package com.bkromhout.minerva.activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -15,10 +17,10 @@ import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
-import android.transition.Transition;
-import android.transition.TransitionInflater;
+import android.transition.*;
 import android.util.Pair;
 import android.view.*;
+import android.view.animation.AnimationUtils;
 import android.widget.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,11 +40,15 @@ import com.bkromhout.minerva.ui.TagBackgroundSpan;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
@@ -197,10 +203,26 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
 
         // Set cover image (we do this separately since we don't want flickering if the change listener fires).
         if (book.hasCoverImage) {
+            // Prevent flickering by waiting until the image is loaded before starting the transition.
+            postponeEnterTransition();
             Glide.with(this)
                  .load(DataUtils.getCoverImageFile(book.relPath))
                  .dontTransform()
                  .dontAnimate()
+                 .listener(new RequestListener<File, GlideDrawable>() {
+                     @Override
+                     public boolean onException(Exception e, File model, Target<GlideDrawable> target,
+                                                boolean isFirstResource) {
+                         return false;
+                     }
+
+                     @Override
+                     public boolean onResourceReady(GlideDrawable resource, File model, Target<GlideDrawable> target,
+                                                    boolean isFromMemoryCache, boolean isFirstResource) {
+                         startPostponedEnterTransition();
+                         return false;
+                     }
+                 })
                  .into(coverImage);
         } else coverImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.default_cover));
 
@@ -379,7 +401,6 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         Transition returnTrans = includeCover ? ti.inflateTransition(R.transition.book_info_shared_return_with_cover) :
                 ti.inflateTransition(R.transition.book_info_shared_return);
 
-        // TODO?
         // Add listener for shared element enter transition.
         enterTrans.addListener(new AnimUtils.TransitionListenerAdapter() {
             @Override
@@ -393,9 +414,19 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
             public void onTransitionEnd(Transition transition) {
                 super.onTransitionEnd(transition);
                 appBar.setVisibility(View.VISIBLE);
-                content.setVisibility(View.VISIBLE);
                 // Show the FAB once the enter transition finishes.
                 fab.show();
+                content.animate()
+                       .alpha(1f)
+                       .setDuration(200)
+                       .setListener(new AnimatorListenerAdapter() {
+                           @Override
+                           public void onAnimationEnd(Animator animation) {
+                               super.onAnimationEnd(animation);
+                               content.setVisibility(View.VISIBLE);
+                           }
+                       })
+                       .start();
             }
         });
 
@@ -414,6 +445,15 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         Window window = getWindow();
         window.setSharedElementEnterTransition(enterTrans);
         window.setSharedElementReturnTransition(returnTrans);
+    }
+
+    private Transition makeQuickFadeUp(View target) {
+        return new TransitionSet()
+                .addTransition(new Slide(Gravity.BOTTOM))
+                .addTransition(new Fade(Fade.IN))
+                .setInterpolator(AnimationUtils.loadInterpolator(this, android.R.interpolator.linear_out_slow_in))
+                .setDuration(100)
+                .addTarget(target);
     }
 
     /**

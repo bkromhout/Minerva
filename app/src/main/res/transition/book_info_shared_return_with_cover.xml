@@ -7,7 +7,6 @@
     <transitionSet android:duration="300">
         <targets>
             <target android:targetId="@id/transition_bg"/>
-            <target android:targetId="@id/content"/>
         </targets>
         <changeBounds/>
     </transitionSet>
@@ -16,7 +15,9 @@
         <targets>
             <target android:targetId="@id/cover_image"/>
         </targets>
-        <changeBounds/>
+        <changeBounds>
+            <arcMotion/>
+        </changeBounds>
         <changeTransform/>
         <changeClipBounds/>
         <changeImageTransform/>

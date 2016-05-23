@@ -117,9 +117,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
         // Set info button click handler.
         vh.btnInfo.setOnClickListener(view -> {
             String bgTransName = Minerva.get().getString(R.string.trans_book_info_bg);
-            String contentTransName = Minerva.get().getString(R.string.trans_book_info_content);
             vh.cardView.setTransitionName(bgTransName);
-            vh.content.setTransitionName(contentTransName);
             if (vh instanceof NormalCardVH) {
                 ImageView coverImage = ((NormalCardVH) vh).ivCoverImage;
                 String coverTransName = Minerva.get().getString(R.string.trans_cover_image);
@@ -127,12 +125,10 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
                 //noinspection unchecked
                 BookInfoActivity.startWithTransition(activity, book.relPath, position, true,
                         Pair.create(coverImage, coverTransName),
-                        Pair.create(vh.content, contentTransName),
                         Pair.create(vh.cardView, bgTransName));
             } else {
                 //noinspection unchecked
                 BookInfoActivity.startWithTransition(activity, book.relPath, position, false,
-                        Pair.create(vh.content, contentTransName),
                         Pair.create(vh.cardView, bgTransName));
             }
         });
