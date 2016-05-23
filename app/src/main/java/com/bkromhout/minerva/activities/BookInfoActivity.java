@@ -17,10 +17,13 @@ import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
-import android.transition.*;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.util.Pair;
-import android.view.*;
-import android.view.animation.AnimationUtils;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
 import android.widget.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -445,15 +448,6 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         Window window = getWindow();
         window.setSharedElementEnterTransition(enterTrans);
         window.setSharedElementReturnTransition(returnTrans);
-    }
-
-    private Transition makeQuickFadeUp(View target) {
-        return new TransitionSet()
-                .addTransition(new Slide(Gravity.BOTTOM))
-                .addTransition(new Fade(Fade.IN))
-                .setInterpolator(AnimationUtils.loadInterpolator(this, android.R.interpolator.linear_out_slow_in))
-                .setDuration(100)
-                .addTarget(target);
     }
 
     /**
