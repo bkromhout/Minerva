@@ -245,6 +245,12 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
 
         // Handle permissions. Make sure we continue a request process if applicable.
         initAndContinuePermChecksIfNeeded();
+
+        // If we just rotated or something, we want to be sure that our FAB is visible and that our dummy bg isn't.
+        if (savedInstanceState != null) {
+            bg.setAlpha(0f);
+            fab.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
