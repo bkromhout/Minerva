@@ -42,7 +42,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
     /**
      * Help our cards ripple.
      */
-    private static RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.container);
+    private static RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.card);
     /**
      * Activity to use for Glide and shared element transitions.
      */
