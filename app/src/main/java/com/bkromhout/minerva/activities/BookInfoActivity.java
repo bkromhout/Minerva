@@ -409,8 +409,11 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
      *                   the content transitions instead.
      */
     private void setTransitions(final boolean shareCover) {
-        if (shareCover) bg.setTransitionName(getString(R.string.trans_book_info_bg));
-        else coordinator.setTransitionName(getString(R.string.trans_book_info_content));
+        // Set transition names dynamically since we come from recyclerview items.
+        if (shareCover) {
+            coverImage.setTransitionName(getString(R.string.trans_cover_image) + posToUpdate);
+            bg.setTransitionName(getString(R.string.trans_book_info_bg) + posToUpdate);
+        } else coordinator.setTransitionName(getString(R.string.trans_book_info_content) + posToUpdate);
 
         Window window = getWindow();
         TransitionInflater ti = TransitionInflater.from(this);

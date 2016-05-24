@@ -117,27 +117,34 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
         // Set info button click handler.
         vh.btnInfo.setOnClickListener(view -> {
             if (vh instanceof NormalCardVH) {
-                String bgTransName = Minerva.get().getString(R.string.trans_book_info_bg);
-                vh.cardView.setTransitionName(bgTransName);
                 ImageView coverImage = ((NormalCardVH) vh).ivCoverImage;
-                String coverTransName = Minerva.get().getString(R.string.trans_cover_image);
-                coverImage.setTransitionName(coverTransName);
                 //noinspection unchecked
                 BookInfoActivity.startWithTransition(activity, book.relPath, position, true,
-                        Pair.create(coverImage, coverTransName),
-                        Pair.create(vh.cardView, bgTransName));
+                        Pair.create(coverImage, coverImage.getTransitionName()),
+                        Pair.create(vh.cardView, vh.cardView.getTransitionName()));
             } else {
-                String bgTransName = Minerva.get().getString(R.string.trans_book_info_content);
-                vh.cardView.setTransitionName(bgTransName);
                 //noinspection unchecked
                 BookInfoActivity.startWithTransition(activity, book.relPath, position, false,
-                        Pair.create(vh.cardView, bgTransName));
+                        Pair.create(vh.cardView, vh.cardView.getTransitionName()));
             }
         });
 
         // Fill in data and set transition names.
         vh.tvTitle.setText(book.title);
         vh.tvAuthor.setText(book.author);
+
+        // Set transition names for certain elements. These depend on whether our card has a cover view and the
+        // position we're binding for currently.
+        if (vh instanceof NormalCardVH) {
+            // Normal cards have cover image views which are transitioned to the corresponding image view in the
+            // BookInfoActivity, and the cardview itself transitions to BookInfoActivity's dummy background view.
+            ((NormalCardVH) vh).ivCoverImage.setTransitionName(
+                    activity.getString(R.string.trans_cover_image) + position);
+            vh.cardView.setTransitionName(activity.getString(R.string.trans_book_info_bg) + position);
+        } else {
+            // Other cards don't have a cover image view, so the card transitions to the whole BookInfoActivity.
+            vh.cardView.setTransitionName(activity.getString(R.string.trans_book_info_content) + position);
+        }
 
         // Do bindings for the rest of the view holder based on its real type.
         if (vh instanceof CompactCardVH) bindCompactBookCard((CompactCardVH) vh, book);
@@ -254,7 +261,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
      * A base ViewHolder class for all book cards.
      */
     static class BaseCardVH extends RecyclerView.ViewHolder {
-        @BindView(R.id.container)
+        @BindView(R.id.card)
         public CardView cardView;
         @BindView(R.id.content)
         public RelativeLayout content;
