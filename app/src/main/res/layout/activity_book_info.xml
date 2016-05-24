@@ -6,22 +6,20 @@
         android:id="@+id/coordinator"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
         tools:context=".activities.BookInfoActivity">
 
     <View
             android:id="@+id/transition_bg"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
             android:background="@color/cardview_dark_background"/>
 
     <android.support.design.widget.AppBarLayout
             android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/collapsible_header_height"
-            android:theme="@style/AppTheme.AppBarOverlay"
-            android:fitsSystemWindows="true">
+            android:fitsSystemWindows="true"
+            android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.design.widget.CollapsingToolbarLayout
                 android:id="@+id/collapsing_toolbar"
@@ -31,7 +29,6 @@
                 android:fitsSystemWindows="true"
                 android:transitionGroup="false"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
-                app:statusBarScrim="?attr/colorPrimaryDark"
                 app:contentScrim="?attr/colorPrimary"
                 app:expandedTitleMarginStart="32dp"
                 app:expandedTitleMarginEnd="64dp"
