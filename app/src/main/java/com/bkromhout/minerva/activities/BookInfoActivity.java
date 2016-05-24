@@ -12,7 +12,6 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
@@ -230,7 +229,10 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
                      }
                  })
                  .into(coverImage);
-        } else coverImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.default_cover));
+        } else {
+            coverImage.setImageBitmap(DataUtils.getDefaultCoverImage());
+            //coverImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.default_cover));
+        }
 
         // Set the movement methods for the certain TextViews just once.
         MovementMethod mm = LinkMovementMethod.getInstance();

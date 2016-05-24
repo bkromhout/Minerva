@@ -1,8 +1,12 @@
 package com.bkromhout.minerva.data;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.text.Spanned;
 import com.bkromhout.minerva.Minerva;
+import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.enums.ModelType;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
@@ -175,6 +179,22 @@ public class DataUtils {
      */
     public static File getCoverImageFile(String relPath) {
         return Util.getFileFromRelPath(Minerva.get().getFilesDir(), relPath + COVER_EXT);
+    }
+
+    /**
+     * Get the default cover image as a bitmap so that the system can scale it easier than it otherwise could as a
+     * LayerDrawable.
+     * @return Bitmap created using LayerDrawable.
+     */
+    public static Bitmap getDefaultCoverImage() {
+        Drawable d = Minerva.get().getDrawable(R.drawable.default_cover);
+        if (d == null) throw new IllegalStateException("Couldn't get default cover drawable");
+        Bitmap bitmap = Bitmap.createBitmap(d.getIntrinsicWidth(), d.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        d.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        d.draw(canvas);
+        // TODO may want to cache this somehow so we don't have to do this each time?
+        return bitmap;
     }
 
     /**
