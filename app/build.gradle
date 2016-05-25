@@ -92,7 +92,7 @@ dependencies {
     compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7:0.4.0'
 
     compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'com.commit451:PhotoView:1.2.5'
+    compile 'com.github.chrisbanes:PhotoView:1.2.6'
     compile 'com.binaryfork:spanny:1.0.4'
     compile 'com.karumi:dexter:2.2.2' //AL
     compile('com.github.afollestad.material-dialogs:core:0.8.5.8@aar') {
@@ -101,16 +101,18 @@ dependencies {
     compile('com.github.afollestad.material-dialogs:commons:0.8.5.8@aar') {
         transitive = true
     }
-    compile('com.mikepenz:aboutlibraries:5.6.5@aar') {
+    compile('com.mikepenz:aboutlibraries:5.6.6@aar') {
         transitive = true
     }
 
-    compile ('com.bkromhout:realm-recyclerview-lite:2.0.3@aar') {
+    compile ('com.bkromhout:realm-recyclerview-lite:2.0.4@aar') {
         transitive = true
     }
-    apt 'com.bkromhout.ruqus:ruqus-compiler:1.1.0'
-    compile ('com.bkromhout.ruqus:ruqus-core:1.1.0@aar') {
+    apt 'com.bkromhout.ruqus:ruqus-compiler:1.2.0'
+    compile ('com.bkromhout.ruqus:ruqus-core:1.2.0@aar') {
         transitive = true
+        // TODO Currently having issues resolving commons for the latest dialogs, so we'll ignore it for now.
+        exclude group: 'com.afollestad.material-dialogs'
     }
 
     compile('nl.siegmann.epublib:epublib-core:3.1') { //AL
