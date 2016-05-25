@@ -84,8 +84,6 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
     ImageView coverImage;
     @BindView(R.id.fab)
     FloatingActionButton fab;
-    @BindView(R.id.content)
-    RelativeLayout content;
 
     // Views which always are shown.
     @BindView(R.id.title)
@@ -98,10 +96,6 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
     TextView chapCount;
     @BindView(R.id.rating)
     RatingBar rating;
-    @BindView(R.id.edit_rating)
-    ImageButton editRating;
-    @BindView(R.id.edit_tags)
-    ImageButton editTags;
     @BindView(R.id.tags)
     TextView tags;
     @BindView(R.id.path)
