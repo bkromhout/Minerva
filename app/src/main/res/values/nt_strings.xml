@@ -8,7 +8,8 @@
     <string name="key_updated_tag">updated_book_tag_name</string>
 
     <!-- Transition Names -->
-    <string name="trans_cover_image">cover_image</string>
-    <string name="trans_book_info_bg">book_info_bg</string>
-    <string name="trans_book_info_content">book_info_content</string>
+    <string name="trans_cover_image">cover_image_</string>
+    <string name="trans_book_info_bg">book_info_bg_</string>
+    <string name="trans_book_info_content">book_info_content_</string>
+    <string name="trans_book_list">trans_book_list_</string>
 </resources>
