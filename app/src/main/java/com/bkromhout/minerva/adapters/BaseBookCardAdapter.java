@@ -102,6 +102,19 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
         // Visually distinguish selected cards during multi-select mode.
         vh.cardView.setActivated(selectedPositions.contains(position));
 
+        // Set transition names for certain elements. These depend on whether our card has a cover view and the
+        // unique ID of the book we're binding for currently.
+        if (vh instanceof NormalCardVH) {
+            // Normal cards have cover image views which are transitioned to the corresponding image view in the
+            // BookInfoActivity, and the cardview itself transitions to BookInfoActivity's dummy background view.
+            ((NormalCardVH) vh).ivCoverImage.setTransitionName(
+                    activity.getString(R.string.trans_cover_image) + book.uniqueId);
+            vh.cardView.setTransitionName(activity.getString(R.string.trans_book_info_bg) + book.uniqueId);
+        } else {
+            // Other cards don't have a cover image view, so the card transitions to the whole BookInfoActivity.
+            vh.cardView.setTransitionName(activity.getString(R.string.trans_book_info_content) + book.uniqueId);
+        }
+
         // Set card click handler.
         vh.content.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
                 BookCardClickEvent.Type.NORMAL, book.relPath, position)));
@@ -119,12 +132,12 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
             if (vh instanceof NormalCardVH) {
                 ImageView coverImage = ((NormalCardVH) vh).ivCoverImage;
                 //noinspection unchecked
-                BookInfoActivity.startWithTransition(activity, book.relPath, position, true,
+                BookInfoActivity.startWithTransition(activity, book.uniqueId, position, true,
                         Pair.create(coverImage, coverImage.getTransitionName()),
                         Pair.create(vh.cardView, vh.cardView.getTransitionName()));
             } else {
                 //noinspection unchecked
-                BookInfoActivity.startWithTransition(activity, book.relPath, position, false,
+                BookInfoActivity.startWithTransition(activity, book.uniqueId, position, false,
                         Pair.create(vh.cardView, vh.cardView.getTransitionName()));
             }
         });
@@ -132,19 +145,6 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
         // Fill in data and set transition names.
         vh.tvTitle.setText(book.title);
         vh.tvAuthor.setText(book.author);
-
-        // Set transition names for certain elements. These depend on whether our card has a cover view and the
-        // position we're binding for currently.
-        if (vh instanceof NormalCardVH) {
-            // Normal cards have cover image views which are transitioned to the corresponding image view in the
-            // BookInfoActivity, and the cardview itself transitions to BookInfoActivity's dummy background view.
-            ((NormalCardVH) vh).ivCoverImage.setTransitionName(
-                    activity.getString(R.string.trans_cover_image) + position);
-            vh.cardView.setTransitionName(activity.getString(R.string.trans_book_info_bg) + position);
-        } else {
-            // Other cards don't have a cover image view, so the card transitions to the whole BookInfoActivity.
-            vh.cardView.setTransitionName(activity.getString(R.string.trans_book_info_content) + position);
-        }
 
         // Do bindings for the rest of the view holder based on its real type.
         if (vh instanceof CompactCardVH) bindCompactBookCard((CompactCardVH) vh, book);

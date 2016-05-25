@@ -24,7 +24,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.AnimationUtils;
-import android.widget.*;
+import android.widget.ImageView;
+import android.widget.RatingBar;
+import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -160,23 +162,21 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
     };
 
     /**
-     * Start the {@link BookInfoActivity} for the {@link RBook} with the given {@code relPath}.
+     * Start the {@link BookInfoActivity} for the {@link RBook} with the given {@code uniqueId}.
      * @param activity       Context to use to start the activity.
-     * @param relPath        Relative path which will be used to get the {@link RBook}.
+     * @param uniqueId       Unique ID which will be used to get the {@link RBook}.
      * @param updatePos      Position which should be updated when the activity closes.
      * @param includeCover   Whether or not to include the cover image in the shared elements transition.
      * @param sharedElements Array of shared element names and their associated views.
      */
     @SafeVarargs
-    public static void startWithTransition(Activity activity, String relPath, int updatePos, boolean includeCover,
+    public static void startWithTransition(Activity activity, long uniqueId, int updatePos, boolean includeCover,
                                            Pair<View, String>... sharedElements) {
-        if (relPath == null || relPath.isEmpty())
-            throw new IllegalArgumentException("Must supply non-null, non-empty relative path.");
-        if (updatePos < 0)
-            throw new IllegalArgumentException("Must supply a position >= 0.");
+        if (uniqueId < 0) throw new IllegalArgumentException("Must supply non-negative unique ID.");
+        if (updatePos < 0) throw new IllegalArgumentException("Must supply non-negative position.");
 
         activity.startActivity(new Intent(activity, BookInfoActivity.class)
-                        .putExtra(C.REL_PATH, relPath)
+                        .putExtra(C.UNIQUE_ID, uniqueId)
                         .putExtra(C.POS_TO_UPDATE, updatePos)
                         .putExtra(CARDS_HAVE_COVERS, includeCover),
                 ActivityOptions.makeSceneTransitionAnimation(activity, sharedElements).toBundle());
@@ -189,10 +189,11 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         ButterKnife.bind(this);
         realm = Realm.getDefaultInstance();
         posToUpdate = getIntent().getIntExtra(C.POS_TO_UPDATE, -1);
+        long uid = getIntent().getLongExtra(C.UNIQUE_ID, -1);
 
         // Get RBook and set title immediately.
-        book = realm.where(RBook.class).equalTo("relPath", getIntent().getStringExtra(C.REL_PATH)).findFirst();
-        if (book == null) throw new IllegalArgumentException("Invalid relative path, no matching RBook found.");
+        book = realm.where(RBook.class).equalTo("uniqueId", uid).findFirst();
+        if (book == null) throw new IllegalArgumentException("Invalid unique ID " + uid + ", no matching RBook found.");
         collapsibleToolbar.setTitle(book.title);
 
         setSupportActionBar(toolbar);
@@ -223,10 +224,8 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
                      }
                  })
                  .into(coverImage);
-        } else {
+        } else // Use default if necessary, but convert it to a bitmap to prevent lag while scaling for transition.
             coverImage.setImageBitmap(DataUtils.getDefaultCoverImage());
-            //coverImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.default_cover));
-        }
 
         // Set the movement methods for the certain TextViews just once.
         MovementMethod mm = LinkMovementMethod.getInstance();
@@ -405,11 +404,12 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
      *                   the content transitions instead.
      */
     private void setTransitions(final boolean shareCover) {
+        String append = String.valueOf(book.uniqueId);
         // Set transition names dynamically since we come from recyclerview items.
         if (shareCover) {
-            coverImage.setTransitionName(getString(R.string.trans_cover_image) + posToUpdate);
-            bg.setTransitionName(getString(R.string.trans_book_info_bg) + posToUpdate);
-        } else coordinator.setTransitionName(getString(R.string.trans_book_info_content) + posToUpdate);
+            coverImage.setTransitionName(getString(R.string.trans_cover_image) + append);
+            bg.setTransitionName(getString(R.string.trans_book_info_bg) + append);
+        } else coordinator.setTransitionName(getString(R.string.trans_book_info_content) + append);
 
         Window window = getWindow();
         TransitionInflater ti = TransitionInflater.from(this);
