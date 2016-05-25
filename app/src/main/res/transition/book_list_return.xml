@@ -1,24 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <transitionSet
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:interpolator="@android:interpolator/fast_out_linear_in"
-        android:transitionOrdering="together"
-        android:duration="200">
+        android:interpolator="@android:interpolator/linear_out_slow_in"
+        android:duration="300">
 
-    <transitionSet>
-        <targets>
-            <target android:excludeId="@android:id/navigationBarBackground"/>
-            <target android:excludeId="@android:id/statusBarBackground"/>
-            <target android:excludeId="@id/appbar"/>
-        </targets>
-        <slide android:slideEdge="bottom"/>
-        <fade/>
-    </transitionSet>
-
-    <fade>
-        <targets>
-            <target android:targetId="@android:id/navigationBarBackground"/>
-            <target android:targetId="@android:id/statusBarBackground"/>
-        </targets>
-    </fade>
+    <transition class="com.bkromhout.minerva.ui.transitions.RevealTransition"
+            android:transitionVisibilityMode="mode_out"/>
 </transitionSet>

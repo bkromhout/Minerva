@@ -1,9 +1,10 @@
 package com.bkromhout.minerva.adapters;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.PorterDuff;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -15,6 +16,7 @@ import butterknife.ButterKnife;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
+import com.bkromhout.minerva.activities.BookListActivity;
 import com.bkromhout.minerva.events.BookListCardClickEvent;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.ui.RippleForegroundListener;
@@ -35,14 +37,19 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
      * Help our cards ripple.
      */
     private static RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.card);
+    /**
+     * Activity to use for shared element transitions.
+     */
+    private final Activity activity;
 
     /**
      * Create a new {@link BookListCardAdapter}.
-     * @param context      Context.
+     * @param activity     Context.
      * @param realmResults Results of a Realm query to display.
      */
-    public BookListCardAdapter(Context context, RealmResults<RBookList> realmResults) {
-        super(context, realmResults);
+    public BookListCardAdapter(Activity activity, RealmResults<RBookList> realmResults) {
+        super(activity, realmResults);
+        this.activity = activity;
     }
 
     @Override
@@ -58,6 +65,12 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
     }
 
     @Override
+    public long getItemId(int position) {
+        if (position == super.getItemCount()) return Long.MIN_VALUE;
+        return realmResults.get(position).uniqueId;
+    }
+
+    @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         if (viewType == C.FOOTER_ITEM_TYPE)
             return new RecyclerView.ViewHolder(inflater.inflate(R.layout.empty_footer, viewGroup, false)) {};
@@ -69,21 +82,25 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         if (position == getItemCount() || !(viewHolder instanceof BookListCardVH)) return;
         BookListCardVH vh = (BookListCardVH) viewHolder;
-        final RBookList rBookList = realmResults.get(position);
-        if (!rBookList.isValid()) return;
+        final RBookList bookList = realmResults.get(position);
+        if (!bookList.isValid()) return;
 
         // Visually distinguish selected cards during multi-select mode.
         vh.cardView.setActivated(selectedPositions.contains(position));
 
+        // Set the transition name to use for the card view.
+        vh.cardView.setTransitionName(Minerva.get().getString(R.string.trans_book_list) + bookList.uniqueId);
+
         // Set card click handler.
-        vh.content.setOnClickListener(view ->
-                EventBus.getDefault().post(new BookListCardClickEvent(BookListCardClickEvent.Type.NORMAL,
-                        rBookList.name, viewHolder.getAdapterPosition())));
+        vh.content.setOnClickListener(view -> {
+            BookListActivity.startWithTransition(activity, bookList.uniqueId, position,
+                    Pair.create(vh.cardView, vh.cardView.getTransitionName()));
+        });
 
         // Set card long click handler.
         vh.content.setOnLongClickListener(view -> {
             EventBus.getDefault().post(
-                    new BookListCardClickEvent(BookListCardClickEvent.Type.LONG, rBookList.name,
+                    new BookListCardClickEvent(BookListCardClickEvent.Type.LONG, bookList.name,
                             viewHolder.getAdapterPosition()));
             return true;
         });
@@ -91,11 +108,11 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
         // Set up btnActions so that it displays a popup menu.
         vh.btnActions.setOnClickListener(view -> {
             PopupMenu menu = new PopupMenu(view.getContext(), view);
-            menu.getMenuInflater().inflate(!rBookList.isSmartList ? R.menu.book_list_card_actions
+            menu.getMenuInflater().inflate(!bookList.isSmartList ? R.menu.book_list_card_actions
                     : R.menu.book_list_smart_card_actions, menu.getMenu());
             menu.setOnMenuItemClickListener(item -> {
                 EventBus.getDefault().post(new BookListCardClickEvent(BookListCardClickEvent.Type.ACTIONS,
-                        rBookList.name, item.getItemId(), viewHolder.getAdapterPosition()));
+                        bookList.name, item.getItemId(), viewHolder.getAdapterPosition()));
                 return true;
             });
             menu.show();
@@ -103,14 +120,14 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
 
         // Set up btnSmartIcon so that it fires an event when pressed.
         vh.btnSmartIcon.setOnClickListener(view -> EventBus.getDefault().post(
-                new BookListCardClickEvent(BookListCardClickEvent.Type.ACTIONS, rBookList.name,
+                new BookListCardClickEvent(BookListCardClickEvent.Type.ACTIONS, bookList.name,
                         R.id.action_show_query, viewHolder.getAdapterPosition())));
 
         // Set visibility of smart list icon.
-        vh.btnSmartIcon.setVisibility(rBookList.isSmartList ? View.VISIBLE : View.GONE);
+        vh.btnSmartIcon.setVisibility(bookList.isSmartList ? View.VISIBLE : View.GONE);
 
         // Set list name.
-        vh.tvListName.setText(rBookList.name);
+        vh.tvListName.setText(bookList.name);
     }
 
     /**

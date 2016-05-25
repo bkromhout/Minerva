@@ -79,7 +79,6 @@ public class RBookListItem extends RealmObject implements UIDModel {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof RBookListItem)) return false;
-
         RBookListItem that = (RBookListItem) o;
         return uniqueId == that.uniqueId;
     }

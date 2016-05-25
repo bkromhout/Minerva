@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
+import android.util.Pair;
 import android.view.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,7 +39,6 @@ import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.ArrayList;
 import java.util.Collections;
 
 /**
@@ -275,10 +275,6 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
         }
         // Do something based on the click type.
         switch (event.getType()) {
-            case NORMAL:
-                // Start BookListActivity.
-                BookListActivity.start(getActivity(), event.getListName(), event.getPosition());
-                break;
             case LONG:
                 // Start multi-select.
                 adapter.toggleSelected(event.getPosition());
@@ -350,8 +346,16 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
                 ActionHelper.createNewList(realm, (String) event.getData());
                 break;
             case R.id.action_new_smart_list:
-                BookListActivity.start(getActivity(), (String) event.getData(), new ArrayList<>(lists).indexOf(
-                        ActionHelper.createNewSmartList(realm, (String) event.getData(), null)));
+                // Create and persist the new smart list.
+                RBookList newList = ActionHelper.createNewSmartList(realm, (String) event.getData(), null);
+                // Ensure that the item is on-screen so that it's been laid out.
+                recyclerView.getLayoutManager().scrollToPosition(lists.indexOf(newList));
+                // Get the view holder.
+                BookListCardAdapter.BookListCardVH vh = (BookListCardAdapter.BookListCardVH)
+                        recyclerView.getRecyclerView().findViewHolderForItemId(newList.uniqueId);
+                // Start BookListActivity with transition.
+                BookListActivity.startWithTransition(getActivity(), newList.uniqueId, vh.getAdapterPosition(),
+                        Pair.create(vh.cardView, vh.cardView.getTransitionName()));
                 break;
             case R.id.action_open_query_builder:
                 String ruqString = tempList.smartListRuqString;

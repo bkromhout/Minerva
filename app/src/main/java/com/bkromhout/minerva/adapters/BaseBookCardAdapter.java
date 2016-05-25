@@ -48,7 +48,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
      */
     private final Activity activity;
     /**
-     * If true, add a footer view which
+     * If true, add a footer view which will prevent the last item from being obscured.
      */
     private boolean addFooterView;
     /**

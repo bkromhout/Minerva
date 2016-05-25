@@ -28,4 +28,11 @@
         <item name="android:windowEnterTransition">@transition/book_info_enter</item>
         <item name="android:windowReturnTransition">@transition/book_info_return</item>
     </style>
+
+    <style name="AppTheme.BookListActivity" parent="AppTheme">
+        <!--<item name="android:windowEnterTransition">@transition/book_list_enter</item>-->
+        <!--<item name="android:windowReturnTransition">@transition/book_list_return</item>-->
+        <!--<item name="android:windowSharedElementEnterTransition">@transition/book_list_shared_enter</item>-->
+        <!--<item name="android:windowSharedElementReturnTransition">@transition/book_list_shared_return</item>-->
+    </style>
 </resources>

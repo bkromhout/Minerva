@@ -10,7 +10,7 @@ public class BookListCardClickEvent {
      * The various types of clicks that might have happened.
      */
     public enum Type {
-        NORMAL, LONG, ACTIONS
+        LONG, ACTIONS
     }
 
     /**

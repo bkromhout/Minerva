@@ -159,13 +159,6 @@ public class RBook extends RealmObject implements UIDModel {
      * is created using this, it risks a situation where we have primary key collisions.
      */
     public RBook() {
-        // VERY BAD!!
-        this.relPath = "DEF_REL_PATH";
-        this.title = "DEF_TITLE";
-        this.author = "DEF_AUTHOR";
-        this.rating = 0;
-        this.lastModifiedDate = Calendar.getInstance().getTime();
-        this.uniqueId = UniqueIdFactory.getInstance().nextId(RBook.class);
     }
 
     /**
@@ -262,16 +255,14 @@ public class RBook extends RealmObject implements UIDModel {
 
     @Override
     public Object getUID() {
-        return relPath;
+        return uniqueId;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof RBook)) return false;
-
         RBook rBook = (RBook) o;
-
         return uniqueId == rBook.uniqueId && relPath.equals(rBook.relPath);
     }
 

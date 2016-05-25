@@ -1,6 +1,7 @@
 package com.bkromhout.minerva.realm;
 
 import com.bkromhout.minerva.C;
+import com.bkromhout.minerva.data.UniqueIdFactory;
 import com.bkromhout.rrvl.UIDModel;
 import com.bkromhout.ruqus.Hide;
 import com.bkromhout.ruqus.RealmUserQuery;
@@ -52,6 +53,12 @@ public class RBookList extends RealmObject implements UIDModel {
      */
     @Hide
     public String smartListRuqString;
+    /**
+     * A unique long value.
+     */
+    @Index
+    @Hide
+    public long uniqueId;
 
     /**
      * Create a default {@link RBookList}.
@@ -60,16 +67,12 @@ public class RBookList extends RealmObject implements UIDModel {
      * a better choice.
      */
     public RBookList() {
-        this.name = null;
-        this.sortName = null;
-        this.nextPos = 0L;
-        this.listItems = null;
-        this.isSmartList = false;
-        this.smartListRuqString = null;
     }
 
     /**
      * Create a new {@link RBookList} with the given {@code name}.
+     * <p>
+     * This constructor will always set {@link #isSmartList} to {@code false}.
      * @param name Name of the book list. This MUST be unique!
      */
     public RBookList(String name) {
@@ -79,10 +82,13 @@ public class RBookList extends RealmObject implements UIDModel {
         this.listItems = null;
         this.isSmartList = false;
         this.smartListRuqString = null;
+        this.uniqueId = UniqueIdFactory.getInstance().nextId(RBookList.class);
     }
 
     /**
      * Create a new {@link RBookList} with the given {@code name} and the given {@code realmUserQuery}.
+     * <p>
+     * This constructor will always set {@link #isSmartList} to {@code true}.
      * @param name           Name of the book list. This MUST be unique!
      * @param realmUserQuery Realm user query to use for the smart list. Can be null.
      */
@@ -92,7 +98,8 @@ public class RBookList extends RealmObject implements UIDModel {
         this.nextPos = 0L;
         this.listItems = null;
         this.isSmartList = true;
-        this.smartListRuqString = realmUserQuery == null ? null : realmUserQuery.toRuqString();
+        this.smartListRuqString = realmUserQuery != null ? realmUserQuery.toRuqString() : null;
+        this.uniqueId = UniqueIdFactory.getInstance().nextId(RBookList.class);
     }
 
     /**
@@ -107,35 +114,11 @@ public class RBookList extends RealmObject implements UIDModel {
      * @param book Book to check for.
      * @return True if {@code book} is in this list, otherwise false.
      */
-    public boolean isBookInList(RBook book) {
-        throwIfSmartList();
-        return _isBookInList(book);
-    }
-
-    /**
-     * Checks to see if {@code book} is already in this list.
-     * @param book Book to check for.
-     * @return True if {@code book} is in this list, otherwise false.
-     */
     private boolean _isBookInList(RBook book) {
         return listItems.where()
                         .equalTo("owningList.name", name)
                         .equalTo("book.relPath", book.relPath)
                         .findFirst() != null;
-    }
-
-    /**
-     * Add a single {@link RBook} to this list if it isn't already.
-     * @param book Book to add to this list.
-     */
-    public void addBook(RBook book) {
-        throwIfSmartList();
-        // Don't re-add the book if it's already in this list.
-        if (isBookInList(book)) return;
-
-        try (Realm realm = Realm.getDefaultInstance()) {
-            realm.executeTransaction(tRealm -> listItems.add(new RBookListItem(this, book)));
-        }
     }
 
     /**
@@ -249,21 +232,21 @@ public class RBookList extends RealmObject implements UIDModel {
 
     @Override
     public Object getUID() {
-        return name;
+        return uniqueId;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof RBookList)) return false;
-
+        if (o == null || getClass() != o.getClass()) return false;
         RBookList rBookList = (RBookList) o;
-
-        return name.equals(rBookList.name);
+        return uniqueId == rBookList.uniqueId && (name != null ? name.equals(rBookList.name) : rBookList.name == null);
     }
 
     @Override
     public int hashCode() {
-        return name.hashCode();
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (int) (uniqueId ^ (uniqueId >>> 32));
+        return result;
     }
 }

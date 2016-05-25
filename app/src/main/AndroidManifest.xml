@@ -32,7 +32,7 @@
                 android:name=".activities.BookListActivity"
                 android:label="@string/title_activity_book_list"
                 android:parentActivityName=".activities.MainActivity"
-                android:theme="@style/AppTheme">
+                android:theme="@style/AppTheme.BookListActivity">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value=".activities.MainActivity"/>

@@ -87,9 +87,7 @@ public class RTag extends RealmObject implements UIDModel {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof RTag)) return false;
-
         RTag rTag = (RTag) o;
-
         return name.equals(rTag.name);
     }
 

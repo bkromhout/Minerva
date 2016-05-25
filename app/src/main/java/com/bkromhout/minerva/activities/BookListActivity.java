@@ -1,7 +1,7 @@
 package com.bkromhout.minerva.activities;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,6 +9,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -67,10 +68,6 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
     LinearLayout emptySmartList;
 
     /**
-     * Unique string to help find the correct list to display from the DB.
-     */
-    private String selStr;
-    /**
      * Position to use in any {@link UpdatePosEvent}s which might be sent.
      */
     private int posToUpdate;
@@ -117,18 +114,26 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
      */
     private boolean isReorderMode;
 
-    public static void start(Context context, String listName, int posToUpdate) {
-        if (listName == null) throw new IllegalArgumentException("Cannot start this activity without a list name.");
-        context.startActivity(new Intent(context, BookListActivity.class)
-                .putExtra(LIST_NAME, listName)
-                .putExtra(C.POS_TO_UPDATE, posToUpdate));
+    /**
+     * Start the {@link BookListActivity} for the {@link RBookList} with the given {@code uniqueId}.
+     * @param activity       Context to use to start the activity.
+     * @param uniqueId       Unique ID which will be used to get the {@link RBookList}.
+     * @param updatePos      Position which should be updated when the activity closes.
+     * @param sharedElements Array of shared element names and their associated views.
+     */
+    @SafeVarargs
+    public static void startWithTransition(Activity activity, long uniqueId, int updatePos,
+                                           Pair<View, String>... sharedElements) {
+        if (uniqueId < 0) throw new IllegalArgumentException("Must supply non-negative unique ID.");
+
+        activity.startActivity(new Intent(activity, BookListActivity.class).putExtra(C.UNIQUE_ID, uniqueId)
+                                                                           .putExtra(C.POS_TO_UPDATE, updatePos),
+                ActivityOptions.makeSceneTransitionAnimation(activity, sharedElements).toBundle());
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Create and bind views.
         setContentView(R.layout.activity_book_list);
         ButterKnife.bind(this);
 
@@ -137,15 +142,17 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Read extras bundle.
-        readExtras(getIntent().getExtras());
-
-        // Get and read preferences.
+        posToUpdate = getIntent().getExtras().getInt(C.POS_TO_UPDATE, -1);
         readPrefs();
 
         // Get Realm, then get the RBookList which we will get items from.
         realm = Realm.getDefaultInstance();
-        srcList = realm.where(RBookList.class).equalTo("name", selStr).findFirst();
+        srcList = realm.where(RBookList.class)
+                       .equalTo("uniqueId", getIntent().getLongExtra(C.UNIQUE_ID, -1))
+                       .findFirst();
+
+        // Assign transition name using unique ID.
+        //coordinator.setTransitionName(getString(R.string.trans_book_list) + srcList.uniqueId);
 
         // Set title, then check to see if we have a RUQ from the savedInstanceState.
         setTitle(srcList.name);
@@ -170,16 +177,6 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
 
         // Handle permissions. Make sure we continue a request process if applicable.
         initAndContinuePermChecksIfNeeded();
-    }
-
-    /**
-     * Fill in variables using the extras bundle.
-     * @param b Extras bundle from intent used to start this activity.
-     */
-    private void readExtras(Bundle b) {
-        if (b == null) return;
-        selStr = b.getString(LIST_NAME, null);
-        posToUpdate = b.getInt(C.POS_TO_UPDATE, -1);
     }
 
     /**

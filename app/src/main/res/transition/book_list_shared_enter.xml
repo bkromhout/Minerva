@@ -9,8 +9,6 @@
         <targets>
             <target android:targetId="@id/coordinator"/>
         </targets>
-        <fade/>
-        <changeBounds/>
         <changeClipBounds/>
     </transitionSet>
 </transitionSet>
