@@ -425,7 +425,11 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
         activateFabs(false);
     }
 
-    private void activateFabs(boolean activate) {
+    /**
+     * Activate/Deactivate FABs by changing main FAB's icon and making the mini FAB visible/not visible.
+     * @param activate If true, activate FABs, otherwise deactivate them.
+     */
+    private void activateFabs(final boolean activate) {
         ObjectAnimator maskAnimator = ObjectAnimator.ofFloat(maskView, "alpha", activate ? 0f : 1f, activate ? 1f : 0f)
                                                     .setDuration(miniFabAnimDuration);
         maskAnimator.addListener(new AnimatorListenerAdapter() {
