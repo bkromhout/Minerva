@@ -1,5 +1,7 @@
 package com.bkromhout.minerva.activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
@@ -10,10 +12,10 @@ import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Transition;
-import android.transition.TransitionSet;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,7 +39,8 @@ import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
 import com.bkromhout.minerva.ui.SnackKiosk;
-import com.bkromhout.minerva.ui.transitions.RevealTransition;
+import com.bkromhout.minerva.ui.UiUtils;
+import com.bkromhout.minerva.ui.transitions.CircularReveal;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.RealmRecyclerView;
@@ -70,19 +73,13 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
     RealmRecyclerView recyclerView;
     @BindView(R.id.smart_list_empty)
     LinearLayout emptySmartList;
+    @BindView(R.id.transition_fg)
+    View fg;
 
     /**
      * Position to use in any {@link UpdatePosEvent}s which might be sent.
      */
     private int posToUpdate;
-    /**
-     * X location to to as center for circular reveal.
-     */
-    private float centerX;
-    /**
-     * Y location to to as center for circular reveal.
-     */
-    private float centerY;
     /**
      * Whether or not to skip the circular reveal usually done when first opening the activity. This is necessary if we
      * know we're going to immediately open the {@link QueryBuilderActivity}.
@@ -136,22 +133,21 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
      * @param activity  Context to use to start the activity.
      * @param uniqueId  Unique ID which will be used to get the {@link RBookList}.
      * @param updatePos Position which should be updated when the activity closes.
-     * @param centerX   X location to to as center for circular reveal. Pass {@code -1f} to use center of activity.
-     * @param centerY   Y location to to as center for circular reveal. Pass {@code -1f} to use center of activity.
+     * @param centerX   X location to to as center for circular reveal. Pass {@code -1} to use center of activity.
+     * @param centerY   Y location to to as center for circular reveal. Pass {@code -1} to use center of activity.
      */
-    public static void start(Activity activity, long uniqueId, int updatePos, float centerX, float centerY) {
+    public static void start(Activity activity, long uniqueId, int updatePos, int centerX, int centerY) {
         if (uniqueId < 0) throw new IllegalArgumentException("Must supply non-negative unique ID.");
 
         Intent intent = new Intent(activity, BookListActivity.class).putExtra(C.UNIQUE_ID, uniqueId)
                                                                     .putExtra(C.POS_TO_UPDATE, updatePos);
-        if (centerX != -1f) intent.putExtra(CENTER_X, centerX);
-        if (centerY != -1f) intent.putExtra(CENTER_Y, centerY);
+        if (centerX != -1) intent.putExtra(CENTER_X, centerX);
+        if (centerY != -1) intent.putExtra(CENTER_Y, centerY);
 
         // Yes, we do indeed pass nothing but the activity here. Why? Because the enter transition literally refuses
         // to play otherwise, that's why. Perhaps in the future we can figure out a way around that.
         //noinspection unchecked
         ActivityOptions emptyOptions = ActivityOptions.makeSceneTransitionAnimation(activity);
-
         activity.startActivity(intent, emptyOptions.toBundle());
     }
 
@@ -160,16 +156,13 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_list);
         ButterKnife.bind(this);
+        posToUpdate = getIntent().getIntExtra(C.POS_TO_UPDATE, -1);
+        readPrefs();
 
         // Set up toolbar.
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        posToUpdate = getIntent().getIntExtra(C.POS_TO_UPDATE, -1);
-        centerX = getIntent().getFloatExtra(CENTER_X, coordinator.getWidth() / 2);
-        centerY = getIntent().getFloatExtra(CENTER_Y, coordinator.getHeight() / 2);
-        readPrefs();
 
         // Get Realm, then get the RBookList which we will get items from.
         realm = Realm.getDefaultInstance();
@@ -198,18 +191,77 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
             if (savedInstanceState.getBoolean(C.NEEDS_POS_UPDATE)) needsPosUpdate = true;
         }
 
-        // TODO Comment this
-        if (savedInstanceState != null || skipReveal) getWindow().setEnterTransition(null);
-        else {
-            Transition enterTrans = getWindow().getEnterTransition();
-            TransitionSet enterTransSet = enterTrans instanceof TransitionSet ? (TransitionSet) enterTrans : null;
-            //noinspection ConstantConditions
-            RevealTransition revealTransition = (RevealTransition) enterTransSet.getTransitionAt(0);
-            revealTransition.setCenter(centerX, centerY);
-        }
+        // Set up the window enter and exit transitions.
+        setupTransitions(savedInstanceState == null && !skipReveal);
 
         // Handle permissions. Make sure we continue a request process if applicable.
         initAndContinuePermChecksIfNeeded();
+    }
+
+    /**
+     * Set up transitions for this activity.
+     * @param doEnterTrans If false, we'll skip the content enter transition. True allows it to happen.
+     */
+    private void setupTransitions(boolean doEnterTrans) {
+        // We want to set a specific center point for our circular reveal transition.
+        int centerX = getIntent().getIntExtra(CENTER_X, coordinator.getWidth() / 2);
+        int centerY = getIntent().getIntExtra(CENTER_Y, coordinator.getHeight() / 2);
+
+        if (doEnterTrans) {
+            // If we're going to do the enter transition, set it up a bit.
+            CircularReveal enterTrans = (CircularReveal) getWindow().getEnterTransition();
+            enterTrans.setCenter(centerX, centerY);
+
+            // Ensure that we're fading out the foreground overlay view as we do the reveal when entering.
+            enterTrans.addListener(new UiUtils.TransitionListenerAdapter() {
+                @Override
+                public void onTransitionStart(Transition transition) {
+                    super.onTransitionStart(transition);
+                    fg.animate()
+                      .alpha(0f)
+                      .setDuration(300)
+                      .setInterpolator(AnimationUtils.loadInterpolator(
+                              BookListActivity.this, android.R.interpolator.accelerate_cubic))
+                      .setListener(new AnimatorListenerAdapter() {
+                          @Override
+                          public void onAnimationEnd(Animator animation) {
+                              super.onAnimationEnd(animation);
+                              fg.setAlpha(0f);
+                          }
+                      })
+                      .start();
+                }
+            });
+        } else {
+            // If we're going to skip the enter transition, tell the system that, then hide the foreground overlay.
+            getWindow().setEnterTransition(null);
+            fg.setAlpha(0f);
+        }
+
+        // Set up the return transition.
+        CircularReveal returnTrans = (CircularReveal) getWindow().getReturnTransition();
+        returnTrans.setCenter(centerX, centerY);
+
+        // Ensure that we fading in the foreground overlay view as we do the "reversed reveal" when returning.
+        returnTrans.addListener(new UiUtils.TransitionListenerAdapter() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+                super.onTransitionStart(transition);
+                fg.animate()
+                  .alpha(1f)
+                  .setDuration(200)
+                  .setInterpolator(AnimationUtils.loadInterpolator(
+                          BookListActivity.this, android.R.interpolator.decelerate_cubic))
+                  .setListener(new AnimatorListenerAdapter() {
+                      @Override
+                      public void onAnimationEnd(Animator animation) {
+                          super.onAnimationEnd(animation);
+                          fg.setAlpha(1f);
+                      }
+                  })
+                  .start();
+            }
+        });
     }
 
     /**

@@ -191,7 +191,7 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-            BookListActivity.start(activity, uniqueIdToSend, posToSend, e.getRawX(), e.getRawY());
+            BookListActivity.start(activity, uniqueIdToSend, posToSend, (int) e.getRawX(), (int) e.getRawY());
             return true;
         }
     }

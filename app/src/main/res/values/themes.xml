@@ -30,12 +30,9 @@
     </style>
 
     <style name="AppTheme.BookListActivity" parent="AppTheme">
-        <!-- TODO can we remove the animation ones? -->
-        <item name="android:windowAnimationStyle">@null</item>
-        <item name="android:windowEnterAnimation">@null</item>
-        <item name="android:windowExitAnimation">@null</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowEnterTransition">@transition/book_list_enter</item>
+        <item name="android:windowReturnTransition">@transition/book_list_return</item>
+        <!-- Make the window background transparent so that we don't have to see the transition background fade -->
+        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 </resources>

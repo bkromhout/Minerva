@@ -52,4 +52,12 @@
                 android:backgroundTint="@color/colorAccent"
                 android:text="@string/action_open_query_builder"/>
     </LinearLayout>
+
+    <View
+            android:id="@+id/transition_fg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/cardview_dark_background"
+            android:translationZ="4dp"
+            tools:alpha="0"/>
 </android.support.design.widget.CoordinatorLayout>

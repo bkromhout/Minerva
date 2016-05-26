@@ -347,7 +347,7 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
             case R.id.action_new_smart_list:
                 // Create and persist the new smart list.
                 RBookList newList = ActionHelper.createNewSmartList(realm, (String) event.getData(), null);
-                BookListActivity.start(getActivity(), newList.uniqueId, lists.indexOf(newList), -1f, -1f);
+                BookListActivity.start(getActivity(), newList.uniqueId, lists.indexOf(newList), -1, -1);
                 break;
             case R.id.action_open_query_builder:
                 String ruqString = tempList.smartListRuqString;
