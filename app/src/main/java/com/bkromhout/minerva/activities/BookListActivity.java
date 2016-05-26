@@ -80,6 +80,11 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
      */
     private float centerY;
     /**
+     * Whether or not to skip the circular reveal usually done when first opening the activity. This is necessary if we
+     * know we're going to immediately open the {@link QueryBuilderActivity}.
+     */
+    private boolean skipReveal = false;
+    /**
      * If true, send a {@link UpdatePosEvent} to the {@link com.bkromhout.minerva.fragments.AllListsFragment} when we
      * exit this activity.
      */
@@ -182,7 +187,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
             }
             // ...And whether we will still need to send a position update upon finishing.
             if (savedInstanceState.getBoolean(C.NEEDS_POS_UPDATE)) needsPosUpdate = true;
-        } else {
+        } else if (!skipReveal) {
             coordinator.setVisibility(View.INVISIBLE);
             getWindow().setEnterTransition(null);
             // Animate our activity in with a circular reveal if we just opened it.
@@ -229,7 +234,9 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 smartListRuq = new RealmUserQuery(srcList.smartListRuqString);
                 updateUi();
             } else if (ruqString == null) {
-                // We need to set up the smart list first. Open the query builder.
+                // We need to set up the smart list first. Open the query builder, and make sure we don't animate in
+                // this activity.
+                skipReveal = true;
                 QueryBuilderActivity.start(this, null);
             } else { // ruqString.isEmpty() == true here.
                 //User has already been to the query builder once, it's up to them now, show a message saying that.
@@ -485,7 +492,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
             case R.id.action_delete_smart_list:
                 // Delete the list currently being shown, then finish the activity.
                 ActionHelper.deleteLists(realm, Collections.singletonList(srcList));
-                finish();
+                onBackPressed();
                 break;
             case R.id.action_rate:
                 ActionHelper.rateBooks(realm, getSelectedBooks(), (Integer) event.getData());
