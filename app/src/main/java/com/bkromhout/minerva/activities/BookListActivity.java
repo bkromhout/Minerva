@@ -462,7 +462,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
      * Called when we wish to take some action.
      * @param event {@link ActionEvent}.
      */
-    @Subscribe
+    @Subscribe(priority = 1)
     public void onActionEvent(ActionEvent event) {
         switch (event.getActionId()) {
             case R.id.action_clear:
@@ -517,6 +517,10 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 ActionHelper.deleteBooks(getSelectedBooks(), (boolean) event.getData());
                 break;
         }
+        // Ensure that AllListsFragment doesn't see the event, which is otherwise would since we're a "transparent"
+        // activity, meaning that AllListsFragment is still running behind us and would otherwise also receive the
+        // event. This is also why we subscribe with a higher priority.
+        EventBus.getDefault().cancelEventDelivery(event);
         if (actionMode != null) actionMode.finish();
     }
 
@@ -705,9 +709,9 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
      * When called, update the item at the position carried in the event.
      * @param event {@link UpdatePosEvent}.
      */
-    @Subscribe(sticky = true)
+    @Subscribe(sticky = true, priority = 1)
     public void onUpdatePosEvent(UpdatePosEvent event) {
-        // Remove the sticky event.
+        // Remove the sticky event, which also ensures that AllListsFragment won't see it.
         EventBus.getDefault().removeStickyEvent(event);
         // If the event's position is ALL_POSITIONS, indicate the whole dataset changed. Otherwise, update the item
         // at the position in the event.
