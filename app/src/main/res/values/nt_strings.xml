@@ -11,5 +11,4 @@
     <string name="trans_cover_image">cover_image_</string>
     <string name="trans_book_info_bg">book_info_bg_</string>
     <string name="trans_book_info_content">book_info_content_</string>
-    <string name="trans_book_list">trans_book_list_</string>
 </resources>

@@ -2,15 +2,35 @@ package com.bkromhout.minerva.ui;
 
 import android.animation.Animator;
 import android.animation.TimeInterpolator;
+import android.graphics.Rect;
 import android.transition.Transition;
 import android.util.ArrayMap;
+import android.view.View;
 
 import java.util.ArrayList;
 
 /**
- * Things to help us with animation.
+ * Things to help us with UI and animation.
  */
-public class AnimUtils {
+public class UiUtils {
+    /**
+     * Used for {@link #isPointInsideView(float, float, View)} so that we only need to create the Rect once.
+     */
+    private static Rect rect;
+
+    /**
+     * Determines if point falls within the bounds of the given {@code view}.
+     * @param x    X coordinate of point
+     * @param y    Y coordinate of point
+     * @param view View object to compare
+     * @return true if the points are within view bounds, false otherwise
+     */
+    public static boolean isPointInsideView(float x, float y, View view) {
+        if (rect == null) rect = new Rect();
+        view.getHitRect(rect);
+        return rect.contains((int) x, (int) y);
+    }
+
     /**
      * https://halfthought.wordpress.com/2014/11/07/reveal-transition/
      * <p>

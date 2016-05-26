@@ -11,7 +11,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
-import android.util.Pair;
 import android.view.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -348,14 +347,7 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
             case R.id.action_new_smart_list:
                 // Create and persist the new smart list.
                 RBookList newList = ActionHelper.createNewSmartList(realm, (String) event.getData(), null);
-                // Ensure that the item is on-screen so that it's been laid out.
-                recyclerView.getLayoutManager().scrollToPosition(lists.indexOf(newList));
-                // Get the view holder.
-                BookListCardAdapter.BookListCardVH vh = (BookListCardAdapter.BookListCardVH)
-                        recyclerView.getRecyclerView().findViewHolderForItemId(newList.uniqueId);
-                // Start BookListActivity with transition.
-                BookListActivity.startWithTransition(getActivity(), newList.uniqueId, vh.getAdapterPosition(),
-                        Pair.create(vh.cardView, vh.cardView.getTransitionName()));
+                BookListActivity.start(getActivity(), newList.uniqueId, lists.indexOf(newList), -1f, -1f);
                 break;
             case R.id.action_open_query_builder:
                 String ruqString = tempList.smartListRuqString;

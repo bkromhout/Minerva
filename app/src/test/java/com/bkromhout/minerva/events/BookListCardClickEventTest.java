@@ -25,7 +25,7 @@ public class BookListCardClickEventTest {
     @BeforeClass
     public static void setUp() {
         // Create events using constructors.
-        event1 = new BookListCardClickEvent(BookListCardClickEvent.Type.NORMAL, "List 1", 5);
+        event1 = new BookListCardClickEvent(BookListCardClickEvent.Type.ACTIONS, "List 1", 5);
         event2 = new BookListCardClickEvent(BookListCardClickEvent.Type.LONG, "List 2", R.id.action_clear, 6);
     }
 
@@ -37,7 +37,7 @@ public class BookListCardClickEventTest {
 
     @Test
     public void threeParamCtor() {
-        assertThat(event1.getType(), is(BookListCardClickEvent.Type.NORMAL));
+        assertThat(event1.getType(), is(BookListCardClickEvent.Type.ACTIONS));
         assertThat(event1.getListName(), is("List 1"));
         assertThat(event1.getActionId(), is(-1));
         assertThat(event1.getPosition(), is(5));

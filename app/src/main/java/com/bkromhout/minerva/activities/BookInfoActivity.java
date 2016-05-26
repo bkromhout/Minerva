@@ -39,7 +39,7 @@ import com.bkromhout.minerva.enums.MarkType;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.realm.RBook;
-import com.bkromhout.minerva.ui.AnimUtils;
+import com.bkromhout.minerva.ui.UiUtils;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.ui.TagBackgroundSpan;
 import com.bkromhout.minerva.util.Dialogs;
@@ -422,7 +422,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
                 shareCover ? R.transition.book_info_shared_return_with_cover : R.transition.book_info_shared_return);
 
         // Add listener for content enter transition.
-        contentEnter.addListener(new AnimUtils.TransitionListenerAdapter() {
+        contentEnter.addListener(new UiUtils.TransitionListenerAdapter() {
             @Override
             public void onTransitionStart(Transition transition) {
                 super.onTransitionStart(transition);
@@ -454,7 +454,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         });
 
         // Add listener for content return transition.
-        contentReturn.addListener(new AnimUtils.TransitionListenerAdapter() {
+        contentReturn.addListener(new UiUtils.TransitionListenerAdapter() {
             @Override
             public void onTransitionStart(Transition transition) {
                 super.onTransitionStart(transition);
@@ -478,7 +478,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         });
 
         // Add listener for shared element enter transition.
-        sharedEnter.addListener(new AnimUtils.TransitionListenerAdapter() {
+        sharedEnter.addListener(new UiUtils.TransitionListenerAdapter() {
             @Override
             public void onTransitionStart(Transition transition) {
                 super.onTransitionStart(transition);
@@ -509,7 +509,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         });
 
         // Add listener for shared element return transition.
-        sharedReturn.addListener(new AnimUtils.TransitionListenerAdapter() {
+        sharedReturn.addListener(new UiUtils.TransitionListenerAdapter() {
             @Override
             public void onTransitionStart(Transition transition) {
                 super.onTransitionStart(transition);

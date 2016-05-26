@@ -9,7 +9,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
-import com.bkromhout.minerva.ui.AnimUtils;
+import com.bkromhout.minerva.ui.UiUtils;
 
 public class RevealTransition extends Visibility {
     private final float xOrigin;
@@ -55,7 +55,7 @@ public class RevealTransition extends Visibility {
         int centerY = view.getHeight() / 2;
 
         Animator reveal = ViewAnimationUtils.createCircularReveal(view, centerX, centerY, startRadius, endRadius);
-        return new AnimUtils.NoPauseAnimator(reveal);
+        return new UiUtils.NoPauseAnimator(reveal);
     }
 
     static float calculateMaxRadius(View view) {

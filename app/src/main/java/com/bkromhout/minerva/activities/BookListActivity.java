@@ -1,7 +1,8 @@
 package com.bkromhout.minerva.activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,10 +10,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Pair;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,8 +52,10 @@ import java.util.List;
  */
 public class BookListActivity extends PermCheckingActivity implements ActionMode.Callback, SnackKiosk.Snacker {
     // Key strings for the bundle passed when this activity is started.
-    public static final String LIST_NAME = "LIST_NAME";
-    private static final String KEY_IS_REORDER_MODE = "IS_REORDER_MODE";
+    public static final String LIST_NAME = "list_name";
+    private static final String CENTER_X = "center_x";
+    private static final String CENTER_Y = "center_y";
+    private static final String KEY_IS_REORDER_MODE = "is_reorder_mode";
 
     // Views.
     @BindView(R.id.toolbar)
@@ -71,6 +71,14 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
      * Position to use in any {@link UpdatePosEvent}s which might be sent.
      */
     private int posToUpdate;
+    /**
+     * X location to to as center for circular reveal.
+     */
+    private float centerX;
+    /**
+     * Y location to to as center for circular reveal.
+     */
+    private float centerY;
     /**
      * If true, send a {@link UpdatePosEvent} to the {@link com.bkromhout.minerva.fragments.AllListsFragment} when we
      * exit this activity.
@@ -116,19 +124,21 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
 
     /**
      * Start the {@link BookListActivity} for the {@link RBookList} with the given {@code uniqueId}.
-     * @param activity       Context to use to start the activity.
-     * @param uniqueId       Unique ID which will be used to get the {@link RBookList}.
-     * @param updatePos      Position which should be updated when the activity closes.
-     * @param sharedElements Array of shared element names and their associated views.
+     * @param activity  Context to use to start the activity.
+     * @param uniqueId  Unique ID which will be used to get the {@link RBookList}.
+     * @param updatePos Position which should be updated when the activity closes.
+     * @param centerX   X location to to as center for circular reveal. Pass {@code -1f} to use center of activity.
+     * @param centerY   Y location to to as center for circular reveal. Pass {@code -1f} to use center of activity.
      */
-    @SafeVarargs
-    public static void startWithTransition(Activity activity, long uniqueId, int updatePos,
-                                           Pair<View, String>... sharedElements) {
+    public static void start(Activity activity, long uniqueId, int updatePos, float centerX, float centerY) {
         if (uniqueId < 0) throw new IllegalArgumentException("Must supply non-negative unique ID.");
 
-        activity.startActivity(new Intent(activity, BookListActivity.class).putExtra(C.UNIQUE_ID, uniqueId)
-                                                                           .putExtra(C.POS_TO_UPDATE, updatePos),
-                ActivityOptions.makeSceneTransitionAnimation(activity, sharedElements).toBundle());
+        Intent intent = new Intent(activity, BookListActivity.class).putExtra(C.UNIQUE_ID, uniqueId)
+                                                                    .putExtra(C.POS_TO_UPDATE, updatePos);
+        if (centerX != -1f) intent.putExtra(CENTER_X, centerX);
+        if (centerY != -1f) intent.putExtra(CENTER_Y, centerY);
+
+        activity.startActivity(intent);
     }
 
     @Override
@@ -142,7 +152,9 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        posToUpdate = getIntent().getExtras().getInt(C.POS_TO_UPDATE, -1);
+        posToUpdate = getIntent().getIntExtra(C.POS_TO_UPDATE, -1);
+        centerX = getIntent().getFloatExtra(CENTER_X, coordinator.getWidth() / 2);
+        centerY = getIntent().getFloatExtra(CENTER_Y, coordinator.getHeight() / 2);
         readPrefs();
 
         // Get Realm, then get the RBookList which we will get items from.
@@ -150,9 +162,6 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
         srcList = realm.where(RBookList.class)
                        .equalTo("uniqueId", getIntent().getLongExtra(C.UNIQUE_ID, -1))
                        .findFirst();
-
-        // Assign transition name using unique ID.
-        //coordinator.setTransitionName(getString(R.string.trans_book_list) + srcList.uniqueId);
 
         // Set title, then check to see if we have a RUQ from the savedInstanceState.
         setTitle(srcList.name);
@@ -173,6 +182,17 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
             }
             // ...And whether we will still need to send a position update upon finishing.
             if (savedInstanceState.getBoolean(C.NEEDS_POS_UPDATE)) needsPosUpdate = true;
+        } else {
+            coordinator.setVisibility(View.INVISIBLE);
+            getWindow().setEnterTransition(null);
+            // Animate our activity in with a circular reveal if we just opened it.
+            coordinator.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    coordinator.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    circularReveal(true);
+                }
+            });
         }
 
         // Handle permissions. Make sure we continue a request process if applicable.
@@ -247,6 +267,11 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
     protected void onResume() {
         super.onResume();
         SnackKiosk.startSnacking(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        circularReveal(false);
     }
 
     @Override
@@ -627,6 +652,31 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 TaggingActivity.start(this, book);
                 break;
         }
+    }
+
+    private void circularReveal(final boolean show) {
+        float radius = Math.max(coordinator.getWidth(), coordinator.getHeight());
+        Animator cr = ViewAnimationUtils.createCircularReveal(coordinator, (int) centerX, (int) centerY,
+                show ? 0f : radius, show ? radius : 0f).setDuration(400);
+        // TODO Add interpolator to this, something that starts fast preferably
+        cr.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+                if (show) coordinator.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                if (!show) {
+                    coordinator.setVisibility(View.INVISIBLE);
+                    finishAfterTransition();
+                    overridePendingTransition(0, 0);
+                }
+            }
+        });
+        cr.start();
     }
 
     /**

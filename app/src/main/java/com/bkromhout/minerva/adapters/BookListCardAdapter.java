@@ -2,9 +2,11 @@ package com.bkromhout.minerva.adapters;
 
 import android.app.Activity;
 import android.graphics.PorterDuff;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Pair;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -20,6 +22,7 @@ import com.bkromhout.minerva.activities.BookListActivity;
 import com.bkromhout.minerva.events.BookListCardClickEvent;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.ui.RippleForegroundListener;
+import com.bkromhout.minerva.ui.UiUtils;
 import com.bkromhout.rrvl.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
@@ -41,6 +44,15 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
      * Activity to use for shared element transitions.
      */
     private final Activity activity;
+    /**
+     * Actual gesture detector implementation used to create {@link #gestureDetector}.
+     */
+    private final CardGestureDetector detectorImpl;
+    /**
+     * Gesture detector to help us with getting a legitimate X-Y point to center {@link BookListActivity}'s circular
+     * reveal effect at when starting it.
+     */
+    private final GestureDetectorCompat gestureDetector;
 
     /**
      * Create a new {@link BookListCardAdapter}.
@@ -50,6 +62,8 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
     public BookListCardAdapter(Activity activity, RealmResults<RBookList> realmResults) {
         super(activity, realmResults);
         this.activity = activity;
+        this.detectorImpl = new CardGestureDetector();
+        this.gestureDetector = new GestureDetectorCompat(activity, detectorImpl);
     }
 
     @Override
@@ -88,13 +102,18 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
         // Visually distinguish selected cards during multi-select mode.
         vh.cardView.setActivated(selectedPositions.contains(position));
 
-        // Set the transition name to use for the card view.
-        vh.cardView.setTransitionName(Minerva.get().getString(R.string.trans_book_list) + bookList.uniqueId);
+        vh.content.setOnTouchListener((v, event) -> {
+            // Pass this into our ripple touch listener so that we still get touch feedback.
+            rippleFgListener.onTouch(v, event);
 
-        // Set card click handler.
-        vh.content.setOnClickListener(view -> {
-            BookListActivity.startWithTransition(activity, bookList.uniqueId, position,
-                    Pair.create(vh.cardView, vh.cardView.getTransitionName()));
+            // Ignore this event if it's within the bounds of either of our buttons.
+            if (UiUtils.isPointInsideView(event.getX(), event.getY(), vh.btnActions)
+                    || (vh.btnSmartIcon.getVisibility() == View.VISIBLE &&
+                    UiUtils.isPointInsideView(event.getX(), event.getY(), vh.btnSmartIcon))) return false;
+
+            // If it isn't, have the gesture detector check it. This will return true if it was handled.
+            detectorImpl.setValuesToSend(bookList.uniqueId, position);
+            return gestureDetector.onTouchEvent(event);
         });
 
         // Set card long click handler.
@@ -152,9 +171,28 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
             // Make sure background responds to changes in "activated" state.
             cardView.getBackground().setTintMode(PorterDuff.Mode.SRC);
             cardView.getBackground().setTintList(Minerva.d().CARD_BG_COLORS);
+        }
+    }
 
-            // Make the card ripple when touched.
-            content.setOnTouchListener(rippleFgListener);
+    private class CardGestureDetector extends GestureDetector.SimpleOnGestureListener {
+        private long uniqueIdToSend;
+        private int posToSend;
+
+        void setValuesToSend(long uniqueIdToSend, int posToSend) {
+            this.uniqueIdToSend = uniqueIdToSend;
+            this.posToSend = posToSend;
+        }
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            // Return true so that the system knows we're interested.
+            return false;
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            BookListActivity.start(activity, uniqueIdToSend, posToSend, e.getRawX(), e.getRawY());
+            return true;
         }
     }
 }
