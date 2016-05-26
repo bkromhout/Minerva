@@ -1,7 +1,6 @@
 package com.bkromhout.minerva.ui.transitions;
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.transition.TransitionValues;
 import android.transition.Visibility;
@@ -11,36 +10,34 @@ import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import com.bkromhout.minerva.ui.UiUtils;
 
+/**
+ * TODO Comment this
+ */
 public class RevealTransition extends Visibility {
-    private final float xOrigin;
-    private final float yOrigin;
+    private float centerX;
+    private float centerY;
 
-    public RevealTransition(float xOrigin, float yOrigin) {
-        this.xOrigin = xOrigin;
-        this.yOrigin = yOrigin;
+    public RevealTransition(float centerX, float centerY) {
+        this.centerX = centerX;
+        this.centerY = centerY;
     }
 
     public RevealTransition(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.xOrigin = -1f;
-        this.yOrigin = -1f;
+        this.centerX = -1f;
+        this.centerY = -1f;
+    }
+
+    public void setCenter(float centerX, float centerY) {
+        this.centerX = centerX;
+        this.centerY = centerY;
     }
 
     @Override
     public Animator onAppear(ViewGroup sceneRoot, final View view, TransitionValues startValues,
                              TransitionValues endValues) {
         float radius = calculateMaxRadius(view);
-        final float originalAlpha = view.getAlpha();
-        //view.setAlpha(0f);
-
-        Animator reveal = createAnimator(view, 0, radius);
-        reveal.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                view.setAlpha(originalAlpha);
-            }
-        });
-        return reveal;
+        return createAnimator(view, 0, radius);
     }
 
     @Override
@@ -51,16 +48,18 @@ public class RevealTransition extends Visibility {
     }
 
     private Animator createAnimator(View view, float startRadius, float endRadius) {
-        int centerX = view.getWidth() / 2;
-        int centerY = view.getHeight() / 2;
+        int centerX = this.centerX != -1f ? (int) this.centerX : view.getWidth() / 2;
+        int centerY = this.centerY != -1f ? (int) this.centerY : view.getWidth() / 2;
 
         Animator reveal = ViewAnimationUtils.createCircularReveal(view, centerX, centerY, startRadius, endRadius);
         return new UiUtils.NoPauseAnimator(reveal);
     }
 
     static float calculateMaxRadius(View view) {
-        float widthSquared = view.getWidth() * view.getWidth();
-        float heightSquared = view.getHeight() * view.getHeight();
-        return (float) (Math.sqrt(widthSquared + heightSquared) / 2);
+        // TODO make smarter based on centerX and centerY.
+        return Math.max(view.getWidth(), view.getHeight());
+//        float widthSquared = view.getWidth() * view.getWidth();
+//        float heightSquared = view.getHeight() * view.getHeight();
+//        return (float) (Math.sqrt(widthSquared + heightSquared) / 2);
     }
 }

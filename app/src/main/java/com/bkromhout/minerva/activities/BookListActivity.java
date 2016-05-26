@@ -1,8 +1,7 @@
 package com.bkromhout.minerva.activities;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,7 +9,11 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.*;
+import android.transition.Transition;
+import android.transition.TransitionSet;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,6 +37,7 @@ import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
 import com.bkromhout.minerva.ui.SnackKiosk;
+import com.bkromhout.minerva.ui.transitions.RevealTransition;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.RealmRecyclerView;
@@ -143,7 +147,12 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
         if (centerX != -1f) intent.putExtra(CENTER_X, centerX);
         if (centerY != -1f) intent.putExtra(CENTER_Y, centerY);
 
-        activity.startActivity(intent);
+        // Yes, we do indeed pass nothing but the activity here. Why? Because the enter transition literally refuses
+        // to play otherwise, that's why. Perhaps in the future we can figure out a way around that.
+        //noinspection unchecked
+        ActivityOptions emptyOptions = ActivityOptions.makeSceneTransitionAnimation(activity);
+
+        activity.startActivity(intent, emptyOptions.toBundle());
     }
 
     @Override
@@ -187,17 +196,16 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
             }
             // ...And whether we will still need to send a position update upon finishing.
             if (savedInstanceState.getBoolean(C.NEEDS_POS_UPDATE)) needsPosUpdate = true;
-        } else if (!skipReveal) {
-            coordinator.setVisibility(View.INVISIBLE);
-            getWindow().setEnterTransition(null);
-            // Animate our activity in with a circular reveal if we just opened it.
-            coordinator.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    coordinator.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    circularReveal(true);
-                }
-            });
+        }
+
+        // TODO Comment this
+        if (savedInstanceState != null || skipReveal) getWindow().setEnterTransition(null);
+        else {
+            Transition enterTrans = getWindow().getEnterTransition();
+            TransitionSet enterTransSet = enterTrans instanceof TransitionSet ? (TransitionSet) enterTrans : null;
+            //noinspection ConstantConditions
+            RevealTransition revealTransition = (RevealTransition) enterTransSet.getTransitionAt(0);
+            revealTransition.setCenter(centerX, centerY);
         }
 
         // Handle permissions. Make sure we continue a request process if applicable.
@@ -274,11 +282,6 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
     protected void onResume() {
         super.onResume();
         SnackKiosk.startSnacking(this);
-    }
-
-    @Override
-    public void onBackPressed() {
-        circularReveal(false);
     }
 
     @Override
@@ -492,7 +495,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
             case R.id.action_delete_smart_list:
                 // Delete the list currently being shown, then finish the activity.
                 ActionHelper.deleteLists(realm, Collections.singletonList(srcList));
-                onBackPressed();
+                finishAfterTransition();
                 break;
             case R.id.action_rate:
                 ActionHelper.rateBooks(realm, getSelectedBooks(), (Integer) event.getData());
@@ -663,31 +666,6 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 TaggingActivity.start(this, book);
                 break;
         }
-    }
-
-    private void circularReveal(final boolean show) {
-        float radius = Math.max(coordinator.getWidth(), coordinator.getHeight());
-        Animator cr = ViewAnimationUtils.createCircularReveal(coordinator, (int) centerX, (int) centerY,
-                show ? 0f : radius, show ? radius : 0f).setDuration(400);
-        // TODO Add interpolator to this, something that starts fast preferably
-        cr.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                super.onAnimationStart(animation);
-                if (show) coordinator.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                if (!show) {
-                    coordinator.setVisibility(View.INVISIBLE);
-                    finishAfterTransition();
-                    overridePendingTransition(0, 0);
-                }
-            }
-        });
-        cr.start();
     }
 
     /**
