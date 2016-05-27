@@ -32,6 +32,10 @@
     <color name="grey30">#303030</color>
     <color name="shadow_light">#66000000</color>
     <color name="shadow_heavy">#80000000</color>
+    <color name="translucent_scrim_top">#26000000</color>
+    <color name="translucent_scrim_top_center">#0C000000</color>
+    <color name="translucent_scrim_bottom">#2A000000</color>
+    <color name="translucent_scrim_bottom_center">#0D000000</color>
 
     <!-- Prevalent App Colors -->
     <color name="colorPrimary">@color/green500</color>

@@ -24,6 +24,8 @@
 
     <!-- Book Info -->
     <dimen name="collapsible_header_height">256dp</dimen>
+    <dimen name="top_protection_scrim_height">88dp</dimen>
+    <dimen name="bottom_protection_scrim_height">88dp</dimen>
 
     <!-- Tags -->
     <dimen name="tag_corner_radius">2dp</dimen>
