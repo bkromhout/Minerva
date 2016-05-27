@@ -320,7 +320,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(smartListRuq == null ? R.menu.book_list : R.menu.book_list_smart, menu);
+        getMenuInflater().inflate(srcList.isSmartList ? R.menu.book_list_smart : R.menu.book_list, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
