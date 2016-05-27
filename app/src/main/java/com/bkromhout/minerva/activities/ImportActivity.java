@@ -350,6 +350,12 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
     }
 
     @Override
+    public void setCurrLogs(String fullLog, String errorLog) {
+        tvLog.setText(fullLog);
+        tvELog.setText(errorLog);
+    }
+
+    @Override
     public void onProgressFlag(int maxProgress) {
         // Change indeterminate state of the progress bar.
         progressBar.setIndeterminate(maxProgress == Importer.SET_PROGRESS_INDETERMINATE);

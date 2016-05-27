@@ -73,6 +73,13 @@ public class ImportLogger {
          * @param logLabel New log label to use.
          */
         void setCurrLogLabel(String logLabel);
+
+        /**
+         * Manually set the text to use for the current full and error logs.
+         * @param fullLog  Full log as a string.
+         * @param errorLog Error log as a string.
+         */
+        void setCurrLogs(String fullLog, String errorLog);
     }
 
     /**
@@ -294,6 +301,9 @@ public class ImportLogger {
         String fullLog = DataUtils.rxToString(logSubject);
         String errorLog = DataUtils.rxToString(errorSubject);
         destroySubjects();
+        // Often times the subject simply hasn't kept up, so the listener doesn't see the last parts of the log
+        // before the subjects are destroyed.
+        if (listener != null) listener.setCurrLogs(fullLog, errorLog);
 
         // Save new log, then destroy the
         saveNewLog(endTime, fullLog, errorLog, wasSuccess);
