@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -391,6 +392,8 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
             mode.setTitle(R.string.title_reorder_mode);
             adapter.setDragMode(true);
         }
+        // Change status bar color to be dark to correspond to dark toolbar color.
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.grey900));
         return true;
     }
 
@@ -402,6 +405,8 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
 
     @Override
     public void onDestroyActionMode(ActionMode mode) {
+        // Set status bar color back to normal.
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
         if (!isReorderMode) {
             adapter.clearSelections();
         } else {

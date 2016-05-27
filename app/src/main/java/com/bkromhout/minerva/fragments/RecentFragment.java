@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
@@ -212,6 +213,8 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
         mode.getMenuInflater().inflate(R.menu.recent_action_mode, menu);
+        // Change status bar color to be dark to correspond to dark toolbar color.
+        getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getActivity(), R.color.grey900));
         return true;
     }
 
@@ -223,6 +226,8 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
 
     @Override
     public void onDestroyActionMode(ActionMode mode) {
+        // Set status bar color back to normal.
+        getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark));
         adapter.clearSelections();
         actionMode = null;
     }
