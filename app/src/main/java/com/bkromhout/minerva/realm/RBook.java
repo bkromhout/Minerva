@@ -224,10 +224,11 @@ public class RBook extends RealmObject implements UIDModel {
         if (!realm.isInTransaction())
             throw new IllegalStateException("You must call this method from within a Realm transaction.");
 
+        // Always update the last import date.
+        this.lastImportDate = otherBook.lastImportDate;
         // Check if the hashes are different, and if they aren't then we're done. If they are, copy the new one.
         if (Arrays.equals(this.hash, otherBook.hash)) return;
         this.hash = otherBook.hash;
-
         this.title = otherBook.title;
         this.author = otherBook.author;
         this.desc = otherBook.desc;
@@ -245,11 +246,8 @@ public class RBook extends RealmObject implements UIDModel {
         if (this.hasCoverImage && !otherBook.hasCoverImage) DataUtils.deleteCoverImage(this.relPath);
         // We would have already gotten/replaced the cover image file if the other book has one, so just set the flag.
         this.hasCoverImage = otherBook.hasCoverImage;
-
         // As long as this book isn't still marked as new, mark it as updated.
         if (!this.isNew) this.isUpdated = true;
-
-        this.lastImportDate = otherBook.lastImportDate;
         this.lastModifiedDate = otherBook.lastModifiedDate;
     }
 
