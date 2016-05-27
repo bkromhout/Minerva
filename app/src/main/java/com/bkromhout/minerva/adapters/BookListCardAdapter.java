@@ -203,13 +203,7 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
         }
 
         @Override
-        public boolean onDown(MotionEvent e) {
-            // Return true so that the system knows we're interested.
-            return false;
-        }
-
-        @Override
-        public boolean onSingleTapConfirmed(MotionEvent e) {
+        public boolean onSingleTapUp(MotionEvent e) {
             // If we're in selection mode, toggle the activation state for the given position. If we aren't, start
             // the BookListActivity.
             if (inSelectionMode) toggleSelected(posToSend);
