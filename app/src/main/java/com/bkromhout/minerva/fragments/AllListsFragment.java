@@ -32,7 +32,6 @@ import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.FastScrollHandleStateListener;
 import com.bkromhout.rrvl.FastScrollerHandleState;
 import com.bkromhout.rrvl.RealmRecyclerView;
-import com.bkromhout.rrvl.RealmRecyclerViewAdapter;
 import com.bkromhout.ruqus.RealmUserQuery;
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -78,7 +77,7 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
     /**
      * Adapter for the recycler view.
      */
-    private RealmRecyclerViewAdapter adapter;
+    private BookListCardAdapter adapter;
     /**
      * Action mode.
      */
@@ -210,6 +209,7 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
         mode.getMenuInflater().inflate(R.menu.all_lists_action_mode, menu);
+        adapter.setSelectionMode(true);
         // Change status bar color to be dark to correspond to dark toolbar color.
         getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getActivity(), R.color.grey900));
         return true;
@@ -226,6 +226,7 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
         // Set status bar color back to normal.
         getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark));
         adapter.clearSelections();
+        adapter.setSelectionMode(false);
         actionMode = null;
     }
 

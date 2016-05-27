@@ -53,6 +53,11 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
      * reveal effect at when starting it.
      */
     private final GestureDetectorCompat gestureDetector;
+    /**
+     * Whether or not we're currently in selection mode. It's necessary for us to track this here so that our {@link
+     * CardGestureDetector} knows what to do when it detects a single tap (click).
+     */
+    private boolean inSelectionMode = false;
 
     /**
      * Create a new {@link BookListCardAdapter}.
@@ -64,6 +69,15 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
         this.activity = activity;
         this.detectorImpl = new CardGestureDetector();
         this.gestureDetector = new GestureDetectorCompat(activity, detectorImpl);
+    }
+
+    /**
+     * Set whether or not the adapter should consider itself to be in selection mode. This is necessary to determine
+     * what should be done when a card is tapped.
+     * @param enabled Whether or not to enable selection mode.
+     */
+    public void setSelectionMode(boolean enabled) {
+        this.inSelectionMode = enabled;
     }
 
     @Override
@@ -174,6 +188,11 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
         }
     }
 
+    /**
+     * Custom gesture detector which helps us know exactly where on a card we've tapped. By capturing this information,
+     * we can provide better UX when doing the reveal transition for {@link BookListActivity} by having the animation
+     * originate from the location of the tap.
+     */
     private class CardGestureDetector extends GestureDetector.SimpleOnGestureListener {
         private long uniqueIdToSend;
         private int posToSend;
@@ -191,7 +210,10 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-            BookListActivity.start(activity, uniqueIdToSend, posToSend, (int) e.getRawX(), (int) e.getRawY());
+            // If we're in selection mode, toggle the activation state for the given position. If we aren't, start
+            // the BookListActivity.
+            if (inSelectionMode) toggleSelected(posToSend);
+            else BookListActivity.start(activity, uniqueIdToSend, posToSend, (int) e.getRawX(), (int) e.getRawY());
             return true;
         }
     }
