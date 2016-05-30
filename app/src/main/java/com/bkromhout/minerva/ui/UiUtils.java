@@ -39,8 +39,7 @@ public class UiUtils {
      */
     public static class NoPauseAnimator extends Animator {
         private final Animator mAnimator;
-        private final ArrayMap<AnimatorListener, AnimatorListener> mListeners =
-                new ArrayMap<AnimatorListener, AnimatorListener>();
+        private final ArrayMap<AnimatorListener, AnimatorListener> mListeners = new ArrayMap<>();
 
         public NoPauseAnimator(Animator animator) {
             mAnimator = animator;
@@ -82,7 +81,7 @@ public class UiUtils {
 
         @Override
         public ArrayList<AnimatorListener> getListeners() {
-            return new ArrayList<AnimatorListener>(mListeners.keySet());
+            return new ArrayList<>(mListeners.keySet());
         }
 
         @Override
