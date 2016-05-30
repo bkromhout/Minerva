@@ -32,7 +32,7 @@
                 app:contentScrim="?attr/colorPrimary"
                 app:expandedTitleMarginStart="32dp"
                 app:expandedTitleMarginEnd="64dp"
-                app:expandedTitleTextAppearance="@android:style/TextAppearance.Large"
+                app:expandedTitleTextAppearance="@style/BookInfoHeaderText"
                 app:titleEnabled="true"
                 app:toolbarId="@+id/toolbar">
 

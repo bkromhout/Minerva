@@ -88,4 +88,11 @@
     <style name="BookInfoTextSmall" parent="TextAppearance.AppCompat.Medium">
         <item name="android:textSize">14sp</item>
     </style>
+
+    <style name="BookInfoHeaderText" parent="TextAppearance.AppCompat.Large">
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowColor">@color/book_info_text_shadow</item>
+        <item name="android:shadowRadius">2</item>
+    </style>
 </resources>
