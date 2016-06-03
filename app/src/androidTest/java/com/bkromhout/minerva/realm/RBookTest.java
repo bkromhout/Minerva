@@ -17,6 +17,8 @@ import static org.hamcrest.core.Is.is;
 
 /**
  * Tests the {@link RBook} class.
+ * <p>
+ * TODO Make sure we mock the UniqueIdFactory so we use IDs we generate ourselves.
  */
 @RunWith(AndroidJUnit4.class)
 public class RBookTest {
