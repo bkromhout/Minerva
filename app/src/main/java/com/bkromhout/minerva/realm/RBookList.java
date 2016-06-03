@@ -60,12 +60,6 @@ public class RBookList extends RealmObject implements UIDModel {
     @Hide
     public long uniqueId;
 
-    /**
-     * Create a default {@link RBookList}.
-     * <p>
-     * Note: There's nothing necessarily <i>bad</i> about using this constructor, but using one with parameters is still
-     * a better choice.
-     */
     public RBookList() {
     }
 
@@ -123,27 +117,26 @@ public class RBookList extends RealmObject implements UIDModel {
 
     /**
      * Adds multiple {@link RBook}s to this list, ignoring any which are already in it.
+     * @param realm Instance of Realm to use.
      * @param books Books to add to this list.
      */
-    public void addBooks(Iterable<RBook> books) {
+    public void addBooks(Realm realm, Iterable<RBook> books) {
         throwIfSmartList();
         // Create a list of RBookListItems from books, ignoring any RBooks which are already in this list.
-        List<RBookListItem> newItems = booksToBookListItems(books);
-
-        try (Realm realm = Realm.getDefaultInstance()) {
-            realm.executeTransaction(tRealm -> listItems.addAll(newItems));
-        }
+        List<RBookListItem> newItems = booksToBookListItems(realm, books);
+        realm.executeTransaction(tRealm -> listItems.addAll(newItems));
     }
 
     /**
      * Convert a list of {@link RBook}s to a list of {@link RBookListItem}s.
+     * @param realm Instance of Realm to use.
      * @param books Books to convert to {@link RBookListItem}s.
      * @return List of {@link RBookListItem}s.
      */
-    private List<RBookListItem> booksToBookListItems(Iterable<RBook> books) {
+    private List<RBookListItem> booksToBookListItems(Realm realm, Iterable<RBook> books) {
         return Observable.from(books)
                          .filter(book -> !_isBookInList(book))
-                         .map(book -> new RBookListItem(this, book))
+                         .map(book -> new RBookListItem(realm, this, book))
                          .toList()
                          .toBlocking()
                          .single();
@@ -185,7 +178,8 @@ public class RBookList extends RealmObject implements UIDModel {
     /**
      * Convert this smart list to a normal list using the given RealmUserQuery. If any books are included in the query
      * multiple times, they will only be added once.
-     * @param ruq The RealmUserQuery from which to get the books to add to this list.
+     * @param realm Instance of Realm to use.
+     * @param ruq   The RealmUserQuery from which to get the books to add to this list.
      */
     public void convertToNormalListUsingRuq(Realm realm, RealmUserQuery ruq) {
         // Don't allow this to occur unless this list is a smart list currently.
@@ -193,7 +187,7 @@ public class RBookList extends RealmObject implements UIDModel {
         if (ruq == null || !ruq.isQueryValid()) throw new IllegalArgumentException("ruq must be non-null and valid.");
 
         // Create RBookListItems from RBooks returned by query.
-        List<RBookListItem> bookListItems = booksToBookListItems(ruq.execute(realm));
+        List<RBookListItem> bookListItems = booksToBookListItems(realm, ruq.execute(realm));
         realm.executeTransaction(tRealm -> {
             // Turn this into a normal list.
             isSmartList = false;
@@ -231,10 +225,16 @@ public class RBookList extends RealmObject implements UIDModel {
     }
 
     /**
-     * Increment {@link #nextPos} by {@link C#LIST_ITEM_GAP}.
+     * Gets current value of {@link #nextPos}, then increments the field by {@link C#LIST_ITEM_GAP} before returning the
+     * originally retrieved value.
+     * @param realm Instance of Realm to use when incrementing {@link #nextPos}.
      */
-    void incrementNextPos() {
+    long getThenIncrementNextPos(Realm realm) {
+        long temp = this.nextPos;
+        realm.beginTransaction();
         this.nextPos += C.LIST_ITEM_GAP;
+        realm.commitTransaction();
+        return temp;
     }
 
     @Override

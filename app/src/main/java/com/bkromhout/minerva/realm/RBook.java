@@ -152,12 +152,6 @@ public class RBook extends RealmObject implements UIDModel {
      */
     public boolean isUpdated;
 
-    /**
-     * Create a default {@link RBook}.
-     * <p>
-     * Note: This really shouldn't ever be called, it's only here because it has to be for Realm. If a new {@link RBook}
-     * is created using this, it risks a situation where we have primary key collisions.
-     */
     public RBook() {
     }
 

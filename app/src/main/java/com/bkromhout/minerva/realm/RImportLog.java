@@ -23,14 +23,7 @@ public class RImportLog extends RealmObject {
      */
     public boolean wasSuccess;
 
-    /**
-     * Create a default {@link RImportLog}.
-     */
     public RImportLog() {
-        endTime = -1;
-        fullLog = null;
-        errorLog = null;
-        wasSuccess = false;
     }
 
     /**

@@ -526,7 +526,11 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
     public void onActionEvent(ActionEvent event) {
         switch (event.getActionId()) {
             case R.id.action_clear:
-                realm.executeTransaction(tRealm -> srcList.listItems.deleteAllFromRealm());
+                realm.executeTransaction(tRealm -> {
+                    // Remove all items from the list, then reset its nextPos value back to 0.
+                    srcList.listItems.deleteAllFromRealm();
+                    srcList.nextPos = 0L;
+                });
                 break;
             case R.id.action_open_query_builder:
                 QueryBuilderActivity.start(this, smartListRuq);

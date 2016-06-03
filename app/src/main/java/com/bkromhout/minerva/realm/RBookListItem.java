@@ -39,34 +39,21 @@ public class RBookListItem extends RealmObject implements UIDModel {
     @Hide
     public Long pos;
 
-    /**
-     * Create a default {@link RBookListItem}.
-     * <p>
-     * Note: This really shouldn't ever be called, it's only here because it has to be for Realm. If a new {@link
-     * RBookListItem} is created using this, it isn't being given an {@link RBook} to hold or a valid position.
-     */
     public RBookListItem() {
-        this.uniqueId = UniqueIdFactory.getInstance().nextId(RBookListItem.class);
-        this.owningList = null;
-        this.book = null;
-        this.pos = Long.MIN_VALUE;
     }
 
     /**
      * Create a new {@link RBookListItem} using to hold the given {@link RBook} in the given {@link RBookList}.
+     * @param realm      Instance of Realm to use for updating the value of {@link RBookList#nextPos} when the {@link
+     *                   RBookListItem} is created.
      * @param owningList {@link RBookList} this this list item belongs to.
      * @param book       {@link RBook} that this list item refers to.
      */
-    public RBookListItem(RBookList owningList, RBook book) {
-        this.uniqueId = UniqueIdFactory.getInstance().nextId(RBookListItem.class);
+    public RBookListItem(Realm realm, RBookList owningList, RBook book) {
         this.owningList = owningList;
         this.book = book;
-
-        // Position is the next position number from owningList. Then we update the next position number.
-        this.pos = owningList.nextPos;
-        try (Realm realm = Realm.getDefaultInstance()) {
-            realm.executeTransaction(tRealm -> owningList.incrementNextPos());
-        }
+        this.pos = owningList.getThenIncrementNextPos(realm);
+        this.uniqueId = UniqueIdFactory.getInstance().nextId(RBookListItem.class);
     }
 
     @Override

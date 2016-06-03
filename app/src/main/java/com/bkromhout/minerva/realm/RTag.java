@@ -42,18 +42,7 @@ public class RTag extends RealmObject implements UIDModel {
     @Hide
     public RealmList<RBook> taggedBooks;
 
-    /**
-     * Create a default {@link RTag}.
-     * <p>
-     * Note: This really shouldn't ever be called, it's only here because it has to be for Realm. If a new {@link RTag}
-     * is created using this, it risks a situation where we have primary key collisions.
-     */
     public RTag() {
-        this.name = "DEF_TAG_NAME";
-        this.sortName = name.toLowerCase();
-        this.taggedBooks = null;
-        this.textColor = Minerva.d().DEFAULT_TAG_TEXT_COLOR;
-        this.bgColor = Minerva.d().DEFAULT_TAG_BG_COLOR;
     }
 
     /**
