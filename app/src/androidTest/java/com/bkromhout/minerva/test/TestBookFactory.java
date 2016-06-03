@@ -12,33 +12,36 @@ import java.util.Collections;
  * Utility class which creates SuperBooks for testing.
  */
 public class TestBookFactory {
-    private long count;
+    /**
+     * Number currently being used to help generate a {@link TestSuperBook}.
+     */
+    private long genNum;
 
     public TestBookFactory() {
-        this.count = 0L;
+        this.genNum = 0L;
     }
 
     /**
-     * Create a new {@link SuperBook}.
-     * @return A {@link SuperBook} guaranteed to be different than the one returned by the last call to this method for
-     * the current instance of {@link TestBookFactory}.
+     * Create a new {@link SuperBook} wrapped in a {@link TestSuperBook}.
+     * @return A {@link TestSuperBook} guaranteed to be different than the one returned by the last call to this method
+     * for the current instance of {@link TestBookFactory}.
      */
-    public final SuperBook produceSuperBook() {
-        count += 1L;
-        String title = "Test Book " + count;
+    public final TestSuperBook generate() {
+        genNum += 1L;
+        String title = "Test Book " + genNum;
         Book book = new Book();
         Metadata metadata = book.getMetadata();
         metadata.addTitle(title);
-        metadata.addAuthor(new Author("Author " + count));
-        metadata.addDescription("Description " + count);
-        metadata.setSubjects(Collections.singletonList("Subject " + count));
-        metadata.addType("Type " + count);
+        metadata.addAuthor(new Author("Author " + genNum));
+        metadata.addDescription("Description " + genNum);
+        metadata.setSubjects(Collections.singletonList("Subject " + genNum));
+        metadata.addType("Type " + genNum);
         metadata.setFormat("application/epub+zip");
         metadata.setLanguage("en");
-        metadata.addPublisher("Publisher " + count);
-        metadata.addDate(new Date("Create Date " + count, Date.Event.CREATION));
-        metadata.addDate(new Date("Publish Date " + count, Date.Event.PUBLICATION));
-        metadata.addDate(new Date("Modified Date " + count, Date.Event.MODIFICATION));
-        return new SuperBook(book, "path/to/book_" + count, title.getBytes());
+        metadata.addPublisher("Publisher " + genNum);
+        metadata.addDate(new Date("Create Date " + genNum, Date.Event.CREATION));
+        metadata.addDate(new Date("Publish Date " + genNum, Date.Event.PUBLICATION));
+        metadata.addDate(new Date("Modified Date " + genNum, Date.Event.MODIFICATION));
+        return new TestSuperBook(book, "path/to/book_" + genNum, title.getBytes(), genNum);
     }
 }
