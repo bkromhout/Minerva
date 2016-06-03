@@ -1,1 +1,2 @@
-include ':app'
+include ':app', ':epublib'
+project(':epublib').projectDir = new File(settingsDir, '../../../Libraries/epublib/epublib-core')

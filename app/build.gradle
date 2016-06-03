@@ -116,6 +116,7 @@ dependencies {
     }
 
     compile('nl.siegmann.epublib:epublib-core:3.1') { //AL
+//    compile(project(':epublib')) {
         exclude group: 'xmlpull'
         exclude group: 'net.sf.kxml'
     }
