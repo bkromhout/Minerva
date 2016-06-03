@@ -230,6 +230,13 @@ public class RBookList extends RealmObject implements UIDModel {
         }
     }
 
+    /**
+     * Increment {@link #nextPos} by {@link C#LIST_ITEM_GAP}.
+     */
+    void incrementNextPos() {
+        this.nextPos += C.LIST_ITEM_GAP;
+    }
+
     @Override
     public Object getUID() {
         return uniqueId;

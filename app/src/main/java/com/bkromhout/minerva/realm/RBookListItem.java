@@ -1,6 +1,5 @@
 package com.bkromhout.minerva.realm;
 
-import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.data.UniqueIdFactory;
 import com.bkromhout.rrvl.UIDModel;
 import com.bkromhout.ruqus.Hide;
@@ -66,7 +65,7 @@ public class RBookListItem extends RealmObject implements UIDModel {
         // Position is the next position number from owningList. Then we update the next position number.
         this.pos = owningList.nextPos;
         try (Realm realm = Realm.getDefaultInstance()) {
-            realm.executeTransaction(tRealm -> owningList.nextPos = this.pos + C.LIST_ITEM_GAP);
+            realm.executeTransaction(tRealm -> owningList.incrementNextPos());
         }
     }
 
