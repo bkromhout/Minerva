@@ -1,19 +1,25 @@
 package com.bkromhout.minerva.activities;
 
 import android.Manifest;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkromhout.minerva.R;
+import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.events.MissingPermEvent;
+import com.bkromhout.minerva.events.PermGrantedEvent;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.EmptyPermissionListener;
 import com.karumi.dexter.listener.single.PermissionListener;
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 /**
@@ -22,6 +28,7 @@ import org.greenrobot.eventbus.Subscribe;
  * TODO It'd be nice to handle all of this stuff by ourselves rather than relaying on Dexter.
  */
 public abstract class PermCheckingActivity extends AppCompatActivity {
+    private static final String ON_GRANTED_ACTION_ID = "on_granted_action_id";
     /**
      * Permission listener for the Read External Storage permission.
      */
@@ -30,6 +37,22 @@ public abstract class PermCheckingActivity extends AppCompatActivity {
      * Reference to rationale dialog so that we can dismiss it if need be.
      */
     private MaterialDialog rationaleDialog;
+    /**
+     * ID of an action which should be taken if the permission being requested is granted.
+     */
+    private int onGrantedActionId = -1;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) onGrantedActionId = savedInstanceState.getInt(ON_GRANTED_ACTION_ID, -1);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(ON_GRANTED_ACTION_ID, onGrantedActionId);
+    }
 
     @Override
     protected void onDestroy() {
@@ -43,9 +66,16 @@ public abstract class PermCheckingActivity extends AppCompatActivity {
      */
     @Subscribe
     public final void onMissingPermEvent(MissingPermEvent event) {
-        // Currently we only have one permission we'd need to check for, read external storage, so we don't bother
-        // checking the permission string in the event.
-        checkPermsIfNotAlreadyDoingSo();
+        // Make sure we don't start another request if one is already happening.
+        if (!Dexter.isRequestOngoing()) {
+            // If the nag snackbar is shown, get rid of it first.
+            SnackKiosk.dismissIfActionId(R.id.sb_action_retry_perms_check);
+            // Store the ID of the action we wish to take if the permission is granted.
+            onGrantedActionId = event.getActionId();
+            // Currently we only have one permission we'd need to check for, read external storage, so we don't bother
+            // checking the permission string in the event.
+            Dexter.checkPermission(storagePL, Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
     }
 
     /**
@@ -58,6 +88,9 @@ public abstract class PermCheckingActivity extends AppCompatActivity {
             @Override
             public void onPermissionDenied(PermissionDeniedResponse response) {
                 super.onPermissionDenied(response);
+                // Cancel any deferred action.
+                onGrantedActionId = -1;
+                ActionHelper.cancelDeferredAction();
                 // For a regular denial, just show the snackbar. For a permanent denial, show a dialog which has a
                 // link to the app info screen.
                 if (!response.isPermanentlyDenied()) showPermNagSnackbar();
@@ -70,20 +103,16 @@ public abstract class PermCheckingActivity extends AppCompatActivity {
                 if (permission.getName().equals(Manifest.permission.READ_EXTERNAL_STORAGE))
                     showRationaleDialog(token);
             }
+
+            @Override
+            public void onPermissionGranted(PermissionGrantedResponse response) {
+                super.onPermissionGranted(response);
+                EventBus.getDefault().post(new PermGrantedEvent(response.getPermissionName(), onGrantedActionId));
+                onGrantedActionId = -1;
+            }
         };
 
         Dexter.continuePendingRequestIfPossible(storagePL);
-    }
-
-    /**
-     * Check for permissions we need if we're not already in the process of doing so.
-     */
-    protected final void checkPermsIfNotAlreadyDoingSo() {
-        if (!Dexter.isRequestOngoing()) {
-            // If the nag snackbar is shown, get rid of it first.
-            SnackKiosk.dismissIfActionId(R.id.sb_action_retry_perms_check);
-            Dexter.checkPermission(storagePL, Manifest.permission.READ_EXTERNAL_STORAGE);
-        }
     }
 
     /**
@@ -124,7 +153,7 @@ public abstract class PermCheckingActivity extends AppCompatActivity {
         // Don't queue a second snackbar.
         if (SnackKiosk.isCurrentActionId(R.id.sb_action_retry_perms_check)) return;
 
-        // This snackbar with make Dexter try to get the permission again.
+        // This snackbar will make Dexter try to get the permission again.
         SnackKiosk.snack(R.string.storage_permission_needed, R.string.retry, R.id.sb_action_retry_perms_check,
                 Snackbar.LENGTH_LONG);
     }

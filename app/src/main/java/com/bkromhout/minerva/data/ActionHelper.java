@@ -28,6 +28,53 @@ import java.util.*;
  * Convenience class which provides static methods to execute actions, preventing the need for duplicate code.
  */
 public class ActionHelper {
+    /**
+     * Allows us to defer actions so that they can be taken later. This is handy for situations where we need to request
+     * permissions.
+     */
+    private interface DeferredAction {
+        void executeDeferredAction(Object[] params);
+    }
+
+    /**
+     * Currently deferred action.
+     */
+    private static DeferredAction deferredAction = null;
+    /**
+     * Set of parameters to supply when currently deferred action is executed.
+     */
+    private static Object[] deferredActionParams = null;
+
+    /**
+     * Defers an action so that it can be taken later using {@link #doDeferredAction()}. Will replace any previously
+     * deferred action.
+     * @param action       {@link DeferredAction}.
+     * @param actionParams Parameters to pass to {@link DeferredAction#executeDeferredAction(Object[])} when {@link
+     *                     #doDeferredAction()} is called.
+     */
+    private static void setDeferredAction(DeferredAction action, Object... actionParams) {
+        deferredAction = action;
+        deferredActionParams = actionParams;
+    }
+
+    /**
+     * Execute the current deferred action, if one is present, otherwise does nothing.
+     */
+    public static void doDeferredAction() {
+        if (deferredAction != null && deferredActionParams != null) {
+            deferredAction.executeDeferredAction(deferredActionParams);
+            cancelDeferredAction();
+        }
+    }
+
+    /**
+     * Cancels the current deferred action, if one is present.
+     */
+    public static void cancelDeferredAction() {
+        deferredAction = null;
+        deferredActionParams = null;
+    }
+
     /*
      * Book Actions.
      */
@@ -227,7 +274,11 @@ public class ActionHelper {
      * @param book Book to open.
      */
     public static void openBookUsingIntent(RBook book) {
-        if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
+        if (!Util.checkForStoragePermAndFireEventIfNeeded(R.id.action_execute_deferred)) {
+            //Defer this action while we ask for permission.
+            setDeferredAction(params -> openBookUsingIntent((RBook) params[0]), book);
+            return;
+        }
         File file = Util.getFileFromRelPath(book.relPath);
 
         // TODO Make the user aware if the underlying file doesn't exist!
@@ -263,7 +314,11 @@ public class ActionHelper {
      * @param books Books to re-import.
      */
     public static void reImportBooks(Iterable<RBook> books) {
-        if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
+        if (!Util.checkForStoragePermAndFireEventIfNeeded(R.id.action_execute_deferred)) {
+            //noinspection unchecked    Defer this action while we ask for permission.
+            setDeferredAction(params -> reImportBooks((Iterable<RBook>) params[0]), books);
+            return;
+        }
         Importer.get().queueReImport(books);
     }
 
@@ -278,7 +333,11 @@ public class ActionHelper {
         if (books == null || books.isEmpty()) return;
 
         // If deleteRealFiles is true, check permissions before doing anything.
-        if (deleteRealFiles && !Util.checkForStoragePermAndFireEventIfNeeded()) return;
+        if (deleteRealFiles && !Util.checkForStoragePermAndFireEventIfNeeded(R.id.action_execute_deferred)) {
+            //noinspection unchecked    Defer this action while we ask for permission.
+            setDeferredAction(params -> deleteBooks((Collection<RBook>) params[0], true), books);
+            return;
+        }
 
         List<String> relPaths = new ArrayList<>(books.size());
         // Delete what we created.

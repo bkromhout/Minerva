@@ -29,10 +29,7 @@ import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.enums.MainFrag;
 import com.bkromhout.minerva.enums.MarkType;
-import com.bkromhout.minerva.events.ActionEvent;
-import com.bkromhout.minerva.events.BookCardClickEvent;
-import com.bkromhout.minerva.events.PrefChangeEvent;
-import com.bkromhout.minerva.events.UpdatePosEvent;
+import com.bkromhout.minerva.events.*;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Dialogs;
@@ -348,6 +345,15 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
                 }
                 break;
         }
+    }
+
+    /**
+     * Called when a permission has been granted.
+     * @param event {@link PermGrantedEvent}.
+     */
+    @Subscribe
+    public void onPermGrantedEvent(PermGrantedEvent event) {
+        if (event.getActionId() == R.id.action_execute_deferred) ActionHelper.doDeferredAction();
     }
 
     /**

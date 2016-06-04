@@ -19,12 +19,14 @@ import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.BackupUtils;
 import com.bkromhout.minerva.enums.MarkType;
+import com.bkromhout.minerva.events.PermGrantedEvent;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 import rx.Observable;
 
 import java.io.File;
@@ -164,6 +166,12 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
         }
 
         @Override
+        public void onStart() {
+            super.onStart();
+            EventBus.getDefault().register(this);
+        }
+
+        @Override
         public void onResume() {
             super.onResume();
             // Register SharedPreferences change listener.
@@ -175,6 +183,21 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
             super.onPause();
             // Unregister SharedPreferences change listener.
             getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        }
+
+        @Override
+        public void onStop() {
+            super.onStop();
+            EventBus.getDefault().unregister(this);
+        }
+
+        /**
+         * Called when a permission has been granted.
+         * @param event {@link PermGrantedEvent}.
+         */
+        @Subscribe
+        public void onPermGrantedEvent(PermGrantedEvent event) {
+            if (event.getActionId() == R.id.action_choose_lib_dir) onLibDirPrefClick(null);
         }
 
         /**
@@ -211,7 +234,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
          * @return Always {@code true}, since we always handle the click.
          */
         private boolean onLibDirPrefClick(Preference preference) {
-            if (!Util.checkForStoragePermAndFireEventIfNeeded()) return true;
+            if (!Util.checkForStoragePermAndFireEventIfNeeded(R.id.action_choose_lib_dir)) return true;
 
             // Set up most of dialog. Our SettingsActivity is the only possible host for this fragment.
             FolderChooserDialog.Builder builder = new FolderChooserDialog.Builder((SettingsActivity) getActivity())

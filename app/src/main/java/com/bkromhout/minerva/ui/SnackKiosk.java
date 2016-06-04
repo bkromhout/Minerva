@@ -311,7 +311,7 @@ public class SnackKiosk {
         switch (actionId) {
             case R.id.sb_action_retry_perms_check:
                 // Fire an event indicating we wish to retry our permissions check.
-                EventBus.getDefault().post(new MissingPermEvent(Manifest.permission.READ_EXTERNAL_STORAGE));
+                EventBus.getDefault().post(new MissingPermEvent(Manifest.permission.READ_EXTERNAL_STORAGE, -1));
                 break;
             case R.id.sb_action_open_import_activity:
                 // Open the import activity.

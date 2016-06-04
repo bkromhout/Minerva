@@ -41,6 +41,7 @@ import com.bkromhout.minerva.enums.SortDir;
 import com.bkromhout.minerva.enums.SortType;
 import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.events.BookCardClickEvent;
+import com.bkromhout.minerva.events.PermGrantedEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.ui.SnackKiosk;
@@ -395,6 +396,15 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
                 }
                 break;
         }
+    }
+
+    /**
+     * Called when a permission has been granted.
+     * @param event {@link PermGrantedEvent}.
+     */
+    @Subscribe
+    public void onPermGrantedEvent(PermGrantedEvent event) {
+        if (event.getActionId() == R.id.action_execute_deferred) ActionHelper.doDeferredAction();
     }
 
     /**

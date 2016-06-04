@@ -13,9 +13,11 @@ import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.Importer;
+import com.bkromhout.minerva.events.PermGrantedEvent;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.io.File;
 
@@ -70,6 +72,22 @@ public class WelcomeActivity extends PermCheckingActivity implements SnackKiosk.
         super.onStop();
     }
 
+    /**
+     * Called when a permission has been granted.
+     * @param event {@link PermGrantedEvent}.
+     */
+    @Subscribe
+    public void onPermGrantedEvent(PermGrantedEvent event) {
+        switch (event.getActionId()) {
+            case R.id.action_choose_lib_dir:
+                onChooseFolderClick();
+                break;
+            case R.id.action_import:
+                onStartFullImportClicked();
+                break;
+        }
+    }
+
     @Override
     public void onFolderSelection(@NonNull FolderChooserDialog dialog, @NonNull File folder) {
         String path = folder.getAbsolutePath();
@@ -90,7 +108,7 @@ public class WelcomeActivity extends PermCheckingActivity implements SnackKiosk.
      */
     @OnClick(R.id.choose_folder)
     void onChooseFolderClick() {
-        if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
+        if (!Util.checkForStoragePermAndFireEventIfNeeded(R.id.action_choose_lib_dir)) return;
         // Set up most of dialog.
         FolderChooserDialog.Builder builder = new FolderChooserDialog.Builder(this)
                 .chooseButton(R.string.ok)
@@ -109,7 +127,7 @@ public class WelcomeActivity extends PermCheckingActivity implements SnackKiosk.
      */
     @OnClick(R.id.start_full_import)
     void onStartFullImportClicked() {
-        if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
+        if (!Util.checkForStoragePermAndFireEventIfNeeded(R.id.action_import)) return;
         Importer.get().queueFullImport();
         Minerva.prefs().setFirstImportTriggered();
         setResult(RESULT_OK);

@@ -16,9 +16,11 @@ import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.ImportLogger;
 import com.bkromhout.minerva.data.Importer;
+import com.bkromhout.minerva.events.PermGrantedEvent;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 import rx.Observer;
 
 import java.io.File;
@@ -268,6 +270,20 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
     }
 
     /**
+     * Called when a permission has been granted.
+     * @param event {@link PermGrantedEvent}.
+     */
+    @Subscribe
+    public void onPermGrantedEvent(PermGrantedEvent event) {
+        switch (event.getActionId()) {
+            case R.id.action_choose_lib_dir:
+            case R.id.action_import:
+                onButtonClick();
+                break;
+        }
+    }
+
+    /**
      * Show a dialog with choices for current and past logs when clicked.
      */
     @OnClick(R.id.choose_log)
@@ -287,17 +303,17 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
      * What to do when the button on the importer view is clicked.
      */
     @OnClick(R.id.import_button)
-    void onButtonClick(View view) {
+    void onButtonClick() {
         switch (currBtnState) {
             case START_IMPORT:
-                if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
+                if (!Util.checkForStoragePermAndFireEventIfNeeded(R.id.action_import)) return;
                 Importer.get().queueFullImport();
                 break;
             case CANCEL_IMPORT:
                 Importer.get().cancelImportRun();
                 break;
             case CHOOSE_DIR:
-                if (!Util.checkForStoragePermAndFireEventIfNeeded()) return;
+                if (!Util.checkForStoragePermAndFireEventIfNeeded(R.id.action_choose_lib_dir)) return;
                 // Set up most of dialog.
                 FolderChooserDialog.Builder builder = new FolderChooserDialog.Builder(this)
                         .chooseButton(R.string.ok)

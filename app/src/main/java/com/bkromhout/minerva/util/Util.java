@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.IdRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.view.menu.MenuBuilder;
@@ -143,12 +144,13 @@ public class Util {
     /**
      * Checks to see if the app currently holds the READ_EXTERNAL_STORAGE permissions, and fires a {@link
      * MissingPermEvent} if it doesn't.
+     * @param actionId ID of the action to take if we're granted the storage permission.
      * @return False if we had to fire the event because we don't have the permission. True if we have the permission.
      */
-    public static boolean checkForStoragePermAndFireEventIfNeeded() {
+    public static boolean checkForStoragePermAndFireEventIfNeeded(@IdRes int actionId) {
         if (hasPerm(Manifest.permission.READ_EXTERNAL_STORAGE)) return true;
 
-        EventBus.getDefault().post(new MissingPermEvent(Manifest.permission.READ_EXTERNAL_STORAGE));
+        EventBus.getDefault().post(new MissingPermEvent(Manifest.permission.READ_EXTERNAL_STORAGE, actionId));
         return false;
     }
 

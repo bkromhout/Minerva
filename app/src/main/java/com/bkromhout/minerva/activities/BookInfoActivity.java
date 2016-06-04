@@ -37,6 +37,7 @@ import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.data.DataUtils;
 import com.bkromhout.minerva.enums.MarkType;
 import com.bkromhout.minerva.events.ActionEvent;
+import com.bkromhout.minerva.events.PermGrantedEvent;
 import com.bkromhout.minerva.events.UpdatePosEvent;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.ui.SnackKiosk;
@@ -502,6 +503,15 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
                 finish();
                 break;
         }
+    }
+
+    /**
+     * Called when a permission has been granted.
+     * @param event {@link PermGrantedEvent}.
+     */
+    @Subscribe
+    public void onPermGrantedEvent(PermGrantedEvent event) {
+        if (event.getActionId() == R.id.action_execute_deferred) ActionHelper.doDeferredAction();
     }
 
     @OnClick(R.id.cover_image)

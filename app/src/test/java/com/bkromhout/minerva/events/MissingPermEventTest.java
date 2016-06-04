@@ -1,5 +1,6 @@
 package com.bkromhout.minerva.events;
 
+import com.bkromhout.minerva.R;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -19,7 +20,7 @@ public class MissingPermEventTest {
     @BeforeClass
     public static void setUp() {
         // Create events using constructors.
-        event = new MissingPermEvent("storage");
+        event = new MissingPermEvent("storage", R.id.action_read);
     }
 
     @AfterClass
@@ -29,6 +30,7 @@ public class MissingPermEventTest {
 
     @Test
     public void test() {
-        assertThat(event.permission, is("storage"));
+        assertThat(event.getPermission(), is("storage"));
+        assertThat(event.getActionId(), is(R.id.action_read));
     }
 }
