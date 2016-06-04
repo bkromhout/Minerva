@@ -17,9 +17,8 @@ public class SuperBook {
      * @param hash The hash of the book file.
      */
     public SuperBook(Book book, String path, byte[] hash) {
-        if (book == null || book.getTitle() == null || book.getTitle().isEmpty() ||
-                DataUtils.getFirstAuthor(book) == null || path == null || path.isEmpty())
-            throw new IllegalArgumentException(path);
+        if (book == null || DataUtils.isDENullOrEmpty(book.getTitle()) || DataUtils.getFirstAuthor(book) == null ||
+                path == null || path.isEmpty()) throw new IllegalArgumentException(path);
 
         this.book = book;
         this.path = path;

@@ -23,6 +23,7 @@ import io.realm.RealmResults;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Date;
+import nl.siegmann.epublib.domain.DcmesElement;
 import nl.siegmann.epublib.epub.EpubReader;
 import rx.Observable;
 
@@ -44,7 +45,7 @@ public class DataUtils {
     /**
      * Get a {@link SuperBook} object from a file object.
      * @param file The file to try and read as an ePub
-     * @return Book object, or null if there were issues.
+     * @return Book object, or {@code null} if there were issues.
      */
     public static SuperBook readEpubFile(File file, String relPath) {
         if (file == null || !file.exists() || !file.isFile()) return null;
@@ -59,10 +60,21 @@ public class DataUtils {
     }
 
     /**
+     * Checks the given {@code dcmesElement} to see if its value is {@code null} or the empty string.
+     * @param dcmesElement {@code DcmesElement} to check.
+     * @return True if {@code dcmesElement}'s value is {@code null} or the empty string.
+     */
+    public static boolean isDENullOrEmpty(DcmesElement dcmesElement) {
+        if (dcmesElement == null) return true;
+        String value = dcmesElement.getValue();
+        return value == null || value.isEmpty();
+    }
+
+    /**
      * Get the first non-empty author from the given {@link Book}.
      * @param book Book.
      * @return Author string as "FirstName LastName" (or just first or last name, if only one is filled in). If {@code
-     * book} is null, or has no authors, or author names are empty strings, returns null.
+     * book} is {@code null}, or has no authors, or author names are empty strings, returns {@code null}.
      */
     public static String getFirstAuthor(Book book) {
         if (book == null || book.getMetadata().getAuthors().isEmpty()) return null;
@@ -85,24 +97,25 @@ public class DataUtils {
     /**
      * Get the first non-empty description from the given {@link Book}.
      * @param book Book.
-     * @return Description string, or null if the {@code book} is null or has no non-empty description.
+     * @return Description string, or {@code null} if the {@code book} is {@code null} or has no non-empty description.
      */
     public static String getFirstDesc(Book book) {
         if (book == null || book.getMetadata().getDescriptions().isEmpty()) return null;
 
-        for (String desc : book.getMetadata().getDescriptions()) if (!desc.isEmpty()) return desc;
+        for (DcmesElement desc : book.getMetadata().getDescriptions())
+            if (!isDENullOrEmpty(desc)) return desc.getValue();
         return null;
     }
 
     /**
      * Get the first non-empty publisher from the given {@link Book}.
      * @param book Book.
-     * @return Publisher string, or null if the {@code book} is null or has no non-empty publisher.
+     * @return Publisher string, or {@code null} if the {@code book} is {@code null} or has no non-empty publisher.
      */
     public static String getFirstPublisher(Book book) {
         if (book == null || book.getMetadata().getPublishers().isEmpty()) return null;
 
-        for (String pub : book.getMetadata().getPublishers()) if (!pub.isEmpty()) return pub;
+        for (DcmesElement pub : book.getMetadata().getPublishers()) if (!isDENullOrEmpty(pub)) return pub.getValue();
         return null;
     }
 
@@ -110,7 +123,8 @@ public class DataUtils {
      * Get the first non-empty {@link nl.siegmann.epublib.domain.Date} from the given {@link Book}.
      * @param book Book.
      * @param type {@link nl.siegmann.epublib.domain.Date.Event} type.
-     * @return Date string, or null if {@code book} is null or doesn't have a non-empty date of the given {@code type}.
+     * @return Date string, or {@code null} if {@code book} is {@code null} or doesn't have a non-empty date of the
+     * given {@code type}.
      */
     public static String getFirstBookDate(Book book, Date.Event type) {
         if (book == null || book.getMetadata().getDates().isEmpty()) return null;
@@ -175,7 +189,7 @@ public class DataUtils {
     /**
      * Get the cover file saved using the given relative path, if there is one.
      * @param relPath Relative path which was used to create cover file path.
-     * @return Cover file, or null.
+     * @return Cover file, or {@code null}.
      */
     public static File getCoverImageFile(String relPath) {
         return Util.getFileFromRelPath(Minerva.get().getFilesDir(), relPath + COVER_EXT);
@@ -255,8 +269,10 @@ public class DataUtils {
     /**
      * Gets an {@link RTag} with the given {@code name}.
      * @param name            Tag name.
-     * @param makeNonexistent If true, an {@link RTag} will be made if one doesn't exist with the given {@code name}.
-     * @return {@link RTag} with {@code name}, or null if there isn't one and {@code makeNonexistent} is false.
+     * @param makeNonexistent If {@code true}, an {@link RTag} will be made if one doesn't exist with the given {@code
+     *                        name}.
+     * @return {@link RTag} with {@code name}, or {@code null} if there isn't one and {@code makeNonexistent} is {@code
+     * false}.
      */
     public static RTag getRTag(String name, boolean makeNonexistent) {
         if (name == null || name.isEmpty()) throw new IllegalArgumentException("Name must not be null or empty.");
@@ -276,9 +292,9 @@ public class DataUtils {
     /**
      * Creates a list of {@link RTag}s from a list of strings.
      * @param strings         List of strings.
-     * @param makeNonexistent If true, strings which aren't the name of any existing {@link RTag}s will cause new {@link
-     *                        RTag}s to be made.
-     * @return List of {@link RTag}s, or {@code null} if {@code strings} is null.
+     * @param makeNonexistent If {@code true}, strings which aren't the name of any existing {@link RTag}s will cause
+     *                        new {@link RTag}s to be made.
+     * @return List of {@link RTag}s, or {@code null} if {@code strings} is {@code null}.
      */
     public static List<RTag> stringListToTagList(List<String> strings, boolean makeNonexistent) {
         if (strings == null) return null;
@@ -291,12 +307,23 @@ public class DataUtils {
     }
 
     /**
+     * Take a list of {@code DcmesElement}s and concatenate them, separated by {@code separator}.
+     * @param list      List of {@code DcmesElement}s.
+     * @param separator What string to use as separators in the output string.
+     * @return Concatenated string, or {@code null} if the list is {@code null} or empty.
+     */
+    public static String concatDEList(List<DcmesElement> list, String separator) {
+        if (list == null) return null;
+        return concatList(Observable.from(list).map(DcmesElement::getValue).toList().toBlocking().first(), separator);
+    }
+
+    /**
      * Take a list of strings and concatenate them, separated by {@code separator}.
      * @param list      List of strings.
      * @param separator What string to use as separators in the output string.
-     * @return Concatenated string, or null if the list is null or empty.
+     * @return Concatenated string, or {@code null} if the list is {@code null} or empty.
      */
-    public static String listToString(List<String> list, String separator) {
+    public static String concatList(List<String> list, String separator) {
         if (list == null || list.isEmpty()) return null;
         StringBuilder builder = new StringBuilder();
         Iterator<String> iterator = list.iterator();

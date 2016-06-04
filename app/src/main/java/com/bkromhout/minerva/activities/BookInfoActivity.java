@@ -567,7 +567,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         if (listNames.isEmpty()) togglePart(Part.LISTS, false);
         else {
             togglePart(Part.LISTS, true);
-            lists.setText(DataUtils.listToString(listNames, ", "));
+            lists.setText(DataUtils.concatList(listNames, ", "));
         }
 
         // Fill in or hide conditional views using book data.

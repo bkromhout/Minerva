@@ -26,8 +26,7 @@ import java.util.Date;
  */
 @Queryable(name = "Books")
 public class RBook extends RealmObject implements UIDModel {
-    public static final String SUBJECT_STR_SEP = ";SUBJECT_STR_SEP;";
-    public static final String TYPE_STR_SEP = ";TYPE_STR_SEP;";
+    public static final String LIST_SEP = ", ";
     /**
      * A unique long value.
      */
@@ -168,13 +167,13 @@ public class RBook extends RealmObject implements UIDModel {
 
         // Fill in data from Book file.
         Book book = superBook.getBook();
-        this.title = book.getTitle();
+        this.title = book.getTitle().getValue();
         this.author = DataUtils.getFirstAuthor(book);
         this.desc = DataUtils.getFirstDesc(book);
-        this.subjects = DataUtils.listToString(book.getMetadata().getSubjects(), SUBJECT_STR_SEP);
-        this.types = DataUtils.listToString(book.getMetadata().getTypes(), TYPE_STR_SEP);
+        this.subjects = DataUtils.concatDEList(book.getMetadata().getSubjects(), LIST_SEP);
+        this.types = DataUtils.concatDEList(book.getMetadata().getTypes(), LIST_SEP);
         this.format = book.getMetadata().getFormat();
-        this.language = book.getMetadata().getLanguage();
+        this.language = DataUtils.concatDEList(book.getMetadata().getLanguages(), LIST_SEP);
         this.publisher = DataUtils.getFirstPublisher(book);
         Identifier identifier = Identifier.getBookIdIdentifier(book.getMetadata().getIdentifiers());
         this.bookId = identifier == null ? null : identifier.toString();

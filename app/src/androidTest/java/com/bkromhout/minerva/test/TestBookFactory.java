@@ -1,10 +1,7 @@
 package com.bkromhout.minerva.test;
 
 import com.bkromhout.minerva.data.SuperBook;
-import nl.siegmann.epublib.domain.Author;
-import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.Date;
-import nl.siegmann.epublib.domain.Metadata;
+import nl.siegmann.epublib.domain.*;
 
 import java.util.Collections;
 
@@ -31,14 +28,13 @@ public class TestBookFactory {
         String title = "Test Book " + genNum;
         Book book = new Book();
         Metadata metadata = book.getMetadata();
-        metadata.addTitle(title);
+        metadata.addTitle(new DcmesElement(title));
         metadata.addAuthor(new Author("Author " + genNum));
-        metadata.addDescription("Description " + genNum);
-        metadata.setSubjects(Collections.singletonList("Subject " + genNum));
-        metadata.addType("Type " + genNum);
+        metadata.addDescription(new DcmesElement("Description " + genNum));
+        metadata.setSubjects(Collections.singletonList(new DcmesElement("Subject " + genNum)));
+        metadata.addType(new DcmesElement("Type " + genNum));
         metadata.setFormat("application/epub+zip");
-        metadata.setLanguage("en");
-        metadata.addPublisher("Publisher " + genNum);
+        metadata.addPublisher(new DcmesElement("Publisher " + genNum));
         metadata.addDate(new Date("Create Date " + genNum, Date.Event.CREATION));
         metadata.addDate(new Date("Publish Date " + genNum, Date.Event.PUBLICATION));
         metadata.addDate(new Date("Modified Date " + genNum, Date.Event.MODIFICATION));
