@@ -76,7 +76,7 @@ public class Minerva extends Application {
         setupRealm();
         // Initialize UniqueIdFactory.
         try (Realm realm = Realm.getDefaultInstance()) {
-            UniqueIdFactory.getInstance().initialize(realm);
+            UniqueIdFactory.getInstance().initializeDefault(realm);
         }
         // Init Ruqus.
         Ruqus.init(this);

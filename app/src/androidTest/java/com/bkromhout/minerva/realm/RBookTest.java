@@ -1,6 +1,7 @@
 package com.bkromhout.minerva.realm;
 
 import android.support.test.runner.AndroidJUnit4;
+import com.bkromhout.minerva.data.UniqueIdFactory;
 import com.bkromhout.minerva.test.TestBookFactory;
 import com.bkromhout.minerva.test.TestRealmConfigurationFactory;
 import com.bkromhout.minerva.test.TestSuperBook;
@@ -17,8 +18,6 @@ import static org.hamcrest.core.Is.is;
 
 /**
  * Tests the {@link RBook} class.
- * <p>
- * TODO Make sure we mock the UniqueIdFactory so we use IDs we generate ourselves.
  */
 @RunWith(AndroidJUnit4.class)
 public class RBookTest {
@@ -34,10 +33,12 @@ public class RBookTest {
         testBookFactory = new TestBookFactory();
         realmConfig = configFactory.createConfiguration();
         realm = Realm.getInstance(realmConfig);
+        UniqueIdFactory.getInstance().setUpTempIds(realm);
     }
 
     @After
     public void tearDown() {
+        UniqueIdFactory.getInstance().tearDownTempIds();
         if (realm != null) realm.close();
     }
 
