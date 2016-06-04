@@ -17,6 +17,7 @@ import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.ActionHelper;
+import com.bkromhout.minerva.data.BackupUtils;
 import com.bkromhout.minerva.enums.MarkType;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.ui.SnackKiosk;
@@ -24,6 +25,7 @@ import com.bkromhout.minerva.util.Util;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
+import rx.Observable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -149,9 +151,16 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
             Preference updatedBookTag = getPreferenceScreen().findPreference(Prefs.UPDATED_BOOK_TAG);
             updatedBookTag.setOnPreferenceClickListener(this::onUpdatedBookTagPrefClick);
             String updatedBookTagVal = prefs.getUpdatedBookTag(null);
-            updatedBookTag.setSummary(
-                    updatedBookTagVal != null ? Minerva.get().getString(R.string.summary_tag_as, updatedBookTagVal) :
-                            "");
+            updatedBookTag.setSummary(updatedBookTagVal != null
+                    ? Minerva.get().getString(R.string.summary_tag_as, updatedBookTagVal) : "");
+
+            // Set up the backup DB item.
+            Preference backupDb = getPreferenceScreen().findPreference(getString(R.string.key_backup_db));
+            backupDb.setOnPreferenceClickListener(this::onBackupDbClick);
+
+            // Set up the restore DB item.
+            Preference restoreDb = getPreferenceScreen().findPreference(getString(R.string.key_restore_db));
+            restoreDb.setOnPreferenceClickListener(this::onRestoreDbClick);
         }
 
         @Override
@@ -170,7 +179,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
 
         /**
          * Listen for preference changes.
-         * @param sharedPreferences The default shared
+         * @param sharedPreferences The default shared preferences.
          * @param key               The key string for the preference that changed.
          */
         @Override
@@ -199,7 +208,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
         /**
          * Click handler for the library directory preference.
          * @param preference The actual preference.
-         * @return Always true, since we always handle the click.
+         * @return Always {@code true}, since we always handle the click.
          */
         private boolean onLibDirPrefClick(Preference preference) {
             if (!Util.checkForStoragePermAndFireEventIfNeeded()) return true;
@@ -221,7 +230,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
         /**
          * Click handler for the new book tag preference.
          * @param preference The actual preference.
-         * @return Always true, since we always handle the click.
+         * @return Always {@code true}, since we always handle the click.
          */
         private boolean onNewBookTagPrefClick(Preference preference) {
             showTagChooserOrSnackbar(MarkType.NEW);
@@ -231,7 +240,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
         /**
          * Click handler for the updated book tag preference.
          * @param preference The actual preference.
-         * @return Always true, since we always handle the click.
+         * @return Always {@code true}, since we always handle the click.
          */
         private boolean onUpdatedBookTagPrefClick(Preference preference) {
             showTagChooserOrSnackbar(MarkType.UPDATED);
@@ -295,6 +304,47 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
                         ActionHelper.replaceMarkTagOnBooks(markType, oldTagName, text.toString());
                     })
                     .show();
+        }
+
+        /**
+         * Click handler for the backup DB item.
+         * @param preference The actual preference.
+         * @return Always {@code true}, since we always handle the click.
+         */
+        private boolean onBackupDbClick(Preference preference) {
+            BackupUtils.backupRealmFile();
+            return true;
+        }
+
+        /**
+         * Click handler for the restore DB item.
+         * @param preference The actual preference.
+         * @return Always {@code true}, since we always handle the click.
+         */
+        private boolean onRestoreDbClick(Preference preference) {
+            // Get a list of backed up realm files. If there aren't any, tell the user that and we're done.
+            List<File> backedUpRealmFiles = BackupUtils.getRestorableRealmFiles();
+            if (backedUpRealmFiles.isEmpty()) {
+                SnackKiosk.snack(R.string.sb_no_db_backups, Snackbar.LENGTH_SHORT);
+                return true;
+            }
+
+            // Show a dialog to let the user choose a file to restore.
+            new MaterialDialog.Builder(getActivity())
+                    .title(R.string.title_restore_db)
+                    .content(R.string.prompt_choose_backed_up_db)
+                    // Transform files to file names and use those as the items in the dialog.
+                    .items(Observable.from(backedUpRealmFiles)
+                                     .map(File::getName)
+                                     .toList().toBlocking().single())
+                    .positiveText(R.string.action_restore)
+                    .negativeText(R.string.cancel)
+                    .itemsCallbackSingleChoice(-1, (dialog, itemView, which, text) -> {
+                        BackupUtils.restoreRealmFile(which);
+                        return true;
+                    })
+                    .show();
+            return true;
         }
     }
 }

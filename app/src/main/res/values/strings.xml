@@ -361,6 +361,25 @@
     <string name="title_auto_tag_updated">Auto-Tag Updated Books</string>
     <string name="summary_tag_as">Tag as “%1$s”</string>
 
+    <string name="cat_title_backup_restore">Backup &amp; Restore</string>
+    <string name="title_backup_db">Backup Database</string>
+    <string name="title_restore_db">Restore Database</string>
+    <string name="summary_restore_db">(Requires app restart)</string>
+    <string name="title_backup_settings">Backup Settings</string>
+    <string name="title_restore_settings">Restore Settings</string>
+
+    <string name="prompt_choose_backed_up_db">Choose a database backup to restore (It is recommended that you back up
+        your current database first)</string>
+    <string name="action_restore">Restore</string>
+
+    <string name="sb_db_backup_success">Database backup successful</string>
+    <string name="sb_db_backup_fail">Database backup failed</string>
+    <string name="sb_no_db_backups">No database backups found</string>
+    <string name="sb_db_restore_success">Database restore successful</string>
+    <string name="sb_settings_backup_success">Setting backup successful</string>
+    <string name="sb_settings_backup_fail">Settings backup failed</string>
+    <string name="sb_no_settings_backups">No settings backups found</string>
+
     <!-- ******************************** About Activity ******************************** -->
     <string name="title_activity_about">@string/nav_item_about</string>
     <string name="app_name_part">inerva</string>

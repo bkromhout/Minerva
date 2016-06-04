@@ -6,6 +6,10 @@
     <string name="key_auto_import">auto_import</string>
     <string name="key_new_tag">new_book_tag_name</string>
     <string name="key_updated_tag">updated_book_tag_name</string>
+    <string name="key_backup_db">backup_db</string>
+    <string name="key_restore_db">restore_db</string>
+    <string name="key_backup_settings">backup_settings</string>
+    <string name="key_restore_settings">restore_settings</string>
 
     <!-- Transition Names -->
     <string name="trans_cover_image">cover_image_</string>

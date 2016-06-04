@@ -22,4 +22,16 @@
                 android:title="@string/title_auto_tag_updated"
                 android:key="@string/key_updated_tag"/>
     </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/cat_title_backup_restore">
+
+        <Preference
+                android:title="@string/title_backup_db"
+                android:key="@string/key_backup_db"/>
+
+        <Preference
+                android:title="@string/title_restore_db"
+                android:summary="@string/summary_restore_db"
+                android:key="@string/key_restore_db"/>
+    </PreferenceCategory>
 </PreferenceScreen>
