@@ -142,15 +142,15 @@ public class Util {
     }
 
     /**
-     * Checks to see if the app currently holds the READ_EXTERNAL_STORAGE permissions, and fires a {@link
+     * Checks to see if the app currently holds the WRITE_EXTERNAL_STORAGE permission, and fires a {@link
      * MissingPermEvent} if it doesn't.
-     * @param actionId ID of the action to take if we're granted the storage permission.
+     * @param actionId ID of the action to take if we're granted the storage permission after asking for it.
      * @return False if we had to fire the event because we don't have the permission. True if we have the permission.
      */
     public static boolean checkForStoragePermAndFireEventIfNeeded(@IdRes int actionId) {
-        if (hasPerm(Manifest.permission.READ_EXTERNAL_STORAGE)) return true;
+        if (hasPerm(Manifest.permission.WRITE_EXTERNAL_STORAGE)) return true;
 
-        EventBus.getDefault().post(new MissingPermEvent(Manifest.permission.READ_EXTERNAL_STORAGE, actionId));
+        EventBus.getDefault().post(new MissingPermEvent(Manifest.permission.WRITE_EXTERNAL_STORAGE, actionId));
         return false;
     }
 

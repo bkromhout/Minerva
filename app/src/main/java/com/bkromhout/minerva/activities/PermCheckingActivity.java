@@ -30,7 +30,7 @@ import org.greenrobot.eventbus.Subscribe;
 public abstract class PermCheckingActivity extends AppCompatActivity {
     private static final String ON_GRANTED_ACTION_ID = "on_granted_action_id";
     /**
-     * Permission listener for the Read External Storage permission.
+     * Permission listener for the Write External Storage permission.
      */
     private PermissionListener storagePL;
     /**
@@ -72,9 +72,9 @@ public abstract class PermCheckingActivity extends AppCompatActivity {
             SnackKiosk.dismissIfActionId(R.id.sb_action_retry_perms_check);
             // Store the ID of the action we wish to take if the permission is granted.
             onGrantedActionId = event.getActionId();
-            // Currently we only have one permission we'd need to check for, read external storage, so we don't bother
+            // Currently we only have one permission we'd need to check for, write external storage, so we don't bother
             // checking the permission string in the event.
-            Dexter.checkPermission(storagePL, Manifest.permission.READ_EXTERNAL_STORAGE);
+            Dexter.checkPermission(storagePL, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
     }
 
@@ -100,7 +100,7 @@ public abstract class PermCheckingActivity extends AppCompatActivity {
             @Override
             public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
                 super.onPermissionRationaleShouldBeShown(permission, token);
-                if (permission.getName().equals(Manifest.permission.READ_EXTERNAL_STORAGE))
+                if (permission.getName().equals(Manifest.permission.WRITE_EXTERNAL_STORAGE))
                     showRationaleDialog(token);
             }
 
