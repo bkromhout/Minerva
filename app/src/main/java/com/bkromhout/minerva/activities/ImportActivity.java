@@ -398,13 +398,6 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
         }
     }
 
-    @Override
-    public boolean shouldAutoSwitchWhenStarting() {
-        // If we're currently viewing the real-time log, we would like to switch when a new run starts.
-        return makeLogLabel(Minerva.get().getString(R.string.log_label_current_import_lc)).equals(tvLogLabel.getText()) ||
-                Minerva.get().getString(R.string.log_label_none).equals(tvLogLabel.getText());
-    }
-
     @NonNull
     @Override
     public Observer<String> getFullLogObserver() {

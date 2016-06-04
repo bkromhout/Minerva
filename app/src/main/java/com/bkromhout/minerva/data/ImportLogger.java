@@ -57,12 +57,6 @@ public class ImportLogger {
         Observer<String> getErrorLogObserver();
 
         /**
-         * Get whether or not the log should be switched automatically if a new import run starts.
-         * @return True to auto-switch logs when a new import starts, false otherwise.
-         */
-        boolean shouldAutoSwitchWhenStarting();
-
-        /**
          * Inform the listener of the last time an import completed successfully.
          * @param time Most recent time an import run completed successfully in milliseconds.
          */
@@ -267,19 +261,14 @@ public class ImportLogger {
         // Make sure we aren't already logging.
         if (isLogging) throw new IllegalStateException("Already logging.");
         isLogging = true;
-
-        // Create subjects, and subscribe listener to them if it's attached.
-        createSubjects();
-        subscribeListenerToSubjects();
-
-        // Set the current number of errors to 0.
         currNumErrors = 0;
 
-        // Make room for a new log if necessary.
+        // Create subjects and make room for a new log if necessary.
+        createSubjects();
         makeRoomForNewLogIfNeeded();
 
         // Switch the listener to the current log immediately, if it's attached and wishes for us to do so.
-        if (listener != null && listener.shouldAutoSwitchWhenStarting()) switchLogs(CURRENT_OR_LATEST_LOG);
+        if (listener != null) switchLogs(CURRENT_OR_LATEST_LOG);
     }
 
     /**
