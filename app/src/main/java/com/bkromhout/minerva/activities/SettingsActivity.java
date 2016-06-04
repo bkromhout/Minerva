@@ -197,7 +197,17 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
          */
         @Subscribe
         public void onPermGrantedEvent(PermGrantedEvent event) {
-            if (event.getActionId() == R.id.action_choose_lib_dir) onLibDirPrefClick(null);
+            switch (event.getActionId()) {
+                case R.id.action_choose_lib_dir:
+                    onLibDirPrefClick(null);
+                    break;
+                case R.id.action_backup_db:
+                    onBackupDbClick(null);
+                    break;
+                case R.id.action_restore_db:
+                    onRestoreDbClick(null);
+                    break;
+            }
         }
 
         /**
@@ -335,6 +345,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
          * @return Always {@code true}, since we always handle the click.
          */
         private boolean onBackupDbClick(Preference preference) {
+            if (!Util.checkForStoragePermAndFireEventIfNeeded(R.id.action_backup_db)) return true;
             BackupUtils.backupRealmFile();
             return true;
         }
@@ -345,8 +356,10 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
          * @return Always {@code true}, since we always handle the click.
          */
         private boolean onRestoreDbClick(Preference preference) {
+            if (!Util.checkForStoragePermAndFireEventIfNeeded(R.id.action_restore_db)) return true;
             // Get a list of backed up realm files. If there aren't any, tell the user that and we're done.
             List<File> backedUpRealmFiles = BackupUtils.getRestorableRealmFiles();
+            if (backedUpRealmFiles == null) return true;
             if (backedUpRealmFiles.isEmpty()) {
                 SnackKiosk.snack(R.string.sb_no_db_backups, Snackbar.LENGTH_SHORT);
                 return true;
@@ -363,7 +376,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
                     .positiveText(R.string.action_restore)
                     .negativeText(R.string.cancel)
                     .itemsCallbackSingleChoice(-1, (dialog, itemView, which, text) -> {
-                        BackupUtils.restoreRealmFile(which);
+                        BackupUtils.prepareToRestoreRealmFile(which);
                         return true;
                     })
                     .show();

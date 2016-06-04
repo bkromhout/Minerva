@@ -6,6 +6,8 @@
     <item type="id" name="action_new_tag"/>
     <item type="id" name="action_open_query_builder"/>
     <item type="id" name="action_choose_lib_dir"/>
+    <item type="id" name="action_backup_db"/>
+    <item type="id" name="action_restore_db"/>
     <item type="id" name="action_execute_deferred"/>
 
     <!-- Snackbar actions -->
