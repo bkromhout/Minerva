@@ -2,12 +2,9 @@ package com.bkromhout.minerva.util;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -103,42 +100,6 @@ public class Util {
         myAppSettings.addCategory(Intent.CATEGORY_DEFAULT);
         myAppSettings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Minerva.get().startActivity(myAppSettings);
-    }
-
-    /**
-     * Restarts the application.
-     * <p>
-     * 10 points to Gryffindor if you're just browsing my code and get the reference, and 10 additional points if you
-     * understand that it's not quite apt given what the method does ;)
-     */
-    public static void rennervate() {
-        Minerva minerva = Minerva.get();
-        minerva.startActivity(getRestartIntent(minerva));
-        Runtime.getRuntime().exit(0);
-    }
-
-    /**
-     * Get the intent which would normally be used by the launcher to start Minerva.
-     * @param context Context to use to get the intent.
-     * @return App launch intent.
-     */
-    private static Intent getRestartIntent(Context context) {
-        Intent defaultIntent = new Intent(Intent.ACTION_MAIN, null);
-        defaultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        defaultIntent.addCategory(Intent.CATEGORY_DEFAULT);
-
-        String packageName = context.getPackageName();
-        PackageManager packageManager = context.getPackageManager();
-        for (ResolveInfo resolveInfo : packageManager.queryIntentActivities(defaultIntent, 0)) {
-            ActivityInfo activityInfo = resolveInfo.activityInfo;
-            if (activityInfo.packageName.equals(packageName)) {
-                defaultIntent.setComponent(new ComponentName(packageName, activityInfo.name));
-                return defaultIntent;
-            }
-        }
-
-        throw new IllegalStateException("Unable to determine default activity for " + packageName
-                + ". Does an activity specify the DEFAULT category in its intent filter?");
     }
 
     /**

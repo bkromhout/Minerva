@@ -358,9 +358,9 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
         private boolean onRestoreDbClick(Preference preference) {
             if (!Util.checkForStoragePermAndFireEventIfNeeded(R.id.action_restore_db)) return true;
             // Get a list of backed up realm files. If there aren't any, tell the user that and we're done.
-            List<File> backedUpRealmFiles = BackupUtils.getRestorableRealmFiles();
+            final File[] backedUpRealmFiles = BackupUtils.getRestorableRealmFiles();
             if (backedUpRealmFiles == null) return true;
-            if (backedUpRealmFiles.isEmpty()) {
+            if (backedUpRealmFiles.length == 0) {
                 SnackKiosk.snack(R.string.sb_no_db_backups, Snackbar.LENGTH_SHORT);
                 return true;
             }
@@ -376,7 +376,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
                     .positiveText(R.string.action_restore)
                     .negativeText(R.string.cancel)
                     .itemsCallbackSingleChoice(-1, (dialog, itemView, which, text) -> {
-                        BackupUtils.prepareToRestoreRealmFile(which);
+                        BackupUtils.prepareToRestoreRealmFile(backedUpRealmFiles[which]);
                         return true;
                     })
                     .show();

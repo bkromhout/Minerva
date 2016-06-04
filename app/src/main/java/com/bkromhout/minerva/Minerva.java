@@ -1,6 +1,11 @@
 package com.bkromhout.minerva;
 
 import android.app.Application;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.preference.PreferenceManager;
 import android.support.annotation.PluralsRes;
 import android.support.v4.content.ContextCompat;
@@ -16,6 +21,9 @@ import java.util.Arrays;
 
 /**
  * Custom Application class.
+ * <p>
+ * Minerva was the Roman goddess of wisdom, as well as one of my favorite characters from the Harry Potter series; what
+ * more could one want in a name?
  */
 public class Minerva extends Application {
     /**
@@ -40,23 +48,6 @@ public class Minerva extends Application {
      * Preferences.
      */
     private Prefs prefs;
-
-    /**
-     * Get a static reference to the application.
-     * @return Static reference to Minerva.
-     */
-    public static Minerva get() {
-        if (INSTANCE == null) throw new IllegalStateException("Minerva isn't available yet.");
-        return INSTANCE;
-    }
-
-    public static Prefs prefs() {
-        return get().prefs;
-    }
-
-    public static D d() {
-        return get().d;
-    }
 
     @Override
     public void onCreate() {
@@ -130,5 +121,57 @@ public class Minerva extends Application {
      */
     public String getQString(@PluralsRes int resId, int count, Object... formatArgs) {
         return getResources().getQuantityString(resId, count, formatArgs);
+    }
+
+    /**
+     * Get a static reference to the application.
+     * @return Static reference to Minerva.
+     */
+    public static Minerva get() {
+        if (INSTANCE == null) throw new IllegalStateException("Minerva isn't available yet.");
+        return INSTANCE;
+    }
+
+    public static Prefs prefs() {
+        return get().prefs;
+    }
+
+    public static D d() {
+        return get().d;
+    }
+
+    /**
+     * Restarts the application.
+     * <p>
+     * 10 points to Gryffindor if you're just browsing my code and get the reference, and 10 additional points if you
+     * understand that the name isn't quite apt given what the method does ;)
+     */
+    public static void rennervate() {
+        INSTANCE.startActivity(getRestartIntent());
+        // Avada Kedavra!
+        Runtime.getRuntime().exit(0);
+    }
+
+    /**
+     * Get the intent which would normally be used by the launcher to start Minerva.
+     * @return App launch intent.
+     */
+    private static Intent getRestartIntent() {
+        Intent restartIntent = new Intent(Intent.ACTION_MAIN, null);
+        restartIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        restartIntent.addCategory(Intent.CATEGORY_DEFAULT);
+
+        String packageName = INSTANCE.getPackageName();
+        PackageManager packageManager = INSTANCE.getPackageManager();
+        for (ResolveInfo resolveInfo : packageManager.queryIntentActivities(restartIntent, 0)) {
+            ActivityInfo activityInfo = resolveInfo.activityInfo;
+            if (activityInfo.packageName.equals(packageName)) {
+                restartIntent.setComponent(new ComponentName(packageName, activityInfo.name));
+                return restartIntent;
+            }
+        }
+
+        throw new IllegalStateException("Unable to determine default activity for " + packageName
+                + ". Does an activity specify the DEFAULT category in its intent filter?");
     }
 }
