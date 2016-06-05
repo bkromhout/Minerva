@@ -108,8 +108,8 @@ dependencies {
     compile ('com.bkromhout:realm-recyclerview-lite:2.0.5@aar') {
         transitive = true
     }
-    apt 'com.bkromhout.ruqus:ruqus-compiler:1.2.0'
-    compile ('com.bkromhout.ruqus:ruqus-core:1.2.0@aar') {
+    apt 'com.bkromhout.ruqus:ruqus-compiler:1.2.1'
+    compile ('com.bkromhout.ruqus:ruqus-core:1.2.1@aar') {
         transitive = true
         // TODO Currently having issues resolving commons for the latest dialogs, so we'll ignore it for now.
         exclude group: 'com.afollestad.material-dialogs'
