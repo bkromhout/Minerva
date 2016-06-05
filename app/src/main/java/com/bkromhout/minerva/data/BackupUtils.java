@@ -12,6 +12,7 @@ import com.bkromhout.minerva.ui.SnackKiosk;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.comparator.NameFileComparator;
 import timber.log.Timber;
 
@@ -50,13 +51,30 @@ public class BackupUtils {
     }
 
     /**
+     * Ensures that we have a unique file name using the {@code file} as a base. If {@code file} exists, we'll iterate
+     * through numbers until we've found one we can append (before the extension) in order to have a unique file name.
+     * @param file File to use as base.
+     * @return {@code file} if its name isn't taken; {@code file} with some number appended otherwise.
+     */
+    private static File ensureUniqueFName(File file) {
+        // Shortcut the logic here.
+        if (!file.exists()) return file;
+        String parent = file.getParent();
+        String baseName = FilenameUtils.getBaseName(file.getName());
+        String extension = FilenameUtils.getExtension(file.getName());
+        int appendNum = 1;
+        while (file.exists()) file = new File(parent, baseName + " " + appendNum + "." + extension);
+        return file;
+    }
+
+    /**
      * Backs up the Realm database file by using {@code Realm.writeCopyTo(File)}.
      */
     public static synchronized void backupRealmFile() {
         if (isBackingUp) return;
         isBackingUp = true;
         // Get the file to write the backup to.
-        File backupFile = new File(getExtDir(BACKUP_PATH), SDF.format(new Date()) + DB_BACKUP_EXT);
+        File backupFile = ensureUniqueFName(new File(getExtDir(BACKUP_PATH), SDF.format(new Date()) + DB_BACKUP_EXT));
         // Back up the database, notifying the user is we succeed or fail.
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.writeCopyTo(backupFile);
