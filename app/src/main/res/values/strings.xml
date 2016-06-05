@@ -376,6 +376,7 @@
     <string name="sb_db_backup_fail">Database backup failed</string>
     <string name="sb_no_db_backups">No database backups found</string>
     <string name="sb_db_restore_success">Database restore successful</string>
+    <string name="sb_db_restore_fail">Database restore failed</string>
     <string name="sb_settings_backup_success">Setting backup successful</string>
     <string name="sb_settings_backup_fail">Settings backup failed</string>
     <string name="sb_no_settings_backups">No settings backups found</string>

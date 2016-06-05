@@ -9,12 +9,14 @@ import android.content.pm.ResolveInfo;
 import android.preference.PreferenceManager;
 import android.support.annotation.PluralsRes;
 import android.support.v4.content.ContextCompat;
+import com.bkromhout.minerva.data.BackupUtils;
 import com.bkromhout.minerva.data.UniqueIdFactory;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.ruqus.Ruqus;
 import com.karumi.dexter.Dexter;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.exceptions.RealmIOException;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.Arrays;
@@ -29,7 +31,7 @@ public class Minerva extends Application {
     /**
      * Realm filename.
      */
-    private static final String REALM_FILE_NAME = "minerva.realm";
+    public static final String REALM_FILE_NAME = "minerva.realm";
     /**
      * Realm schema version.
      */
@@ -52,8 +54,11 @@ public class Minerva extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        // Stash application context, then init global instances of certain classes.
+        // Stash application context, then check to see if we need to restore things, and do so if necessary.
         INSTANCE = this;
+        BackupUtils.restoreRealmFileIfApplicable();
+
+        // Get global instances of certain classes.
         this.prefs = new Prefs(PreferenceManager.getDefaultSharedPreferences(this));
         this.d = new D(this);
 
@@ -61,20 +66,40 @@ public class Minerva extends Application {
         EventBus.builder().addIndex(new EventBusIndex()).installDefaultEventBus();
         // Init Dexter.
         Dexter.initialize(this);
-        // Do first time init if needed.
-        doFirstTimeInitIfNeeded();
-        // Set up Realm.
-        setupRealm();
-        // Initialize UniqueIdFactory.
-        try (Realm realm = Realm.getDefaultInstance()) {
-            UniqueIdFactory.getInstance().initializeDefault(realm);
-        }
         // Init Ruqus.
         Ruqus.init(this);
+        // Do first time init if needed.
+        doFirstTimeInitIfNeeded();
+
+        // Set up default RealmConfiguration.
+        Realm.setDefaultConfiguration(new RealmConfiguration.Builder(this)
+                .name(REALM_FILE_NAME)
+                .schemaVersion(REALM_SCHEMA_VERSION)
+                .initialData(this::initialRealmData)
+                .build());
+
+        // Do init that requires Realm. This also serves the purpose of allowing us to check and see if a DB restore
+        // was successful (if one was performed).
+        try (Realm realm = Realm.getDefaultInstance()) {
+            initUsingRealm(realm);
+            // We got through realm initialization, so we're good to delete the temporary Realm file that might exist
+            // if we just restored the Realm.
+            BackupUtils.removeTempRealmFile();
+        } catch (RealmIOException e) {
+            // We failed to open the restored Realm file, so try to roll back the changes.
+            BackupUtils.rollBackFromDBRestore();
+
+            // Try to do init again. If this still fails...well, I'm not really sure to be honest :(
+            try (Realm realm = Realm.getDefaultInstance()) {
+                initUsingRealm(realm);
+            }
+        }
     }
 
     /**
      * Initializes some default data for the app the first time it runs.
+     * <p>
+     * This method is called BEFORE Realm is available!
      */
     private void doFirstTimeInitIfNeeded() {
         if (prefs.doneFirstTimeInit()) return;
@@ -84,17 +109,6 @@ public class Minerva extends Application {
         prefs.putUpdatedBookTag(getString(R.string.default_updated_book_tag));
 
         prefs.setFirstTimeInitDone();
-    }
-
-    /**
-     * Set up Realm's default configuration.
-     */
-    protected void setupRealm() {
-        Realm.setDefaultConfiguration(new RealmConfiguration.Builder(this)
-                .name(REALM_FILE_NAME)
-                .schemaVersion(REALM_SCHEMA_VERSION)
-                .initialData(this::initialRealmData)
-                .build());
     }
 
     /**
@@ -110,6 +124,15 @@ public class Minerva extends Application {
         realm.copyToRealm(Arrays.asList(
                 new RTag(getString(R.string.default_new_book_tag), d.DEFAULT_TAG_TEXT_COLOR, newBgColor),
                 new RTag(getString(R.string.default_updated_book_tag), d.DEFAULT_TAG_TEXT_COLOR, updatedBgColor)));
+    }
+
+    /**
+     * Do initialization steps which require Realm.
+     * @param realm Instance of Realm.
+     */
+    private void initUsingRealm(Realm realm) {
+        // Initialize default unique ID factory.
+        UniqueIdFactory.getInstance().initializeDefault(realm);
     }
 
     /**
@@ -132,10 +155,18 @@ public class Minerva extends Application {
         return INSTANCE;
     }
 
+    /**
+     * Get the preference wrapper class.
+     * @return {@link Prefs}.
+     */
     public static Prefs prefs() {
         return get().prefs;
     }
 
+    /**
+     * Get the dynamically-loaded "constants" holder class.
+     * @return {@link D}.
+     */
     public static D d() {
         return get().d;
     }

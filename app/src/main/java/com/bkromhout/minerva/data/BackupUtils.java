@@ -1,11 +1,14 @@
 package com.bkromhout.minerva.data;
 
+import android.content.Context;
 import android.os.Environment;
 import android.support.design.widget.Snackbar;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
+import com.bkromhout.minerva.enums.DBRestoreState;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import org.apache.commons.io.FileUtils;
 import timber.log.Timber;
 
@@ -23,10 +26,11 @@ public class BackupUtils {
     private static final String DB_BACKUP_EXT = ".minervaDB";
     private static final String SETTINGS_BACKUP_EXT = ".minervaSettings";
     private static final String RESTORE_NAME = "restore.realm";
+    private static final String TEMP_NAME = "temp.realm";
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.US);
 
     private static volatile boolean isBackingUp = false;
-    private static volatile boolean isRestoring = false;
+    private static volatile DBRestoreState dbRestoreState = DBRestoreState.NOT;
 
     /**
      * Get a File object representing a directory at {@code relPath}, where the base path is {@code
@@ -65,7 +69,7 @@ public class BackupUtils {
      * @return List of Realm database files.
      */
     public static synchronized File[] getRestorableRealmFiles() {
-        if (isBackingUp || isRestoring) return null;
+        if (isBackingUp || dbRestoreState != DBRestoreState.NOT) return null;
 
         // Get the DB backups directory. If it doesn't exist, return the empty list.
         File dbBackupDir = getExtDir(BACKUP_PATH);
@@ -85,16 +89,17 @@ public class BackupUtils {
      *                    files which would be returned by {@link #getRestorableRealmFiles()}.
      */
     public static synchronized void prepareToRestoreRealmFile(File dbToRestore) {
-        if (isBackingUp || isRestoring) return;
+        if (isBackingUp || dbRestoreState != DBRestoreState.NOT) return;
         if (dbToRestore == null || !dbToRestore.isFile() || !dbToRestore.getName().endsWith(DB_BACKUP_EXT))
             throw new IllegalArgumentException("dbToRestore must be non-null and represent a valid existing file.");
-        isRestoring = true;
+        dbRestoreState = DBRestoreState.PREPARING;
 
         // Copy the specified file to our app's data/files/ directory with the name "restore.realm".
         try {
             FileUtils.copyFile(dbToRestore, new File(Minerva.get().getFilesDir(), RESTORE_NAME));
         } catch (IOException e) {
             Timber.e(e, "Failed to copy \"%s\" to data/files/ for restoration.", dbToRestore.getAbsolutePath());
+            SnackKiosk.snack(R.string.sb_db_restore_fail, Snackbar.LENGTH_SHORT);
             return;
         }
 
@@ -105,12 +110,113 @@ public class BackupUtils {
      * Checks the app's data/files/ directory to see if there's a Realm file waiting to be restored, and restores it if
      * there is.
      * <p>
-     * This method assumes that Realm is completely closed.
+     * This method assumes that Realm is completely closed, and that one of either {@link #rollBackFromDBRestore()} or
+     * {@link #removeTempRealmFile()} will be called soon after this completes in order to complete the restoring
+     * process.
      */
     public static synchronized void restoreRealmFileIfApplicable() {
-        isRestoring = true;
-        // TODO
+        if (dbRestoreState != DBRestoreState.NOT) return;
+        Minerva minerva = Minerva.get();
+        File filesDir = minerva.getFilesDir();
 
-        isRestoring = false;
+        // Check to see if there's a "restore.realm" file. If there isn't, then we're done here.
+        File restoreDb = new File(filesDir, RESTORE_NAME);
+        if (!restoreDb.isFile()) return;
+        dbRestoreState = DBRestoreState.STARTING;
+
+        // Handle current Realm files.
+        RealmConfiguration config = new RealmConfiguration.Builder(minerva).name(Minerva.REALM_FILE_NAME).build();
+        File currDb = new File(config.getPath());
+        if (currDb.exists()) {
+            try {
+                // Make a temporary copy of the current Realm database file.
+                FileUtils.copyFile(currDb, minerva.openFileOutput(TEMP_NAME, Context.MODE_PRIVATE));
+                dbRestoreState = DBRestoreState.TEMP_CREATED;
+            } catch (IOException e) {
+                Timber.e(e, "Problem while making temporary copy of current Realm DB file.");
+                rollBackFromDBRestore();
+                return;
+            }
+
+            // Have Realm delete its stuff.
+            if (!Realm.deleteRealm(config)) {
+                Timber.e("Problem while having Realm delete its current files.");
+                rollBackFromDBRestore();
+                return;
+            } else dbRestoreState = DBRestoreState.CURR_DELETED;
+        }
+
+        // Rename the "restore.realm" file to "minerva.realm".
+        if (!restoreDb.renameTo(new File(filesDir, Minerva.REALM_FILE_NAME))) {
+            Timber.e("Problem while renaming restore.realm to minerva.realm.");
+            rollBackFromDBRestore();
+        } else dbRestoreState = DBRestoreState.RENAMED;
+    }
+
+    /**
+     * Rolls back the efforts made to restore a previous database.
+     */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static synchronized void rollBackFromDBRestore() {
+        if (isBackingUp || dbRestoreState == DBRestoreState.NOT) return;
+        DBRestoreState currState = dbRestoreState;
+        dbRestoreState = DBRestoreState.ROLLBACK;
+
+        Minerva minerva = Minerva.get();
+        File filesDir = minerva.getFilesDir();
+        RealmConfiguration config = new RealmConfiguration.Builder(minerva).name(Minerva.REALM_FILE_NAME).build();
+        File currDb = new File(config.getPath());
+        File restoreDb = new File(filesDir, RESTORE_NAME);
+        File tempDb = new File(filesDir, TEMP_NAME);
+
+        // Do rollback actions.
+        switch (currState) {
+            case RENAMED:
+                // We physically restored the DB file successfully, but Realm wasn't happy with it. Delete it, and
+                // any files Realm may have made, then proceed onto the next cases to put the temporary copy back.
+                Realm.deleteRealm(config);
+            case CURR_DELETED:
+                // We just had issues renaming "restore.realm" to "minerva.realm", but were able to delete the Realm
+                // files. Proceed onto the next case.
+            case TEMP_CREATED:
+                // We created the temporary file successfully, so check to see if we actually deleted the DB file it
+                // was copied from.
+                if (!currDb.exists()) {
+                    // If we deleted it, copy it back as "minerva.realm". We would try and rename it, but it's
+                    // possible we had issues with renaming, so we copy it instead.
+                    try {
+                        FileUtils.copyFile(tempDb, currDb);
+                    } catch (IOException e) {
+                        // We'd better hope this doesn't happen, or the user is not going to be happy.
+                        e.printStackTrace();
+                    }
+                }
+            case STARTING:
+                // Remove the temporary DB copy, if it exists.
+                if (tempDb.exists()) tempDb.delete();
+                // Remove the "restore.realm" file, if it exists.
+                if (restoreDb.exists()) restoreDb.delete();
+        }
+
+        // Notify user of failure to restore database.
+        SnackKiosk.snack(R.string.sb_db_restore_fail, Snackbar.LENGTH_SHORT);
+        dbRestoreState = DBRestoreState.NOT;
+    }
+
+    /**
+     * Removes the temporary copy of the previously-present database created during the restore process.
+     */
+    public static synchronized void removeTempRealmFile() {
+        if (isBackingUp || dbRestoreState == DBRestoreState.NOT) return;
+        dbRestoreState = DBRestoreState.COMPLETING;
+
+        // Delete the temporary copy of the DB we created earlier.
+        File tempDb = new File(Minerva.get().getFilesDir(), TEMP_NAME);
+        if (tempDb.exists()) //noinspection ResultOfMethodCallIgnored
+            tempDb.delete();
+
+        // Notify user of successful database restoration.
+        SnackKiosk.snack(R.string.sb_db_restore_success, Snackbar.LENGTH_SHORT);
+        dbRestoreState = DBRestoreState.NOT;
     }
 }
