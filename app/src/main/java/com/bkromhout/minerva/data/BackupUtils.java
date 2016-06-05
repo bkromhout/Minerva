@@ -1,5 +1,6 @@
 package com.bkromhout.minerva.data;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Environment;
 import android.support.design.widget.Snackbar;
@@ -85,10 +86,11 @@ public class BackupUtils {
      * Copies one of the Realm files that is returned by {@link #getRestorableRealmFiles()} based on the given {@code
      * idx} to the app's data/files/ directory so that it will be restored the next time the app starts. Restarts the
      * app when finished.
+     * @param activity    Activity to finish.
      * @param dbToRestore File which represents the database file to restore. It is assumed that this is one of the
      *                    files which would be returned by {@link #getRestorableRealmFiles()}.
      */
-    public static synchronized void prepareToRestoreRealmFile(File dbToRestore) {
+    public static synchronized void prepareToRestoreRealmFile(Activity activity, File dbToRestore) {
         if (isBackingUp || dbRestoreState != DBRestoreState.NOT) return;
         if (dbToRestore == null || !dbToRestore.isFile() || !dbToRestore.getName().endsWith(DB_BACKUP_EXT))
             throw new IllegalArgumentException("dbToRestore must be non-null and represent a valid existing file.");
@@ -96,14 +98,14 @@ public class BackupUtils {
 
         // Copy the specified file to our app's data/files/ directory with the name "restore.realm".
         try {
-            FileUtils.copyFile(dbToRestore, new File(Minerva.get().getFilesDir(), RESTORE_NAME));
+            FileUtils.copyFile(dbToRestore, new File(activity.getFilesDir(), RESTORE_NAME));
         } catch (IOException e) {
             Timber.e(e, "Failed to copy \"%s\" to data/files/ for restoration.", dbToRestore.getAbsolutePath());
             SnackKiosk.snack(R.string.sb_db_restore_fail, Snackbar.LENGTH_SHORT);
             return;
         }
 
-        Minerva.rennervate(); // ;)
+        Minerva.rennervate(activity); // ;)
     }
 
     /**

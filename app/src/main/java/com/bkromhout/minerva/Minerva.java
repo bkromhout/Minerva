@@ -1,5 +1,6 @@
 package com.bkromhout.minerva;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -176,9 +177,11 @@ public class Minerva extends Application {
      * <p>
      * 10 points to Gryffindor if you're just browsing my code and get the reference, and 10 additional points if you
      * understand that the name isn't quite apt given what the method does ;)
+     * @param activity Activity to finish.
      */
-    public static void rennervate() {
+    public static void rennervate(Activity activity) {
         INSTANCE.startActivity(getRestartIntent());
+        activity.finish();
         // Avada Kedavra!
         Runtime.getRuntime().exit(0);
     }

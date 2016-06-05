@@ -377,7 +377,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
                     .positiveText(R.string.action_restore)
                     .negativeText(R.string.cancel)
                     .itemsCallbackSingleChoice(-1, (dialog, itemView, which, text) -> {
-                        BackupUtils.prepareToRestoreRealmFile(backedUpRealmFiles[which]);
+                        BackupUtils.prepareToRestoreRealmFile(getActivity(), backedUpRealmFiles[which]);
                         return true;
                     })
                     .show();
