@@ -35,15 +35,15 @@
 
     <!-- Permissions -->
     <string name="storage_permission">Storage Permission</string>
-    <string name="storage_permission_rationale">Minerva needs permission to read book files and write backup
-        files.</string>
+    <string name="storage_permission_rationale">Minerva needs permission to read book files, and to read and write
+        backup files.</string>
     <string name="storage_permission_needed">Storage permission needed</string>
     <string name="storage_permission_perm_denied">Minerva needs the Storage permission, but you permanently denied it.
         \nOpen the App Info screen to grant it.</string>
 
     <string name="storage_permission_rationale_long">Minerva uses the Storage permission to read book files from your
-        library folder, and to write backup files which will outlast un-installation.\n\nSince you permanently denied
-        the Storage permission, you need to grant it from the App Info screen.</string>
+        library folder, and to read and write backup files which will outlast un-installation.\n\nSince you permanently
+        denied the Storage permission, you need to grant it from the App Info screen.</string>
 
 
     <!-- ******************************** Action Strings (Alphabetical order). ******************************** -->
