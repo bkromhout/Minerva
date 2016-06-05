@@ -3,6 +3,8 @@ package com.bkromhout.minerva.fragments;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -321,7 +323,7 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
             case R.id.action_edit_smart_list:
                 String ruqString = tempList.smartListRuqString;
                 QueryBuilderActivity.start(this, ruqString == null || ruqString.isEmpty()
-                        ? null : new RealmUserQuery(ruqString));
+                        ? null : new RealmUserQuery(ruqString), tempList.uniqueId);
                 break;
             case R.id.action_convert_to_normal_list:
                 Dialogs.simpleConfirmDialog(getActivity(), R.string.title_convert_to_normal_list,
@@ -358,7 +360,7 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
             case R.id.action_open_query_builder:
                 String ruqString = tempList.smartListRuqString;
                 QueryBuilderActivity.start(this, ruqString == null || ruqString.isEmpty()
-                        ? null : new RealmUserQuery(ruqString));
+                        ? null : new RealmUserQuery(ruqString), tempList.uniqueId);
                 break;
             case R.id.action_rename_list:
             case R.id.action_rename_smart_list:
@@ -380,6 +382,24 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
                 break;
         }
         if (actionMode != null) actionMode.finish();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case C.RC_QUERY_BUILDER_ACTIVITY:
+                // Came back from QueryBuilderActivity.
+                if (resultCode == Activity.RESULT_OK) {
+                    // There's a valid RUQ in the extras, so update the smart list using the unique ID (also from the
+                    // extras).
+                    RBookList smartList = lists.where()
+                                               .equalTo("uniqueId", data.getLongExtra(C.UNIQUE_ID, -1))
+                                               .findFirst();
+                    if (smartList != null) ActionHelper.updateSmartList(realm, smartList,
+                            ((RealmUserQuery) data.getParcelableExtra(C.RUQ)).toRuqString());
+                }
+                break;
+        }
     }
 
     /**

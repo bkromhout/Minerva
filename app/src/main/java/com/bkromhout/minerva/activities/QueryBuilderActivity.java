@@ -34,12 +34,16 @@ public class QueryBuilderActivity extends AppCompatActivity implements RealmQuer
 
     /**
      * Convenience method to start this activity from a fragment.
-     * @param fragment The fragment to return a result to.
-     * @param ruq      The The {@link RealmUserQuery} to pre-fill.
+     * @param fragment          The fragment to return a result to.
+     * @param ruq               The {@link RealmUserQuery} to pre-fill.
+     * @param smartListUniqueId The unique ID of some smart list; will be passed back to the calling fragment in
+     *                          onActivityResult as an extra with key {@link C#UNIQUE_ID} if the result code is {@code
+     *                          RESULT_OK}.
      */
-    public static void start(Fragment fragment, RealmUserQuery ruq) {
+    public static void start(Fragment fragment, RealmUserQuery ruq, long smartListUniqueId) {
         Intent intent = new Intent(new Intent(fragment.getContext(), QueryBuilderActivity.class));
         if (ruq != null) intent.putExtra(C.RUQ, ruq);
+        if (smartListUniqueId != -1) intent.putExtra(C.UNIQUE_ID, smartListUniqueId);
         fragment.startActivityForResult(intent, C.RC_QUERY_BUILDER_ACTIVITY);
     }
 
@@ -106,7 +110,8 @@ public class QueryBuilderActivity extends AppCompatActivity implements RealmQuer
                 if (!rqv.isQueryValid())
                     Toast.makeText(this, R.string.sb_err_invalid_query, Toast.LENGTH_LONG).show();
                 else {
-                    setResult(RESULT_OK, new Intent().putExtra(C.RUQ, rqv.getRealmUserQuery()));
+                    setResult(RESULT_OK, new Intent().putExtra(C.RUQ, rqv.getRealmUserQuery())
+                                                     .putExtra(C.UNIQUE_ID, getIntent().getLongExtra(C.UNIQUE_ID, -1)));
                     finish();
                 }
                 return true;

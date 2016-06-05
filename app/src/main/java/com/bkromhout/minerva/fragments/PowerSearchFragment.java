@@ -416,7 +416,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
     @OnClick(R.id.fab)
     void onFabClick() {
         // Start QueryBuilderActivity, passing it the currently held RealmUserQuery.
-        QueryBuilderActivity.start(this, ruq);
+        QueryBuilderActivity.start(this, ruq, -1);
     }
 
     /**
