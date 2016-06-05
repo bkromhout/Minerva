@@ -3,6 +3,7 @@ package com.bkromhout.minerva.data;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
@@ -11,11 +12,13 @@ import com.bkromhout.minerva.ui.SnackKiosk;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.comparator.NameFileComparator;
 import timber.log.Timber;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
@@ -66,20 +69,24 @@ public class BackupUtils {
     }
 
     /**
-     * Gets a list of currently backed up Realm files.
+     * Gets a list of currently backed up Realm files, ordered newest to oldest.
      * @return List of Realm database files.
      */
+    @NonNull
     public static synchronized File[] getRestorableRealmFiles() {
-        if (isBackingUp || dbRestoreState != DBRestoreState.NOT) return null;
+        if (isBackingUp || dbRestoreState != DBRestoreState.NOT) return FileUtils.EMPTY_FILE_ARRAY;
 
-        // Get the DB backups directory. If it doesn't exist, return the empty list.
+        // Get the DB backups directory. If it doesn't exist or isn't a directory, return the empty list.
         File dbBackupDir = getExtDir(BACKUP_PATH);
-        if (!dbBackupDir.exists()) return new File[] {};
+        if (!dbBackupDir.isDirectory()) return FileUtils.EMPTY_FILE_ARRAY;
 
-        // Return all files whose extensions match our DB backup extension.
-        return dbBackupDir.listFiles((dir, filename) -> {
+        // Get all files whose extensions match our DB backup extension. Sort so that the order is newest to oldest.
+        File[] restorableDbFiles = dbBackupDir.listFiles((dir, filename) -> {
             return filename.endsWith(DB_BACKUP_EXT);
         });
+        Arrays.sort(restorableDbFiles, NameFileComparator.NAME_INSENSITIVE_REVERSE);
+
+        return restorableDbFiles;
     }
 
     /**
