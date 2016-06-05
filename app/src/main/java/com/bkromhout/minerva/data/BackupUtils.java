@@ -27,7 +27,7 @@ public class BackupUtils {
     private static final String SETTINGS_BACKUP_EXT = ".minervaSettings";
     private static final String RESTORE_NAME = "restore.realm";
     private static final String TEMP_NAME = "temp.realm";
-    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.US);
+    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH_mm_ss", Locale.US);
 
     private static volatile boolean isBackingUp = false;
     private static volatile DBRestoreState dbRestoreState = DBRestoreState.NOT;
