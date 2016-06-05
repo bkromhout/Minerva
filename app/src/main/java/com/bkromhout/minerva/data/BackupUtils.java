@@ -23,7 +23,7 @@ import java.util.Locale;
  */
 public class BackupUtils {
     private static final String BACKUP_PATH = "/Minerva/";
-    private static final String DB_BACKUP_EXT = ".minervaDB";
+    public static final String DB_BACKUP_EXT = ".minervaDB";
     private static final String SETTINGS_BACKUP_EXT = ".minervaSettings";
     private static final String RESTORE_NAME = "restore.realm";
     private static final String TEMP_NAME = "temp.realm";

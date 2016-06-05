@@ -372,6 +372,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
                     // Transform files to file names and use those as the items in the dialog.
                     .items(Observable.from(backedUpRealmFiles)
                                      .map(File::getName)
+                                     .map(s -> s.replace(BackupUtils.DB_BACKUP_EXT, ""))
                                      .toList().toBlocking().single())
                     .positiveText(R.string.action_restore)
                     .negativeText(R.string.cancel)
