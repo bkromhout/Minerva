@@ -478,7 +478,7 @@ public class TaggingActivity extends AppCompatActivity implements SnackKiosk.Sna
         /**
          * List of {@link RBook}s whose will be modified.
          */
-        public List<RBook> selectedBooks;
+        List<RBook> selectedBooks;
         /**
          * Whether or not we'll require an explicit update if we make changes or tag(s) are deleted. This is set to true
          * if {@link #selectedBooks} is of size 1.
@@ -548,7 +548,7 @@ public class TaggingActivity extends AppCompatActivity implements SnackKiosk.Sna
          */
         private void init(List<RBook> books) {
             this.selectedBooks = books;
-            willRequireExplicitUpdate = books.size() == 1;
+            willRequireExplicitUpdate = true; // TODO As a quick fix, we've just turned this on for all cases.
             calculateSharedTags(books);
             this.newCheckedItems = new ArrayList<>(this.oldCheckedItems);
             this.newPartiallyCheckedItems = new ArrayList<>(this.oldPartiallyCheckedItems);
