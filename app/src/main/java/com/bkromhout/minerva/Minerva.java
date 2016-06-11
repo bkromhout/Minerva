@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.PluralsRes;
 import android.support.v4.content.ContextCompat;
 import com.bkromhout.minerva.data.BackupUtils;
+import com.bkromhout.minerva.data.Importer;
 import com.bkromhout.minerva.data.UniqueIdFactory;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.ruqus.Ruqus;
@@ -95,6 +96,9 @@ public class Minerva extends Application {
                 initUsingRealm(realm);
             }
         }
+
+        // Trigger auto-import if needed.
+        if (prefs.isLibAutoImport(false)) Importer.get().queueFullImport();
     }
 
     /**

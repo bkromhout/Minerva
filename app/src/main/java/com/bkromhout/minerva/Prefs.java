@@ -54,14 +54,14 @@ public class Prefs {
      * Check whether we've done first time init.
      * @return True if we've done first time init, otherwise false.
      */
-    public boolean doneFirstTimeInit() {
+    boolean doneFirstTimeInit() {
         return prefs.getBoolean(FIRST_TIME_INIT, false);
     }
 
     /**
      * Mark first time init as done.
      */
-    public void setFirstTimeInitDone() {
+    void setFirstTimeInitDone() {
         prefs.edit().putBoolean(FIRST_TIME_INIT, true).apply();
     }
 
@@ -109,7 +109,7 @@ public class Prefs {
      * @param defValue The default value to return if nothing is set.
      * @return Auto-import boolean.
      */
-    public boolean getLibAutoImport(boolean defValue) {
+    boolean isLibAutoImport(boolean defValue) {
         return prefs.getBoolean(LIB_AUTO_IMPORT, defValue);
     }
 
@@ -259,7 +259,7 @@ public class Prefs {
      * Put recents card type.
      * @param cardType Card type.
      */
-    public void putRecentsCardType(BookCardType cardType) {
+    private void putRecentsCardType(BookCardType cardType) {
         prefs.edit().putInt(RECENTS_CARD_TYPE, cardType.getNum()).apply();
     }
 
@@ -281,7 +281,7 @@ public class Prefs {
      * Put library card type.
      * @param cardType Card type.
      */
-    public void putLibraryCardType(BookCardType cardType) {
+    private void putLibraryCardType(BookCardType cardType) {
         prefs.edit().putInt(LIBRARY_CARD_TYPE, cardType.getNum()).apply();
     }
 
@@ -353,7 +353,7 @@ public class Prefs {
      * Put list card type.
      * @param cardType Card type.
      */
-    public void putListCardType(BookCardType cardType) {
+    private void putListCardType(BookCardType cardType) {
         prefs.edit().putInt(LIST_CARD_TYPE, cardType.getNum()).apply();
     }
 
@@ -375,7 +375,7 @@ public class Prefs {
      * Put power search card type.
      * @param cardType Card type.
      */
-    public void putPowerSearchCardType(BookCardType cardType) {
+    private void putPowerSearchCardType(BookCardType cardType) {
         prefs.edit().putInt(POWER_SEARCH_CARD_TYPE, cardType.getNum()).apply();
     }
 }
