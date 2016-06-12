@@ -242,6 +242,25 @@ public class RBookList extends RealmObject implements UIDModel {
         return uniqueId;
     }
 
+    /*
+     * TODO Workarounds for an issue where the realm transformer doesn't work on androidTest sources :(
+     */
+    Long getNextPos() {
+        return nextPos;
+    }
+
+    boolean isSmartList() {
+        return isSmartList;
+    }
+
+    String getSmartListRuqString() {
+        return smartListRuqString;
+    }
+
+    RealmList<RBookListItem> getListItems() {
+        return listItems;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

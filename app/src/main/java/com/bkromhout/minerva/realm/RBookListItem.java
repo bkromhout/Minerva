@@ -61,6 +61,11 @@ public class RBookListItem extends RealmObject implements UIDModel {
         return uniqueId;
     }
 
+    // TODO Workaround for an issue where the realm transformer doesn't work on androidTest sources :(
+    RBook getBook() {
+        return this.book;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

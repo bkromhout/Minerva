@@ -249,17 +249,21 @@ public class RBook extends RealmObject implements UIDModel {
         return uniqueId;
     }
 
-    // TODO Workaround for an issue where the realm transformer doesn't work on androidTest sources :(
-    void setNew(boolean isNew) {
-        this.isNew = isNew;
+    /*
+     * TODO Workarounds for an issue where the realm transformer doesn't work on androidTest sources :(
+     */
+    String getRelPath() {
+        return this.relPath;
     }
 
-    // TODO Workaround for an issue where the realm transformer doesn't work on androidTest sources :(
     boolean isNew() {
         return this.isNew;
     }
 
-    // TODO Workaround for an issue where the realm transformer doesn't work on androidTest sources :(
+    void setNew(boolean isNew) {
+        this.isNew = isNew;
+    }
+
     boolean isUpdated() {
         return this.isUpdated;
     }
