@@ -255,6 +255,10 @@ public class RBookList extends RealmObject implements UIDModel {
         return smartListRuqString;
     }
 
+    void setSmartListRuqString(String smartListRuqString) {
+        this.smartListRuqString = smartListRuqString;
+    }
+
     RealmList<RBookListItem> getListItems() {
         return listItems;
     }
