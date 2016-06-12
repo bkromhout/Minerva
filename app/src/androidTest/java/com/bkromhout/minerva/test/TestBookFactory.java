@@ -1,6 +1,8 @@
 package com.bkromhout.minerva.test;
 
 import com.bkromhout.minerva.data.SuperBook;
+import com.bkromhout.minerva.data.UniqueIdFactory;
+import com.bkromhout.minerva.realm.RBook;
 import nl.siegmann.epublib.domain.*;
 
 import java.util.ArrayList;
@@ -52,5 +54,21 @@ public class TestBookFactory {
         ArrayList<TestSuperBook> tsbList = new ArrayList<>(num);
         for (int i = 0; i < num; i++) tsbList.add(generate());
         return tsbList;
+    }
+
+    /**
+     * Converts a list of {@link TestSuperBook}s to a list of {@link RBook}s.
+     * @param tsbList List of {@link TestSuperBook}s.
+     * @return List of {@link RBook}s.
+     * @throws IllegalStateException if temporary unique IDs haven't been set up yet
+     * ({@link UniqueIdFactory#areTempIdsSetUp()} returns {@code false}.)
+     */
+    public static List<RBook> toRBooks(List<TestSuperBook> tsbList) {
+        if (!UniqueIdFactory.getInstance().areTempIdsSetUp())
+            throw new IllegalStateException("Must set up temporary unique IDs prior to creating RBooks for testing.");
+
+        ArrayList<RBook> books = new ArrayList<>(tsbList.size());
+        for (TestSuperBook tsb : tsbList) books.add(new RBook(tsb));
+        return books;
     }
 }
