@@ -13,6 +13,7 @@ import java.util.List;
  * Utility class which creates SuperBooks for testing.
  */
 public class TestBookFactory {
+    public static final String BASE_TEST_PATH = "path/to/book_";
     /**
      * Number currently being used to help generate a {@link TestSuperBook}.
      */
@@ -41,7 +42,7 @@ public class TestBookFactory {
         metadata.addDate(new Date("Create Date " + genNum, Date.Event.CREATION));
         metadata.addDate(new Date("Publish Date " + genNum, Date.Event.PUBLICATION));
         metadata.addDate(new Date("Modified Date " + genNum, Date.Event.MODIFICATION));
-        return new TestSuperBook(book, "path/to/book_" + genNum, title.getBytes(), genNum);
+        return new TestSuperBook(book, BASE_TEST_PATH + genNum, title.getBytes(), genNum);
     }
 
     /**
