@@ -47,16 +47,35 @@ public class RBookTest {
         TestSuperBook superBook = testBookFactory.generate();
         realm.beginTransaction();
         RBook book1 = realm.copyToRealm(new RBook(superBook));
-        RBook book2 = realm.copyToRealm(new RBook(superBook));
-        book1.isNew = false;
+        book1.setNew(false);
         realm.commitTransaction();
+        RBook book2 = new RBook(superBook);
 
-        assertThat(book1.isNew, is(false));
-        assertThat(book1.isUpdated, is(false));
+        assertThat(book1.isNew(), is(false));
+        assertThat(book1.isUpdated(), is(false));
 
         realm.beginTransaction();
         book1.updateFromOtherRBook(realm, book2);
         realm.commitTransaction();
-        assertThat(book1.isUpdated, is(false));
+        assertThat(book1.isUpdated(), is(false));
+    }
+
+    @Test
+    public void updatesRBook() {
+        TestSuperBook superBook1 = testBookFactory.generate();
+        TestSuperBook superBook2 = testBookFactory.generate();
+        realm.beginTransaction();
+        RBook book1 = realm.copyToRealm(new RBook(superBook1));
+        book1.setNew(false);
+        realm.commitTransaction();
+        RBook book2 = new RBook(superBook2);
+
+        assertThat(book1.isNew(), is(false));
+        assertThat(book1.isUpdated(), is(false));
+
+        realm.beginTransaction();
+        book1.updateFromOtherRBook(realm, book2);
+        realm.commitTransaction();
+        assertThat(book1.isUpdated(), is(true));
     }
 }
