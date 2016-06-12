@@ -1,4 +1,3 @@
-package com.bkromhout.minerva.test;
 /*
  * Copyright 2016 Realm Inc.
  *
@@ -14,6 +13,7 @@ package com.bkromhout.minerva.test;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.bkromhout.minerva.test;
 
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -46,7 +46,7 @@ import static org.junit.Assert.assertTrue;
 public class TestRealmConfigurationFactory extends TemporaryFolder {
     private Map<RealmConfiguration, Boolean> map = new ConcurrentHashMap<>();
     private Set<RealmConfiguration> configurations = Collections.newSetFromMap(map);
-    protected boolean unitTestFailed = false;
+    private boolean unitTestFailed = false;
 
     @Override
     public Statement apply(final Statement base, Description description) {

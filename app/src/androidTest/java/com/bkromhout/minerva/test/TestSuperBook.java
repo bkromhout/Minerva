@@ -15,7 +15,7 @@ public class TestSuperBook extends SuperBook {
      * @param path The path (relative to the library dir) to the book file.
      * @param hash The hash of the book file.
      */
-    public TestSuperBook(Book book, String path, byte[] hash, long genNum) {
+    TestSuperBook(Book book, String path, byte[] hash, long genNum) {
         super(book, path, hash);
         this.genNum = genNum;
     }
