@@ -11,7 +11,6 @@ import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.rx.RxFileWalker;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
-import com.google.common.collect.ImmutableList;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import rx.Observable;
@@ -45,7 +44,7 @@ public class Importer {
     /**
      * File extensions which we support importing.
      */
-    public static final List<String> VALID_EXTENSIONS = ImmutableList.of("epub");
+    public static final List<String> VALID_EXTENSIONS = Collections.singletonList("epub");
 
     /**
      * Implemented by classes which wish to listen to events from the importer.

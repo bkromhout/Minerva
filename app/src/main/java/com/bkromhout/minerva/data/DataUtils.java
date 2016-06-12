@@ -14,10 +14,6 @@ import com.bkromhout.minerva.realm.RBookListItem;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.ruqus.RealmUserQuery;
-import com.google.common.hash.Hashing;
-import com.google.common.hash.HashingInputStream;
-import com.google.common.io.ByteStreams;
-import com.google.common.io.Files;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import nl.siegmann.epublib.domain.Author;
@@ -50,7 +46,7 @@ public class DataUtils {
     public static SuperBook readEpubFile(File file, String relPath) {
         if (file == null || !file.exists() || !file.isFile()) return null;
 
-        try (HashingInputStream in = new HashingInputStream(Hashing.sha256(), new FileInputStream(file))) {
+        try (HashingInputStream in = new HashingInputStream(new FileInputStream(file))) {
             Book book = new EpubReader().readEpub(in);
             return new SuperBook(book, relPath, in.hash().asBytes());
         } catch (IOException e) {
@@ -164,11 +160,22 @@ public class DataUtils {
      * @param relPath Relative path to use to create cover file path.
      */
     public static void saveStreamAsCoverImage(InputStream in, String relPath) {
+        if (in == null) throw new IllegalArgumentException("in must not be null");
         File coverFile = new File(Minerva.get().getFilesDir(), relPath + COVER_EXT);
         try {
-            Files.createParentDirs(coverFile);
+            // Make sure that we've made the necessary folders.
+            File parent = coverFile.getCanonicalFile().getParentFile();
+            if (!parent.mkdirs() && !parent.isDirectory())
+                throw new IOException("Unable to create parent directories of " + coverFile);
+
+            // Save the file from the input stream by copying the contents from one stream to another.
             try (FileOutputStream out = new FileOutputStream(coverFile)) {
-                ByteStreams.copy(in, out);
+                byte[] buffer = new byte[8192];
+                while (true) {
+                    int numRead = in.read(buffer);
+                    if (numRead == -1) break;
+                    out.write(buffer, 0, numRead);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -274,7 +281,7 @@ public class DataUtils {
      * @return {@link RTag} with {@code name}, or {@code null} if there isn't one and {@code makeNonexistent} is {@code
      * false}.
      */
-    public static RTag getRTag(String name, boolean makeNonexistent) {
+    private static RTag getRTag(String name, boolean makeNonexistent) {
         if (name == null || name.isEmpty()) throw new IllegalArgumentException("Name must not be null or empty.");
         try (Realm realm = Realm.getDefaultInstance()) {
             // Try to find existing tag with name.
@@ -352,7 +359,7 @@ public class DataUtils {
      * @param stringObservable String observable.
      * @return Concatenated string.
      */
-    public static String rxToString(Observable<String> stringObservable) {
+    static String rxToString(Observable<String> stringObservable) {
         return stringObservable.reduce(new StringBuilder(), StringBuilder::append)
                                .toBlocking()
                                .single()

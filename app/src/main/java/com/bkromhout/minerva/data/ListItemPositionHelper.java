@@ -3,7 +3,6 @@ package com.bkromhout.minerva.data;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
-import com.google.common.math.LongMath;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -150,15 +149,15 @@ public class ListItemPositionHelper {
         if (item1 == null && item2 == null) throw new IllegalArgumentException("Both items are null.");
 
         // Handle acceptable nulls.
-        if (item1 == null) return LongMath.checkedSubtract(item2.pos, C.LIST_ITEM_GAP);
-        if (item2 == null) return LongMath.checkedAdd(item1.pos, C.LIST_ITEM_GAP);
+        if (item1 == null) return item2.pos - C.LIST_ITEM_GAP;
+        if (item2 == null) return item1.pos + C.LIST_ITEM_GAP;
 
         // Get positions, make sure that item2 doesn't precede item1 and isn't in the same position as item1.
         Long p1 = item1.pos, p2 = item2.pos;
         if (p2 <= p1) throw new IllegalArgumentException("item2 was before or at the same position as item1.");
 
         // Calculate middle.
-        Long pos = LongMath.mean(p1, p2);
+        Long pos = (p1 + p2) / 2L;
 
         // Make sure there isn't an item in the calculated position. If there is, return null.
         return bookList.listItems.where().equalTo("pos", pos).findFirst() == null ? pos : null;

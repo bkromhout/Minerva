@@ -36,7 +36,6 @@ import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import com.bkromhout.rrvl.RealmRecyclerView;
-import com.google.common.collect.Lists;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.jakewharton.rxbinding.widget.TextViewTextChangeEvent;
 import difflib.Delta;
@@ -51,6 +50,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -100,7 +100,7 @@ public class TaggingActivity extends AppCompatActivity implements SnackKiosk.Sna
      * @param book     The selected {@link RBook}.
      */
     public static void start(Fragment fragment, RBook book) {
-        start(fragment, Lists.asList(book, new RBook[] {}));
+        start(fragment, Collections.singletonList(book));
     }
 
     /**
@@ -119,7 +119,7 @@ public class TaggingActivity extends AppCompatActivity implements SnackKiosk.Sna
      * @param book     The selected {@link RBook}.
      */
     public static void start(Activity activity, RBook book) {
-        start(activity, Lists.asList(book, new RBook[] {}));
+        start(activity, Collections.singletonList(book));
     }
 
     /**
