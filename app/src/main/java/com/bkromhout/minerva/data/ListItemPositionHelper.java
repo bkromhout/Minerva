@@ -29,7 +29,7 @@ public class ListItemPositionHelper {
      * @param itemToMove Item to move.
      * @param targetItem Item which {@code itemToMove} will be moved before.
      */
-    public static void moveItemToBefore(RBookListItem itemToMove, RBookListItem targetItem) {
+    private static void moveItemToBefore(RBookListItem itemToMove, RBookListItem targetItem) {
         if (itemToMove == null || targetItem == null) throw new IllegalArgumentException("Neither item may be null.");
         if (itemToMove.uniqueId == targetItem.uniqueId) return;
 
@@ -62,7 +62,7 @@ public class ListItemPositionHelper {
      * @param itemToMove Item to move.
      * @param targetItem Item which {@code itemToMove} will be moved after.
      */
-    public static void moveItemToAfter(RBookListItem itemToMove, RBookListItem targetItem) {
+    private static void moveItemToAfter(RBookListItem itemToMove, RBookListItem targetItem) {
         if (itemToMove == null || targetItem == null) throw new IllegalArgumentException("Neither item may be null.");
         if (itemToMove.uniqueId == targetItem.uniqueId) return;
 
