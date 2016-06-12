@@ -44,7 +44,7 @@ import static org.junit.Assert.assertTrue;
  * it.
  */
 public class TestRealmConfigurationFactory extends TemporaryFolder {
-    private Map<RealmConfiguration, Boolean> map = new ConcurrentHashMap<RealmConfiguration, Boolean>();
+    private Map<RealmConfiguration, Boolean> map = new ConcurrentHashMap<>();
     private Set<RealmConfiguration> configurations = Collections.newSetFromMap(map);
     protected boolean unitTestFailed = false;
 
@@ -74,14 +74,11 @@ public class TestRealmConfigurationFactory extends TemporaryFolder {
     @Override
     protected void after() {
         try {
-            for (RealmConfiguration configuration : configurations) {
+            for (RealmConfiguration configuration : configurations)
                 Realm.deleteRealm(configuration);
-            }
         } catch (IllegalStateException e) {
             // Only throw the exception caused by deleting the opened Realm if the test case itself doesn't throw.
-            if (!unitTestFailed) {
-                throw e;
-            }
+            if (!unitTestFailed) throw e;
         } finally {
             // This will delete the temp folder.
             super.after();
@@ -131,8 +128,7 @@ public class TestRealmConfigurationFactory extends TemporaryFolder {
     }
 
     // Copies a Realm file from assets to temp dir
-    public void copyRealmFromAssets(Context context, String realmPath, String newName)
-            throws IOException {
+    public void copyRealmFromAssets(Context context, String realmPath, String newName) throws IOException {
         // Delete the existing file before copy
         RealmConfiguration configToDelete = new RealmConfiguration.Builder(getRoot())
                 .name(newName)
@@ -145,9 +141,8 @@ public class TestRealmConfigurationFactory extends TemporaryFolder {
         FileOutputStream outputStream = new FileOutputStream(file);
         byte[] buf = new byte[1024];
         int bytesRead;
-        while ((bytesRead = is.read(buf)) > -1) {
+        while ((bytesRead = is.read(buf)) > -1)
             outputStream.write(buf, 0, bytesRead);
-        }
         outputStream.close();
         is.close();
     }
