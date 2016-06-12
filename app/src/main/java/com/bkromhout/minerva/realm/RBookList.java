@@ -144,35 +144,33 @@ public class RBookList extends RealmObject implements UIDModel {
 
     /**
      * Removes multiple {@link RBook}s from this list.
+     * @param realm Instance of Realm to use.
      * @param books Books to remove from this list.
      */
-    public void removeBooks(Iterable<RBook> books) {
+    public void removeBooks(Realm realm, Iterable<RBook> books) {
         throwIfSmartList();
-        try (Realm realm = Realm.getDefaultInstance()) {
-            realm.executeTransaction(tRealm -> {
-                // Delete the book list items.
-                for (RBook book : books)
-                    listItems.where().equalTo("book.relPath", book.relPath).findFirst().deleteFromRealm();
-            });
-        }
+        realm.executeTransaction(tRealm -> {
+            // Delete the book list items.
+            for (RBook book : books)
+                listItems.where().equalTo("book.relPath", book.relPath).findFirst().deleteFromRealm();
+        });
     }
 
     /**
      * If this is a smart list, convert it to a normal list by getting the RealmUserQuery and adding the items that it
      * returns when it is executed. If any books are included in the query multiple times, they will only be added
      * once.
+     * @param realm Instance of Realm to use.
      */
-    public void convertToNormalList() {
+    public void convertToNormalList(Realm realm) {
         // If this isn't a smart list, do nothing.
         if (!isSmartList) return;
-        try (Realm realm = Realm.getDefaultInstance()) {
-            // If this is a smart list but it doesn't actually have a query, just toggle the boolean.
-            // If there is a query, we'll need to actually add the items, which means we need to get a
-            // RealmUserQuery first.
-            if (smartListRuqString == null || smartListRuqString.isEmpty())
-                realm.executeTransaction(tRealm -> isSmartList = false);
-            else convertToNormalListUsingRuq(realm, new RealmUserQuery(smartListRuqString));
-        }
+        // If this is a smart list but it doesn't actually have a query, just toggle the boolean.
+        // If there is a query, we'll need to actually add the items, which means we need to get a
+        // RealmUserQuery first.
+        if (smartListRuqString == null || smartListRuqString.isEmpty())
+            realm.executeTransaction(tRealm -> isSmartList = false);
+        else convertToNormalListUsingRuq(realm, new RealmUserQuery(smartListRuqString));
     }
 
     /**

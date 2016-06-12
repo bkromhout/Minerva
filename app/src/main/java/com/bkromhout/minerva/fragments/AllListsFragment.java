@@ -368,7 +368,7 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
                 if (event.getPosToUpdate() != -1) adapter.notifyItemChanged(event.getPosToUpdate());
                 break;
             case R.id.action_convert_to_normal_list:
-                tempList.convertToNormalList();
+                tempList.convertToNormalList(realm);
                 if (event.getPosToUpdate() != -1) adapter.notifyItemChanged(event.getPosToUpdate());
                 break;
             case R.id.action_delete_list:

@@ -572,7 +572,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 ActionHelper.reImportBooks(getSelectedBooks());
                 break;
             case R.id.action_remove:
-                srcList.removeBooks(getSelectedBooks());
+                srcList.removeBooks(realm, getSelectedBooks());
                 break;
             case R.id.action_delete:
                 ActionHelper.deleteBooks(getSelectedBooks(), (boolean) event.getData());
