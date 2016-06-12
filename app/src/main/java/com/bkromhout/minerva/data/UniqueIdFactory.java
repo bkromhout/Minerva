@@ -48,7 +48,7 @@ public class UniqueIdFactory {
     public synchronized void initializeDefault(final Realm realm) {
         if (ids != null) throw new IllegalStateException("Already initialized default ID map.");
         ids = new HashMap<>();
-        initIdMap(realm, ids);
+        initIdMap(realm, ids, false);
     }
 
     /**
@@ -70,7 +70,7 @@ public class UniqueIdFactory {
         if (ids == null) throw new IllegalStateException("Default ID map must be initialized first.");
         if (tempIds != null) throw new IllegalStateException("Already initialized temporary ID map.");
         tempIds = new HashMap<>();
-        initIdMap(realm, tempIds);
+        initIdMap(realm, tempIds, true);
     }
 
     /**
@@ -116,10 +116,11 @@ public class UniqueIdFactory {
 
     /**
      * Initializes a unique ID map for the given {@code realm}, and stores it in {@code idMap}.
-     * @param realm Realm to initialize a unique ID map for.
-     * @param idMap Reference to actual map object to store entries in.
+     * @param realm  Realm to initialize a unique ID map for.
+     * @param idMap  Reference to actual map object to store entries in.
+     * @param isTemp If this map will be used for temporary IDs.
      */
-    private static void initIdMap(Realm realm, Map<Class<? extends RealmModel>, AtomicLong> idMap) {
+    private static void initIdMap(Realm realm, Map<Class<? extends RealmModel>, AtomicLong> idMap, boolean isTemp) {
         final RealmConfiguration configuration = realm.getConfiguration();
         final RealmSchema realmSchema = realm.getSchema();
 
@@ -128,7 +129,8 @@ public class UniqueIdFactory {
         for (final Class<? extends RealmModel> c : configuration.getRealmObjectClasses()) {
             final RealmObjectSchema objectSchema = realmSchema.get(c.getSimpleName());
             if (objectSchema != null && objectSchema.hasPrimaryKey()) {
-                Timber.d("Attempting to initialize unique ID factory for %s.", objectSchema.getClassName());
+                Timber.d("Attempting to initialize %s unique ID factory for %s.", isTemp ? "temporary" : "default",
+                        objectSchema.getClassName());
                 try {
                     Number keyValue = realm.where(c).max(UNIQUE_ID_FIELD);
                     if (keyValue != null) idMap.put(c, new AtomicLong(keyValue.longValue()));
@@ -137,7 +139,8 @@ public class UniqueIdFactory {
                     Timber.d("%s doesn't have a uniqueId field.", objectSchema.getClassName());
                 } catch (IllegalArgumentException ignored) {
                     // If we don't have any data yet, then Realm will think the field doesn't exist, and throws this.
-                    Timber.w("Couldn't initialize unique ID factory for %s.", objectSchema.getClassName());
+                    Timber.w("Couldn't initialize %s unique ID factory for %s.", isTemp ? "temporary" : "default",
+                            objectSchema.getClassName());
                 }
             }
         }
