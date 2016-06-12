@@ -108,7 +108,7 @@ public class RBookList extends RealmObject implements UIDModel {
      * @param book Book to check for.
      * @return True if {@code book} is in this list, otherwise false.
      */
-    private boolean _isBookInList(RBook book) {
+    private boolean isBookInList(RBook book) {
         return listItems.where()
                         .equalTo("owningList.name", name)
                         .equalTo("book.relPath", book.relPath)
@@ -135,7 +135,7 @@ public class RBookList extends RealmObject implements UIDModel {
      */
     private List<RBookListItem> booksToBookListItems(Realm realm, Iterable<RBook> books) {
         return Observable.from(books)
-                         .filter(book -> !_isBookInList(book))
+                         .filter(book -> !isBookInList(book))
                          .map(book -> new RBookListItem(realm, this, book))
                          .toList()
                          .toBlocking()
