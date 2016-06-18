@@ -247,6 +247,10 @@
     <string name="prompt_new_list">Enter a name for the new list</string>
     <string name="prompt_rename_list">Enter a new name for the list</string>
     <string name="list_name_hint">Name</string>
+    <plurals name="list_count">
+        <item quantity="one">%1$d Book</item>
+        <item quantity="other">%1$d Books</item>
+    </plurals>
 
     <!-- Smart Lists -->
     <string name="action_new_smart_list">New Smart List</string>

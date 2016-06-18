@@ -84,8 +84,8 @@ public class Prefs {
     }
 
     /*
-    * Settings
-    */
+     * Settings
+     */
 
     /**
      * Get the library directory path.
