@@ -43,7 +43,7 @@ public class DataUtils {
      * @param file The file to try and read as an ePub
      * @return Book object, or {@code null} if there were issues.
      */
-    public static SuperBook readEpubFile(File file, String relPath) {
+    static SuperBook readEpubFile(File file, String relPath) {
         if (file == null || !file.exists() || !file.isFile()) return null;
 
         try (HashingInputStream in = new HashingInputStream(new FileInputStream(file))) {
@@ -60,7 +60,7 @@ public class DataUtils {
      * @param dcmesElement {@code DcmesElement} to check.
      * @return True if {@code dcmesElement}'s value is {@code null} or the empty string.
      */
-    public static boolean isDENullOrEmpty(DcmesElement dcmesElement) {
+    static boolean isDENullOrEmpty(DcmesElement dcmesElement) {
         if (dcmesElement == null) return true;
         String value = dcmesElement.getValue();
         return value == null || value.isEmpty();

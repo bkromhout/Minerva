@@ -28,7 +28,7 @@ public class Prefs {
     // Recents
     public static final String RECENTS_CARD_TYPE = "recents_card_type";
     // Library
-    public static final String LIBRARY_CARD_TYPE = "library_card_type";
+    private static final String LIBRARY_CARD_TYPE = "library_card_type";
     private static final String LIBRARY_SORT_DIR = "library_sort_dir";
     private static final String LIBRARY_SORT_TYPE = "library_sort_type";
     // All Lists/Lists
