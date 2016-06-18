@@ -5,8 +5,10 @@ import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.data.UniqueIdFactory;
 import com.bkromhout.minerva.test.TestBookFactory;
 import com.bkromhout.minerva.test.TestRealmConfigurationFactory;
+import com.bkromhout.ruqus.RealmUserQuery;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmModel;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -68,14 +70,14 @@ public class RBookListTest {
 
         assertThat(list.getNextPos(), is(0L));
         assertThat(list.isSmartList(), is(false));
-        assertThat(list.getSmartListRuqString(), nullValue());
+        assertThat(list.getSmartListRuqString(), is(nullValue()));
         assertThat(list.getListItems().size(), is(0));
 
         // Add books and verify.
         list.addBooks(realm, testBooks);
 
         assertThat(list.getNextPos(), is(C.LIST_ITEM_GAP * NUM_TEST_BOOKS));
-        assertItemsCorrect(list, 1, 2, 3, 4, 5);
+        assertItemsCorrect(list.getListItems(), 1, 2, 3, 4, 5);
 
         // Remove books and verify.
         List<RBook> toRemove = new ArrayList<>();
@@ -84,38 +86,61 @@ public class RBookListTest {
         list.removeBooks(realm, toRemove);
 
         assertThat(list.getNextPos(), is(C.LIST_ITEM_GAP * NUM_TEST_BOOKS));
-        assertItemsCorrect(list, 2, 4, 5);
+        assertItemsCorrect(list.getListItems(), 2, 4, 5);
 
         // Re-add books and verify that we didn't add duplicates.
         list.addBooks(realm, testBooks);
 
         assertThat(list.getNextPos(), is(C.LIST_ITEM_GAP * (NUM_TEST_BOOKS + 2)));
-        assertItemsCorrect(list, 2, 4, 5, 1, 3);
+        assertItemsCorrect(list.getListItems(), 2, 4, 5, 1, 3);
     }
 
     @Test
     public void testSmartList() {
+        // Create RUQs and do sanity checks.
+        RealmUserQuery ruq1 = new RealmUserQuery(RUQ_STR_1);
+        RealmUserQuery ruq2 = new RealmUserQuery(RUQ_STR_2);
+        assertItemsCorrect(ruq1.execute(realm), 1, 2, 3, 4, 5);
+        assertItemsCorrect(ruq2.execute(realm), 1);
+
+        // Create smart lists and do initial checks.
         realm.beginTransaction();
-        RBookList smartList1 = new RBookList("smartList1");
-        smartList1.setSmartListRuqString(RUQ_STR_1);
-        RBookList smartList2 = new RBookList("smartList2");
-        smartList2.setSmartListRuqString(RUQ_STR_2);
+        RBookList smartList1 = realm.copyToRealm(new RBookList("smartList1", ruq1));
+        RBookList smartList2 = realm.copyToRealm(new RBookList("smartList2", ruq2));
         realm.commitTransaction();
 
         assertThat(smartList1.isSmartList(), is(true));
         assertThat(smartList2.isSmartList(), is(true));
+        assertThat(smartList1.getSmartListRuqString(), is(RUQ_STR_1));
+        assertThat(smartList2.getSmartListRuqString(), is(RUQ_STR_2));
+        assertThat(smartList1.getNextPos(), is(0L));
+        assertThat(smartList2.getNextPos(), is(0L));
+
+        // Convert to normal lists and verify.
+        smartList1.convertToNormalList(realm);
+        smartList2.convertToNormalList(realm);
+
+        assertThat(smartList1.isSmartList(), is(false));
+        assertThat(smartList2.isSmartList(), is(false));
+        assertThat(smartList1.getSmartListRuqString(), is(nullValue()));
+        assertThat(smartList2.getSmartListRuqString(), is(nullValue()));
+        assertThat(smartList1.getNextPos(), is(500L));
+        assertThat(smartList2.getNextPos(), is(100L));
+        assertItemsCorrect(smartList1.getListItems(), 1, 2, 3, 4, 5);
+        assertItemsCorrect(smartList2.getListItems(), 1);
     }
 
     /**
      * Checks that the items in {@code list} are correct by checking that there are the same number of them as the
      * number of {@code nums}, and that they are in the same order as {@code nums}.
-     * @param list {@link RBookList} whose items will be checked.
-     * @param nums List of numbers which were used when generating the books that the {@code list}'s items point to.
+     * @param items List of {@link RBookListItem}s or {@link RBook}s to check.
+     * @param nums  List of numbers which were used when generating the books that the {@code list}'s items point to.
      */
-    private void assertItemsCorrect(RBookList list, int... nums) {
-        List<RBookListItem> items = list.getListItems();
+    private void assertItemsCorrect(List<? extends RealmModel> items, int... nums) {
         assertThat(items.size(), is(nums.length));
-        for (int i = 0; i < nums.length; i++)
-            assertThat(items.get(i).getBook().getRelPath(), is(TestBookFactory.BASE_TEST_PATH + nums[i]));
+        for (int i = 0; i < nums.length; i++) {
+            RBook b = items.get(i) instanceof RBook ? (RBook) items.get(i) : ((RBookListItem) items.get(i)).getBook();
+            assertThat(b.getRelPath(), is(TestBookFactory.BASE_TEST_PATH + nums[i]));
+        }
     }
 }
