@@ -147,7 +147,7 @@ public class TagCardAdapter extends RealmRecyclerViewAdapter<RTag, RecyclerView.
     /**
      * TagCardVH class.
      */
-    public class TagCardVH extends RecyclerView.ViewHolder {
+    class TagCardVH extends RecyclerView.ViewHolder {
         @BindView(R.id.card)
         CardView card;
         @BindView(R.id.tag_name)
@@ -159,7 +159,7 @@ public class TagCardAdapter extends RealmRecyclerViewAdapter<RTag, RecyclerView.
         @BindView(R.id.btn_actions)
         ImageButton btnActions;
 
-        public TagCardVH(View itemView) {
+        TagCardVH(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
 

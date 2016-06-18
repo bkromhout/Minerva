@@ -166,19 +166,19 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
     /**
      * BookListCardVH class.
      */
-    public class BookListCardVH extends RecyclerView.ViewHolder {
+    class BookListCardVH extends RecyclerView.ViewHolder {
         @BindView(R.id.card)
-        public CardView cardView;
+        CardView cardView;
         @BindView(R.id.content)
         public LinearLayout content;
         @BindView(R.id.list_name)
-        public TextView tvListName;
+        TextView tvListName;
         @BindView(R.id.smart_list_icon)
-        public ImageButton btnSmartIcon;
+        ImageButton btnSmartIcon;
         @BindView(R.id.btn_actions)
-        public ImageButton btnActions;
+        ImageButton btnActions;
 
-        public BookListCardVH(View itemView) {
+        BookListCardVH(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
 

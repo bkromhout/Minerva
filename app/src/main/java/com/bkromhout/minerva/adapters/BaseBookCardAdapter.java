@@ -54,7 +54,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
     /**
      * Whether or not this adapter may allow item dragging to start.
      */
-    boolean mayStartDrags = false;
+    private boolean mayStartDrags = false;
 
     public BaseBookCardAdapter(Activity activity, RealmResults<T> realmResults) {
         this(activity, realmResults, true);
@@ -262,17 +262,17 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
      */
     static class BaseCardVH extends RecyclerView.ViewHolder {
         @BindView(R.id.card)
-        public CardView cardView;
+        CardView cardView;
         @BindView(R.id.content)
         public RelativeLayout content;
         @BindView(R.id.btn_info)
-        public ImageButton btnInfo;
+        ImageButton btnInfo;
         @BindView(R.id.title)
-        public TextView tvTitle;
+        TextView tvTitle;
         @BindView(R.id.author)
-        public TextView tvAuthor;
+        TextView tvAuthor;
 
-        public BaseCardVH(View itemView) {
+        BaseCardVH(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             // Make sure background responds to changes in "activated" state.
@@ -289,9 +289,9 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
      */
     static class CompactCardVH extends BaseCardVH {
         @BindView(R.id.rating_txt)
-        public TextView tvRating;
+        TextView tvRating;
 
-        public CompactCardVH(View itemView) {
+        CompactCardVH(View itemView) {
             super(itemView);
         }
     }
@@ -302,15 +302,15 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
      */
     static class NoCoverCardVH extends BaseCardVH {
         @BindView(R.id.btn_quick_tag)
-        public ImageButton btnQuickTag;
+        ImageButton btnQuickTag;
         @BindView(R.id.description)
-        public TextView tvDesc;
+        TextView tvDesc;
         @BindView(R.id.rating)
-        public RatingBar rbRating;
+        RatingBar rbRating;
         @BindView(R.id.tags)
-        public TextView tvTags;
+        TextView tvTags;
 
-        public NoCoverCardVH(View itemView) {
+        NoCoverCardVH(View itemView) {
             super(itemView);
         }
     }
@@ -320,9 +320,9 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
      */
     static class NormalCardVH extends NoCoverCardVH {
         @BindView(R.id.cover_image)
-        public ImageView ivCoverImage;
+        ImageView ivCoverImage;
 
-        public NormalCardVH(View itemView) {
+        NormalCardVH(View itemView) {
             super(itemView);
         }
     }
