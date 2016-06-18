@@ -95,7 +95,8 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
     @Override
     public long getItemId(int position) {
         if (position == super.getItemCount()) return Long.MIN_VALUE;
-        return realmResults.get(position).uniqueId;
+        final RBookList bookList = realmResults.get(position);
+        return bookList.isValid() ? bookList.uniqueId : -1;
     }
 
     @Override

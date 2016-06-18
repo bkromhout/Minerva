@@ -85,7 +85,8 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
     public long getItemId(int position) {
         if (position == super.getItemCount()) return Long.MIN_VALUE;
         T item = realmResults.get(position);
-        if (item instanceof RBook) return ((RBook) item).uniqueId;
+        if (!item.isValid()) return -1;
+        else if (item instanceof RBook) return ((RBook) item).uniqueId;
         else if (item instanceof RBookListItem) return ((RBookListItem) item).uniqueId;
         else throw new IllegalArgumentException("Unexpected item type: " + item.getClass().getName());
     }
@@ -95,8 +96,10 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
         if (position == getItemCount() || !(viewHolder instanceof BaseCardVH)) return;
         BaseCardVH vh = (BaseCardVH) viewHolder;
         // Get/check variables needed to help bind.
-        RBookListItem bookListItem = getBookListItemFromT(realmResults.get(position));
-        RBook book = bookListItem != null ? bookListItem.book : getBookFromT(realmResults.get(position));
+        T item = realmResults.get(position);
+        if (!item.isValid()) return; // Stop now if the object is no longer managed by Realm.
+        RBookListItem bookListItem = getBookListItemFromT(item);
+        RBook book = bookListItem != null ? bookListItem.book : getBookFromT(item);
         if (book == null || rippleFgListener == null) throw new IllegalArgumentException();
 
         // Visually distinguish selected cards during multi-select mode.

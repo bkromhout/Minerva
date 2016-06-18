@@ -87,6 +87,7 @@ public class TagCardAdapter extends RealmRecyclerViewAdapter<RTag, RecyclerView.
         if (position == getItemCount() || !(viewHolder instanceof TagCardVH)) return;
         TagCardVH vh = (TagCardVH) viewHolder;
         RTag tag = realmResults.get(position);
+        if (!tag.isValid()) return;
 
         // Set card click listener.
         vh.card.setOnClickListener(v -> {
