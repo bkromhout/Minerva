@@ -57,7 +57,7 @@ import java.util.List;
  */
 public class BookListActivity extends PermCheckingActivity implements ActionMode.Callback, SnackKiosk.Snacker {
     // Key strings for the bundle passed when this activity is started.
-    public static final String LIST_NAME = "list_name";
+    private static final String LIST_NAME = "list_name";
     private static final String CENTER_X = "center_x";
     private static final String CENTER_Y = "center_y";
     private static final String KEY_IS_REORDER_MODE = "is_reorder_mode";
@@ -373,7 +373,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
         }
         if (actionMode != null) actionMode.finish();
         // If we need to update the list's card in AllListsFragment, send the sticky event now.
-        if (needsPosUpdate) EventBus.getDefault().post(new UpdatePosEvent(posToUpdate));
+        if (needsPosUpdate) EventBus.getDefault().postSticky(new UpdatePosEvent(posToUpdate));
     }
 
     @Override
@@ -538,6 +538,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 setTitle((String) event.getData());
                 // Update intent used to start activity so that we don't crash if we rotate or something.
                 getIntent().putExtra(LIST_NAME, (String) event.getData());
+                needsPosUpdate = true;
                 break;
             case R.id.action_convert_to_normal_list:
                 if (smartListRuq != null) {
