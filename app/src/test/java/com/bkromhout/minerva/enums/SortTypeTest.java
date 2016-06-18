@@ -23,41 +23,42 @@ public class SortTypeTest {
     /**
      * Parameters to test with.
      */
-    @Parameterized.Parameters(name = "{4}")
+    @Parameterized.Parameters(name = "{0}")
     public static Collection<Object[]> params() {
         return Arrays.asList(new Object[][] {
-                {0, R.id.sort_title, R.string.sort_title, "title", SortType.TITLE},
-                {1, R.id.sort_author, R.string.sort_author, "author", SortType.AUTHOR},
-                {2, R.id.sort_time_added, R.string.sort_time_added, "lastImportDate", SortType.TIME_ADDED},
-                {3, R.id.sort_rating, R.string.sort_rating, "rating", SortType.RATING}
+                {SortType.TITLE, 0, R.id.sort_title, R.string.sort_title, new String[] {"title"}},
+                {SortType.AUTHOR, 1, R.id.sort_author, R.string.sort_author, new String[] {"author"}},
+                {SortType.TIME_ADDED, 2, R.id.sort_time_added, R.string.sort_time_added, new String[] {"lastImportDate"}},
+                {SortType.RATING, 3, R.id.sort_rating, R.string.sort_rating, new String[] {"rating"}},
+                {SortType.REL_PATH, 4, R.id.sort_rel_path, R.string.sort_rel_path, new String[] {"relPath", "title"}}
         });
     }
 
     /**
+     * Current {@link SortType}.
+     */
+    @Parameterized.Parameter()
+    public SortType type;
+    /**
      * Current number; should correspond to {@link #type}.
      */
-    @Parameterized.Parameter(0)
+    @Parameterized.Parameter(1)
     public int num;
     /**
      * Current resource ID; should correspond to {@link #type}.
      */
-    @Parameterized.Parameter(1)
+    @Parameterized.Parameter(2)
     public int resId;
     /**
      * Current name; should correspond to {@link #type}.
      */
-    @Parameterized.Parameter(2)
+    @Parameterized.Parameter(3)
     public int name;
     /**
-     * Current Realm field name; should correspond to {@link #type}.
-     */
-    @Parameterized.Parameter(3)
-    public String realmField;
-    /**
-     * Current {@link SortType}.
+     * Current Realm field names; should correspond to {@link #type}.
      */
     @Parameterized.Parameter(4)
-    public SortType type;
+    public String[] realmFields;
 
     /**
      * Tests that the current {@link #type}'s getters will returns the correct values.
@@ -67,7 +68,8 @@ public class SortTypeTest {
         assertThat(type.getNum(), is(num));
         assertThat(type.getResId(), is(resId));
         assertThat(type.getName(), is(name));
-        assertThat(type.getRealmField(), is(realmField));
+        assertThat(type.getRealmFields(), is(realmFields));
+        assertThat(type.getNumRealmFields(), is(realmFields.length));
     }
 
     /**

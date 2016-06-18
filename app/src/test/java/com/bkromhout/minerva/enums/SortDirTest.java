@@ -66,7 +66,7 @@ public class SortDirTest {
         assertThat(type.getNum(), is(num));
         assertThat(type.getResId(), is(resId));
         assertThat(type.getName(), is(name));
-        assertThat(type.getRealmSort(), is(realmSort));
+        assertThat(type.getRealmSort(3), is(new Sort[] {realmSort, realmSort, realmSort}));
     }
 
     /**

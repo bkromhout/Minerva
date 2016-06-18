@@ -275,7 +275,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
         // Handle actions.
         switch (item.getItemId()) {
             case R.id.action_add_to_list:
-                Dialogs.addToListDialogOrToast(getActivity(), realm);
+                Dialogs.addToListDialogOrSnack(getActivity(), realm);
                 return true;
             case R.id.action_tag:
                 //noinspection unchecked

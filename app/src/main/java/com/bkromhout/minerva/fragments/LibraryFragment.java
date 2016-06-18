@@ -326,7 +326,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
         // Handle actions.
         switch (item.getItemId()) {
             case R.id.action_add_to_list:
-                Dialogs.addToListDialogOrToast(getActivity(), realm);
+                Dialogs.addToListDialogOrSnack(getActivity(), realm);
                 return true;
             case R.id.action_tag:
                 //noinspection unchecked
@@ -551,13 +551,13 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
         this.filter = filter;
         if (filter == null || filter.isEmpty())
             books = realm.where(RBook.class)
-                         .findAllSorted(sortType.getRealmField(), sortDir.getRealmSort());
+                         .findAllSorted(sortType.getRealmFields(), sortDir.getRealmSort(sortType.getNumRealmFields()));
         else
             books = realm.where(RBook.class)
                          .contains("title", filter, Case.INSENSITIVE)
                          .or()
                          .contains("author", filter, Case.INSENSITIVE)
-                         .findAllSorted(sortType.getRealmField(), sortDir.getRealmSort());
+                         .findAllSorted(sortType.getRealmFields(), sortDir.getRealmSort(sortType.getNumRealmFields()));
 
         books.addChangeListener(emptyListener);
         // TODO Might need to manually call toggleEmptyState() here.
@@ -573,7 +573,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
     private void sortRealmResults() {
         if (realm == null || realm.isClosed() || books == null || !books.isValid()) return;
         recyclerView.setUseFastScrollBubble(sortType != SortType.TIME_ADDED);
-        books = books.sort(sortType.getRealmField(), sortDir.getRealmSort());
+        books = books.sort(sortType.getRealmFields(), sortDir.getRealmSort(sortType.getNumRealmFields()));
         books.addChangeListener(emptyListener);
     }
 

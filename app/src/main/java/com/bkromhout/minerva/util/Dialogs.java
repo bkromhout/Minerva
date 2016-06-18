@@ -12,7 +12,6 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import butterknife.ButterKnife;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.enums.BookCardType;
@@ -170,11 +169,11 @@ public class Dialogs {
     }
 
     /**
-     * Shows a dialog to let user choose a list.
+     * Shows a dialog to let user choose a list, or show a snackbar with an option to add one if there aren't any.
      * @param ctx   Context to use.
      * @param realm Realm instance to use.
      */
-    public static void addToListDialogOrToast(final Context ctx, final Realm realm) {
+    public static void addToListDialogOrSnack(final Context ctx, final Realm realm) {
         // Get list of normal lists.
         RealmResults<RBookList> lists = realm.where(RBookList.class)
                                              .equalTo("isSmartList", false)

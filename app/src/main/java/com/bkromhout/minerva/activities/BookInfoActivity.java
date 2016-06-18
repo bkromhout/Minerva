@@ -447,7 +447,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
                 ActionHelper.openBookUsingIntent(book);
                 return true;
             case R.id.action_add_to_list:
-                Dialogs.addToListDialogOrToast(this, realm);
+                Dialogs.addToListDialogOrSnack(this, realm);
                 return true;
             case R.id.action_tag:
                 //noinspection unchecked

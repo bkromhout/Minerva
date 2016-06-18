@@ -13,25 +13,27 @@ public enum SortType {
     TITLE(0, R.id.sort_title, R.string.sort_title, "title"),
     AUTHOR(1, R.id.sort_author, R.string.sort_author, "author"),
     TIME_ADDED(2, R.id.sort_time_added, R.string.sort_time_added, "lastImportDate"),
-    RATING(3, R.id.sort_rating, R.string.sort_rating, "rating");
+    RATING(3, R.id.sort_rating, R.string.sort_rating, "rating"),
+    REL_PATH(4, R.id.sort_rel_path, R.string.sort_rel_path, "relPath", "title");
 
     private final int num;
     private final int id;
     private final int name;
-    private final String realmField;
+    private final String[] realmFields;
 
     /**
      * Create a new {@link SortType}.
-     * @param num        The number to associate.
-     * @param id         The resource ID to associate.
-     * @param name       The name to associate.
-     * @param realmField The {@link com.bkromhout.minerva.realm.RBook} field to associate.
+     * @param num         The number to associate.
+     * @param id          The resource ID to associate.
+     * @param name        The name to associate.
+     * @param realmFields The {@link com.bkromhout.minerva.realm.RBook} fields to associate, taken in order when used
+     *                    for sorting.
      */
-    SortType(int num, @IdRes int id, @StringRes int name, String realmField) {
+    SortType(int num, @IdRes int id, @StringRes int name, String... realmFields) {
         this.num = num;
         this.id = id;
         this.name = name;
-        this.realmField = realmField;
+        this.realmFields = realmFields;
     }
 
     /**
@@ -61,11 +63,19 @@ public enum SortType {
     }
 
     /**
-     * Get the associated {@link com.bkromhout.minerva.realm.RBook} field name.
-     * @return Field name.
+     * Get the associated {@link com.bkromhout.minerva.realm.RBook} field names.
+     * @return Field names.
      */
-    public final String getRealmField() {
-        return realmField;
+    public final String[] getRealmFields() {
+        return realmFields;
+    }
+
+    /**
+     * Get the number of associated {@link com.bkromhout.minerva.realm.RBook} field names.
+     * @return Number of field names.
+     */
+    public final int getNumRealmFields() {
+        return realmFields.length;
     }
 
     /**

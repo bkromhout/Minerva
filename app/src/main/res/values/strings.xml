@@ -130,6 +130,7 @@
     <string name="sort_author">Author</string>
     <string name="sort_time_added">Time Added</string>
     <string name="sort_rating">Rating</string>
+    <string name="sort_rel_path">Relative Path</string>
 
     <string name="lbl_card_opts">Card Style</string>
     <string name="card_normal">Normal</string>

@@ -7,6 +7,8 @@ import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import io.realm.Sort;
 
+import java.util.Arrays;
+
 /**
  * Represents the different sort directions.
  */
@@ -60,11 +62,14 @@ public enum SortDir {
     }
 
     /**
-     * Get Realm's version of the sort direction enum.
-     * @return Realm sort enum.
+     * Get an array of Realm's version of the sort direction enum. All items will be the same.
+     * @param size How large the array should be.
+     * @return An array of Realm sort enums.
      */
-    public final Sort getRealmSort() {
-        return realmSort;
+    public final Sort[] getRealmSort(int size) {
+        Sort[] sortArr = new Sort[size];
+        Arrays.fill(sortArr, realmSort);
+        return sortArr;
     }
 
     /**

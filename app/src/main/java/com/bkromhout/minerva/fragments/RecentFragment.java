@@ -270,7 +270,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
                 Dialogs.markAsDialog(getActivity());
                 return true;
             case R.id.action_add_to_list:
-                Dialogs.addToListDialogOrToast(getActivity(), realm);
+                Dialogs.addToListDialogOrSnack(getActivity(), realm);
                 return true;
             case R.id.action_re_import:
                 Dialogs.simpleConfirmDialog(getContext(), R.string.title_re_import_books,
