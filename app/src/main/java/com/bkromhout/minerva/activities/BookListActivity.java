@@ -601,6 +601,8 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 if (resultCode == RESULT_OK) {
                     // There's a valid RUQ in the extras.
                     updateRuq(data.getParcelableExtra(C.RUQ));
+                    // If it's different than what we started with, we'll want to update the card in AllListsFragment.
+                    if (data.getBooleanExtra(C.HAS_CHANGED, false)) needsPosUpdate = true;
                 } else if (smartListRuq == null) {
                     // No valid RUQ returned, and we don't have one already, meaning that srcList's RUQ string is null.
                     // Make it empty string instead so we don't keep forcing the user back into the query builder.

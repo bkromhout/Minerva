@@ -31,6 +31,10 @@ public class QueryBuilderActivity extends AppCompatActivity implements RealmQuer
      * What mode the {@link RealmQueryView} is in.
      */
     private RealmQueryView.Mode rqvMode = RealmQueryView.Mode.MAIN;
+    /**
+     * The string of the RUQ passed into this activity when it was started, if any.
+     */
+    private String initialRuqStr;
 
     /**
      * Convenience method to start this activity from a fragment.
@@ -81,8 +85,13 @@ public class QueryBuilderActivity extends AppCompatActivity implements RealmQuer
 
         // Read extras bundle.
         Bundle b = getIntent().getExtras();
-        if (b != null && b.containsKey(C.RUQ)) //noinspection ConstantConditions
-            rqv.setRealmUserQuery(b.getParcelable(C.RUQ));
+        if (b != null && b.containsKey(C.RUQ)) {
+            RealmUserQuery ruq = b.getParcelable(C.RUQ);
+            if (ruq != null) {
+                initialRuqStr = ruq.toRuqString();
+                rqv.setRealmUserQuery(ruq);
+            }
+        }
     }
 
 
@@ -110,7 +119,10 @@ public class QueryBuilderActivity extends AppCompatActivity implements RealmQuer
                 if (!rqv.isQueryValid())
                     Toast.makeText(this, R.string.sb_err_invalid_query, Toast.LENGTH_LONG).show();
                 else {
-                    setResult(RESULT_OK, new Intent().putExtra(C.RUQ, rqv.getRealmUserQuery())
+                    RealmUserQuery ruq = rqv.getRealmUserQuery();
+                    boolean hasChanged = initialRuqStr == null || !initialRuqStr.equals(ruq.toRuqString());
+                    setResult(RESULT_OK, new Intent().putExtra(C.RUQ, ruq)
+                                                     .putExtra(C.HAS_CHANGED, hasChanged)
                                                      .putExtra(C.UNIQUE_ID, getIntent().getLongExtra(C.UNIQUE_ID, -1)));
                     finish();
                 }

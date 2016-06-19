@@ -10,8 +10,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,6 +24,8 @@ import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.ui.RippleForegroundListener;
 import com.bkromhout.minerva.ui.UiUtils;
 import com.bkromhout.rrvl.RealmRecyclerViewAdapter;
+import com.bkromhout.ruqus.RealmUserQuery;
+import io.realm.Realm;
 import io.realm.RealmResults;
 import org.greenrobot.eventbus.EventBus;
 
@@ -45,6 +47,10 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
      */
     private final Activity activity;
     /**
+     * Instance of Realm to use for getting counts for smart lists.
+     */
+    private final Realm realm;
+    /**
      * Actual gesture detector implementation used to create {@link #gestureDetector}.
      */
     private final CardGestureDetector detectorImpl;
@@ -62,11 +68,13 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
     /**
      * Create a new {@link BookListCardAdapter}.
      * @param activity     Context.
+     * @param realm        Instance of Realm.
      * @param realmResults Results of a Realm query to display.
      */
-    public BookListCardAdapter(Activity activity, RealmResults<RBookList> realmResults) {
+    public BookListCardAdapter(Activity activity, Realm realm, RealmResults<RBookList> realmResults) {
         super(activity, realmResults);
         this.activity = activity;
+        this.realm = realm;
         this.detectorImpl = new CardGestureDetector();
         this.gestureDetector = new GestureDetectorCompat(activity, detectorImpl);
     }
@@ -162,18 +170,30 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
 
         // Set list name.
         vh.tvListName.setText(bookList.name);
+
+        // Set list count.
+        int count = -1;
+        if (!bookList.isSmartList) count = bookList.listItems.size();
+        else if (bookList.smartListRuqString != null && !bookList.smartListRuqString.isEmpty())
+            count = new RealmUserQuery(bookList.smartListRuqString).execute(realm).size();
+
+        vh.tvListCount.setText(count == -1 ? activity.getString(R.string.not_set_up) : // "Not Set Up" if -1.
+                (count == 0 ? activity.getString(R.string.no_books) : // "No Books" if 0.
+                        Minerva.get().getQString(R.plurals.list_count, count, count))); // "# Book(s)" otherwise.
     }
 
     /**
      * BookListCardVH class.
      */
-    class BookListCardVH extends RecyclerView.ViewHolder {
+    static class BookListCardVH extends RecyclerView.ViewHolder {
         @BindView(R.id.card)
         CardView cardView;
         @BindView(R.id.content)
-        public LinearLayout content;
+        public RelativeLayout content;
         @BindView(R.id.list_name)
         TextView tvListName;
+        @BindView(R.id.list_count)
+        TextView tvListCount;
         @BindView(R.id.smart_list_icon)
         ImageButton btnSmartIcon;
         @BindView(R.id.btn_actions)

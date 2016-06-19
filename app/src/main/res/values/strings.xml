@@ -251,6 +251,8 @@
         <item quantity="one">%1$d Book</item>
         <item quantity="other">%1$d Books</item>
     </plurals>
+    <string name="no_books">No Books</string>
+    <string name="not_set_up">Not Set Up</string>
 
     <!-- Smart Lists -->
     <string name="action_new_smart_list">New Smart List</string>

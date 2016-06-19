@@ -143,7 +143,7 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
         // Get lists, then create and bind the adapter.
         lists = realm.where(RBookList.class)
                      .findAllSorted("sortName");
-        adapter = new BookListCardAdapter(getActivity(), lists);
+        adapter = new BookListCardAdapter(getActivity(), realm, lists);
         recyclerView.setFastScrollHandleStateListener(this);
         recyclerView.setAdapter(adapter);
     }
@@ -395,8 +395,11 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
                     RBookList smartList = lists.where()
                                                .equalTo("uniqueId", data.getLongExtra(C.UNIQUE_ID, -1))
                                                .findFirst();
-                    if (smartList != null) ActionHelper.updateSmartList(realm, smartList,
-                            ((RealmUserQuery) data.getParcelableExtra(C.RUQ)).toRuqString());
+                    if (smartList != null && data.getBooleanExtra(C.HAS_CHANGED, false)) {
+                        ActionHelper.updateSmartList(realm, smartList,
+                                ((RealmUserQuery) data.getParcelableExtra(C.RUQ)).toRuqString());
+                        adapter.notifyItemChanged(lists.indexOf(smartList));
+                    }
                 }
                 break;
         }
