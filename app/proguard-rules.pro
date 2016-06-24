@@ -58,7 +58,7 @@
 -keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
   **[] $VALUES;
   public *;
-}w
+}
 
 # Realm
 -keep class com.bkromhout.minerva.realm.** { *; }
