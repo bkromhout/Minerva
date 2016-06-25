@@ -81,12 +81,12 @@ dependencies {
     compile 'com.github.bkromhout:java-diff-utils:2.1.0'
     compile 'org.greenrobot:eventbus:3.0.0'
     apt 'org.greenrobot:eventbus-annotation-processor:3.0.1'
-    compile 'com.jakewharton:butterknife:8.0.1'
-    apt 'com.jakewharton:butterknife-compiler:8.0.1'
+    compile 'com.jakewharton:butterknife:8.1.0'
+    apt 'com.jakewharton:butterknife-compiler:8.1.0'
     compile 'com.jakewharton.timber:timber:4.1.2'
 
-    compile 'io.reactivex:rxjava:1.1.5'
-    compile 'io.reactivex:rxandroid:1.2.0'
+    compile 'io.reactivex:rxjava:1.1.6'
+    compile 'io.reactivex:rxandroid:1.2.1'
     compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
     compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7:0.4.0'
 
@@ -96,13 +96,7 @@ dependencies {
     compile 'com.karumi:dexter:2.2.2' // TODO Get rid of in favor of doing it ourselves.
     compile 'com.afollestad.material-dialogs:core:0.8.6.0'
     compile 'com.afollestad.material-dialogs:commons:0.8.6.0'
-//    compile('com.github.afollestad.material-dialogs:core:0.8.6.0@aar') {
-//        transitive = true
-//    }
-//    compile('com.github.afollestad.material-dialogs:commons:0.8.6.0@aar') {
-//        transitive = true
-//    }
-    compile('com.mikepenz:aboutlibraries:5.6.6@aar') {
+    compile('com.mikepenz:aboutlibraries:5.6.8@aar') {
         transitive = true
     }
 
@@ -112,8 +106,6 @@ dependencies {
     apt 'com.bkromhout.ruqus:ruqus-compiler:1.2.2'
     compile ('com.bkromhout.ruqus:ruqus-core:1.2.2@aar') {
         transitive = true
-        // TODO Currently having issues resolving commons for the latest dialogs, so we'll ignore it for now.
-        exclude group: 'com.afollestad.material-dialogs'
     }
 
     compile(project(':epublib')) {
