@@ -389,6 +389,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
             mode.setTitle(R.string.title_reorder_mode);
             adapter.setDragMode(true);
         }
+        adapter.setSelectionMode(true);
         // Change status bar color to be dark to correspond to dark toolbar color.
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.grey900));
         return true;
@@ -404,6 +405,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
     public void onDestroyActionMode(ActionMode mode) {
         // Set status bar color back to normal.
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        adapter.setSelectionMode(false);
         if (!isReorderMode) {
             adapter.clearSelections();
         } else {

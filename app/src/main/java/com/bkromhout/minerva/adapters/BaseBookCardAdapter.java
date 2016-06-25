@@ -55,6 +55,11 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
      * Whether or not this adapter may allow item dragging to start.
      */
     private boolean mayStartDrags = false;
+    /**
+     * Whether or not we're currently in selection mode. It's necessary for us to track this here so that we can block
+     * button clicks as when the value is {@code true}.
+     */
+    private boolean inSelectionMode = false;
 
     public BaseBookCardAdapter(Activity activity, RealmResults<T> realmResults) {
         this(activity, realmResults, true);
@@ -65,6 +70,15 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
         this.activity = activity;
         this.addFooterView = addFooterView;
         setHasStableIds(true);
+    }
+
+    /**
+     * Set whether or not the adapter should consider itself to be in selection mode. This is necessary to determine
+     * what should be done when a card is tapped.
+     * @param enabled Whether or not to enable selection mode.
+     */
+    public void setSelectionMode(boolean enabled) {
+        this.inSelectionMode = enabled;
     }
 
     @Override
@@ -132,6 +146,10 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
 
         // Set info button click handler.
         vh.btnInfo.setOnClickListener(view -> {
+            if (inSelectionMode) {
+                toggleSelected(viewHolder.getAdapterPosition());
+                return;
+            }
             if (vh instanceof NormalCardVH) {
                 ImageView coverImage = ((NormalCardVH) vh).ivCoverImage;
                 //noinspection unchecked

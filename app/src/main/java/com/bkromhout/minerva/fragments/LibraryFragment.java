@@ -281,6 +281,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
         mode.getMenuInflater().inflate(R.menu.library_action_mode, menu);
+        adapter.setSelectionMode(true);
         // Change status bar color to be dark to correspond to dark toolbar color.
         getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getActivity(), R.color.grey900));
         return true;
@@ -294,6 +295,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
 
     @Override
     public void onDestroyActionMode(ActionMode mode) {
+        adapter.setSelectionMode(false);
         // Set status bar color back to normal.
         getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark));
         adapter.clearSelections();
