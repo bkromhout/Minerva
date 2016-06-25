@@ -41,4 +41,6 @@ keystore.properties
 # Proguard
 proguard/
 mapping.txt
+
 /realm_files/
+/app/fabric.properties
