@@ -149,6 +149,10 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
 
         // Set up btnActions so that it displays a popup menu.
         vh.btnActions.setOnClickListener(view -> {
+            if (inSelectionMode) {
+                toggleSelected(viewHolder.getAdapterPosition());
+                return;
+            }
             PopupMenu menu = new PopupMenu(view.getContext(), view);
             menu.getMenuInflater().inflate(!bookList.isSmartList ? R.menu.book_list_card_actions
                     : R.menu.book_list_smart_card_actions, menu.getMenu());
