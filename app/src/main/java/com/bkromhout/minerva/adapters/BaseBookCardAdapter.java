@@ -134,13 +134,13 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
 
         // Set card click handler.
         vh.content.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
-                BookCardClickEvent.Type.NORMAL, book.relPath, vh.getAdapterPosition())));
+                BookCardClickEvent.Type.NORMAL, book.relPath, vh.getAdapterPosition(), vh.getLayoutPosition())));
 
         // Set card long click handler.
         vh.content.setOnLongClickListener(v -> {
             if (mayStartDrags) startDragging(vh);
             else EventBus.getDefault().post(new BookCardClickEvent(BookCardClickEvent.Type.LONG, book.relPath,
-                    vh.getAdapterPosition()));
+                    vh.getAdapterPosition(), vh.getLayoutPosition()));
             return true;
         });
 
@@ -170,7 +170,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
 
         // Do bindings for the rest of the view holder based on its real type.
         if (vh instanceof CompactCardVH) bindCompactBookCard((CompactCardVH) vh, book);
-        else if (vh instanceof NoCoverCardVH) bindNoCoverBookCard((NoCoverCardVH) vh, position, book);
+        else if (vh instanceof NoCoverCardVH) bindNoCoverBookCard((NoCoverCardVH) vh, book);
         if (vh instanceof NormalCardVH) bindNormalBookCard((NormalCardVH) vh, book);
 
         // If we have an RBookListItem, store its key on the CardView.
@@ -190,13 +190,13 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
     /**
      * Bind a {@link NoCoverCardVH}. (This would be called for normal book cards as well.)
      * @param resolvedVH No-cover book card view holder.
-     * @param position   Item position.
      * @param book       Book to populate item with.
      */
-    private void bindNoCoverBookCard(NoCoverCardVH resolvedVH, int position, RBook book) {
+    private void bindNoCoverBookCard(NoCoverCardVH resolvedVH, RBook book) {
         // Set quick tag button handler.
         resolvedVH.btnQuickTag.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
-                BookCardClickEvent.Type.QUICK_TAG, book.relPath, position)));
+                BookCardClickEvent.Type.QUICK_TAG, book.relPath, resolvedVH.getAdapterPosition(),
+                resolvedVH.getLayoutPosition())));
 
         // Fill in data.
         resolvedVH.tvDesc.setText(DataUtils.stripHtmlTags(book.desc)); // Strip HTML tags since we have limited space.

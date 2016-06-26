@@ -426,8 +426,8 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
         RBook book = books.where().equalTo("relPath", event.getRelPath()).findFirst();
 
         if (actionMode != null) {
-            if (event.getType() == BookCardClickEvent.Type.LONG) adapter.extendSelectionTo(event.getPosition());
-            else adapter.toggleSelected(event.getPosition());
+            if (event.getType() == BookCardClickEvent.Type.LONG) adapter.extendSelectionTo(event.getAdapterPosition());
+            else adapter.toggleSelected(event.getAdapterPosition());
             return;
         }
         // Do something based on the click type.
@@ -438,7 +438,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
                 break;
             case LONG:
                 // Start multi-select.
-                adapter.toggleSelected(event.getPosition());
+                adapter.toggleSelected(event.getAdapterPosition());
                 startActionMode();
                 break;
             case QUICK_TAG:

@@ -79,6 +79,11 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
      * Action mode.
      */
     private static ActionMode actionMode;
+    /**
+     * If not set to {@code -1} when {@link #onResume()} is called, will cause the card whose position is equal to this
+     * value to be moved to the top.
+     */
+    private int moveToTop = -1;
 
     public RecentFragment() {
         // Required empty public constructor
@@ -168,6 +173,10 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
     public void onResume() {
         super.onResume();
         SnackKiosk.startSnacking(this);
+        if (moveToTop != -1) {
+            adapter.notifyItemMoved(moveToTop, 0);
+            moveToTop = -1;
+        }
     }
 
     @Override
@@ -312,6 +321,10 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
             case R.id.action_rate:
                 ActionHelper.rateBooks(realm, selectedItems, (Integer) event.getData());
                 break;
+            case R.id.action_read:
+                // Save the position to update so we can refresh the list correctly when resuming.
+                this.moveToTop = event.getPosToUpdate();
+                break;
             case R.id.action_mark_as:
                 int whichMark = (int) event.getData();
                 ActionHelper.markBooks(selectedItems, whichMark < 2 ? MarkType.NEW : MarkType.UPDATED,
@@ -375,19 +388,19 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
         RBook book = books.where().equalTo("relPath", event.getRelPath()).findFirst();
 
         if (actionMode != null) {
-            if (event.getType() == BookCardClickEvent.Type.LONG) adapter.extendSelectionTo(event.getPosition());
-            else adapter.toggleSelected(event.getPosition());
+            if (event.getType() == BookCardClickEvent.Type.LONG) adapter.extendSelectionTo(event.getAdapterPosition());
+            else adapter.toggleSelected(event.getAdapterPosition());
             return;
         }
         // Do something based on the click type.
         switch (event.getType()) {
             case NORMAL:
                 // Open the book file.
-                ActionHelper.openBookUsingIntent(book);
+                ActionHelper.openBookUsingIntent(book, event.getLayoutPosition());
                 break;
             case LONG:
                 // Start multi-select.
-                adapter.toggleSelected(event.getPosition());
+                adapter.toggleSelected(event.getAdapterPosition());
                 startActionMode();
                 break;
             case QUICK_TAG:

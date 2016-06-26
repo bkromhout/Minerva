@@ -11,6 +11,7 @@ import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.activities.TaggingActivity.TaggingHelper;
 import com.bkromhout.minerva.enums.MarkType;
+import com.bkromhout.minerva.events.ActionEvent;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RBookList;
 import com.bkromhout.minerva.realm.RBookListItem;
@@ -20,6 +21,7 @@ import com.bkromhout.minerva.util.Util;
 import com.bkromhout.ruqus.RealmUserQuery;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.util.*;
@@ -274,9 +276,20 @@ public class ActionHelper {
      * @param book Book to open.
      */
     public static void openBookUsingIntent(RBook book) {
+        openBookUsingIntent(book, -1);
+    }
+
+    /**
+     * Open the book's real file in an application which will allow the user to read it. This will also put the book at
+     * the top of the recents list.
+     * @param book        Book to open.
+     * @param posToUpdate If not {@code -1}, then an {@link com.bkromhout.minerva.events.ActionEvent} will be fired
+     *                    after the external app is called.
+     */
+    public static void openBookUsingIntent(RBook book, int posToUpdate) {
         if (!Util.checkForStoragePermAndFireEventIfNeeded(R.id.action_execute_deferred)) {
             //Defer this action while we ask for permission.
-            setDeferredAction(params -> openBookUsingIntent((RBook) params[0]), book);
+            setDeferredAction(params -> openBookUsingIntent((RBook) params[0], (int) params[1]), book, posToUpdate);
             return;
         }
         File file = Util.getFileFromRelPath(book.relPath);
@@ -300,6 +313,8 @@ public class ActionHelper {
                 book.lastReadDate = Calendar.getInstance().getTime();
                 book.isInRecents = true;
             });
+            // If we have a position to update, fire an ActionEvent (NOT UpdatePosEvent!!).
+            if (posToUpdate != -1) EventBus.getDefault().post(new ActionEvent(R.id.action_read, null, posToUpdate));
         } catch (ActivityNotFoundException e) {
             // Tell the user there aren't any apps which advertise the ability to handle the book's file type.
             SnackKiosk.snack(R.string.sb_err_no_apps, R.string.dismiss, Snackbar.LENGTH_LONG);

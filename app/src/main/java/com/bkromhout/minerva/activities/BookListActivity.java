@@ -719,8 +719,8 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
         else throw new IllegalArgumentException("Invalid adapter type.");
 
         if (actionMode != null) {
-            if (event.getType() == BookCardClickEvent.Type.LONG) adapter.extendSelectionTo(event.getPosition());
-            else adapter.toggleSelected(event.getPosition());
+            if (event.getType() == BookCardClickEvent.Type.LONG) adapter.extendSelectionTo(event.getAdapterPosition());
+            else adapter.toggleSelected(event.getAdapterPosition());
             return;
         }
         // Do something based on the click type.
@@ -731,7 +731,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 break;
             case LONG:
                 // Start multi-select.
-                adapter.toggleSelected(event.getPosition());
+                adapter.toggleSelected(event.getAdapterPosition());
                 startActionMode();
                 break;
             case QUICK_TAG:

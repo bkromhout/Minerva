@@ -23,19 +23,25 @@ public class BookCardClickEvent {
     /**
      * The position of the clicked view.
      */
-    private final int position;
+    private final int adapterPosition;
+    /**
+     * The layout position of the clicked view.
+     */
+    private final int layoutPosition;
 
     /**
      * Create a new {@link BookCardClickEvent}.
-     * @param type     Type of click.
-     * @param relPath  The value of {@link com.bkromhout.minerva.realm.RBook#relPath relPath} for the view's
-     *                 corresponding {@link com.bkromhout.minerva.realm.RBook}
-     * @param position The position of the clicked view in the adapter.
+     * @param type            Type of click.
+     * @param relPath         The value of {@link com.bkromhout.minerva.realm.RBook#relPath relPath} for the view's
+     *                        corresponding {@link com.bkromhout.minerva.realm.RBook}
+     * @param adapterPosition The adapter position of the clicked view.
+     * @param layoutPosition  The layout position of the clicked view.
      */
-    public BookCardClickEvent(Type type, String relPath, int position) {
+    public BookCardClickEvent(Type type, String relPath, int adapterPosition, int layoutPosition) {
         this.type = type;
         this.relPath = relPath;
-        this.position = position;
+        this.adapterPosition = adapterPosition;
+        this.layoutPosition = layoutPosition;
     }
 
     /**
@@ -55,10 +61,18 @@ public class BookCardClickEvent {
     }
 
     /**
-     * Get the position of the clicked item in the adapter.
-     * @return Clicked item position.
+     * Get the adapter position of the clicked item.
+     * @return Item adapter position.
      */
-    public int getPosition() {
-        return position;
+    public int getAdapterPosition() {
+        return adapterPosition;
+    }
+
+    /**
+     * Get the layout position of the clicked item.
+     * @return Item layout position.
+     */
+    public int getLayoutPosition() {
+        return layoutPosition;
     }
 }
