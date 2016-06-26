@@ -150,6 +150,16 @@ public class Minerva extends Application {
     private void initUsingRealm(Realm realm) {
         // Initialize default unique ID factory.
         UniqueIdFactory.getInstance().initializeDefault(realm);
+
+        // Ensure that the tags used for New and Updated books still exist (they may not if we did a DB restore).
+        RTag tag = realm.where(RTag.class)
+                        .equalTo("name", prefs.getNewBookTag(getString(R.string.default_new_book_tag)))
+                        .findFirst();
+        if (tag == null) prefs.putNewBookTag(null);
+        tag = realm.where(RTag.class)
+                   .equalTo("name", prefs.getUpdatedBookTag(getString(R.string.default_updated_book_tag)))
+                   .findFirst();
+        if (tag == null) prefs.putUpdatedBookTag(null);
     }
 
     /**
