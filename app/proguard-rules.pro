@@ -24,6 +24,16 @@
     void setOptionalIconsVisible(boolean);
 }
 
+# Support Lib Exclusions
+-keep class android.support.v7.widget.SearchView {
+   public <init>(android.content.Context);
+   public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep interface android.support.v7.widget.SearchView {
+   public <init>(android.content.Context);
+   public <init>(android.content.Context, android.util.AttributeSet);
+}
+
 # AboutLibraries
 -keep class .R
 -keep class **.R$* {
