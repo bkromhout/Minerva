@@ -8,7 +8,6 @@ import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.enums.MarkType;
 import com.bkromhout.minerva.realm.RBook;
 import com.bkromhout.minerva.realm.RTag;
-import com.bkromhout.minerva.rx.RxFileWalker;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
 import io.realm.Realm;
@@ -24,10 +23,7 @@ import rx.subjects.Subject;
 import timber.log.Timber;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Handles all importing.
@@ -44,7 +40,7 @@ public class Importer {
     /**
      * File extensions which we support importing.
      */
-    public static final List<String> VALID_EXTENSIONS = Collections.singletonList("epub");
+    private static final List<String> VALID_EXTENSIONS = Collections.singletonList("epub");
 
     /**
      * Implemented by classes which wish to listen to events from the importer.
@@ -145,6 +141,10 @@ public class Importer {
      */
     private Queue<RBook> bookQueue;
     /**
+     * List of relative paths for which we didn't find files during re-import.
+     */
+    private List<String> invalidReImportPaths;
+    /**
      * Instance of Realm.
      */
     private Realm realm;
@@ -183,6 +183,7 @@ public class Importer {
         this.numTotal = 0;
         this.currRun = null;
         this.bookQueue = new LinkedList<>();
+        this.invalidReImportPaths = new ArrayList<>();
         this.queuedRuns = new LinkedList<>();
 
         // Set our state to READY.
@@ -344,8 +345,11 @@ public class Importer {
                 .doOnUnsubscribe(() -> fileResolverSubscription = null)
                 .map(relPath -> {
                     File file = Util.getFileFromRelPath(currDir, relPath);
-                    if (file == null) logger.error(Minerva.get().getString(R.string.ril_err_getting_file,
-                            currDir.getAbsolutePath() + relPath));
+                    if (file == null) {
+                        logger.error(Minerva.get().getString(R.string.ril_err_getting_file,
+                                currDir.getAbsolutePath() + relPath));
+                        invalidReImportPaths.add(relPath);
+                    }
                     return file;
                 })
                 .filter(file -> file != null)
@@ -378,6 +382,21 @@ public class Importer {
         if (fileResolverSubscription != null) {
             fileResolverSubscription.unsubscribe();
             fileResolverSubscription = null;
+        }
+
+        // Make sure that any RBooks which have invalid relative paths don't indicate they have cover images.
+        if (!invalidReImportPaths.isEmpty()) {
+            realm = Realm.getDefaultInstance();
+            realm.executeTransactionAsync(tRealm -> {
+                for (String relPath : invalidReImportPaths) {
+                    RBook book = tRealm.where(RBook.class)
+                                       .equalTo("relPath", relPath)
+                                       .equalTo("hasCoverImage", true)
+                                       .findFirst();
+                    if (book != null) book.hasCoverImage = false;
+                }
+            });
+            realm.close();
         }
 
         // Check file list.
@@ -681,6 +700,7 @@ public class Importer {
         numTotal = 0;
         currRun = null;
         bookQueue = new LinkedList<>();
+        invalidReImportPaths = new ArrayList<>();
 
         // Close the log, then inform the listener that we're ready again.
         logger.finishCurrentLog(wasSuccess);

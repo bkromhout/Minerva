@@ -43,8 +43,9 @@ public enum DBRestoreState {
      */
     ROLLBACK,
     /**
-     * State entered when we know that our restore was successful, and we wish to delete the temporary copy which we
-     * made at the start of the process.
+     * State entered when we know that our restore was successful. In this stage we delete the temporary copy of the DB
+     * which we made at the start of the process, and then perform a number of validations to ensure that our app's
+     * other data is in sync with the state of the Realm.
      */
     COMPLETING
 }

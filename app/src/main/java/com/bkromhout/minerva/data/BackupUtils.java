@@ -9,6 +9,8 @@ import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.enums.DBRestoreState;
+import com.bkromhout.minerva.realm.RBook;
+import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -30,7 +32,6 @@ import java.util.Locale;
 public class BackupUtils {
     private static final String BACKUP_PATH = "/Minerva/";
     public static final String DB_BACKUP_EXT = ".minervaDB";
-    private static final String SETTINGS_BACKUP_EXT = ".minervaSettings";
     private static final String RESTORE_NAME = "restore.realm";
     private static final String TEMP_NAME = "temp.realm";
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH_mm_ss", Locale.US);
@@ -242,11 +243,34 @@ public class BackupUtils {
         File tempDb = new File(Minerva.get().getFilesDir(), TEMP_NAME);
         if (tempDb.exists()) //noinspection ResultOfMethodCallIgnored
             tempDb.delete();
+    }
 
+    /**
+     * Validate various areas of our app's data which aren't stored in the DB to verify that we're fully in sync with
+     * the state of the Realm. This is necessary since the "state of the world" outside of the DB may have changed since
+     * the backup was made.
+     * @param realm An instance of Realm to use.
+     * @param prefs An instance of {@link Prefs} to use.
+     */
+    public static synchronized void doPostRestoreValidations(Realm realm, Prefs prefs) {
+        if (dbRestoreState != DBRestoreState.COMPLETING) return;
         // Check to see if this was a restore from the welcome screen, and if it was then go ahead and fake like
         // we've done the initial import so it won't be shown again.
-        Prefs prefs = Minerva.prefs();
         if (!prefs.hasFirstImportBeenTriggered()) prefs.setFirstImportTriggered();
+
+        // Ensure that the tags used for New and Updated books still exist (they may not if we did a DB restore).
+        RTag tag = realm.where(RTag.class)
+                        .equalTo("name", prefs.getNewBookTag(Minerva.get().getString(R.string.default_new_book_tag)))
+                        .findFirst();
+        if (tag == null) prefs.putNewBookTag(null);
+        tag = realm.where(RTag.class)
+                   .equalTo("name", prefs.getUpdatedBookTag(Minerva.get().getString(R.string.default_updated_book_tag)))
+                   .findFirst();
+        if (tag == null) prefs.putUpdatedBookTag(null);
+
+        // Sync up our local cover files with the books in the DB which indicate they have covers. We can do this
+        // easily by trying to re-import all books which currently indicate they have cover images.
+        Importer.get().queueReImport(realm.where(RBook.class).equalTo("hasCoverImage", true).findAll());
 
         // Notify user of successful database restoration.
         SnackKiosk.snack(R.string.sb_db_restore_success, Snackbar.LENGTH_SHORT);

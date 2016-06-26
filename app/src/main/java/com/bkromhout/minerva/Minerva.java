@@ -95,17 +95,21 @@ public class Minerva extends Application {
         // Do init that requires Realm. This also serves the purpose of allowing us to check and see if a DB restore
         // was successful (if one was performed).
         try (Realm realm = Realm.getDefaultInstance()) {
-            initUsingRealm(realm);
-            // We got through realm initialization, so we're good to delete the temporary Realm file that might exist
+            // Initialize default unique ID factory.
+            UniqueIdFactory.getInstance().initializeDefault(realm);
+            // We got through Realm initialization, so we're good to delete the temporary Realm file that might exist
             // if we just restored the Realm.
             BackupUtils.removeTempRealmFile();
+            // Validate a few things now that we've successfully restored the Realm DB.
+            BackupUtils.doPostRestoreValidations(realm, prefs);
         } catch (RealmIOException e) {
             // We failed to open the restored Realm file, so try to roll back the changes.
             BackupUtils.rollBackFromDBRestore();
 
             // Try to do init again. If this still fails...well, I'm not really sure to be honest :(
             try (Realm realm = Realm.getDefaultInstance()) {
-                initUsingRealm(realm);
+                // Initialize default unique ID factory.
+                UniqueIdFactory.getInstance().initializeDefault(realm);
             }
         }
 
@@ -141,25 +145,6 @@ public class Minerva extends Application {
         realm.copyToRealm(Arrays.asList(
                 new RTag(getString(R.string.default_new_book_tag), d.DEFAULT_TAG_TEXT_COLOR, newBgColor),
                 new RTag(getString(R.string.default_updated_book_tag), d.DEFAULT_TAG_TEXT_COLOR, updatedBgColor)));
-    }
-
-    /**
-     * Do initialization steps which require Realm.
-     * @param realm Instance of Realm.
-     */
-    private void initUsingRealm(Realm realm) {
-        // Initialize default unique ID factory.
-        UniqueIdFactory.getInstance().initializeDefault(realm);
-
-        // Ensure that the tags used for New and Updated books still exist (they may not if we did a DB restore).
-        RTag tag = realm.where(RTag.class)
-                        .equalTo("name", prefs.getNewBookTag(getString(R.string.default_new_book_tag)))
-                        .findFirst();
-        if (tag == null) prefs.putNewBookTag(null);
-        tag = realm.where(RTag.class)
-                   .equalTo("name", prefs.getUpdatedBookTag(getString(R.string.default_updated_book_tag)))
-                   .findFirst();
-        if (tag == null) prefs.putUpdatedBookTag(null);
     }
 
     /**
