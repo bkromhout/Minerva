@@ -134,7 +134,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
 
         // Set card click handler.
         vh.content.setOnClickListener(view -> EventBus.getDefault().post(new BookCardClickEvent(
-                BookCardClickEvent.Type.NORMAL, book.relPath, position)));
+                BookCardClickEvent.Type.NORMAL, book.relPath, vh.getAdapterPosition())));
 
         // Set card long click handler.
         vh.content.setOnLongClickListener(v -> {
@@ -146,6 +146,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
 
         // Set info button click handler.
         vh.btnInfo.setOnClickListener(view -> {
+            if (mayStartDrags) return;
             if (inSelectionMode) {
                 toggleSelected(viewHolder.getAdapterPosition());
                 return;
