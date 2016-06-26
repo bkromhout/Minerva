@@ -16,15 +16,16 @@ public class Prefs {
      */
     // General
     private static final String FIRST_TIME_INIT = "first_time_init_done";
-    private final static String CURR_FRAG = "current_fragment";
+    private static final String CURR_FRAG = "current_fragment";
+    private static final String RATE_ME_COUNT_DOWN = "rate_me_count_down";
     // Settings
     public static String LIB_DIR = Minerva.get().getString(R.string.key_lib_dir);
     private static String LIB_AUTO_IMPORT = Minerva.get().getString(R.string.key_auto_import);
     public static String NEW_BOOK_TAG = Minerva.get().getString(R.string.key_new_tag);
     public static String UPDATED_BOOK_TAG = Minerva.get().getString(R.string.key_updated_tag);
     // Importing
-    private final static String LAST_IMPORT_SUCCESS_TIME = "most_recent_import_success";
-    private final static String FIRST_IMPORT_TRIGGERED = "first_import_triggered";
+    private static final String LAST_IMPORT_SUCCESS_TIME = "most_recent_import_success";
+    private static final String FIRST_IMPORT_TRIGGERED = "first_import_triggered";
     // Recents
     public static final String RECENTS_CARD_TYPE = "recents_card_type";
     // Library
@@ -35,6 +36,12 @@ public class Prefs {
     public static final String LIST_CARD_TYPE = "list_card_type";
     // Power Search
     public static final String POWER_SEARCH_CARD_TYPE = "power_search_card_type";
+
+    /*
+     * Other Constants.
+     */
+    private static final int RATE_ME_INITIAL = 7;
+    private static final int NEVER_RATE_ME = -1;
 
     /**
      * Shared Preferences.
@@ -81,6 +88,34 @@ public class Prefs {
      */
     public void putCurrFrag(MainFrag currFrag) {
         prefs.edit().putInt(CURR_FRAG, currFrag.getIndex()).apply();
+    }
+
+    /**
+     * Check to see if we should show a "Rate Minerva" dialog. If this returns false, it'll also decrement the current
+     * countdown, which starts at {@link #RATE_ME_INITIAL}.
+     * @return False if {@link #hasFirstImportBeenTriggered()} returns {@code false} or if the current value stored for
+     * {@link #RATE_ME_COUNT_DOWN} isn't 0 (in which case it will be decremented. True otherwise.
+     */
+    public boolean shouldShowRateMeDialog() {
+        if (!hasFirstImportBeenTriggered()) return false;
+        int countDown = prefs.getInt(RATE_ME_COUNT_DOWN, RATE_ME_INITIAL);
+        if (countDown == 0) return true;
+        prefs.edit().putInt(RATE_ME_COUNT_DOWN, countDown - 1).apply();
+        return false;
+    }
+
+    /**
+     * Reset the value stored for {@link #RATE_ME_COUNT_DOWN} back to {@link #RATE_ME_INITIAL}.
+     */
+    public void resetRateMeCountDown() {
+        prefs.edit().putInt(RATE_ME_COUNT_DOWN, RATE_ME_INITIAL).apply();
+    }
+
+    /**
+     * Set the value stored for {@link #RATE_ME_COUNT_DOWN} to {@link #NEVER_RATE_ME}.
+     */
+    public void setNeverShowRateMe() {
+        prefs.edit().putInt(RATE_ME_COUNT_DOWN, NEVER_RATE_ME).apply();
     }
 
     /*

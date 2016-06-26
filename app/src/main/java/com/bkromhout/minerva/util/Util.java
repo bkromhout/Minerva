@@ -103,6 +103,14 @@ public class Util {
     }
 
     /**
+     * Opens Minerva's page on the Google Play Store.
+     */
+    public static void openPlayStorePage() {
+        Minerva.get().startActivity(new Intent(Intent.ACTION_VIEW)
+                .setData(Uri.parse("market://details?id=com.bkromhout.minerva")));
+    }
+
+    /**
      * Checks to see if the app currently holds the WRITE_EXTERNAL_STORAGE permission, and fires a {@link
      * MissingPermEvent} if it doesn't.
      * @param actionId ID of the action to take if we're granted the storage permission after asking for it.

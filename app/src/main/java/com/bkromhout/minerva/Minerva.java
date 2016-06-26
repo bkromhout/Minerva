@@ -13,6 +13,7 @@ import android.support.v4.content.ContextCompat;
 import com.bkromhout.minerva.data.BackupUtils;
 import com.bkromhout.minerva.data.Importer;
 import com.bkromhout.minerva.data.UniqueIdFactory;
+import com.bkromhout.minerva.events.ShowRateMeDialogEvent;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.util.CrashlyticsTree;
 import com.bkromhout.ruqus.Ruqus;
@@ -115,6 +116,9 @@ public class Minerva extends Application {
 
         // Trigger auto-import if needed.
         if (prefs.isLibAutoImport(false)) Importer.get().queueFullImport();
+
+        // Send event to have MainActivity trigger "Rate Minerva" dialog if need be.
+        if (prefs.shouldShowRateMeDialog()) EventBus.getDefault().postSticky(new ShowRateMeDialogEvent());
     }
 
     /**

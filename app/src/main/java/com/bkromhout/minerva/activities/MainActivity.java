@@ -21,10 +21,12 @@ import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.enums.MainFrag;
+import com.bkromhout.minerva.events.ShowRateMeDialogEvent;
 import com.bkromhout.minerva.fragments.AllListsFragment;
 import com.bkromhout.minerva.fragments.LibraryFragment;
 import com.bkromhout.minerva.fragments.PowerSearchFragment;
 import com.bkromhout.minerva.fragments.RecentFragment;
+import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import io.realm.Realm;
 import org.greenrobot.eventbus.EventBus;
@@ -148,6 +150,14 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
         super.onPostCreate(savedInstanceState);
         // Sync drawer toggle.
         drawerToggle.syncState();
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        // Show the "Rate Minerva" dialog if a sticky event is present for it.
+        if (EventBus.getDefault().removeStickyEvent(ShowRateMeDialogEvent.class) != null)
+            Dialogs.rateMinervaDialog(this);
     }
 
     @Override

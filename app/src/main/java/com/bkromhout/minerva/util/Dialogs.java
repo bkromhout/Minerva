@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
@@ -264,7 +265,8 @@ public class Dialogs {
         // Build base dialog.
         MaterialDialog.Builder builder = new MaterialDialog.Builder(ctx)
                 .title(title)
-                .content(queryString != null && !queryString.isEmpty() ? queryString : Minerva.get().getString(emptyText))
+                .content(queryString != null && !queryString.isEmpty() ? queryString :
+                        Minerva.get().getString(emptyText))
                 .positiveText(R.string.dismiss);
         // Conditionally show the "Open Query Builder" button.
         if (showBuilderBtn) builder.neutralText(R.string.action_open_query_builder)
@@ -272,5 +274,29 @@ public class Dialogs {
                                            new ActionEvent(R.id.action_open_query_builder, null, posToUpdate)));
         // Show the dialog.
         builder.show();
+    }
+
+    /**
+     * Show a dialog asking the user if they are willing to rate Minerva on the Google Play Store. No incentives or
+     * anything, just a request.
+     * @param ctx Context to use.
+     */
+    public static void rateMinervaDialog(final Context ctx) {
+        new MaterialDialog.Builder(ctx)
+                .title(R.string.title_rate_minerva)
+                .content(R.string.prompt_rate_minerva)
+                .positiveColor(ContextCompat.getColor(ctx, R.color.colorAccent))
+                .positiveText(R.string.yes)
+                .negativeText(R.string.not_now)
+                .neutralText(R.string.never)
+                .onPositive((dialog, which) -> {
+                    Minerva.prefs().setNeverShowRateMe();
+                    Util.openPlayStorePage();
+                })
+                .onNegative(((dialog, which) -> Minerva.prefs().resetRateMeCountDown()))
+                .onNeutral(((dialog, which) -> Minerva.prefs().setNeverShowRateMe()))
+                .cancelable(false)
+                .canceledOnTouchOutside(false)
+                .show();
     }
 }

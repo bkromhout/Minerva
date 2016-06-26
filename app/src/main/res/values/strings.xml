@@ -46,6 +46,12 @@
         library folder, and to read and write backup files which will outlast un-installation.\n\nSince you permanently
         denied the Storage permission, you need to grant it from the App Info screen.</string>
 
+    <!-- Rate Me Dialog -->
+    <string name="title_rate_minerva">Rate Minerva</string>
+    <string name="prompt_rate_minerva">I hope you’re enjoying Minerva! Would you consider taking a minute to rate and
+        review it?
+        \n\nThank you :)
+        \n—Brenden Kromhout</string>
 
     <!-- ******************************** Action Strings (Alphabetical order). ******************************** -->
     <!-- Add To List -->
