@@ -1,4 +1,4 @@
-package com.bkromhout.minerva.rx;
+package com.bkromhout.minerva.data;
 
 import com.bkromhout.minerva.util.Util;
 import rx.Observable;
@@ -11,7 +11,7 @@ import java.util.List;
  * Recursively walks down from a given starting directory and emits File objects for any files whose extensions match
  * the given extensions.
  */
-public class RxFileWalker implements Observable.OnSubscribe<File> {
+class RxFileWalker implements Observable.OnSubscribe<File> {
     /**
      * Root File object to start walking at. Should be a directory.
      */
@@ -27,7 +27,7 @@ public class RxFileWalker implements Observable.OnSubscribe<File> {
      * @param root       The directory to start at.
      * @param extensions The extensions to limit which files to emit. If null, will emit all files.
      */
-    public RxFileWalker(File root, List<String> extensions) {
+    RxFileWalker(File root, List<String> extensions) {
         this.root = root;
         this.extensions = extensions;
     }
@@ -58,7 +58,7 @@ public class RxFileWalker implements Observable.OnSubscribe<File> {
      * @param root Directory to walk.
      * @param sub  The subscriber to emit Files to.
      */
-    public void walk(File root, Subscriber<? super File> sub) {
+    private void walk(File root, Subscriber<? super File> sub) {
         // Return ASAP if we have no subscribers.
         if (sub.isUnsubscribed()) return;
 
