@@ -8,13 +8,13 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
+import com.bkromhout.minerva.util.Util;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.aboutlibraries.ui.LibsSupportFragment;
 import timber.log.Timber;
@@ -25,8 +25,6 @@ import timber.log.Timber;
 public class AboutActivity extends AppCompatActivity {
     @BindView(R.id.about_app_version)
     TextView version;
-    @BindView(R.id.github)
-    ImageButton github;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +67,12 @@ public class AboutActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @OnClick(R.id.google_play)
+    void onGooglePlayLogoClicked() {
+        // Open Minerva's page on the Google Play Store.
+        Util.openPlayStorePage();
     }
 
     @OnClick(R.id.github)

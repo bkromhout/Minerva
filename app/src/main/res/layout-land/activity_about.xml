@@ -69,12 +69,25 @@
                     tools:text="{Dummy Version 0.0.0 (0)}"/>
 
             <ImageButton
-                    android:id="@+id/github"
-                    app:layout_heightPercent="18%"
+                    android:id="@+id/google_play"
+                    app:layout_heightPercent="20%"
                     app:layout_aspectRatio="100%"
-                    android:layout_centerHorizontal="true"
+                    app:layout_marginStartPercent="13%"
                     android:layout_below="@id/about_app_version"
-                    android:src="@drawable/github_logo"
+                    android:src="@drawable/logo_google_play"
+                    android:tint="@color/textColorPrimary"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="@string/acc_google_play_logo"
+                    style="@style/ImageButtonRippleBg"/>
+
+            <ImageButton
+                    android:id="@+id/github"
+                    app:layout_heightPercent="20%"
+                    app:layout_aspectRatio="100%"
+                    android:layout_below="@id/about_app_version"
+                    android:layout_toEndOf="@id/google_play"
+                    android:src="@drawable/logo_github"
                     android:tint="@color/textColorPrimary"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"
