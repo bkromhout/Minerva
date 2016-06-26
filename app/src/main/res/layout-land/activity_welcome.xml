@@ -103,6 +103,7 @@
                 android:id="@+id/first_import_prompt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textAlignment="center"
                 android:text="@string/first_time_import_prompt"
                 android:visibility="gone"
                 tools:visibility="visible"/>
@@ -120,6 +121,15 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:text="@string/start_full_import"
+                android:visibility="gone"
+                tools:visibility="visible"/>
+
+        <Button
+                android:id="@+id/restore_db_backup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/title_restore_db"
                 android:visibility="gone"
                 tools:visibility="visible"/>
     </LinearLayout>

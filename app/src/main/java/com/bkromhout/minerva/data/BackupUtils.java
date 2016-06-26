@@ -6,6 +6,7 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import com.bkromhout.minerva.Minerva;
+import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.enums.DBRestoreState;
 import com.bkromhout.minerva.ui.SnackKiosk;
@@ -241,6 +242,11 @@ public class BackupUtils {
         File tempDb = new File(Minerva.get().getFilesDir(), TEMP_NAME);
         if (tempDb.exists()) //noinspection ResultOfMethodCallIgnored
             tempDb.delete();
+
+        // Check to see if this was a restore from the welcome screen, and if it was then go ahead and fake like
+        // we've done the initial import so it won't be shown again.
+        Prefs prefs = Minerva.prefs();
+        if (!prefs.hasFirstImportBeenTriggered()) prefs.setFirstImportTriggered();
 
         // Notify user of successful database restoration.
         SnackKiosk.snack(R.string.sb_db_restore_success, Snackbar.LENGTH_SHORT);

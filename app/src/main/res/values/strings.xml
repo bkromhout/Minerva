@@ -103,7 +103,7 @@
     <string name="welcome_to">Welcome to</string>
     <string name="choose_library_dir_prompt">Choose your library folder</string>
     <string name="first_time_import_prompt">If you’re happy with your choice, Minerva can start importing books from
-        your library folder</string>
+        your library folder. Or, you can restore a backed up database.</string>
     <string name="lbl_folder">Folder</string>
     <string name="open_folder_chooser">Open Folder Chooser</string>
 
