@@ -135,7 +135,7 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
                     UiUtils.isPointInsideView(event.getX(), event.getY(), vh.btnSmartIcon))) return false;
 
             // If it isn't, have the gesture detector check it. This will return true if it was handled.
-            detectorImpl.setValuesToSend(bookList.uniqueId, position);
+            detectorImpl.setValuesToSend(bookList.uniqueId, vh.getAdapterPosition());
             return gestureDetector.onTouchEvent(event);
         });
 
