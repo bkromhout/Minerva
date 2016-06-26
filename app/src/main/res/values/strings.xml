@@ -400,7 +400,6 @@
     <string name="app_name_part">inerva</string>
     <string name="acc_app_icon">App Icon</string>
     <string name="version_string">Version %1$s (%2$d)</string>
-    <string name="acc_github_logo">GitHub Repository</string>
-    <string name="acc_google_play_logo">Google Play Store Page</string>
+    <string name="acc_github_logo">GitHub Logo</string>
 
 </resources>
