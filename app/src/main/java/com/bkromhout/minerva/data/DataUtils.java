@@ -3,6 +3,7 @@ package com.bkromhout.minerva.data;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
 import com.bkromhout.minerva.Minerva;
@@ -140,7 +141,10 @@ public class DataUtils {
      */
     public static Spanned toSpannedHtml(String s) {
         if (s == null || s.isEmpty()) return null;
-        return Html.fromHtml(s);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            return Html.fromHtml(s, Html.FROM_HTML_MODE_COMPACT);
+        else //noinspection deprecation
+            return Html.fromHtml(s);
     }
 
     /**
@@ -151,7 +155,10 @@ public class DataUtils {
      */
     public static String stripHtmlTags(String s) {
         if (s == null || s.isEmpty()) return null;
-        return Html.fromHtml(s).toString();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            return Html.fromHtml(s, Html.FROM_HTML_MODE_COMPACT).toString();
+        else //noinspection deprecation
+            return Html.fromHtml(s).toString();
     }
 
     /**
