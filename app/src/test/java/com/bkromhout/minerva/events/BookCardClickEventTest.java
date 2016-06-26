@@ -19,7 +19,7 @@ public class BookCardClickEventTest {
     @BeforeClass
     public static void setUp() {
         // Create events using constructors.
-        event = new BookCardClickEvent(BookCardClickEvent.Type.NORMAL, "/test/path", 5, vh.getLayoutPosition());
+        event = new BookCardClickEvent(BookCardClickEvent.Type.NORMAL, "/test/path", 5, 6);
     }
 
     @AfterClass
@@ -32,5 +32,6 @@ public class BookCardClickEventTest {
         assertThat(event.getType(), is(BookCardClickEvent.Type.NORMAL));
         assertThat(event.getRelPath(), is("/test/path"));
         assertThat(event.getAdapterPosition(), is(5));
+        assertThat(event.getLayoutPosition(), is(6));
     }
 }
