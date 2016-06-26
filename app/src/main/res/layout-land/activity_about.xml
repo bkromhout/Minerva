@@ -70,7 +70,7 @@
 
             <ImageButton
                     android:id="@+id/github"
-                    app:layout_heightPercent="18%"
+                    app:layout_heightPercent="20%"
                     app:layout_aspectRatio="100%"
                     android:layout_centerHorizontal="true"
                     android:layout_below="@id/about_app_version"
