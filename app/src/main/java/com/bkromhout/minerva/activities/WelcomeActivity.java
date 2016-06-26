@@ -23,6 +23,13 @@ import java.io.File;
 
 public class WelcomeActivity extends PermCheckingActivity implements SnackKiosk.Snacker,
         FolderChooserDialog.FolderCallback {
+    /**
+     * Due to the way that our permissions handling works, we have to make sure that we wait to retry things until
+     * onResume is called. These are the possible options currently.
+     */
+    private enum DeferredAction {
+        OPEN_F_CHOOSER, SHOW_DB_BACKUPS_LIST, START_IMPORT
+    }
 
     // Views
     @BindView(R.id.base)
@@ -35,6 +42,11 @@ public class WelcomeActivity extends PermCheckingActivity implements SnackKiosk.
     TextView tvFirstImportPrompt;
     @BindView(R.id.start_full_import)
     Button btnStartFullImport;
+
+    /**
+     * What deferred action to take when {@link #onResume()} is called.
+     */
+    private DeferredAction deferredAction = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +70,20 @@ public class WelcomeActivity extends PermCheckingActivity implements SnackKiosk.
     protected void onResume() {
         super.onResume();
         SnackKiosk.startSnacking(this);
+
+        if (deferredAction != null) {
+            switch (deferredAction) {
+                case OPEN_F_CHOOSER:
+                    onChooseFolderClick();
+                    break;
+                case SHOW_DB_BACKUPS_LIST:
+                    // TODO
+                    break;
+                case START_IMPORT:
+                    onStartFullImportClicked();
+                    break;
+            }
+        }
     }
 
     @Override
@@ -80,10 +106,10 @@ public class WelcomeActivity extends PermCheckingActivity implements SnackKiosk.
     public void onPermGrantedEvent(PermGrantedEvent event) {
         switch (event.getActionId()) {
             case R.id.action_choose_lib_dir:
-                onChooseFolderClick();
+                deferredAction = DeferredAction.OPEN_F_CHOOSER;
                 break;
             case R.id.action_import:
-                onStartFullImportClicked();
+                deferredAction = DeferredAction.START_IMPORT;
                 break;
         }
     }
