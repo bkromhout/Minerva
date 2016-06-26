@@ -3,6 +3,7 @@
           package="com.bkromhout.minerva">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
             android:name=".Minerva"
@@ -16,6 +17,7 @@
                 android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
@@ -98,5 +100,8 @@
         <meta-data
                 android:name="com.bkromhout.minerva.util.GlideConfig"
                 android:value="GlideModule"/>
+        <meta-data
+                android:name="io.fabric.ApiKey"
+                android:value="0a12da9a5fe9cea6a00aeb29a1a5400076bcbaf2"/>
     </application>
 </manifest>

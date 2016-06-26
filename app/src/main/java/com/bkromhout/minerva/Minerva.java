@@ -15,7 +15,11 @@ import com.bkromhout.minerva.data.Importer;
 import com.bkromhout.minerva.data.UniqueIdFactory;
 import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.ruqus.Ruqus;
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
+import com.crashlytics.android.ndk.CrashlyticsNdk;
 import com.karumi.dexter.Dexter;
+import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.exceptions.RealmIOException;
@@ -56,6 +60,11 @@ public class Minerva extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Crashlytics crashlyticsKit = new Crashlytics.Builder()
+                .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
+                .build();
+        Fabric.with(this, crashlyticsKit, new CrashlyticsNdk());
+
         // Stash application context, then check to see if we need to restore things, and do so if necessary.
         INSTANCE = this;
         BackupUtils.restoreRealmFileIfApplicable();
