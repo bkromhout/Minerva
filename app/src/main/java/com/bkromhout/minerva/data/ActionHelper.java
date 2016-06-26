@@ -292,10 +292,13 @@ public class ActionHelper {
             setDeferredAction(params -> openBookUsingIntent((RBook) params[0], (int) params[1]), book, posToUpdate);
             return;
         }
-        File file = Util.getFileFromRelPath(book.relPath);
 
-        // TODO Make the user aware if the underlying file doesn't exist!
-        if (file == null) return;
+        File file = Util.getFileFromRelPath(book.relPath);
+        // Make the user aware if the underlying file doesn't exist.
+        if (file == null) {
+            SnackKiosk.snack(R.string.sb_err_file_not_found, Snackbar.LENGTH_SHORT);
+            return;
+        }
 
         // Construct intent to use to open the file.
         Intent newIntent = new Intent(Intent.ACTION_VIEW);

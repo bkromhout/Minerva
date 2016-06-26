@@ -32,6 +32,7 @@
     <!-- Common error strings -->
     <string name="err_name_taken">Name already in use</string>
     <string name="sb_err_no_apps">You have no apps which can open this book’s file</string>
+    <string name="sb_err_file_not_found">File not found</string>
 
     <!-- Permissions -->
     <string name="storage_permission">Storage Permission</string>
