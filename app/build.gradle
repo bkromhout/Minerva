@@ -75,7 +75,7 @@ dexcount {
 
 //noinspection GroovyAssignabilityCheck
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:2.3.0'
 
     compile 'com.android.support:appcompat-v7:24.0.0'
@@ -109,11 +109,11 @@ dependencies {
         transitive = true
     }
 
-    compile ('com.bkromhout:realm-recyclerview-lite:2.0.5@aar') {
+    compile('com.bkromhout:realm-recyclerview-lite:2.0.5@aar') {
         transitive = true
     }
     apt 'com.bkromhout.ruqus:ruqus-compiler:1.2.2'
-    compile ('com.bkromhout.ruqus:ruqus-core:1.2.2@aar') {
+    compile('com.bkromhout.ruqus:ruqus-core:1.2.2@aar') {
         transitive = true
     }
 
