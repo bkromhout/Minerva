@@ -140,7 +140,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
         vh.content.setOnLongClickListener(v -> {
             if (mayStartDrags) startDragging(vh);
             else EventBus.getDefault().post(new BookCardClickEvent(BookCardClickEvent.Type.LONG, book.relPath,
-                    position));
+                    vh.getAdapterPosition()));
             return true;
         });
 
@@ -154,12 +154,12 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
             if (vh instanceof NormalCardVH) {
                 ImageView coverImage = ((NormalCardVH) vh).ivCoverImage;
                 //noinspection unchecked
-                BookInfoActivity.startWithTransition(activity, book.uniqueId, position, true,
+                BookInfoActivity.startWithTransition(activity, book.uniqueId, vh.getAdapterPosition(), true,
                         Pair.create(coverImage, coverImage.getTransitionName()),
                         Pair.create(vh.cardView, vh.cardView.getTransitionName()));
             } else {
                 //noinspection unchecked
-                BookInfoActivity.startWithTransition(activity, book.uniqueId, position, false,
+                BookInfoActivity.startWithTransition(activity, book.uniqueId, vh.getAdapterPosition(), false,
                         Pair.create(vh.cardView, vh.cardView.getTransitionName()));
             }
         });
