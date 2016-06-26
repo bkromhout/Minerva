@@ -30,7 +30,7 @@
     <style name="MinervaDarkCardNoRipple" parent="CardView.Dark">
         <item name="android:layout_marginTop">@dimen/card_margin</item>
         <item name="cardBackgroundColor">@color/card_bg_color</item>
-        <item name="android:stateListAnimator">@anim/card_lift_state_list</item>
+        <item name="android:stateListAnimator">@animator/button_lift_state_list</item>
         <!--<item name="cardElevation">@dimen/card_elevation</item>-->
     </style>
 
@@ -50,7 +50,7 @@
     </style>
 
     <style name="LiftOnTouchButton">
-        <item name="android:stateListAnimator">@anim/button_lift_state_list</item>
+        <item name="android:stateListAnimator">@animator/button_lift_state_list</item>
     </style>
 
     <!-- RealmRecyclerView styles -->
