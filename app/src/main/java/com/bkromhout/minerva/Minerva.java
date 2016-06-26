@@ -14,6 +14,7 @@ import com.bkromhout.minerva.data.BackupUtils;
 import com.bkromhout.minerva.data.Importer;
 import com.bkromhout.minerva.data.UniqueIdFactory;
 import com.bkromhout.minerva.realm.RTag;
+import com.bkromhout.minerva.util.CrashlyticsTree;
 import com.bkromhout.ruqus.Ruqus;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
@@ -24,6 +25,7 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.exceptions.RealmIOException;
 import org.greenrobot.eventbus.EventBus;
+import timber.log.Timber;
 
 import java.util.Arrays;
 
@@ -64,6 +66,7 @@ public class Minerva extends Application {
                 .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
                 .build();
         Fabric.with(this, crashlyticsKit, new CrashlyticsNdk());
+        Timber.plant(new CrashlyticsTree());
 
         // Stash application context, then check to see if we need to restore things, and do so if necessary.
         INSTANCE = this;

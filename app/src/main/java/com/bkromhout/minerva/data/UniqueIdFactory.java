@@ -139,7 +139,7 @@ public class UniqueIdFactory {
                     Timber.d("%s doesn't have a uniqueId field.", objectSchema.getClassName());
                 } catch (IllegalArgumentException ignored) {
                     // If we don't have any data yet, then Realm will think the field doesn't exist, and throws this.
-                    Timber.w("Couldn't initialize %s unique ID factory for %s.", isTemp ? "temporary" : "default",
+                    Timber.d("Couldn't initialize %s unique ID factory for %s.", isTemp ? "temporary" : "default",
                             objectSchema.getClassName());
                 }
             }
