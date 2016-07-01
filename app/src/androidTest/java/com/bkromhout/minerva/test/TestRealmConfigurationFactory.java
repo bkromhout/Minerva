@@ -47,6 +47,11 @@ public class TestRealmConfigurationFactory extends TemporaryFolder {
     private Map<RealmConfiguration, Boolean> map = new ConcurrentHashMap<>();
     private Set<RealmConfiguration> configurations = Collections.newSetFromMap(map);
     private boolean unitTestFailed = false;
+    private final Context context;
+
+    public TestRealmConfigurationFactory(Context context) {
+        this.context = context;
+    }
 
     @Override
     public Statement apply(final Statement base, Description description) {
@@ -86,7 +91,7 @@ public class TestRealmConfigurationFactory extends TemporaryFolder {
     }
 
     public RealmConfiguration createConfiguration() {
-        RealmConfiguration configuration = new RealmConfiguration.Builder(getRoot())
+        RealmConfiguration configuration = new RealmConfiguration.Builder(context, getRoot())
                 .build();
 
         configurations.add(configuration);
@@ -96,7 +101,7 @@ public class TestRealmConfigurationFactory extends TemporaryFolder {
     public RealmConfiguration createConfiguration(String subDir, String name) {
         final File folder = new File(getRoot(), subDir);
         assertTrue(folder.mkdirs());
-        RealmConfiguration configuration = new RealmConfiguration.Builder(folder)
+        RealmConfiguration configuration = new RealmConfiguration.Builder(context, folder)
                 .name(name)
                 .build();
 
@@ -105,7 +110,7 @@ public class TestRealmConfigurationFactory extends TemporaryFolder {
     }
 
     public RealmConfiguration createConfiguration(String name) {
-        RealmConfiguration configuration = new RealmConfiguration.Builder(getRoot())
+        RealmConfiguration configuration = new RealmConfiguration.Builder(context, getRoot())
                 .name(name)
                 .build();
 
@@ -114,7 +119,7 @@ public class TestRealmConfigurationFactory extends TemporaryFolder {
     }
 
     public RealmConfiguration createConfiguration(String name, byte[] key) {
-        RealmConfiguration configuration = new RealmConfiguration.Builder(getRoot())
+        RealmConfiguration configuration = new RealmConfiguration.Builder(context, getRoot())
                 .name(name)
                 .encryptionKey(key)
                 .build();
@@ -124,13 +129,13 @@ public class TestRealmConfigurationFactory extends TemporaryFolder {
     }
 
     public RealmConfiguration.Builder createConfigurationBuilder() {
-        return new RealmConfiguration.Builder(getRoot());
+        return new RealmConfiguration.Builder(context, getRoot());
     }
 
     // Copies a Realm file from assets to temp dir
     public void copyRealmFromAssets(Context context, String realmPath, String newName) throws IOException {
         // Delete the existing file before copy
-        RealmConfiguration configToDelete = new RealmConfiguration.Builder(getRoot())
+        RealmConfiguration configToDelete = new RealmConfiguration.Builder(context, getRoot())
                 .name(newName)
                 .build();
         Realm.deleteRealm(configToDelete);

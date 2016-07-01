@@ -1,5 +1,6 @@
 package com.bkromhout.minerva.realm;
 
+import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.data.UniqueIdFactory;
@@ -35,7 +36,8 @@ public class RBookListTest {
             "com.bkromhout.ruqus.transformers.EqualTo#$_Ruqus_RUQ_$#";
 
     @Rule
-    public final TestRealmConfigurationFactory configFactory = new TestRealmConfigurationFactory();
+    public final TestRealmConfigurationFactory configFactory = new TestRealmConfigurationFactory(
+            InstrumentationRegistry.getContext());
 
     private TestBookFactory testBookFactory;
     private Realm realm;
