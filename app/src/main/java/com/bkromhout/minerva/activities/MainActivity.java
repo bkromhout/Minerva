@@ -109,7 +109,7 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
             if (resultCode == RESULT_OK) {
                 Minerva.prefs().setIntroCompleted();
                 // If we want to restore a database backup, we'll do it now. Otherwise, we'll start importing.
-                if (data.hasExtra(C.RESTORE_PATH)) {
+                if (data != null && data.hasExtra(C.RESTORE_PATH)) {
                     // We're going to go under the assumption that a user savvy enough to want to restore a backup will
                     // understand Minerva needs the storage permission to do so, and won't have taken the effort to
                     // leave during the intro flow, open App Info, deny the permission, then come back and try anyway.
