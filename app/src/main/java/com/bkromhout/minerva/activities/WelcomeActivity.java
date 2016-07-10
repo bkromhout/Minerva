@@ -318,9 +318,9 @@ public class WelcomeActivity extends IntroActivity implements SnackKiosk.Snacker
     }
 
     @Override
-    public Intent makeReturnIntent() {
+    public Intent onSendActivityResult(int result) {
         // If the user wants to restore a DB backup, we should pass its path back to MainActivity.
-        return restorePath != null ? new Intent().putExtra(C.RESTORE_PATH, restorePath) : null;
+        return result == RESULT_OK && restorePath != null ? new Intent().putExtra(C.RESTORE_PATH, restorePath) : null;
     }
 
     @NonNull
