@@ -106,12 +106,8 @@
 
 
     <!-- ******************************** Welcome Activity ******************************** -->
-    <string name="title_activity_welcome">Welcome</string>
-    <string name="welcome_to">Welcome to</string>
     <string name="choose_library_dir">Choose Library Folder</string>
     <string name="choose_library_dir_desc">Choose the folder where Minerva should expect to find your book files.</string>
-    <string name="first_time_import_prompt">If you’re happy with your choice, Minerva can start importing books from
-        your library folder. Or, you can restore a backed up database.</string>
     <string name="lbl_folder">&lt;b>Folder:&lt;/b> %1$s</string>
     <string name="open_folder_chooser">Open Folder Chooser</string>
     <string name="restore_database_desc">If you previously backed up Minerva’s database and would like to restore it,
@@ -405,7 +401,6 @@
 
     <!-- ******************************** About Activity ******************************** -->
     <string name="title_activity_about">@string/nav_item_about</string>
-    <string name="app_name_part">inerva</string>
     <string name="acc_app_logo_name_tagline">Minerva; Organize your eBooks with ease!</string>
     <string name="version_string">Version %1$s (%2$d)</string>
     <string name="acc_github_logo">GitHub Logo</string>

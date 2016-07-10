@@ -83,8 +83,7 @@
         </activity>
         <activity
                 android:name=".activities.WelcomeActivity"
-                android:label="@string/title_activity_welcome"
-                android:theme="@style/AppTheme.WelcomeActivity">
+                android:theme="@style/Theme.Intro">
         </activity>
 
         <provider
