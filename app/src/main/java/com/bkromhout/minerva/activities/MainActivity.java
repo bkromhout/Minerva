@@ -19,8 +19,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.Minerva;
+import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
+import com.bkromhout.minerva.data.BackupUtils;
+import com.bkromhout.minerva.data.Importer;
 import com.bkromhout.minerva.enums.MainFrag;
+import com.bkromhout.minerva.events.PermGrantedEvent;
 import com.bkromhout.minerva.events.ShowRateMeDialogEvent;
 import com.bkromhout.minerva.fragments.AllListsFragment;
 import com.bkromhout.minerva.fragments.LibraryFragment;
@@ -30,6 +34,9 @@ import com.bkromhout.minerva.util.Dialogs;
 import com.bkromhout.minerva.util.Util;
 import io.realm.Realm;
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.io.File;
 
 /**
  * Main activity, responsible for hosting fragments.
@@ -89,7 +96,7 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
         }
 
         // Check to see if we need to show the welcome activity.
-        if (savedInstanceState == null && !Minerva.prefs().hasFirstImportBeenTriggered())
+        if (savedInstanceState == null && !Minerva.prefs().introCompleted())
             startActivityForResult(new Intent(this, WelcomeActivity.class), C.RC_WELCOME_ACTIVITY);
 
         // Handle permissions. Make sure we continue a request process if applicable.
@@ -99,9 +106,21 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == C.RC_WELCOME_ACTIVITY) {
-            // If we came back from the welcome activity successfully, open the import activity. Otherwise, close.
-            if (resultCode == RESULT_OK) Util.startAct(this, ImportActivity.class, null);
-            else finish();
+            if (resultCode == RESULT_OK) {
+                Minerva.prefs().setIntroCompleted();
+                // If we want to restore a database backup, we'll do it now. Otherwise, we'll start importing.
+                if (data.hasExtra(C.RESTORE_PATH)) {
+                    // We're going to go under the assumption that a user savvy enough to want to restore a backup will
+                    // understand Minerva needs the storage permission to do so, and won't have taken the effort to
+                    // leave during the intro flow, open App Info, deny the permission, then come back and try anyway.
+                    File restoreFile = new File(data.getStringExtra(C.RESTORE_PATH));
+                    BackupUtils.prepareToRestoreRealmFile(this, restoreFile);
+                    finish();
+                } else {
+                    if (!Util.checkForStoragePermAndFireEventIfNeeded(R.id.action_first_import)) return;
+                    doFirstImport();
+                }
+            } else finish();
         }
         // Pass down to fragments.
         super.onActivityResult(requestCode, resultCode, data);
@@ -275,24 +294,25 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
     }
 
     /**
-     * Override this method so that we remove focus from our filter EditText when we click outside of its bounds.
+     * Ensure that retry the first full import when the storage permission has been granted. Will do nothing if we've
+     * already done the first full import, or if we haven't finished the intro flow.
+     * @param event {@link PermGrantedEvent}.
      */
-//    @Override
-//    public boolean dispatchTouchEvent(MotionEvent event) {
-//        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//            View v = getCurrentFocus();
-//            if (v instanceof SearchView.SearchAutoComplete) {
-//                Rect outRect = new Rect();
-//                v.getGlobalVisibleRect(outRect);
-//                if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
-//                    v.clearFocus();
-//                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-//                    // Consume this touch event, we don't want to accidentally toggle one of the tag cards.
-//                    return true;
-//                }
-//            }
-//        }
-//        return super.dispatchTouchEvent(event);
-//    }
+    @Subscribe
+    public void onStoragePermissionGranted(PermGrantedEvent event) {
+        if (event.getActionId() == R.id.action_first_import) doFirstImport();
+    }
+
+    /**
+     * If we haven't already done so, but we have finished the intro flow, trigger the first full import. Go ahead and
+     * open the {@link ImportActivity} too.
+     */
+    private void doFirstImport() {
+        Prefs prefs = Minerva.prefs();
+        if (!prefs.hasFirstImportBeenTriggered() && prefs.introCompleted()) {
+            Importer.get().queueFullImport();
+            prefs.setFirstImportTriggered();
+            Util.startAct(this, ImportActivity.class, null);
+        }
+    }
 }

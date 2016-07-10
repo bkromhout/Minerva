@@ -112,6 +112,7 @@
     <string name="open_folder_chooser">Open Folder Chooser</string>
     <string name="restore_database_desc">If you previously backed up Minerva’s database and would like to restore it,
         go ahead and choose the backup file now. Minerva will restore it once you’re done with setup.</string>
+    <string name="welcome_restore_backed_up_db_prompt">Choose a database backup to restore when setup is finished</string>
     <string name="choose_database_backup">Choose Database Backup</string>
     <string name="ready_to_go">You’re ready to go!</string>
     <string name="ready_to_go_desc">I hope you enjoy using Minerva as much as I enjoyed making it.

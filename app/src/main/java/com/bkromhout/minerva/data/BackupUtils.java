@@ -256,7 +256,8 @@ public class BackupUtils {
         if (dbRestoreState != DBRestoreState.COMPLETING) return;
         // Check to see if this was a restore from the welcome screen, and if it was then go ahead and fake like
         // we've done the initial import so it won't be shown again.
-        if (!prefs.hasFirstImportBeenTriggered()) prefs.setFirstImportTriggered();
+        boolean reImportOnly = prefs.hasFirstImportBeenTriggered();
+        if (!reImportOnly) prefs.setFirstImportTriggered();
 
         // Ensure that the tags used for New and Updated books still exist (they may not if we did a DB restore).
         RTag tag = realm.where(RTag.class)
@@ -269,8 +270,12 @@ public class BackupUtils {
         if (tag == null) prefs.putUpdatedBookTag(null);
 
         // Sync up our local cover files with the books in the DB which indicate they have covers. We can do this
-        // easily by trying to re-import all books which currently indicate they have cover images.
-        Importer.get().queueReImport(realm.where(RBook.class).equalTo("hasCoverImage", true).findAll());
+        // easily by trying to re-import all books which currently indicate they have cover images. If we restored
+        // from the welcome screen we prefer a full import though.
+        if (reImportOnly) Importer.get().queueReImport(realm.where(RBook.class)
+                                                            .equalTo("hasCoverImage", true)
+                                                            .findAll());
+        else Importer.get().queueFullImport();
 
         // Notify user of successful database restoration.
         SnackKiosk.snack(R.string.sb_db_restore_success, Snackbar.LENGTH_SHORT);

@@ -26,6 +26,7 @@ public final class C {
     public static final String SEARCH_STRING = "search_string";
     public static final String RUQ = "realm_user_query";
     public static final String HAS_CHANGED = "has_changed";
+    public static final String RESTORE_PATH = "restore_path";
 
     /* Request codes. */
     public static final int RC_WELCOME_ACTIVITY = 1;

@@ -1,6 +1,7 @@
 package com.bkromhout.minerva.activities;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,14 +9,13 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.TextView;
-import butterknife.OnClick;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
+import com.bkromhout.minerva.C;
 import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.data.BackupUtils;
 import com.bkromhout.minerva.data.DataUtils;
-import com.bkromhout.minerva.data.Importer;
 import com.bkromhout.minerva.events.PermGrantedEvent;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import com.bkromhout.minerva.util.Util;
@@ -33,9 +33,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Fancy welcome activity.
+ * Super fancy material-design-compliant welcome activity.
  */
 public class WelcomeActivity extends IntroActivity implements SnackKiosk.Snacker, FolderChooserDialog.FolderCallback {
+    private static final String KEY_DEFERRED_ACTION = "deferred_action";
+    private static final String KEY_RESTORE_PATH_INDEX = "restore_path_index";
+
     private static final int WELCOME = 0;
     private static final int PERMISSIONS = 1;
     private static final int CHOOSE_FOLDER = 2;
@@ -47,18 +50,37 @@ public class WelcomeActivity extends IntroActivity implements SnackKiosk.Snacker
      * onResume is called. These are the possible options currently.
      */
     private enum DeferredAction {
-        OPEN_F_CHOOSER, SHOW_DB_BACKUPS_LIST, START_IMPORT
+        OPEN_F_CHOOSER, SHOW_DB_BACKUPS_LIST
     }
 
     /**
      * What deferred action to take when {@link #onResume()} is called.
      */
     private DeferredAction deferredAction = null;
+    /**
+     * Path to the DB backup file the user wishes to restore when setup is finished.
+     */
+    private String restorePath = null;
+    /**
+     * Index of the restore path in the list of paths returned by {@link BackupUtils#getRestorableRealmFiles()}. This is
+     * only used to make sure the same option is checked if the user opens the dialog again.
+     */
+    private int restorePathIdx = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setFullscreen(true);
         super.onCreate(savedInstanceState);
+        setResult(RESULT_CANCELED);
+
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(KEY_DEFERRED_ACTION))
+                deferredAction = DeferredAction.values()[savedInstanceState.getInt(KEY_DEFERRED_ACTION)];
+            if (savedInstanceState.containsKey(C.RESTORE_PATH)) {
+                restorePath = savedInstanceState.getString(C.RESTORE_PATH);
+                restorePathIdx = savedInstanceState.getInt(KEY_RESTORE_PATH_INDEX);
+            }
+        }
 
         setButtonBackFunction(BUTTON_BACK_FUNCTION_BACK);
 
@@ -104,15 +126,23 @@ public class WelcomeActivity extends IntroActivity implements SnackKiosk.Snacker
         if (deferredAction != null) {
             switch (deferredAction) {
                 case OPEN_F_CHOOSER:
-                    onChooseFolderClick();
+                    onOpenFolderChooserClick();
                     break;
                 case SHOW_DB_BACKUPS_LIST:
                     onRestoreDbClick();
                     break;
-                case START_IMPORT:
-                    onStartFullImportClicked();
-                    break;
             }
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (deferredAction != null) outState.putInt(KEY_DEFERRED_ACTION, deferredAction.ordinal());
+        if (restorePath != null) {
+            outState.putString(C.RESTORE_PATH, restorePath);
+            outState.putInt(KEY_RESTORE_PATH_INDEX, restorePathIdx);
         }
     }
 
@@ -141,12 +171,13 @@ public class WelcomeActivity extends IntroActivity implements SnackKiosk.Snacker
             case R.id.action_restore_db:
                 deferredAction = DeferredAction.SHOW_DB_BACKUPS_LIST;
                 break;
-            case R.id.action_import:
-                deferredAction = DeferredAction.START_IMPORT;
-                break;
         }
     }
 
+    /**
+     * Create Slides for the intro pager.
+     * @return List of intro slides.
+     */
     private List<Slide> makeSlides() {
         ArrayList<Slide> slides = new ArrayList<>();
 
@@ -162,6 +193,7 @@ public class WelcomeActivity extends IntroActivity implements SnackKiosk.Snacker
                 .image(R.drawable.welcome_micro_sd_card)
                 .background(R.color.red500)
                 .backgroundDark(R.color.red700)
+                .permission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .build());
 
         slides.add(new SimpleSlide.Builder()
@@ -172,7 +204,7 @@ public class WelcomeActivity extends IntroActivity implements SnackKiosk.Snacker
                 .background(R.color.orange500)
                 .backgroundDark(R.color.orange700)
                 .buttonCtaLabel(R.string.open_folder_chooser)
-                .buttonCtaClickListener(view -> onChooseFolderClick())
+                .buttonCtaClickListener(view -> onOpenFolderChooserClick())
                 .build());
 
         slides.add(new SimpleSlide.Builder()
@@ -215,8 +247,7 @@ public class WelcomeActivity extends IntroActivity implements SnackKiosk.Snacker
     /**
      * Show the folder chooser when that button is clicked.
      */
-    @OnClick(R.id.choose_folder)
-    void onChooseFolderClick() {
+    private void onOpenFolderChooserClick() {
         if (!Util.checkForStoragePermAndFireEventIfNeeded(R.id.action_choose_lib_dir)) return;
         // Set up most of dialog.
         FolderChooserDialog.Builder builder = new FolderChooserDialog.Builder(this)
@@ -229,17 +260,6 @@ public class WelcomeActivity extends IntroActivity implements SnackKiosk.Snacker
 
         // Show the folder chooser dialog.
         builder.show();
-    }
-
-    /**
-     * Trigger a full import, then finish and show the {@link ImportActivity} when clicked.
-     */
-    private void onStartFullImportClicked() {
-        if (!Util.checkForStoragePermAndFireEventIfNeeded(R.id.action_import)) return;
-        Importer.get().queueFullImport();
-        Minerva.prefs().setFirstImportTriggered();
-        setResult(RESULT_OK);
-        finish();
     }
 
     /**
@@ -257,7 +277,7 @@ public class WelcomeActivity extends IntroActivity implements SnackKiosk.Snacker
         // Show a dialog to let the user choose a file to restore.
         new MaterialDialog.Builder(this)
                 .title(R.string.title_restore_db)
-                .content(R.string.prompt_choose_backed_up_db)
+                .content(R.string.welcome_restore_backed_up_db_prompt)
                 // Transform files to file names and use those as the items in the dialog.
                 .items(Observable.from(backedUpRealmFiles)
                                  .map(File::getName)
@@ -265,10 +285,12 @@ public class WelcomeActivity extends IntroActivity implements SnackKiosk.Snacker
                                  .map(s -> s.replace(BackupUtils.DB_BACKUP_EXT, "").replace("_", ":"))
                                  .toList()
                                  .toBlocking().single())
-                .positiveText(R.string.action_restore)
+                .positiveText(R.string.ok)
                 .negativeText(R.string.cancel)
-                .itemsCallbackSingleChoice(-1, (dialog, itemView, which, text) -> {
-                    BackupUtils.prepareToRestoreRealmFile(this, backedUpRealmFiles[which]);
+                .itemsCallbackSingleChoice(restorePathIdx, (dialog, itemView, which, text) -> {
+                    // Save path to backup file for later.
+                    restorePathIdx = which;
+                    restorePath = backedUpRealmFiles[which].getAbsolutePath();
                     return true;
                 })
                 .show();
@@ -279,6 +301,12 @@ public class WelcomeActivity extends IntroActivity implements SnackKiosk.Snacker
         String path = folder.getAbsolutePath();
         Minerva.prefs().putLibDir(path);
         setFolderText(path);
+    }
+
+    @Override
+    public Intent makeReturnIntent() {
+        // If the user wants to restore a DB backup, we should pass its path back to MainActivity.
+        return restorePath != null ? new Intent().putExtra(C.RESTORE_PATH, restorePath) : null;
     }
 
     @NonNull

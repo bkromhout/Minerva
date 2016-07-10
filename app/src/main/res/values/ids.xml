@@ -9,6 +9,7 @@
     <item type="id" name="action_backup_db"/>
     <item type="id" name="action_restore_db"/>
     <item type="id" name="action_execute_deferred"/>
+    <item type="id" name="action_first_import"/>
 
     <!-- Snackbar actions -->
     <item type="id" name="sb_action_retry_perms_check"/>

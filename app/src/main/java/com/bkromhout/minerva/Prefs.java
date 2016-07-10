@@ -16,6 +16,7 @@ public class Prefs {
      */
     // General
     private static final String FIRST_TIME_INIT = "first_time_init_done";
+    private static final String INTRO_COMPLETED = "intro_completed";
     private static final String CURR_FRAG = "current_fragment";
     private static final String RATE_ME_COUNT_DOWN = "rate_me_count_down";
     // Settings
@@ -73,6 +74,21 @@ public class Prefs {
     }
 
     /**
+     * Check whether the user has completed the intro.
+     * @return True if the user has completed the intro, otherwise false.
+     */
+    public boolean introCompleted() {
+        return prefs.getBoolean(INTRO_COMPLETED, false);
+    }
+
+    /**
+     * Mark intro as completed.
+     */
+    public void setIntroCompleted() {
+        prefs.edit().putBoolean(INTRO_COMPLETED, true).apply();
+    }
+
+    /**
      * Get the {@link MainFrag} which specifies the fragment that is currently being shown in {@link MainActivity}.
      * @param defValue The default value to return if nothing is set.
      * @return Enum.
@@ -96,7 +112,7 @@ public class Prefs {
      * @return False if {@link #hasFirstImportBeenTriggered()} returns {@code false} or if the current value stored for
      * {@link #RATE_ME_COUNT_DOWN} isn't 0 (in which case it will be decremented. True otherwise.
      */
-    public boolean shouldShowRateMeDialog() {
+    boolean shouldShowRateMeDialog() {
         if (!hasFirstImportBeenTriggered()) return false;
         int countDown = prefs.getInt(RATE_ME_COUNT_DOWN, RATE_ME_INITIAL);
         if (countDown == 0) return true;
