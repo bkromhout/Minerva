@@ -116,9 +116,9 @@
     <string name="choose_database_backup">Choose Backup</string>
     <string name="ready_to_go">You’re ready to go!</string>
     <string name="ready_to_go_desc">I hope you enjoy using Minerva as much as I enjoyed making it.
-        \nIf you run into any problems, or have any suggestions, feel free to open an issue on GitHub (tap the GitHub
-        icon in the "About" screen).
-        \n—Brenden Kromhout—</string>
+        \n\nIf you run into any problems or have any suggestions, go to the “About” screen, tap the GitHub icon, and
+        open an issue.
+        \n\n—Brenden Kromhout—</string>
 
 
     <!-- ******************************** Main Activity/Nav Drawer/Fragment Titles ******************************** -->
