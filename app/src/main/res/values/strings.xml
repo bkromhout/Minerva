@@ -107,7 +107,8 @@
 
     <!-- ******************************** Welcome Activity ******************************** -->
     <string name="choose_library_dir">Choose Library Folder</string>
-    <string name="choose_library_dir_desc">Choose the folder where Minerva should expect to find your book files.</string>
+    <string name="choose_library_dir_desc">Choose the folder where Minerva should expect to find your book files.
+        \nMinerva will never look for books outside of your library folder.</string>
     <string name="lbl_folder">&lt;b>Folder:&lt;/b> %1$s</string>
     <string name="open_folder_chooser">Choose Folder</string>
     <string name="restore_database_desc">If you previously backed up Minerva’s database and would like to restore it,
