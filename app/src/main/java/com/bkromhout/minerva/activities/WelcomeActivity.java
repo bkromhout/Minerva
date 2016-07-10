@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -41,7 +42,7 @@ public class WelcomeActivity extends IntroActivity implements SnackKiosk.Snacker
 
     private static final int WELCOME = 0;
     private static final int PERMISSIONS = 1;
-    private static final int CHOOSE_FOLDER = 2;
+    private static final int CHOOSE_LIBRARY_FOLDER = 2;
     private static final int RESTORE_DB = 3;
     private static final int FINISHED = 4;
 
@@ -83,7 +84,17 @@ public class WelcomeActivity extends IntroActivity implements SnackKiosk.Snacker
         }
 
         setButtonBackFunction(BUTTON_BACK_FUNCTION_BACK);
-
+        addSlides(makeSlides());
+        addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                if (position == CHOOSE_LIBRARY_FOLDER) {
+                    // Restore our library folder text if we already have it.
+                    String libDir = Minerva.prefs().getLibDir(null);
+                    if (libDir != null) setFolderText(libDir);
+                }
+            }
+        });
         setNavigationPolicy(new NavigationPolicy() {
             @Override
             public boolean canGoForward(int whichScreen) {
@@ -91,7 +102,7 @@ public class WelcomeActivity extends IntroActivity implements SnackKiosk.Snacker
                     case PERMISSIONS:
                         return ContextCompat.checkSelfPermission(WelcomeActivity.this,
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-                    case CHOOSE_FOLDER:
+                    case CHOOSE_LIBRARY_FOLDER:
                         return Util.tryResolveDir(Minerva.prefs().getLibDir(null)) != null;
                     case WELCOME:
                     case RESTORE_DB:
@@ -106,8 +117,6 @@ public class WelcomeActivity extends IntroActivity implements SnackKiosk.Snacker
                 return whichScreen != WELCOME;
             }
         });
-
-        addSlides(makeSlides());
     }
 
     @Override
@@ -233,7 +242,7 @@ public class WelcomeActivity extends IntroActivity implements SnackKiosk.Snacker
      * @param folderPath Path to the chosen library folder.
      */
     private void setFolderText(String folderPath) {
-        View root = getSlide(CHOOSE_FOLDER).getFragment().getView();
+        View root = getSlide(CHOOSE_LIBRARY_FOLDER).getFragment().getView();
         TextView desc = root != null ? (TextView) root.findViewById(R.id.mi_description) : null;
         TextView extra = root != null ? (TextView) root.findViewById(R.id.extra_slide_text) : null;
         boolean notNullOrEmpty = folderPath != null && !folderPath.isEmpty();
