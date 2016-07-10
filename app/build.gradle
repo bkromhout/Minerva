@@ -105,7 +105,8 @@ dependencies {
     compile 'com.karumi:dexter:2.2.2' // TODO Get rid of in favor of doing it ourselves.
     compile 'com.afollestad.material-dialogs:core:0.8.6.1'
     compile 'com.afollestad.material-dialogs:commons:0.8.6.1'
-    compile 'com.heinrichreimersoftware:material-intro:1.5.5'
+    //compile 'com.heinrichreimersoftware:material-intro:1.5.5'
+    compile 'com.github.bkromhout:material-intro:0dc7caf' // TODO Use my fork until PR is approved.
     compile('com.mikepenz:aboutlibraries:5.6.8@aar') {
         transitive = true
     }
