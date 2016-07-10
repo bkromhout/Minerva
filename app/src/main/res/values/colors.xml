@@ -6,12 +6,22 @@
     <color name="green700">#388E3C</color>
     <color name="green800">#2E7D32</color>
 
+    <color name="red500">#F44336</color>
+    <color name="red700">#D32F2F</color>
     <color name="redA200">#FF5252</color>
 
+    <color name="orange500">#FF9800</color>
+    <color name="orange700">#F57C00</color>
+
+    <color name="blue500">#2196F3</color>
     <color name="blue700">#1976D2</color>
 
+    <color name="blueGrey500">#607D8B</color>
+    <color name="blueGrey700">#455A64</color>
     <color name="blueGrey800">#37474F</color>
 
+    <color name="brown500">#795548</color>
+    <color name="brown700">#5D4037</color>
     <color name="brown900">#3E2723</color>
 
     <color name="white12p">#1FFFFFFF</color>

@@ -36,8 +36,8 @@
 
     <!-- Permissions -->
     <string name="storage_permission">Storage Permission</string>
-    <string name="storage_permission_rationale">Minerva needs permission to read book files, and to read and write
-        backup files.</string>
+    <string name="storage_permission_rationale">Minerva uses the storage permission to read your book files and to
+        write backup files.</string>
     <string name="storage_permission_needed">Storage permission needed</string>
     <string name="storage_permission_perm_denied">Minerva needs the Storage permission, but you permanently denied it.
         \nOpen the App Info screen to grant it.</string>
@@ -108,11 +108,20 @@
     <!-- ******************************** Welcome Activity ******************************** -->
     <string name="title_activity_welcome">Welcome</string>
     <string name="welcome_to">Welcome to</string>
-    <string name="choose_library_dir_prompt">Choose your library folder</string>
+    <string name="choose_library_dir">Choose Library Folder</string>
+    <string name="choose_library_dir_desc">Choose the folder where Minerva should expect to find your book files.</string>
     <string name="first_time_import_prompt">If you’re happy with your choice, Minerva can start importing books from
         your library folder. Or, you can restore a backed up database.</string>
-    <string name="lbl_folder">Folder</string>
+    <string name="lbl_folder">&lt;b>Folder:&lt;/b> %1$s</string>
     <string name="open_folder_chooser">Open Folder Chooser</string>
+    <string name="restore_database_desc">If you previously backed up Minerva’s database and would like to restore it,
+        go ahead and choose the backup file now. Minerva will restore it once you’re done with setup.</string>
+    <string name="choose_database_backup">Choose Database Backup</string>
+    <string name="ready_to_go">You’re ready to go!</string>
+    <string name="ready_to_go_desc">I hope you enjoy using Minerva as much as I enjoyed making it.
+        \nIf you run into any problems, or have any suggestions, feel free to open an issue on GitHub (tap the GitHub
+        icon in the "About" screen).
+        \n—Brenden Kromhout—</string>
 
 
     <!-- ******************************** Main Activity/Nav Drawer/Fragment Titles ******************************** -->
@@ -178,7 +187,6 @@
     <string name="import_red_no_cancel">Saving book info; you can’t cancel now</string>
 
     <string name="start_full_import">Start Full Import</string>
-    <string name="choose_library_dir">Choose Library Folder</string>
 
     <!-- Importer Log Strings -->
     <string name="il_done">Done\n</string>
