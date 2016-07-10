@@ -296,6 +296,11 @@ public class WelcomeActivity extends IntroActivity implements SnackKiosk.Snacker
                                  .toBlocking().single())
                 .positiveText(R.string.ok)
                 .negativeText(R.string.cancel)
+                .neutralText(R.string.none)
+                .onNeutral((dialog, which) -> {
+                    restorePathIdx = -1;
+                    restorePath = null;
+                })
                 .itemsCallbackSingleChoice(restorePathIdx, (dialog, itemView, which, text) -> {
                     // Save path to backup file for later.
                     restorePathIdx = which;
