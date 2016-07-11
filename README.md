@@ -87,8 +87,8 @@ During the development of Minerva, I actually ended up making two Android librar
 <a name="ruqus"/>
 ### Ruqus
 [`Ruqus`](https://github.com/bkromhout/ruqus) is the library which makes Minerva’s power search and smart list features possible. I won’t go into too much detail about it here since it’s a bit complicated, but there are two key things it provides:
-1. It gives ***users*** a way to dynamically build queries against a Realm database using a custom view view, `RealmQueryView`. The developer maintains control over which models (and fields, of course) are available to the user.
-2. It gives ***developers*** a class called `RealmUserQuery`, which is what holds those user-built queries. `RealmUserQuery` implements `Parcelable`, as well as providing two `String` output formats:  
+* It gives ***users*** a way to dynamically build queries against a Realm database using a custom view view, `RealmQueryView`. The developer maintains control over which models (and fields, of course) are available to the user.
+* It gives ***developers*** a class called `RealmUserQuery`, which is what holds those user-built queries. `RealmUserQuery` implements `Parcelable`, as well as providing two `String` output formats:  
     * An non-user-friendly `String`-based representation which can be used to reconstruct a `RealmUserQuery` object
     * A user-friendly `String` describing the query
 
