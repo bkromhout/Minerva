@@ -1,8 +1,10 @@
 ![# Minerva](https://bkromhout.github.io/Minerva/logo_name_web_version_optimized.svg)
 
-<center>
-[![Get it on Google Play](http://steverichey.github.io/google-play-badge-svg/img/en_get.svg)](https://play.google.com/store/apps/details?id=com.bkromhout.minerva)
-</center>
+<p align="center">
+    <a href="https://play.google.com/store/apps/details?id=com.bkromhout.minerva">
+        <img src="http://steverichey.github.io/google-play-badge-svg/img/en_get.svg" alt="Get it on Google Play"/>
+    </a>
+</p>
 
 ### Table of Contents
 * [What is Minerva?](#what_is_minerva)
@@ -38,9 +40,8 @@
     (Pretty much anything Minerva knows about your books can be used as a parameter)
     * Sort the search results based on any of those same options
     * Save power searches as Smart lists
-* Dark-themed Material Design
 
-Minerva is supported on devices running at least Android Lollipop (5.0).
+Minerva sports a dark, Material Design theme, and is supported on devices running at least Android Lollipop (5.0).
 
 
 <a name="what_isnt_minerva"/>
@@ -66,8 +67,8 @@ Fueled by annoyance, I coded for a solid 11 hours. A little over six months and 
 <a name="the_name"/>
 ## Why “Minerva”?
 My reasons for choosing to name the app “Minerva” were twofold:
-1. For no reason other than pure whim, I was hoping to use the name of one of the ancient Greek or Roman deities. “Minerva” is [the Roman goddess of wisdom](https://en.wikipedia.org/wiki/Minerva).
-2. “Minerva” is also a reference to Minerva McGonagall, one of my favorite characters from J.K. Rowling’s *Harry Potter* series. The *Harry Potter* universe was a big part of my life for a long time, and there’s no doubt that I owe much of my love for books to it.
+* For no reason other than pure whim, I was hoping to use the name of one of the ancient Greek or Roman deities. “Minerva” is [the Roman goddess of wisdom](https://en.wikipedia.org/wiki/Minerva).
+* “Minerva” is also a reference to Minerva McGonagall, one of my favorite characters from J.K. Rowling’s *Harry Potter* series. The *Harry Potter* universe was a big part of my life for a long time, and there’s no doubt that I owe much of my love for books to it.
 
 (If it isn’t obvious, the latter was the real determining factor; I’d have named it “Athena” otherwise 😉)
 
