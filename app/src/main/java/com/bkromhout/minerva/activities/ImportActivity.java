@@ -368,7 +368,7 @@ public class ImportActivity extends PermCheckingActivity implements FolderChoose
     @Override
     public void setCurrLogs(String fullLog, String errorLog) {
         tvLog.setText(fullLog);
-        tvELog.setText(errorLog);
+        tvELog.setText(errorLog != null && !errorLog.equals("null") ? errorLog : "");
     }
 
     @Override
