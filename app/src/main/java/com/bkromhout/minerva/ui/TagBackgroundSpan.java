@@ -41,15 +41,15 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
     /**
      * Colors to use for tag backgrounds.
      */
-    private HashMap<String, Integer> colorMap;
+    private final HashMap<String, Integer> colorMap;
     /**
      * Number of lines to actually draw for. This was we won't waste time drawing on lines that we don't use.
      */
-    private int maxLines;
+    private final int maxLines;
     /**
      * Path to reuse each time we draw a tag's background.
      */
-    private Path path;
+    private final Path path;
     /**
      * Width of tag separator text.
      */
@@ -73,7 +73,7 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
                 new TagBackgroundSpan(colorMap, maxLines));
     }
 
-    public TagBackgroundSpan(HashMap<String, Integer> colorMap, int maxLines) {
+    private TagBackgroundSpan(HashMap<String, Integer> colorMap, int maxLines) {
         this.colorMap = colorMap;
         this.maxLines = maxLines;
         this.path = new Path();

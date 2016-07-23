@@ -157,7 +157,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
     /**
      * Listen for changes to {@link #book}. Call {@link #updateUi()} when they occur.
      */
-    private RealmChangeListener<RBook> bookListener = newBook -> {
+    private final RealmChangeListener<RBook> bookListener = newBook -> {
         if (!newBook.title.equals(getTitle().toString())) setTitle(newBook.title);
         updateUi();
     };

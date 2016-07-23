@@ -42,7 +42,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
     /**
      * Help our cards ripple.
      */
-    private static RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.card);
+    private static final RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.card);
     /**
      * Activity to use for Glide and shared element transitions.
      */
@@ -50,7 +50,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
     /**
      * If true, add a footer view which will prevent the last item from being obscured.
      */
-    private boolean addFooterView;
+    private final boolean addFooterView;
     /**
      * Whether or not this adapter may allow item dragging to start.
      */
@@ -60,10 +60,6 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
      * button clicks as when the value is {@code true}.
      */
     private boolean inSelectionMode = false;
-
-    public BaseBookCardAdapter(Activity activity, RealmResults<T> realmResults) {
-        this(activity, realmResults, true);
-    }
 
     public BaseBookCardAdapter(Activity activity, RealmResults<T> realmResults, boolean addFooterView) {
         super(activity, realmResults);

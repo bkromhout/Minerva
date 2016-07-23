@@ -137,12 +137,6 @@ public class MainActivity extends PermCheckingActivity implements NavigationView
                 super.onDrawerOpened(drawerView);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
-
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
         };
         drawerToggle.setDrawerIndicatorEnabled(true);
         drawer.addDrawerListener(drawerToggle);

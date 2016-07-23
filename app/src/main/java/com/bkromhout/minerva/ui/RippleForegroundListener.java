@@ -53,7 +53,7 @@ public class RippleForegroundListener implements View.OnTouchListener {
         return false;
     }
 
-    public View findRippleView(View view) {
+    private View findRippleView(View view) {
         if (view.getId() == rippleViewId) {
             return view;
         } else {

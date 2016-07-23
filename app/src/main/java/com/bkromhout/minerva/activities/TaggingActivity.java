@@ -491,11 +491,11 @@ public class TaggingActivity extends AppCompatActivity implements SnackKiosk.Sna
         /**
          * List of originally checked tags (those which all selected books share).
          */
-        public List<String> oldCheckedItems;
+        public final List<String> oldCheckedItems;
         /**
          * List of originally partially checked tags (those which some, but not all, selected books have).
          */
-        public List<String> oldPartiallyCheckedItems;
+        public final List<String> oldPartiallyCheckedItems;
         /**
          * List of finally checked tags (those which all selected books share).
          */

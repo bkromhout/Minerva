@@ -294,9 +294,7 @@ public class SnackKiosk {
                            });
 
         // Add an action button if necessary.
-        if (snack.actionRes != -1) snackbar.setAction(snack.actionRes, v -> {
-            handleAction(v, snack.actionId);
-        });
+        if (snack.actionRes != -1) snackbar.setAction(snack.actionRes, v -> handleAction(v, snack.actionId));
 
         // Show the snackbar.
         snackbar.show();

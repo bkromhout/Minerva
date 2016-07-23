@@ -83,7 +83,7 @@ public abstract class PermCheckingActivity extends AppCompatActivity {
      * <p>
      * This should be called at some point in the concrete class's onCreate method.
      */
-    protected final void initAndContinuePermChecksIfNeeded() {
+    final void initAndContinuePermChecksIfNeeded() {
         this.storagePL = new EmptyPermissionListener() {
             @Override
             public void onPermissionDenied(PermissionDeniedResponse response) {

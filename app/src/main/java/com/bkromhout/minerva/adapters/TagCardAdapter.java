@@ -35,15 +35,15 @@ public class TagCardAdapter extends RealmRecyclerViewAdapter<RTag, RecyclerView.
     /**
      * Help our cards ripple.
      */
-    private static RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.card);
+    private static final RippleForegroundListener rippleFgListener = new RippleForegroundListener(R.id.card);
     /**
      * List of items which are checked. The strings in this list should correspond to names of {@link RTag}s.
      */
-    private List<String> checkedItems;
+    private final List<String> checkedItems;
     /**
      * List of items which are partially checked. The strings in this list should correspond to names of {@link RTag}s.
      */
-    private List<String> partiallyCheckedItems;
+    private final List<String> partiallyCheckedItems;
 
     /**
      * Create a new {@link TagCardAdapter}.

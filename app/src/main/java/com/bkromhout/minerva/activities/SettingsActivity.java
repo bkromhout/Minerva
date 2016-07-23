@@ -123,7 +123,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
         /**
          * Preferences.
          */
-        private Prefs prefs = Minerva.prefs();
+        private final Prefs prefs = Minerva.prefs();
 
         @Override
         public void onCreate(Bundle savedInstanceState) {

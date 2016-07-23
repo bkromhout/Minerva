@@ -17,7 +17,7 @@ import com.bkromhout.minerva.R;
  */
 public class TriStateCheckBox extends AppCompatCheckBox implements TriCheckable {
 
-    public static final int[] EXTRA_STATE_SET = {R.attr.state_partially_checked};
+    private static final int[] EXTRA_STATE_SET = {R.attr.state_partially_checked};
 
     private boolean isPartiallyChecked = false;
 
@@ -115,7 +115,7 @@ public class TriStateCheckBox extends AppCompatCheckBox implements TriCheckable 
 
         private SavedState(Parcel in) {
             super(in);
-            isPartiallyChecked = (boolean) in.readValue(null);
+            isPartiallyChecked = (boolean) in.readValue(getClass().getClassLoader());
         }
 
         @Override

@@ -198,7 +198,7 @@
     <string name="il_all_files_read">\nAll files read\n\n</string>
     <string name="il_saving_files">Saving file data…</string>
     <string name="il_finished">\nFinished import.</string>
-    <string name="il_finished_with_errors">\nFinished import with %1$d errors.</string>
+    <string name="il_finished_with_errors">\nFinished import with %1$d error(s).</string>
     <string name="il_cancelled">\nImport cancelled.</string>
 
     <string name="il_err_generic">Error while importing and converting files</string>

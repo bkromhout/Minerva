@@ -128,7 +128,7 @@ public class Util {
      * @param permission The permission to check.
      * @return True if we currently have been granted the permission, otherwise false.
      */
-    public static boolean hasPerm(String permission) {
+    private static boolean hasPerm(String permission) {
         return ContextCompat.checkSelfPermission(Minerva.get(), permission) == PackageManager.PERMISSION_GRANTED;
     }
 

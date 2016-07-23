@@ -53,7 +53,7 @@ public class QueryBuilderActivity extends AppCompatActivity implements RealmQuer
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        if (!rqv.leaveBuilderMode()) super.onBackPressed();
     }
 
     /**
@@ -149,4 +149,6 @@ public class QueryBuilderActivity extends AppCompatActivity implements RealmQuer
         rqvMode = newMode;
         invalidateOptionsMenu();
     }
+
+
 }

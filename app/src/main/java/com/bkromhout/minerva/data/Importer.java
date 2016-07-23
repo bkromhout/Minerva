@@ -127,7 +127,7 @@ public class Importer {
     /*
      * Import process vars.
      */
-    private ImportLogger logger;
+    private final ImportLogger logger;
     /**
      * Subscription to an Rx flow which attempts to get a list of files for us to import.
      */

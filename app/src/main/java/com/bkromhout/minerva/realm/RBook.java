@@ -26,7 +26,7 @@ import java.util.Date;
  */
 @Queryable(name = "Books")
 public class RBook extends RealmObject implements UIDModel {
-    public static final String LIST_SEP = ", ";
+    private static final String LIST_SEP = ", ";
     /**
      * A unique long value.
      */

@@ -26,11 +26,11 @@ public class ImportLogger {
     /**
      * Maximum number of past logs to keep.
      */
-    public static final int MAX_LOGS = 30;
+    private static final int MAX_LOGS = 30;
     /**
      * Represents either the current log (if we're logging), or the most recent log (if we aren't logging).
      */
-    public static final int CURRENT_OR_LATEST_LOG = 0;
+    private static final int CURRENT_OR_LATEST_LOG = 0;
 
     /**
      * Implement to view past import logs and listen to running import logs.

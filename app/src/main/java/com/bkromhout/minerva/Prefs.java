@@ -20,10 +20,10 @@ public class Prefs {
     private static final String CURR_FRAG = "current_fragment";
     private static final String RATE_ME_COUNT_DOWN = "rate_me_count_down";
     // Settings
-    public static String LIB_DIR = Minerva.get().getString(R.string.key_lib_dir);
-    private static String LIB_AUTO_IMPORT = Minerva.get().getString(R.string.key_auto_import);
-    public static String NEW_BOOK_TAG = Minerva.get().getString(R.string.key_new_tag);
-    public static String UPDATED_BOOK_TAG = Minerva.get().getString(R.string.key_updated_tag);
+    public static final String LIB_DIR = Minerva.get().getString(R.string.key_lib_dir);
+    private static final String LIB_AUTO_IMPORT = Minerva.get().getString(R.string.key_auto_import);
+    public static final String NEW_BOOK_TAG = Minerva.get().getString(R.string.key_new_tag);
+    public static final String UPDATED_BOOK_TAG = Minerva.get().getString(R.string.key_updated_tag);
     // Importing
     private static final String LAST_IMPORT_SUCCESS_TIME = "most_recent_import_success";
     private static final String FIRST_IMPORT_TRIGGERED = "first_import_triggered";
@@ -47,7 +47,7 @@ public class Prefs {
     /**
      * Shared Preferences.
      */
-    private SharedPreferences prefs;
+    private final SharedPreferences prefs;
 
     // Only Minerva should create an instance of this.
     Prefs(SharedPreferences prefs) {

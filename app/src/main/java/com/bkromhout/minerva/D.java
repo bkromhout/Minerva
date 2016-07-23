@@ -15,36 +15,36 @@ public class D {
      * Default tag text color.
      */
     @ColorInt
-    public int DEFAULT_TAG_TEXT_COLOR;
+    public final int DEFAULT_TAG_TEXT_COLOR;
     /**
      * Default tag background color.
      */
     @ColorInt
-    public int DEFAULT_TAG_BG_COLOR;
+    public final int DEFAULT_TAG_BG_COLOR;
     /**
      * Color selector for card view backgrounds.
      */
-    public ColorStateList CARD_BG_COLORS;
+    public final ColorStateList CARD_BG_COLORS;
     /**
      * How much padding to use on the bottom of the tag.
      */
-    public float TAG_BOTTOM_PADDING;
+    public final float TAG_BOTTOM_PADDING;
     /**
      * Radius to use for rounded tag corners.
      */
-    public float TAG_CORNER_RADIUS;
+    public final float TAG_CORNER_RADIUS;
     /**
      * Corner radii values for all corners.
      */
-    public float[] ALL_CORNERS;
+    public final float[] ALL_CORNERS;
     /**
      * Corner radii values for start corners only.
      */
-    public float[] START_CORNERS_ONLY;
+    public final float[] START_CORNERS_ONLY;
     /**
      * Corner radii values for end corners only.
      */
-    public float[] END_CORNERS_ONLY;
+    public final float[] END_CORNERS_ONLY;
 
     // Only Minerva should create an instance of this.
     D(Application application) {
