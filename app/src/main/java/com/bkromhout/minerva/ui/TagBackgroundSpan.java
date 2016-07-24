@@ -104,9 +104,12 @@ public class TagBackgroundSpan implements LineBackgroundSpan {
      * @param end      Exclusive position to end at in {@code text} for this line.
      */
     private void drawTagBgs(Canvas c, Paint p, int x, int y, int baseline, String text, int start, int end) {
+        String currentLine = text.substring(start, end);
+        // Occasionally our last line will just be part of the tag separator. We have nothing to do in those cases.
+        if (TAG_SEP.endsWith(currentLine)) return;
         // We only care about the text for the current line, so get that first, then split it into parts using the
         // tag separator string, and measure those parts so that we can draw the individual backgrounds.
-        String[] parts = TAG_SEP_PATTERN.split(text.substring(start, end));
+        String[] parts = TAG_SEP_PATTERN.split(currentLine);
         float[] partWidths = measureLineParts(p, parts);
 
         float xOffset = 0f;
