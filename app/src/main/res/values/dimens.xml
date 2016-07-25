@@ -1,9 +1,52 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="nav_header_vertical_spacing">16dp</dimen>
-    <dimen name="nav_header_height">160dp</dimen>
-    <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <!-- Elevations -->
+    <dimen name="button_elevation">2dp</dimen>
+    <dimen name="card_elevation">2dp</dimen>
+    <dimen name="touch_raise">6dp</dimen>
+
+    <!-- FABs -->
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="mini_fab_margin">24dp</dimen>
+    <dimen name="mini_fab_translate">-64dp</dimen>
+
+    <!-- RecyclerView Padding -->
+    <dimen name="recycler_view_padding">8dp</dimen>
+    <!-- Padding for end of recycler views to avoid FAB overlap -->
+    <dimen name="rv_end_padding">80dp</dimen>
+
+    <!-- Nav Drawer Header -->
+    <dimen name="nav_header_vertical_spacing">16dp</dimen>
+    <dimen name="nav_header_height">160dp</dimen>
+
+    <!-- Book Info -->
+    <dimen name="collapsible_header_height">256dp</dimen>
+    <dimen name="top_protection_scrim_height">88dp</dimen>
+    <dimen name="bottom_protection_scrim_height">88dp</dimen>
+
+    <!-- Tags -->
+    <dimen name="tag_corner_radius">2dp</dimen>
+    <dimen name="tag_side_padding">3dp</dimen>
+    <dimen name="tag_bottom_padding">1dp</dimen>
+    <dimen name="tag_line_spacing_extra">4dp</dimen>
+
+    <!-- Cards -->
+    <dimen name="card_margin">8dp</dimen>
+
+    <dimen name="large_cover_width">96dp</dimen>
+    <dimen name="large_cover_height">128dp</dimen>
+
+    <dimen name="book_card_height">180dp</dimen>
+    <dimen name="book_card_no_cover_height">128dp</dimen>
+    <dimen name="book_card_compact_height">64dp</dimen>
+
+    <dimen name="list_card_height">56dp</dimen>
+    <dimen name="tag_card_height">48dp</dimen>
+
+    <!-- Other -->
+    <dimen name="default_cover_dimen">128dp</dimen>
+    <item name="default_cover_viewport_dimen" format="float" type="dimen">128.0</item>
 </resources>

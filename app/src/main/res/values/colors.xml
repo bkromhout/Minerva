@@ -1,6 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <!-- Material Design Colors -->
+    <color name="green100">#C8E6C9</color>
+    <color name="green500">#4CAF50</color>
+    <color name="green700">#388E3C</color>
+    <color name="green800">#2E7D32</color>
+
+    <color name="red500">#F44336</color>
+    <color name="red700">#D32F2F</color>
+    <color name="redA200">#FF5252</color>
+
+    <color name="orange500">#FF9800</color>
+    <color name="orange700">#F57C00</color>
+
+    <color name="blue500">#2196F3</color>
+    <color name="blue700">#1976D2</color>
+
+    <color name="blueGrey500">#607D8B</color>
+    <color name="blueGrey700">#455A64</color>
+    <color name="blueGrey800">#37474F</color>
+
+    <color name="brown500">#795548</color>
+    <color name="brown700">#5D4037</color>
+    <color name="brown900">#3E2723</color>
+
+    <color name="white12p">#1FFFFFFF</color>
+
+    <color name="grey200">#EEEEEE</color>
+    <color name="grey300">#E0E0E0</color>
+    <color name="grey400">#BDBDBD</color>
+    <color name="grey500">#9E9E9E</color>
+    <color name="grey600">#757575</color>
+    <color name="grey700">#616161</color>
+    <color name="grey800">#424242</color>
+    <color name="grey900">#212121</color>
+
+
+    <!-- Other colors -->
+    <color name="greyDE">#DEDEDE</color>
+    <color name="grey66">#666666</color>
+    <color name="grey30">#303030</color>
+    <color name="shadow_light">#66000000</color>
+    <color name="shadow_heavy">#80000000</color>
+    <color name="book_info_text_shadow">#FF000000</color>
+    <color name="translucent_scrim_top">#26000000</color>
+    <color name="translucent_scrim_top_center">#0C000000</color>
+    <color name="translucent_scrim_bottom">#5A000000</color>
+    <color name="translucent_scrim_bottom_center">#24000000</color>
+
+    <!-- Prevalent App Colors -->
+    <color name="colorPrimary">@color/green500</color>
+    <color name="colorPrimaryDark">@color/green700</color>
+    <color name="colorPrimaryLight">@color/green100</color>
+    <color name="colorAccent">@color/redA200</color>
+
+    <color name="textColorPrimary">@android:color/white</color>
+    <color name="textColorSecondary">@color/grey500</color>
+    <color name="textColorDialogContent">#C7C7C7</color>
+    <!-- inverse text color: 87% black -->
+    <color name="textColorPrimaryInverse">#DE000000</color>
+    <color name="textColorSecondaryInverse">@color/grey500</color>
+
+    <color name="selectedCard">@color/grey600</color>
+    
+    <!-- Override realm-recyclerview-lite colors. -->
+    <color name="rrvl_handle_active_color">@color/colorAccent</color>
+    <color name="rrvl_bubble_color">@color/colorAccent</color>
+
+    <!-- Override AboutLibraries to use dark colors. -->
+    <color name="about_libraries_window_background">@color/grey30</color>
+    <color name="about_libraries_card">@color/grey66</color>
+    <color name="about_libraries_title_openSource">@android:color/white</color>
+    <color name="about_libraries_text_openSource">@color/greyDE</color>
+    <color name="about_libraries_special_button_openSource">@android:color/white</color>
+    <color name="about_libraries_dividerDark_openSource">@color/grey30</color>
+    <color name="about_libraries_dividerLight_openSource">@color/grey30</color>
 </resources>

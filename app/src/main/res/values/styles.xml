@@ -1,20 +1,98 @@
 <resources>
+    <!-- For the Hamburger Icon -->
+    <style name="DrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@color/textColorPrimary</item>
+    </style>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+    <!-- Toolbar -->
+    <style name="AppTheme.Toolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:popupTheme">@style/AppTheme.PopupOverlay</item>
+        <item name="android:theme">@style/AppTheme.AppBarOverlay</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
+    <!-- AppBar -->
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+    <!-- PopupMenu -->
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat">
+    </style>
 
+    <!-- Dark Cards -->
+    <style name="MinervaDarkCardNoRipple" parent="CardView.Dark">
+        <item name="android:layout_marginTop">@dimen/card_margin</item>
+        <item name="cardBackgroundColor">@color/card_bg_color</item>
+        <item name="android:stateListAnimator">@animator/card_state_list</item>
+        <!--<item name="cardElevation">@dimen/card_elevation</item>-->
+    </style>
+
+    <style name="MinervaDarkCard" parent="MinervaDarkCardNoRipple">
+        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <!-- Button styles -->
+    <style name="ImageButtonRippleBg" parent="Widget.AppCompat.ImageButton">
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="LiftOnTouchButton">
+        <item name="android:stateListAnimator">@animator/button_lift_state_list</item>
+    </style>
+
+    <!-- RealmRecyclerView styles -->
+    <style name="RealmRVBase">
+        <item name="rvPaddingStart">@dimen/recycler_view_padding</item>
+        <item name="rvPaddingEnd">@dimen/recycler_view_padding</item>
+        <item name="rvPaddingBottom">@dimen/recycler_view_padding</item>
+    </style>
+
+    <style name="RealmRVFastScroll" parent="RealmRVBase">
+        <item name="fastScroll">true</item>
+        <item name="autoHideFastScrollHandle">true</item>
+        <item name="handleAutoHideDelay">1000</item>
+    </style>
+
+    <style name="RealmRVFastScrollWithBubble" parent="RealmRVFastScroll">
+        <item name="useFastScrollBubble">true</item>
+    </style>
+
+    <!-- Text styles -->
+    <style name="LabelText" parent="TextAppearance.AppCompat.Button">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
+    <style name="BookInfoLabelText" parent="LabelText">
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">2dp</item>
+    </style>
+
+    <style name="BookInfoText" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="BookInfoTextSmall" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="BookInfoHeaderText" parent="TextAppearance.AppCompat.Large">
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowColor">@color/book_info_text_shadow</item>
+        <item name="android:shadowRadius">4</item>
+    </style>
 </resources>

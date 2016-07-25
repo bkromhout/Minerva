@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:state_enabled="false"
+          android:alpha="0.28"
+          android:color="@color/textColorPrimary"/>
+    <item android:color="@color/colorAccent"
+          app:state_partially_checked="true"/>
+    <item android:state_checked="true"
+          android:color="@color/colorAccent"/>
+    <item android:color="@color/textColorPrimary"/>
+</selector>

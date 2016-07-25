@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/card"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/list_card_height"
+        style="@style/MinervaDarkCard">
+
+    <RelativeLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="8dp">
+
+        <TextView
+                android:id="@+id/list_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@+id/smart_list_icon"
+                android:layout_marginBottom="-2dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textStyle="bold"
+                style="@style/TextAppearance.AppCompat.Medium"
+                tools:text="Cool Book List"/>
+
+        <TextView
+                android:id="@+id/list_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/list_name"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textColor="@color/grey500"
+                tools:text="Not Set Up"/>
+
+        <ImageButton
+                android:id="@+id/smart_list_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@+id/btn_actions"
+                android:tint="@color/textColorPrimary"
+                android:src="@drawable/ic_lightbulb_filled"
+                android:contentDescription="@string/action_show_query"
+                android:visibility="gone"
+                style="@style/ImageButtonRippleBg"
+                tools:visibility="visible"/>
+
+        <ImageButton
+                android:id="@id/btn_actions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:tint="@color/textColorSecondary"
+                android:src="@drawable/ic_more_vertical"
+                android:contentDescription="@string/acc_actions"
+                style="@style/ImageButtonRippleBg"/>
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

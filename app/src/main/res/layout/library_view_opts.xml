@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/library_view_opts_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:padding="4dp">
+
+    <LinearLayout
+            android:id="@+id/sort_opts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="40dp"
+            android:orientation="vertical">
+
+        <TextView
+                android:id="@+id/lbl_sort_opts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/grey200"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:text="@string/lbl_sort_opts"/>
+
+        <RadioGroup
+                android:id="@+id/rg_sort_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkedButton="@+id/sort_title">
+
+            <RadioButton
+                    android:id="@id/sort_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sort_title"/>
+
+            <RadioButton
+                    android:id="@+id/sort_author"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sort_author"/>
+
+            <RadioButton
+                    android:id="@+id/sort_time_added"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sort_time_added"/>
+
+            <RadioButton
+                    android:id="@+id/sort_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sort_rating"/>
+
+            <RadioButton
+                    android:id="@+id/sort_rel_path"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sort_rel_path"/>
+        </RadioGroup>
+
+        <RadioGroup
+                android:id="@+id/rg_sort_dir"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:checkedButton="@+id/sort_asc">
+
+            <RadioButton
+                    android:id="@id/sort_asc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="12dp"
+                    android:buttonTint="@color/rb_icon_color"
+                    android:buttonTintMode="src_in"
+                    android:button="@drawable/ic_sort_ascending"/>
+
+            <RadioButton
+                    android:id="@+id/sort_desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="12dp"
+                    android:buttonTint="@color/rb_icon_color"
+                    android:buttonTintMode="src_in"
+                    android:button="@drawable/ic_sort_descending"/>
+        </RadioGroup>
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/card_opts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/sort_opts"
+            android:orientation="vertical">
+
+        <TextView
+                android:id="@+id/lbl_card_opts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/grey200"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:layout_gravity="center_horizontal"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:text="@string/lbl_card_opts"/>
+
+        <RadioGroup
+                android:id="@+id/rg_card_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkedButton="@+id/card_normal">
+
+            <RadioButton
+                    android:id="@id/card_normal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/card_normal"/>
+
+            <RadioButton
+                    android:id="@+id/card_no_cover"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/card_no_cover"/>
+
+            <RadioButton
+                    android:id="@+id/card_compact"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/card_compact"/>
+        </RadioGroup>
+    </LinearLayout>
+</RelativeLayout>

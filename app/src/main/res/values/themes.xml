@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Default is a dark theme -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="android:textColorSecondary">@color/textColorPrimary</item>
+        <item name="android:textColorPrimaryInverse">@color/textColorPrimaryInverse</item>
+        <item name="android:textColorSecondaryInverse">@color/textColorPrimaryInverse</item>
+
+        <item name="windowActionModeOverlay">true</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+    </style>
+
+    <!-- Default dark theme + transparent status bar -->
+    <style name="AppTheme.TransparentStatus" parent="AppTheme">
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <style name="AppTheme.WelcomeActivity" parent="AppTheme">
+        <item name="android:statusBarColor">#303030</item>
+    </style>
+
+    <style name="AppTheme.BookInfoActivity" parent="AppTheme.TransparentStatus">
+        <item name="android:windowEnterTransition">@transition/book_info_enter</item>
+        <item name="android:windowReturnTransition">@transition/book_info_return</item>
+    </style>
+
+    <style name="AppTheme.BookListActivity" parent="AppTheme">
+        <item name="android:windowEnterTransition">@transition/book_list_enter</item>
+        <item name="android:windowReturnTransition">@transition/book_list_return</item>
+        <!-- Make the window background transparent so that we don't have to see the transition background fade -->
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+</resources>

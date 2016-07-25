@@ -1,8 +1,410 @@
 <resources>
+    <!-- Special characters (for easy copy-paste):
+    Right single quote: ’ (Or, Shift+Alt+])
+    Left double quote:  “ (Or, Alt+[ to surround)
+    Right double quote: ”
+    -->
+
+    <!-- ******************************** General ******************************** -->
     <string name="app_name">Minerva</string>
+    <string name="tag_line">Organize your eBooks with ease</string>
+    <string name="app_info">App Info</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <!--suppress CheckTagEmptyBody -->
+    <string name="empty"></string>
+    <string name="dismiss">Dismiss</string>
+    <string name="ok">OK</string>
+    <string name="got_it">Got it</string>
+    <string name="yes">Yes</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="no">No</string>
+    <string name="not_now">Not now</string>
+    <string name="clear">Clear</string>
+    <string name="settings">Settings</string>
+    <string name="retry">Retry</string>
+    <string name="undo">Undo</string>
+    <string name="never">Never</string>
 
-    <string name="action_settings">Settings</string>
+    <string name="sort_asc">Ascending</string>
+    <string name="sort_desc">Descending</string>
+
+    <!-- Common error strings -->
+    <string name="err_name_taken">Name already in use</string>
+    <string name="sb_err_no_apps">You have no apps which can open this book’s file</string>
+    <string name="sb_err_file_not_found">File not found</string>
+
+    <!-- Permissions -->
+    <string name="storage_permission">Storage Permission</string>
+    <string name="storage_permission_rationale">Minerva uses the storage permission to read your book files and to
+        write backup files.</string>
+    <string name="storage_permission_needed">Storage permission needed</string>
+    <string name="storage_permission_perm_denied">Minerva needs the Storage permission, but you permanently denied it.
+        \nOpen the App Info screen to grant it.</string>
+
+    <string name="storage_permission_rationale_long">Minerva uses the Storage permission to read book files from your
+        library folder, and to read and write backup files which will outlast un-installation.\n\nSince you permanently
+        denied the Storage permission, you need to grant it from the App Info screen.</string>
+
+    <!-- Rate Me Dialog -->
+    <string name="title_rate_minerva">Rate Minerva</string>
+    <string name="prompt_rate_minerva">I hope you’re enjoying Minerva! Would you consider taking a minute to rate and
+        review it?
+        \n\nThank you :)
+        \n—Brenden Kromhout</string>
+
+    <!-- ******************************** Action Strings (Alphabetical order). ******************************** -->
+    <!-- Add To List -->
+    <string name="action_add_to_list">Add To List</string>
+
+    <!-- Clear -->
+    <string name="action_clear">@string/clear</string>
+    <string name="action_clear_list">Clear List</string>
+    <string name="prompt_clear_list">Clear this list of all books?</string>
+    <string name="action_clear_recents">Clear Recents</string>
+    <string name="prompt_clear_recents">Clear all books from the recents list?</string>
+
+    <!-- Delete -->
+    <string name="action_delete">Delete</string>
+    <string name="title_delete_book">Delete Book</string>
+    <string name="title_delete_books">Delete Books</string>
+    <string name="title_delete_list">Delete List</string>
+    <string name="title_delete_lists">Delete Lists</string>
+    <string name="prompt_delete_book">Delete this book from your library?</string>
+    <string name="prompt_delete_books">Delete the selected books from your library?</string>
+    <string name="prompt_delete_from_device_too">Delete from device too</string>
+    <string name="info_delete_from_device_permanent">This is permanent</string>
+    <string name="prompt_delete_list">Delete this list?</string>
+    <string name="prompt_delete_lists">Delete the selected lists?</string>
+
+    <!-- Rate -->
+    <string name="action_rate">Rate</string>
+    <string name="title_dialog_rating">Rating</string>
+
+    <!-- Re-Import -->
+    <string name="action_re_import">Re-Import</string>
+    <string name="title_re_import_book">Re-Import Book</string>
+    <string name="title_re_import_books">Re-Import Books</string>
+    <string name="prompt_re_import_book">Re-import this book?</string>
+    <string name="prompt_re_import_books">Re-import the selected books?</string>
+
+    <!-- Remove -->
+    <string name="action_remove">Remove</string>
+    <string name="title_remove_book">Remove Book</string>
+    <string name="title_remove_books">Remove Books</string>
+    <string name="prompt_remove_from_list">Remove the selected books from this list?</string>
+    <string name="prompt_remove_from_recents">Remove the selected books from the recents list?</string>
+
+    <!-- Actions name strings for actions without many associated strings (i.e., they're more "standalone"), or whose
+         associated strings are contained to one area of the app and thus are in another part of this file. -->
+    <string name="action_resume_reading">Resume Reading</string>
+    <string name="action_search">Search</string>
+    <string name="action_select_all">Select All</string>
+    <string name="action_select_none">Select None</string>
+    <string name="action_sort">Sort</string>
+    <string name="action_tag">Tag</string>
+
+
+    <!-- ******************************** Welcome Activity ******************************** -->
+    <string name="choose_library_dir">Choose Library Folder</string>
+    <string name="choose_library_dir_desc">Choose the folder where Minerva should expect to find your book files.</string>
+    <string name="lbl_folder">&lt;b>Folder:&lt;/b> %1$s</string>
+    <string name="open_folder_chooser">Choose Folder</string>
+    <string name="restore_database_desc">If you previously backed up Minerva’s database and would like to restore it,
+        go ahead and choose the backup file now. Minerva will restore it once you’re done with setup.</string>
+    <string name="welcome_restore_backed_up_db_prompt">Choose a database backup to restore when setup is finished</string>
+    <string name="none">None</string>
+    <string name="choose_database_backup">Choose Backup</string>
+    <string name="ready_to_go">You’re ready to go!</string>
+    <string name="ready_to_go_desc">I hope you enjoy using Minerva as much as I enjoyed making it.
+        \n\nIf you run into any problems or have any suggestions, go to the “About” screen, tap the GitHub icon, and
+        open an issue.
+        \n\n—Brenden Kromhout—</string>
+
+
+    <!-- ******************************** Main Activity/Nav Drawer/Fragment Titles ******************************** -->
+    <string name="nav_item_recent">Recent</string>
+    <string name="nav_item_library">Library</string>
+    <string name="nav_item_all_lists">Lists</string>
+    <string name="nav_item_power_search">Power Search</string>
+    <string name="nav_item_settings">@string/settings</string>
+    <string name="nav_item_about">About</string>
+
+    <string name="acc_navigation_drawer_open">Open navigation drawer</string>
+    <string name="acc_navigation_drawer_close">Close navigation drawer</string>
+
+
+    <!-- ******************************** Library Fragment ******************************** -->
+    <string name="action_import">Import</string>
+    <string name="action_filter">Filter</string>
+    <string name="action_view_opts">View Options</string>
+
+    <string name="lbl_sort_opts">Sort By</string>
+    <string name="sort_title">Title</string>
+    <string name="sort_author">Author</string>
+    <string name="sort_time_added">Time Added</string>
+    <string name="sort_rating">Rating</string>
+    <string name="sort_rel_path">Relative Path</string>
+
+    <string name="lbl_card_opts">Card Style</string>
+    <string name="card_normal">Normal</string>
+    <string name="card_no_cover">No Cover</string>
+    <string name="card_compact">Compact</string>
+
+    <string name="prompt_empty_library">Your library is empty and sad</string>
+    <string name="action_open_importer">Open Importer</string>
+    <string name="sb_no_lists">You have no lists</string>
+
+
+    <!-- ******************************** Importing Process ******************************** -->
+    <!-- Import Activity -->
+    <string name="title_activity_import">Importer</string>
+
+    <string name="import_header_initializing">Initializing…</string>
+    <string name="import_header_ready">Ready</string>
+    <string name="import_header_importing">Importing…</string>
+    <string name="import_header_saving">Saving…</string>
+    <string name="import_header_cancelling">Cancelling…</string>
+
+    <string name="lbl_last_import_time">Last Successful Import</string>
+    <string name="last_import_time_default">Never</string>
+    <string name="lbl_choose_log">Choose Log</string>
+    <string name="lbl_full_log">Full</string>
+    <string name="lbl_errors_only">Errors</string>
+
+    <string name="log_label">Log %1$s</string>
+    <string name="log_label_none">No Logs</string>
+    <string name="log_label_current_import_uc">For current import</string>
+    <string name="log_label_current_import_lc">for current import</string>
+    <string name="log_label_from_uc">From %1$s</string>
+    <string name="log_label_from_lc">from %1$s</string>
+
+    <string name="num_queued">%1$d Queued</string>
+
+    <string name="import_red_choose_dir">Choose a library folder first</string>
+    <string name="import_red_no_cancel">Saving book info; you can’t cancel now</string>
+
+    <string name="start_full_import">Start Full Import</string>
+
+    <!-- Importer Log Strings -->
+    <string name="il_done">Done\n</string>
+    <string name="fil_starting">Starting full import\n\n</string>
+    <string name="ril_starting">Starting re-import\n\n</string>
+    <string name="fil_finding_files">Finding files…</string>
+    <string name="ril_build_file_list">Building file list…</string>
+    <string name="il_found_files">Found %1$d file(s)\n\n</string>
+    <string name="il_reading_files">Reading files:\n</string>
+    <string name="il_read_file">Read “%1$s”\n</string>
+    <string name="il_all_files_read">\nAll files read\n\n</string>
+    <string name="il_saving_files">Saving file data…</string>
+    <string name="il_finished">\nFinished import.</string>
+    <string name="il_finished_with_errors">\nFinished import with %1$d error(s).</string>
+    <string name="il_cancelled">\nImport cancelled.</string>
+
+    <string name="il_err_generic">Error while importing and converting files</string>
+    <string name="il_err_processing_file">Error while importing “%1$s”\n</string>
+    <string name="ril_err_getting_file">Error getting file “%1$s”\n</string>
+    <string name="ril_err_getting_files">Error while getting files</string>
+    <string name="il_err_invalid_lib_dir">Invalid library folder, cancelling import</string>
+    <string name="il_err_no_files">There are no files to import</string>
+    <string name="il_err_realm">Realm error</string>
+
+    <!-- Importer Snackbar Strings -->
+    <string name="sb_il_action_details">Details</string>
+    <string name="sb_fil_queued">Full import queued</string>
+    <string name="sb_ril_queued">Re-import queued</string>
+    <string name="sb_fil_started">Full import started</string>
+    <string name="sb_ril_started">Re-import started</string>
+
+    <string name="sb_fil">Full import</string>
+    <string name="sb_ril">Re-import</string>
+    <string name="sb_result_finished">\u0020finished</string>
+    <string name="sb_result_cancelled">\u0020cancelled</string>
+
+    <string name="sb_il_results_zero">; found nothing to import</string>
+    <plurals name="sb_il_results">
+        <item quantity="one">; processed %1$d book out of %2$d</item>
+        <item quantity="other">; processed %1$d books out of %2$d</item>
+    </plurals>
+    <plurals name="sb_il_just_error_results">
+        <item quantity="one">; had %1$d error</item>
+        <item quantity="other">; had %1$d errors</item>
+    </plurals>
+
+    <plurals name="sb_il_and_error_results">
+        <item quantity="one">, and had %1$d error</item>
+        <item quantity="other">, and had %1$d errors</item>
+    </plurals>
+
+    <plurals name="sb_il_more_queued">
+        <item quantity="one">. There is %1$d more import run queued</item>
+        <item quantity="other">. There are %1$d more import runs queued</item>
+    </plurals>
+
+    <!-- ******************************** Lists ******************************** -->
+    <string name="action_edit">Edit</string>
+    <string name="action_rename">Rename</string>
+    <string name="action_save_as_smart_list">Save As Smart List</string>
+
+    <!-- Book List Activity -->
+    <string name="title_activity_book_list">Book List</string>
+    <string name="title_reorder_mode">Reorder Mode</string>
+    <string name="action_card_type">Card Style</string>
+    <string name="action_reorder">Reorder</string>
+    <string name="action_move_to_top">Move To Top</string>
+    <string name="action_move_to_bottom">Move To Bottom</string>
+
+    <!-- All Lists Fragment -->
+    <string name="action_new_list">New List</string>
+    <string name="title_rename_list">Rename List</string>
+    <string name="prompt_new_list">Enter a name for the new list</string>
+    <string name="prompt_rename_list">Enter a new name for the list</string>
+    <string name="list_name_hint">Name</string>
+    <plurals name="list_count">
+        <item quantity="one">%1$d Book</item>
+        <item quantity="other">%1$d Books</item>
+    </plurals>
+    <string name="no_books">No Books</string>
+    <string name="not_set_up">Not Set Up</string>
+
+    <!-- Smart Lists -->
+    <string name="action_new_smart_list">New Smart List</string>
+    <string name="action_convert">Convert</string>
+    <string name="action_to_normal_list">To Normal List</string>
+
+
+    <string name="title_rename_smart_list">Rename Smart List</string>
+    <string name="title_edit_smart_list">Edit Smart List</string>
+    <string name="title_convert_to_normal_list">Convert to Normal List</string>
+    <string name="title_delete_smart_list">Delete Smart List</string>
+
+    <string name="prompt_new_smart_list">Enter a name for the new smart list</string>
+    <string name="prompt_rename_smart_list">Enter a new name for the smart list</string>
+    <string name="prompt_convert_to_normal_list">Convert this smart list to a normal list?
+        \n\nYou cannot undo this action.</string>
+    <string name="prompt_delete_smart_list">Delete this smart list?</string>
+
+    <string name="smart_list_created">Smart List Created</string>
+
+    <!-- ******************************** Queries ******************************** -->
+    <string name="title_activity_query_builder">Query Builder</string>
+    <string name="title_curr_query">Current Query</string>
+    <string name="title_smart_list_query">Smart List Query</string>
+
+    <string name="action_show_query">Show Query</string>
+    <string name="action_open_query_builder">Open Query Builder</string>
+
+    <string name="no_query">You haven’t built a query yet.</string>
+    <string name="no_query_for_smart_list">You haven’t built a query for this smart list.</string>
+    <string name="no_query_for_smart_list_n">You haven’t built a query\nfor this smart list.</string>
+    <string name="sb_err_invalid_query">Invalid Query</string>
+
+    <!-- ******************************** Book Card/Book Info Activity ******************************** -->
+    <string name="title_activity_info">Book Information</string>
+
+    <string name="lbl_title">Title</string>
+    <string name="lbl_author">Author</string>
+    <string name="lbl_desc">Description</string>
+    <string name="lbl_rating">Rating</string>
+    <string name="lbl_rating_colon">Rating:</string>
+    <string name="lbl_chap_count">Chapter Count</string>
+    <string name="lbl_tags">Tags</string>
+    <string name="lbl_lists">Lists</string>
+    <string name="lbl_path">Path</string>
+    <string name="lbl_last_read_date">Last Read</string>
+    <string name="lbl_last_import_date">Last Imported</string>
+    <string name="lbl_subjects">Subjects</string>
+    <string name="lbl_types">Types</string>
+    <string name="lbl_format">Format</string>
+    <string name="lbl_language">Language</string>
+    <string name="lbl_publisher">Publisher</string>
+    <string name="lbl_publish_date">Published</string>
+    <string name="lbl_mod_date">Modified</string>
+
+    <string name="acc_book_cover">Book Cover</string>
+    <string name="acc_book_info">View book info</string>
+    <string name="acc_quick_tag">Quick tag</string>
+    <string name="acc_actions">Actions</string>
+    <string name="acc_rating">@string/title_dialog_rating</string>
+
+    <string name="no_tags">This book has no tags</string>
+    <string name="no_lists">This book isn’t in any lists</string>
+
+    <string name="dummy_title">The Title of a Book</string>
+    <string name="dummy_author">Firstname Lastname</string>
+    <string name="dummy_desc">This is a fairly sizable dummy portion of text which is useful for showing in textviews
+        which would probably hold a fair amount of text. For example, perhaps you have a textview which shows the
+        description of a book? This would be a good string to have there!</string>
+
+    <!-- ******************************** Tagging Activity ******************************** -->
+    <string name="title_activity_tagging">Choose Tags</string>
+    <string name="title_dialog_choose_tag">Choose Tag</string>
+    <string name="title_tag_text_color">Tag Text Color</string>
+    <string name="title_tag_bg_color">Tag Background Color</string>
+    <string name="title_rename_tag">Rename Tag</string>
+    <string name="title_delete_tag">Delete Tag</string>
+
+    <string name="action_save_tags">Save Tags</string>
+    <string name="action_new_tag">New Tag</string>
+
+    <string name="prompt_new_tag">Enter a name for the new tag</string>
+    <string name="prompt_rename_tag">Enter a new name for the tag</string>
+    <string name="prompt_delete_tag">Delete “%1$s”?\n\nThis is permanent, even if you leave the tagging screen
+        without saving.</string>
+    <string name="tag_name_hint">Tag Name</string>
+
+    <string name="default_new_book_tag">New</string>
+    <string name="default_updated_book_tag">Updated</string>
+    <string name="sb_no_available_tags">You have no available tags</string>
+
+    <!-- ******************************** Marking ******************************** -->
+    <string name="title_dialog_mark_as">Mark As…</string>
+    <string name="action_mark_as">Mark As</string>
+
+    <string-array name="mark_choices">
+        <item>New</item>
+        <item>Not New</item>
+        <item>Updated</item>
+        <item>Not Updated</item>
+    </string-array>
+
+    <!-- ******************************** Settings Activity ******************************** -->
+    <string name="title_activity_settings">@string/settings</string>
+
+    <string name="cat_title_library">Library</string>
+    <string name="title_lib_dir">Library Folder</string>
+    <string name="title_auto_import">Auto-Import</string>
+    <string name="summary_auto_import">Run a full import when the app starts</string>
+
+    <string name="cat_title_tagging">Tagging</string>
+    <string name="title_auto_tag_new">Auto-Tag New Books</string>
+    <string name="title_auto_tag_updated">Auto-Tag Updated Books</string>
+    <string name="summary_tag_as">Tag as “%1$s”</string>
+
+    <string name="cat_title_backup_restore">Backup &amp; Restore</string>
+    <string name="title_backup_db">Backup Database</string>
+    <string name="title_restore_db">Restore Database</string>
+    <string name="summary_restore_db">(Requires app restart)</string>
+    <string name="title_backup_settings">Backup Settings</string>
+    <string name="title_restore_settings">Restore Settings</string>
+
+    <string name="prompt_choose_backed_up_db">Choose a database backup to restore (It is recommended that you back up
+        your current database first)</string>
+    <string name="action_restore">Restore</string>
+
+    <string name="sb_db_backup_success">Database backup successful</string>
+    <string name="sb_db_backup_fail">Database backup failed</string>
+    <string name="sb_no_db_backups">No database backups found</string>
+    <string name="sb_db_restore_success">Database restore successful</string>
+    <string name="sb_db_restore_fail">Database restore failed</string>
+    <string name="sb_settings_backup_success">Setting backup successful</string>
+    <string name="sb_settings_backup_fail">Settings backup failed</string>
+    <string name="sb_no_settings_backups">No settings backups found</string>
+
+    <!-- ******************************** About Activity ******************************** -->
+    <string name="title_activity_about">@string/nav_item_about</string>
+    <string name="acc_app_logo_name_tagline">Minerva; Organize your eBooks with ease!</string>
+    <string name="version_string">Version %1$s (%2$d)</string>
+    <string name="acc_github_logo">GitHub Logo</string>
+
 </resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Nav Drawer Header -->
+    <dimen name="nav_header_height">110dp</dimen>
+
+    <!-- Book Info -->
+    <dimen name="collapsible_header_height">128dp</dimen>
+
+    <!-- Cards -->
+    <dimen name="large_cover_width">120dp</dimen>
+    <dimen name="large_cover_height">160dp</dimen>
+
+    <dimen name="book_card_height">180dp</dimen>
+    <dimen name="book_card_no_cover_height">128dp</dimen>
+    <dimen name="book_card_compact_height">64dp</dimen>
+</resources>

@@ -16,4 +16,64 @@
 #   public *;
 #}
 
+# Really no reason to do this and invite trouble since the source is available on Github.
+-dontobfuscate
+
+# Make sure our little menu icons hack works.
+-keepclasseswithmembers class * {
+    void setOptionalIconsVisible(boolean);
+}
+
+# Support Lib Exclusions
+-keep class android.support.v7.widget.SearchView {
+   public <init>(android.content.Context);
+   public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep interface android.support.v7.widget.SearchView {
+   public <init>(android.content.Context);
+   public <init>(android.content.Context, android.util.AttributeSet);
+}
+
+# AboutLibraries
+-keep class .R
+-keep class **.R$* {
+    <fields>;
+}
+
+# Butter Knife 7
+-keep class butterknife.** { *; }
+-dontwarn butterknife.internal.**
+-keep class **$$ViewBinder { *; }
+-keepclasseswithmembernames class * {
+    @butterknife.* <fields>;
+}
+-keepclasseswithmembernames class * {
+    @butterknife.* <methods>;
+}
+
+# epublib
+-dontwarn org.xmlpull.v1.**
+-dontnote org.xmlpull.v1.**
+-keep class org.xmlpull.** { *; }
+
+# EventBus 3
+-keepattributes *Annotation*
+-keepclassmembers class ** {
+    @org.greenrobot.eventbus.Subscribe <methods>;
+}
+-keep enum org.greenrobot.eventbus.ThreadMode { *; }
+
+# Glide
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
+}
+
+# Realm
+-keep class com.bkromhout.minerva.realm.** { *; }
+-keep class io.realm.RealmCollection
+-keep class io.realm.OrderedRealmCollection
+
+# Retrolambda
 -dontwarn java.lang.invoke.*

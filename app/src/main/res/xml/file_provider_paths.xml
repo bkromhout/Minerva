@@ -1,0 +1,7 @@
+<paths>
+    <!-- Sadly since we can't know until runtime what the paths to the SD cards are, we have to use this undocumented
+    "root-path" tag, fingers crossed that it isn't removed in the future. Storage on Android; always a pleasure. -->
+    <root-path
+            name="files"
+            path="/storage"/>
+</paths>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+            android:id="@+id/nav_items"
+            android:checkableBehavior="single">
+        <item
+                android:id="@+id/nav_recent"
+                android:icon="@drawable/ic_history"
+                android:title="@string/nav_item_recent"/>
+        <item
+                android:id="@+id/nav_library"
+                android:icon="@drawable/ic_library"
+                android:title="@string/nav_item_library"/>
+        <item
+                android:id="@+id/nav_all_lists"
+                android:icon="@drawable/ic_lists"
+                android:title="@string/nav_item_all_lists"/>
+        <item
+                android:id="@+id/nav_power_search"
+                android:icon="@drawable/ic_power_search"
+                android:title="@string/nav_item_power_search"/>
+    </group>
+
+    <group
+            android:id="@+id/nav_footer"
+            android:checkableBehavior="none">
+        <item
+                android:id="@+id/nav_settings"
+                android:icon="@drawable/ic_cog"
+                android:title="@string/nav_item_settings"/>
+        <item
+                android:id="@+id/nav_about"
+                android:icon="@drawable/ic_info_filled"
+                android:title="@string/nav_item_about"/>
+    </group>
+</menu>

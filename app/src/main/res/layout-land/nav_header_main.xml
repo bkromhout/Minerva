@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.percent.PercentFrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/nav_header_height"
+        android:background="@drawable/side_nav_bar"
+        android:paddingBottom="8dp"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark"
+        tools:showIn="@layout/activity_main">
+
+    <ImageView
+            android:id="@+id/about_logo"
+            android:layout_width="wrap_content"
+            app:layout_heightPercent="80%"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="4dp"
+            android:src="@drawable/app_icon_name_tagline"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/acc_app_logo_name_tagline"/>
+</android.support.percent.PercentFrameLayout>

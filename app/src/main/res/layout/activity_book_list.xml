@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/coordinator"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/grey30"
+        android:fitsSystemWindows="true"
+        tools:context=".activities.BookListActivity">
+
+    <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+        <include layout="@layout/toolbar"/>
+    </android.support.design.widget.AppBarLayout>
+
+    <com.bkromhout.rrvl.RealmRecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:dragAndDrop="true"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            style="@style/RealmRVFastScroll"/>
+
+    <LinearLayout
+            android:id="@+id/smart_list_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:gravity="center"
+            tools:visibility="visible">
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:gravity="center_horizontal"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:text="@string/no_query_for_smart_list_n"/>
+
+        <Button
+                android:id="@+id/open_query_builder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/colorAccent"
+                android:text="@string/action_open_query_builder"/>
+    </LinearLayout>
+
+    <View
+            android:id="@+id/transition_fg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/cardview_dark_background"
+            android:translationZ="4dp"
+            tools:alpha="0"/>
+</android.support.design.widget.CoordinatorLayout>

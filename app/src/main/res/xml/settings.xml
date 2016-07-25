@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/cat_title_library">
+
+        <Preference
+                android:title="@string/title_lib_dir"
+                android:key="@string/key_lib_dir"/>
+
+        <CheckBoxPreference
+                android:title="@string/title_auto_import"
+                android:summary="@string/summary_auto_import"
+                android:key="@string/key_auto_import"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/cat_title_tagging">
+
+        <Preference
+                android:title="@string/title_auto_tag_new"
+                android:key="@string/key_new_tag"/>
+
+        <Preference
+                android:title="@string/title_auto_tag_updated"
+                android:key="@string/key_updated_tag"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/cat_title_backup_restore">
+
+        <Preference
+                android:title="@string/title_backup_db"
+                android:key="@string/key_backup_db"/>
+
+        <Preference
+                android:title="@string/title_restore_db"
+                android:summary="@string/summary_restore_db"
+                android:key="@string/key_restore_db"/>
+    </PreferenceCategory>
+</PreferenceScreen>

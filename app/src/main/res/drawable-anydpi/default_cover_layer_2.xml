@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="@dimen/default_cover_dimen"
+        android:height="@dimen/default_cover_dimen"
+        android:viewportWidth="@dimen/default_cover_viewport_dimen"
+        android:viewportHeight="@dimen/default_cover_viewport_dimen">
+    <path
+            android:fillColor="@color/grey900"
+            android:pathData="@string/def_cover_layer_2"/>
+</vector>

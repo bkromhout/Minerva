@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/card"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/book_card_height"
+        style="@style/MinervaDarkCard">
+
+    <RelativeLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp">
+
+        <ImageView
+                android:id="@+id/cover_image"
+                android:layout_width="@dimen/large_cover_width"
+                android:layout_height="@dimen/large_cover_height"
+                android:layout_marginStart="8dp"
+                android:layout_alignParentEnd="true"
+                android:elevation="4dp"
+                android:background="@color/grey800"
+                android:src="@drawable/default_cover"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/acc_book_cover"/>
+
+        <ImageButton
+                android:id="@+id/btn_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="-8dp"
+                android:layout_toStartOf="@+id/btn_quick_tag"
+                android:layout_below="@id/cover_image"
+                android:tint="@color/grey200"
+                android:src="@drawable/ic_info_unfilled"
+                android:contentDescription="@string/acc_book_info"
+                style="@style/ImageButtonRippleBg"/>
+
+        <ImageButton
+                android:id="@id/btn_quick_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="-8dp"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@id/cover_image"
+                android:tint="@color/grey200"
+                android:src="@drawable/ic_tags"
+                android:contentDescription="@string/acc_quick_tag"
+                style="@style/ImageButtonRippleBg"/>
+
+        <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/cover_image"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textStyle="bold"
+                style="@style/TextAppearance.AppCompat.Medium"
+                tools:text="@string/dummy_title"/>
+
+        <TextView
+                android:id="@+id/author"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/title"
+                android:layout_toStartOf="@id/cover_image"
+                android:maxLines="1"
+                android:ellipsize="end"
+                tools:text="@string/dummy_author"/>
+
+        <View
+                android:id="@+id/sep1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/author"
+                android:layout_toStartOf="@id/cover_image"
+                android:background="@color/grey700"/>
+
+        <TextView
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/sep1"
+                android:layout_toStartOf="@id/cover_image"
+                android:layout_marginBottom="2dp"
+                android:maxLines="3"
+                android:ellipsize="end"
+                android:textColor="@color/grey500"
+                tools:text="@string/dummy_desc"/>
+
+        <TextView
+                android:id="@+id/lbl_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="2dp"
+                android:layout_below="@id/description"
+                android:textColor="@color/grey200"
+                android:text="@string/lbl_rating"/>
+
+        <RatingBar
+                android:id="@+id/rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/description"
+                android:layout_toEndOf="@id/lbl_rating"
+                android:progressTint="@color/grey200"
+                android:progressBackgroundTint="@color/grey700"
+                android:numStars="5"
+                android:rating="3"
+                style="?android:attr/ratingBarStyleSmall"/>
+
+        <TextView
+                android:id="@+id/tags"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="2dp"
+                android:layout_below="@id/lbl_rating"
+                android:layout_toStartOf="@id/cover_image"
+                android:textSize="12sp"
+                android:lineSpacingExtra="@dimen/tag_line_spacing_extra"
+                android:maxLines="2"
+                android:ellipsize="end"/>
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

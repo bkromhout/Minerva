@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+            android:id="@+id/action_rename_smart_list"
+            android:title="@string/action_rename"/>
+
+    <item
+            android:id="@+id/action_edit_smart_list"
+            android:title="@string/action_edit"/>
+
+    <item
+            android:id="@+id/action_convert_to_normal_list"
+            android:title="@string/action_to_normal_list"/>
+
+    <item
+            android:id="@+id/action_delete_smart_list"
+            android:title="@string/action_delete"/>
+</menu>

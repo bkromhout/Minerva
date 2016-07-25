@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<transition xmlns:android="http://schemas.android.com/apk/res/android"
+            class="com.bkromhout.minerva.ui.transitions.CircularReveal"
+            android:interpolator="@android:interpolator/linear_out_slow_in"
+            android:duration="500">
+    <targets>
+        <target android:targetId="@id/coordinator"/>
+    </targets>
+</transition>

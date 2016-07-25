@@ -1,0 +1,51 @@
+<android.support.design.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/coordinator"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".fragments.AllListsFragment">
+
+    <com.bkromhout.rrvl.RealmRecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            style="@style/RealmRVFastScroll"/>
+
+    <View
+            android:id="@+id/mask_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/shadow_light"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+    <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/mini_fab_margin"
+            android:src="@drawable/ic_lightbulb"
+            android:tint="@color/textColorPrimary"
+            android:clickable="true"
+            android:contentDescription="@string/action_new_smart_list"
+            app:fabSize="mini"
+            app:layout_anchor="@id/recycler"
+            app:layout_anchorGravity="bottom|right|end"
+            app:layout_behavior="com.bkromhout.minerva.ui.ScrollAwareFABBehavior"/>
+
+    <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/anim_ic_add_list"
+            android:tint="@color/textColorPrimary"
+            android:clickable="true"
+            android:contentDescription="@string/action_new_list"
+            app:layout_anchor="@id/recycler"
+            app:layout_anchorGravity="bottom|right|end"
+            app:layout_behavior="com.bkromhout.minerva.ui.ScrollAwareFABBehavior"/>
+</android.support.design.widget.CoordinatorLayout>

@@ -1,0 +1,66 @@
+<android.support.design.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/coordinator"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".fragments.LibraryFragment">
+
+    <com.bkromhout.rrvl.RealmRecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            style="@style/RealmRVFastScrollWithBubble"/>
+
+    <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_eye"
+            android:tint="@color/textColorPrimary"
+            android:clickable="true"
+            android:contentDescription="@string/action_view_opts"
+            app:layout_anchor="@id/recycler"
+            app:layout_anchorGravity="bottom|right|end"
+            app:layout_behavior="com.bkromhout.minerva.ui.ScrollAwareFABBehavior"/>
+
+    <android.support.percent.PercentRelativeLayout
+            android:id="@+id/empty_library"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+        <ImageView
+                android:id="@+id/sad_face"
+                app:layout_widthPercent="50%"
+                app:layout_aspectRatio="100%"
+                android:layout_centerHorizontal="true"
+                android:tint="@color/grey900"
+                android:src="@drawable/sad_face"
+                tools:ignore="ContentDescription"/>
+
+        <TextView
+                android:id="@+id/empty_library_prompt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/sad_face"
+                android:layout_marginBottom="8dp"
+                android:layout_centerHorizontal="true"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:text="@string/prompt_empty_library"/>
+
+        <Button
+                android:id="@+id/open_full_importer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/empty_library_prompt"
+                android:layout_centerHorizontal="true"
+                android:backgroundTint="@color/colorAccent"
+                android:text="@string/action_open_importer"/>
+    </android.support.percent.PercentRelativeLayout>
+</android.support.design.widget.CoordinatorLayout>
