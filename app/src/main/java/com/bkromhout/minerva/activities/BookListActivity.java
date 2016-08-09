@@ -495,12 +495,12 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 return true;
             case R.id.action_move_to_top:
                 //noinspection unchecked
-                ActionHelper.moveItemsToStart(srcList, adapter.getSelectedRealmObjects());
+                ActionHelper.moveItemsToStart(realm, srcList, adapter.getSelectedRealmObjects());
                 actionMode.finish();
                 return true;
             case R.id.action_move_to_bottom:
                 //noinspection unchecked
-                ActionHelper.moveItemsToEnd(srcList, adapter.getSelectedRealmObjects());
+                ActionHelper.moveItemsToEnd(realm, srcList, adapter.getSelectedRealmObjects());
                 actionMode.finish();
                 return true;
             case R.id.action_re_import:
@@ -566,8 +566,8 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 break;
             case R.id.action_mark_as:
                 int whichMark = (int) event.getData();
-                ActionHelper.markBooks(getSelectedBooks(), whichMark < 2 ? MarkType.NEW : MarkType.UPDATED,
-                        whichMark % 2 == 0);
+                ActionHelper.markBooks(realm, getSelectedBooks(),
+                        whichMark < 2 ? MarkType.NEW : MarkType.UPDATED, whichMark % 2 == 0);
                 break;
             case R.id.action_add_to_list:
                 ActionHelper.addBooksToList(realm, getSelectedBooks(), (String) event.getData());
@@ -580,7 +580,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 srcList.removeBooks(realm, getSelectedBooks());
                 break;
             case R.id.action_delete:
-                ActionHelper.deleteBooks(getSelectedBooks(), (boolean) event.getData());
+                ActionHelper.deleteBooks(realm, getSelectedBooks(), (boolean) event.getData());
                 break;
         }
         // Ensure that AllListsFragment doesn't see the event, which is otherwise would since we're a "transparent"
@@ -729,7 +729,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
         switch (event.getType()) {
             case NORMAL:
                 // Open the book file.
-                ActionHelper.openBookUsingIntent(book);
+                ActionHelper.openBookUsingIntent(realm, book);
                 break;
             case LONG:
                 // Start multi-select.

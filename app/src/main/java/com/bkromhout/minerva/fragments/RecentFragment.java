@@ -327,8 +327,8 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
                 break;
             case R.id.action_mark_as:
                 int whichMark = (int) event.getData();
-                ActionHelper.markBooks(selectedItems, whichMark < 2 ? MarkType.NEW : MarkType.UPDATED,
-                        whichMark % 2 == 0);
+                ActionHelper.markBooks(realm, selectedItems,
+                        whichMark < 2 ? MarkType.NEW : MarkType.UPDATED, whichMark % 2 == 0);
                 break;
             case R.id.action_add_to_list:
                 ActionHelper.addBooksToList(realm, selectedItems, (String) event.getData());
@@ -343,7 +343,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
                 });
                 break;
             case R.id.action_delete:
-                ActionHelper.deleteBooks(selectedItems, (boolean) event.getData());
+                ActionHelper.deleteBooks(realm, selectedItems, (boolean) event.getData());
                 break;
         }
         if (actionMode != null) actionMode.finish();
@@ -396,7 +396,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
         switch (event.getType()) {
             case NORMAL:
                 // Open the book file.
-                ActionHelper.openBookUsingIntent(book, event.getLayoutPosition());
+                ActionHelper.openBookUsingIntent(realm, book, event.getLayoutPosition());
                 break;
             case LONG:
                 // Start multi-select.
@@ -415,7 +415,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
     @OnClick(R.id.fab)
     void onFabClick() {
         if (books != null && books.isValid() && !books.isEmpty())
-            ActionHelper.openBookUsingIntent(books.first());
+            ActionHelper.openBookUsingIntent(realm, books.first());
     }
 
     /**

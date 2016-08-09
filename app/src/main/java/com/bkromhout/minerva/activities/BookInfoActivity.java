@@ -444,7 +444,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
         switch (item.getItemId()) {
             case R.id.action_read:
                 // Open the book file.
-                ActionHelper.openBookUsingIntent(book);
+                ActionHelper.openBookUsingIntent(realm, book);
                 return true;
             case R.id.action_add_to_list:
                 Dialogs.addToListDialogOrSnack(this, realm);
@@ -492,14 +492,14 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
                 break;
             case R.id.action_mark_as:
                 int whichMark = (int) event.getData();
-                ActionHelper.markBooks(Collections.singletonList(book), whichMark < 2 ? MarkType.NEW : MarkType.UPDATED,
-                        whichMark % 2 == 0);
+                ActionHelper.markBooks(realm, Collections.singletonList(book),
+                        whichMark < 2 ? MarkType.NEW : MarkType.UPDATED, whichMark % 2 == 0);
                 break;
             case R.id.action_re_import:
                 ActionHelper.reImportBooks(Collections.singletonList(book));
                 break;
             case R.id.action_delete:
-                ActionHelper.deleteBooks(Collections.singletonList(book), (boolean) event.getData());
+                ActionHelper.deleteBooks(realm, Collections.singletonList(book), (boolean) event.getData());
                 finish();
                 break;
         }
@@ -526,7 +526,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
     @OnClick(R.id.fab)
     void onReadFabClicked() {
         // Open the book file.
-        ActionHelper.openBookUsingIntent(book);
+        ActionHelper.openBookUsingIntent(realm, book);
     }
 
     /**

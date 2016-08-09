@@ -549,7 +549,7 @@ public class Importer {
                                                            .endGroup()
                                                            .findAll();
                         // Add the new tag to those books.
-                        ActionHelper.addTagsToBooks(books, Collections.singletonList(tag));
+                        ActionHelper.addTagsToBooks(bgRealm, books, Collections.singletonList(tag));
                     }
 
                     tagName = MarkType.UPDATED.getTagName();
@@ -568,7 +568,7 @@ public class Importer {
                                                            .endGroup()
                                                            .findAll();
                         // Add the updated tag to those books.
-                        ActionHelper.addTagsToBooks(books, Collections.singletonList(tag));
+                        ActionHelper.addTagsToBooks(bgRealm, books, Collections.singletonList(tag));
                     }
                 },
                 this::importFinished,
