@@ -510,7 +510,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 return true;
             case R.id.action_delete:
                 Dialogs.confirmCheckBoxDialog(this, R.string.title_delete_books, R.string.prompt_delete_books,
-                        R.string.prompt_delete_from_device_too, R.string.info_delete_from_device_permanent,
+                        R.string.prompt_delete_from_device_too,
                         R.string.action_delete, R.id.action_delete);
             default:
                 return false;

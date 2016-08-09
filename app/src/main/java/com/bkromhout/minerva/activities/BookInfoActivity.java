@@ -465,7 +465,7 @@ public class BookInfoActivity extends PermCheckingActivity implements SnackKiosk
                 return true;
             case R.id.action_delete:
                 Dialogs.confirmCheckBoxDialog(this, R.string.title_delete_book, R.string.prompt_delete_book,
-                        R.string.prompt_delete_from_device_too, R.string.info_delete_from_device_permanent,
+                        R.string.prompt_delete_from_device_too,
                         R.string.action_delete, R.id.action_delete);
                 return true;
             case android.R.id.home:
