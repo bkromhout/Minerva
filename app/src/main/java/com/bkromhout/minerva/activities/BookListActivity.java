@@ -487,6 +487,9 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 int initialRating = adapter.getSelectedItemCount() == 1 ? getSelectedBooks().get(0).rating : 0;
                 Dialogs.ratingDialog(this, initialRating);
                 return true;
+            case R.id.action_add_to_list:
+                Dialogs.addToListDialogOrSnack(this, realm);
+                return true;
             case R.id.action_mark_as:
                 Dialogs.markAsDialog(this);
                 return true;
@@ -567,10 +570,9 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                         whichMark % 2 == 0);
                 break;
             case R.id.action_add_to_list:
-                // TODO actually implement a move/copy to other lists feature???
-                //RBookList list = realm.where(RBookList.class).equalTo("name", (String) event.getData()).findFirst();
-                //RBookList.addBooks(list, selectedItems);
+                ActionHelper.addBooksToList(realm, getSelectedBooks(), (String) event.getData());
                 break;
+            // TODO Add a "Move to List" action?
             case R.id.action_re_import:
                 ActionHelper.reImportBooks(getSelectedBooks());
                 break;
