@@ -283,12 +283,14 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
 
     @Override
     public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
+        super.onSelectedChanged(viewHolder, actionState);
         if (viewHolder != null && viewHolder instanceof BaseCardVH)
             ((BaseCardVH) viewHolder).cardView.setSelected(true);
     }
 
     @Override
     public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+        super.clearView(recyclerView, viewHolder);
         if (viewHolder != null && viewHolder instanceof BaseCardVH)
             ((BaseCardVH) viewHolder).cardView.setSelected(false);
     }

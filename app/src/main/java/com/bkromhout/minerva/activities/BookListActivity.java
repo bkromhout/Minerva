@@ -551,7 +551,6 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 setTitle((String) event.getData());
                 // Update intent used to start activity so that we don't crash if we rotate or something.
                 getIntent().putExtra(LIST_NAME, (String) event.getData());
-                needsPosUpdate = true;
                 break;
             case R.id.action_convert_to_normal_list:
                 if (smartListRuq != null) {
