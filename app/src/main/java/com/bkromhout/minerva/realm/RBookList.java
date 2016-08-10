@@ -157,6 +157,23 @@ public class RBookList extends RealmObject implements UIDModel {
     }
 
     /**
+     * This method directly re-adds a book which was removed. Checks for position and unique ID are bypassed.
+     * @param realm Instance of Realm to use.
+     * @param bookUniqueId Unique ID of the {@link RBook} which this item refers to.
+     * @param pos Position of this item in the list.
+     * @param uniqueId Unique ID of this item.
+     */
+    public void reAddBook(Realm realm, long bookUniqueId, long pos, long uniqueId) {
+        throwIfSmartList();
+        realm.executeTransaction(bgRealm -> {
+            RBook book = bgRealm.where(RBook.class).equalTo("uniqueId", bookUniqueId).findFirst();
+            if (book == null) throw new IllegalStateException("Attempting to re-add an RBook which does not exist!");
+            RBookListItem listItem = new RBookListItem(this, book, pos, uniqueId);
+            listItems.add(listItem);
+        });
+    }
+
+    /**
      * If this is a smart list, convert it to a normal list by getting the RealmUserQuery and adding the items that it
      * returns when it is executed. If any books are included in the query multiple times, they will only be added
      * once.

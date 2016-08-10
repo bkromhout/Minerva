@@ -424,8 +424,8 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
         Snackbar undoSnackbar = Snackbar.make(coordinator, R.string.book_removed, Snackbar.LENGTH_LONG);
         undoSnackbar.setAction(R.string.undo, view -> {
             // Put back in recents if undo button is clicked.
-            try (Realm realm1 = Realm.getDefaultInstance()) {
-                realm1.executeTransactionAsync(bgRealm ->
+            try (Realm realm = Realm.getDefaultInstance()) {
+                realm.executeTransactionAsync(bgRealm ->
                     bgRealm.where(RBook.class).equalTo("uniqueId", uniqueId).findFirst().isInRecents = true);
             }
         });

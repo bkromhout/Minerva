@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
@@ -55,7 +56,8 @@ import java.util.List;
 /**
  * Activity which displays a list of books based on an {@link RBookList}.
  */
-public class BookListActivity extends PermCheckingActivity implements ActionMode.Callback, SnackKiosk.Snacker {
+public class BookListActivity extends PermCheckingActivity implements ActionMode.Callback, SnackKiosk.Snacker,
+        SwipeHandler {
     // Key strings for the bundle passed when this activity is started.
     private static final String LIST_NAME = "list_name";
     private static final String CENTER_X = "center_x";
@@ -280,6 +282,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
             modelType = ModelType.fromRealmClass(smartListRuq.getQueryClass());
             items = smartListRuq.execute(realm);
             adapter = makeAdapter();
+            recyclerView.setSwipe(false);
             recyclerView.setAdapter(adapter);
             return;
         }
@@ -305,6 +308,7 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
             items = srcList.listItems.where().findAllSorted("pos");
             modelType = ModelType.BOOK_LIST_ITEM;
             adapter = makeAdapter();
+            recyclerView.setSwipe(true);
             recyclerView.setAdapter(adapter);
         }
     }
@@ -378,6 +382,8 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
 
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        // Ensure swiping is disabled.
+        recyclerView.setSwipe(false);
         if (smartListRuq != null) {
             // Smart list; can't reorder list items so it has less action items.
             mode.getMenuInflater().inflate(R.menu.book_list_smart_action_mode, menu);
@@ -413,6 +419,8 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
             isReorderMode = false;
         }
         actionMode = null;
+        // Re-enable swiping if this isn't a smart list.
+        if (smartListRuq == null) recyclerView.setSwipe(true);
     }
 
     @Override
@@ -663,29 +671,36 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
      */
     @SuppressWarnings("unchecked")
     private BaseBookCardAdapter makeAdapter() {
+        BaseBookCardAdapter adapter = null;
+
         if (modelType == ModelType.BOOK) {
             switch (cardType) {
                 case NORMAL:
-                    return new BookCardAdapter(this, (RealmResults<RBook>) items, false);
+                    adapter = new BookCardAdapter(this, (RealmResults<RBook>) items, false);
+                    break;
                 case NO_COVER:
-                    return new BookCardNoCoverAdapter(this, (RealmResults<RBook>) items, false);
+                    adapter = new BookCardNoCoverAdapter(this, (RealmResults<RBook>) items, false);
+                    break;
                 case COMPACT:
-                    return new BookCardCompactAdapter(this, (RealmResults<RBook>) items, false);
-                default:
-                    throw new IllegalStateException("Invalid card type.");
+                    adapter = new BookCardCompactAdapter(this, (RealmResults<RBook>) items, false);
+                    break;
             }
         } else if (modelType == ModelType.BOOK_LIST_ITEM) {
             switch (cardType) {
                 case NORMAL:
-                    return new BookItemCardAdapter(this, (RealmResults<RBookListItem>) items, false);
+                    adapter = new BookItemCardAdapter(this, (RealmResults<RBookListItem>) items, false);
+                    break;
                 case NO_COVER:
-                    return new BookItemCardNoCoverAdapter(this, (RealmResults<RBookListItem>) items, false);
+                    adapter = new BookItemCardNoCoverAdapter(this, (RealmResults<RBookListItem>) items, false);
+                    break;
                 case COMPACT:
-                    return new BookItemCardCompactAdapter(this, (RealmResults<RBookListItem>) items, false);
-                default:
-                    throw new IllegalStateException("Invalid card type.");
+                    adapter = new BookItemCardCompactAdapter(this, (RealmResults<RBookListItem>) items, false);
+                    break;
             }
-        } else throw new IllegalStateException("Invalid adapter type.");
+        } else throw new IllegalArgumentException("Invalid model type");
+
+        adapter.setSwipeHandler(this);
+        return adapter;
     }
 
     /**
@@ -740,6 +755,34 @@ public class BookListActivity extends PermCheckingActivity implements ActionMode
                 TaggingActivity.start(this, book);
                 break;
         }
+    }
+
+    /**
+     * Called when a book is swiped out of a normal list. Never called for smart lists.
+     * @param uniqueId The unique ID of the item so that the {@link RBookListItem} can be retrieved.
+     */
+    @Override
+    public void handleSwiped(long uniqueId) {
+        RBookListItem bookListItem = realm.where(RBookListItem.class).equalTo("uniqueId", uniqueId).findFirst();
+
+        final long listUniqueId = bookListItem.owningList.uniqueId;
+        final long bookUniqueId = bookListItem.book.uniqueId;
+        final long pos = bookListItem.pos;
+
+        // Remove list item.
+        realm.executeTransactionAsync(bgRealm ->
+                bgRealm.where(RBookListItem.class).equalTo("uniqueId", uniqueId).findFirst().deleteFromRealm());
+
+        // Show undo snackbar.
+        Snackbar undoSnackbar = Snackbar.make(coordinator, R.string.book_removed, Snackbar.LENGTH_LONG);
+        undoSnackbar.setAction(R.string.undo, view -> {
+            try (Realm realm = Realm.getDefaultInstance()) {
+                // Re-add list item.
+                RBookList bookList = realm.where(RBookList.class).equalTo("uniqueId", listUniqueId).findFirst();
+                bookList.reAddBook(realm, bookUniqueId, pos, uniqueId);
+            }
+        });
+        undoSnackbar.show();
     }
 
     /**

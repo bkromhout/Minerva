@@ -1,7 +1,8 @@
 # Minerva Changelog
 
 ## 1.1.0
-* Now you can add books in lists to normal lists
+* Swipe book cards to remove them from recents and normal lists
+* Add books in lists to other (normal) lists
 * Updated libraries
 
 ## 1.0.1
