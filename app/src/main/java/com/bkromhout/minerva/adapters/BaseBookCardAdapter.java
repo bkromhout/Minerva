@@ -113,7 +113,7 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
         if (book == null || rippleFgListener == null) throw new IllegalArgumentException();
 
         // Visually distinguish selected cards during multi-select mode.
-        vh.cardView.setActivated(selectedPositions.contains(position));
+        vh.cardView.setActivated(isSelected(position));
 
         // Set transition names for certain elements. These depend on whether our card has a cover view and the
         // unique ID of the book we're binding for currently.
