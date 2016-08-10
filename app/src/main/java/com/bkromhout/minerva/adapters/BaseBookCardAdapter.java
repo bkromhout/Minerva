@@ -5,7 +5,6 @@ import android.graphics.PorterDuff;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Pair;
 import android.view.View;
 import android.widget.*;
@@ -52,6 +51,10 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
      */
     private final boolean addFooterView;
     /**
+     * Handles actions taken as the result of an item being swiped away.
+     */
+    private SwipeHandler swipeHandler;
+    /**
      * Whether or not this adapter may allow item dragging to start.
      */
     private boolean mayStartDrags = false;
@@ -75,6 +78,14 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
      */
     public void setSelectionMode(boolean enabled) {
         this.inSelectionMode = enabled;
+    }
+
+    /**
+     * Sets the swipe handler for this adapter.
+     * @param swipeHandler Swipe handler.
+     */
+    public void setSwipeHandler(SwipeHandler swipeHandler) {
+        this.swipeHandler = swipeHandler;
     }
 
     @Override
@@ -169,8 +180,9 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
         else if (vh instanceof NoCoverCardVH) bindNoCoverBookCard((NoCoverCardVH) vh, book);
         if (vh instanceof NormalCardVH) bindNormalBookCard((NormalCardVH) vh, book);
 
-        // If we have an RBookListItem, store its key on the CardView.
+        // If we have an RBookListItem, store its key on the CardView, otherwise store the RBook's key instead.
         if (bookListItem != null) vh.cardView.setTag(bookListItem.uniqueId);
+        else vh.cardView.setTag(book.uniqueId);
     }
 
     /**
@@ -264,8 +276,14 @@ public abstract class BaseBookCardAdapter<T extends RealmObject & UIDModel, VH e
     }
 
     @Override
+    public void onSwiped(RecyclerView.ViewHolder swiped, int direction) {
+        long swipedId = (long) ((BaseCardVH) swiped).cardView.getTag();
+        if (swipeHandler != null) swipeHandler.handleSwiped(swipedId);
+    }
+
+    @Override
     public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
-        if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && viewHolder != null && viewHolder instanceof BaseCardVH)
+        if (viewHolder != null && viewHolder instanceof BaseCardVH)
             ((BaseCardVH) viewHolder).cardView.setSelected(true);
     }
 
