@@ -109,11 +109,11 @@ dependencies {
         transitive = true
     }
 
-    compile('com.bkromhout:realm-recyclerview-lite:2.1.2@aar') {
+    compile('com.bkromhout:realm-recyclerview-lite:3.0.0@aar') {
         transitive = true
     }
-    apt 'com.bkromhout.ruqus:ruqus-compiler:1.2.6'
-    compile('com.bkromhout.ruqus:ruqus-core:1.2.6@aar') {
+    apt 'com.bkromhout.ruqus:ruqus-compiler:2.0.0'
+    compile('com.bkromhout.ruqus:ruqus-core:2.0.0@aar') {
         transitive = true
     }
 
