@@ -24,7 +24,7 @@ import com.karumi.dexter.Dexter;
 import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-import io.realm.exceptions.RealmIOException;
+import io.realm.exceptions.RealmFileException;
 import org.greenrobot.eventbus.EventBus;
 import timber.log.Timber;
 
@@ -87,7 +87,8 @@ public class Minerva extends Application {
         doFirstTimeInitIfNeeded();
 
         // Set up default RealmConfiguration.
-        Realm.setDefaultConfiguration(new RealmConfiguration.Builder(this)
+        Realm.init(this);
+        Realm.setDefaultConfiguration(new RealmConfiguration.Builder()
                 .name(REALM_FILE_NAME)
                 .schemaVersion(REALM_SCHEMA_VERSION)
                 .initialData(this::initialRealmData)
@@ -103,7 +104,7 @@ public class Minerva extends Application {
             BackupUtils.removeTempRealmFile();
             // Validate a few things now that we've successfully restored the Realm DB.
             BackupUtils.doPostRestoreValidations(realm, prefs);
-        } catch (RealmIOException e) {
+        } catch (RealmFileException e) {
             // We failed to open the restored Realm file, so try to roll back the changes.
             BackupUtils.rollBackFromDBRestore();
 
