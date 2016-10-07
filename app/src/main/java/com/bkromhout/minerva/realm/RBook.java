@@ -30,13 +30,13 @@ public class RBook extends RealmObject implements UIDModel {
     /**
      * A unique long value.
      */
-    @Index
+    @PrimaryKey
     @Hide
     public long uniqueId;
     /**
      * Path to book file (relative to library directory).
      */
-    @PrimaryKey
+    @Index
     @Required
     @VisibleAs(string = "Relative Path")
     public String relPath;

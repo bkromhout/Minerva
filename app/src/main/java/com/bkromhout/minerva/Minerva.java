@@ -44,7 +44,7 @@ public class Minerva extends Application {
     /**
      * Realm schema version.
      */
-    private static final long REALM_SCHEMA_VERSION = 0;
+    private static final long REALM_SCHEMA_VERSION = 1;
 
     /**
      * Static INSTANCE of application context. Beware, this isn't available before the application starts.
@@ -71,6 +71,7 @@ public class Minerva extends Application {
 
         // Stash application context, then check to see if we need to restore things, and do so if necessary.
         INSTANCE = this;
+        Realm.init(this);
         BackupUtils.restoreRealmFileIfApplicable();
 
         // Get global instances of certain classes.
@@ -87,10 +88,10 @@ public class Minerva extends Application {
         doFirstTimeInitIfNeeded();
 
         // Set up default RealmConfiguration.
-        Realm.init(this);
         Realm.setDefaultConfiguration(new RealmConfiguration.Builder()
                 .name(REALM_FILE_NAME)
                 .schemaVersion(REALM_SCHEMA_VERSION)
+                .migration(new RealmMigrator())
                 .initialData(this::initialRealmData)
                 .build());
 
