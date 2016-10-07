@@ -372,8 +372,11 @@
     <!-- ******************************** Settings Activity ******************************** -->
     <string name="title_activity_settings">@string/settings</string>
 
-    <string name="cat_title_library">Library</string>
+    <string name="cat_title_library">Library &amp; Import</string>
     <string name="title_lib_dir">Library Folder</string>
+    <string name="title_detect_moved">Try to Detect Moved Files</string>
+    <string name="summary_detect_moved">Attempt to prevent duplicate library items by detecting moved files</string>
+    <string name="title_dupe_handling">Duplicate Handling</string>
     <string name="title_auto_import">Auto-Import</string>
     <string name="summary_auto_import">Run a full import when the app starts</string>
 
