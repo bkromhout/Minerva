@@ -317,8 +317,7 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
             case R.id.action_rename_smart_list:
                 Dialogs.uniqueNameDialog(getActivity(), RBookList.class, R.string.title_rename_smart_list,
                         R.string.prompt_rename_smart_list, R.string.list_name_hint, listName,
-                        R.id.action_rename_smart_list, position
-                );
+                        R.id.action_rename_smart_list, position);
                 break;
             case R.id.action_edit_smart_list:
                 String ruqString = tempList.smartListRuqString;
@@ -329,7 +328,6 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
                 Dialogs.simpleConfirmDialog(getActivity(), R.string.title_convert_to_normal_list,
                         R.string.prompt_convert_to_normal_list, R.string.action_convert,
                         R.id.action_convert_to_normal_list);
-
                 break;
             case R.id.action_delete_list:
                 Dialogs.simpleConfirmDialog(getActivity(), R.string.title_delete_list, R.string.prompt_delete_list,
@@ -365,7 +363,6 @@ public class AllListsFragment extends Fragment implements ActionMode.Callback, F
             case R.id.action_rename_list:
             case R.id.action_rename_smart_list:
                 ActionHelper.renameList(realm, tempList, (String) event.getData());
-                if (event.getPosToUpdate() != -1) adapter.notifyItemChanged(event.getPosToUpdate());
                 break;
             case R.id.action_convert_to_normal_list:
                 tempList.convertToNormalList(realm);

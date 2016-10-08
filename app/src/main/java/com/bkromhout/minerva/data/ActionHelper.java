@@ -108,10 +108,11 @@ public class ActionHelper {
 
     /**
      * Adds the {@code tags} to the {@code books}.
+     * @param realm Instance of Realm to use.
      * @param books List of {@link RBook}s to add tags to.
      * @param tags  List {@link RTag}s.
      */
-    public static void addTagsToBooks(List<RBook> books, List<RTag> tags) {
+    public static void addTagsToBooks(Realm realm, List<RBook> books, List<RTag> tags) {
         if (books == null || tags == null) throw new IllegalArgumentException("No nulls allowed.");
         if (books.isEmpty() || tags.isEmpty()) return;
 
@@ -119,40 +120,39 @@ public class ActionHelper {
         String newBookTagName = Minerva.prefs().getNewBookTag(null);
         String updatedBookTagName = Minerva.prefs().getUpdatedBookTag(null);
 
-        try (Realm realm = Realm.getDefaultInstance()) {
-            // Sometimes this method is called when we're already in a transaction. We can't nest them.
-            boolean isInXactAlready = realm.isInTransaction();
-            if (!isInXactAlready) realm.beginTransaction();
+        // Sometimes this method is called when we're already in a transaction. We can't nest them.
+        boolean isInXactAlready = realm.isInTransaction();
+        if (!isInXactAlready) realm.beginTransaction();
 
-            // Loop through books and add tags to them.
-            for (int i = books.size() - 1; i >= 0; i--) {
-                RBook book = books.get(i);
-                for (RTag tag : tags) {
-                    // If the book doesn't already have the tag,
-                    if (!book.tags.contains(tag)) {
-                        // add the tag to the book,
-                        book.tags.add(tag);
-                        // and add the book to the tag.
-                        tag.taggedBooks.add(book);
-                    }
-                    // Make sure that we set new/updated state to true if those tags were added (and it wasn't already).
-                    if (newBookTagName != null && newBookTagName.equals(tag.name) && !book.isNew)
-                        book.isNew = true;
-                    if (updatedBookTagName != null && updatedBookTagName.equals(tag.name) && !book.isUpdated)
-                        book.isUpdated = true;
+        // Loop through books and add tags to them.
+        for (int i = books.size() - 1; i >= 0; i--) {
+            RBook book = books.get(i);
+            for (RTag tag : tags) {
+                // If the book doesn't already have the tag,
+                if (!book.tags.contains(tag)) {
+                    // add the tag to the book,
+                    book.tags.add(tag);
+                    // and add the book to the tag.
+                    tag.taggedBooks.add(book);
                 }
+                // Make sure that we set new/updated state to true if those tags were added (and it wasn't already).
+                if (newBookTagName != null && newBookTagName.equals(tag.name) && !book.isNew)
+                    book.isNew = true;
+                if (updatedBookTagName != null && updatedBookTagName.equals(tag.name) && !book.isUpdated)
+                    book.isUpdated = true;
             }
-            // Again, if there's an outer transaction already ongoing, don't finish it here.
-            if (!isInXactAlready) realm.commitTransaction();
         }
+        // Again, if there's an outer transaction already ongoing, don't finish it here.
+        if (!isInXactAlready) realm.commitTransaction();
     }
 
     /**
      * Removes the {@code tags} from the {@code books}.
+     * @param realm Instance of Realm to use.
      * @param books List of {@link RBook}s to remove tags from.
      * @param tags  List {@link RTag}s.
      */
-    public static void removeTagsFromBooks(List<RBook> books, List<RTag> tags) {
+    public static void removeTagsFromBooks(Realm realm, List<RBook> books, List<RTag> tags) {
         if (books == null || tags == null) throw new IllegalArgumentException("No nulls allowed.");
         if (books.isEmpty() || tags.isEmpty()) return;
 
@@ -160,24 +160,22 @@ public class ActionHelper {
         String newBookTagName = Minerva.prefs().getNewBookTag(null);
         String updatedBookTagName = Minerva.prefs().getUpdatedBookTag(null);
 
-        try (Realm realm = Realm.getDefaultInstance()) {
-            realm.beginTransaction();
-            // Loop through books and remove tags from them.
-            for (int i = books.size() - 1; i >= 0; i--) {
-                RBook book = books.get(i);
-                for (RTag tag : tags) {
-                    // If the book has the tag, remove it,
-                    if (book.tags.remove(tag)) {
-                        // and remove the book from the tag.
-                        tag.taggedBooks.remove(book);
-                    }
-                    // Make sure that we new/updated state if we had those tags removed.
-                    if (newBookTagName != null && newBookTagName.equals(tag.name)) book.isNew = false;
-                    if (updatedBookTagName != null && updatedBookTagName.equals(tag.name)) book.isUpdated = false;
+        realm.beginTransaction();
+        // Loop through books and remove tags from them.
+        for (int i = books.size() - 1; i >= 0; i--) {
+            RBook book = books.get(i);
+            for (RTag tag : tags) {
+                // If the book has the tag, remove it,
+                if (book.tags.remove(tag)) {
+                    // and remove the book from the tag.
+                    tag.taggedBooks.remove(book);
                 }
+                // Make sure that we new/updated state if we had those tags removed.
+                if (newBookTagName != null && newBookTagName.equals(tag.name)) book.isNew = false;
+                if (updatedBookTagName != null && updatedBookTagName.equals(tag.name)) book.isUpdated = false;
             }
-            realm.commitTransaction();
         }
+        realm.commitTransaction();
     }
 
     /**
@@ -186,110 +184,110 @@ public class ActionHelper {
      * <p>
      * Any books already tagged with {@code newTagName} but whose value for the given {@code markType} isn't set to
      * {@code true} will be changed so that it is set to {@code true} in order to stay in sync.
+     * @param realm      Instance of Realm to use.
      * @param markType   The mark whose associated tag is being replaced.
      * @param oldTagName Name of the tag to replace.
      * @param newTagName Name of the replacement tag.
      */
-    public static void replaceMarkTagOnBooks(MarkType markType, String oldTagName, String newTagName) {
+    public static void replaceMarkTagOnBooks(Realm realm, MarkType markType, String oldTagName, String newTagName) {
         // At least one of the tag names can't be null.
         if (oldTagName == null && newTagName == null)
             throw new IllegalArgumentException("At least one of oldTagName, newTagName must not be null.");
 
-        try (Realm realm = Realm.getDefaultInstance()) {
-            // Get a list of books whose given mark type is set to true.
-            RealmResults<RBook> books = realm.where(RBook.class)
-                                             .equalTo(markType.getFieldName(), true)
-                                             .findAll();
+        // Get a list of books whose given mark type is set to true.
+        RealmResults<RBook> books = realm.where(RBook.class)
+                                         .equalTo(markType.getFieldName(), true)
+                                         .findAll();
 
-            // Get tags.
-            RTag oldTag = oldTagName != null ? realm.where(RTag.class).equalTo("name", oldTagName).findFirst() : null;
-            RTag newTag = newTagName != null ? realm.where(RTag.class).equalTo("name", newTagName).findFirst() : null;
+        // Get tags.
+        RTag oldTag = oldTagName != null ? realm.where(RTag.class).equalTo("name", oldTagName).findFirst() : null;
+        RTag newTag = newTagName != null ? realm.where(RTag.class).equalTo("name", newTagName).findFirst() : null;
 
-            realm.beginTransaction();
-            // Loop through the books whose given mark type is set to true.
-            for (RBook book : books) {
-                // First, remove the old tag (if there is one).
-                if (oldTag != null) {
-                    book.tags.remove(oldTag);
-                    oldTag.taggedBooks.remove(book);
-                }
-
-                // Then, add the new tag (if there is one, and if it isn't already).
-                if (newTag != null && !book.tags.contains(newTag)) {
-                    book.tags.add(newTag);
-                    newTag.taggedBooks.add(book);
-                }
+        realm.beginTransaction();
+        // Loop through the books whose given mark type is set to true.
+        for (RBook book : books) {
+            // First, remove the old tag (if there is one).
+            if (oldTag != null) {
+                book.tags.remove(oldTag);
+                oldTag.taggedBooks.remove(book);
             }
 
-            // If we have a new tag, update the given mark's value on books already tagged with the new tag but not
-            // marked accordingly so that we stay in sync.
-            if (newTag != null) {
-                // Get a list of such books.
-                books = newTag.taggedBooks.where()
-                                          .equalTo(markType.getFieldName(), false)
-                                          .findAll();
-
-                // Loop backwards over list and set given mark's value to true.
-                for (int i = books.size() - 1; i >= 0; i--) {
-                    if (markType == MarkType.NEW) books.get(i).isNew = true;
-                    else if (markType == MarkType.UPDATED) books.get(i).isUpdated = true;
-                }
+            // Then, add the new tag (if there is one, and if it isn't already).
+            if (newTag != null && !book.tags.contains(newTag)) {
+                book.tags.add(newTag);
+                newTag.taggedBooks.add(book);
             }
-
-            realm.commitTransaction();
         }
+
+        // If we have a new tag, update the given mark's value on books already tagged with the new tag but not
+        // marked accordingly so that we stay in sync.
+        if (newTag != null) {
+            // Get a list of such books.
+            books = newTag.taggedBooks.where()
+                                      .equalTo(markType.getFieldName(), false)
+                                      .findAll();
+
+            // Loop backwards over list and set given mark's value to true.
+            for (int i = books.size() - 1; i >= 0; i--) {
+                if (markType == MarkType.NEW) books.get(i).isNew = true;
+                else if (markType == MarkType.UPDATED) books.get(i).isUpdated = true;
+            }
+        }
+
+        realm.commitTransaction();
     }
 
     /**
      * Mark the given {@code books}.
+     * @param realm    Instance of Realm to use.
      * @param books    List of {@link RBook}s to mark.
      * @param markType Type of mark.
      * @param marked   Whether the mark should be true or false.
      */
-    public static void markBooks(List<RBook> books, MarkType markType, boolean marked) {
+    public static void markBooks(Realm realm, List<RBook> books, MarkType markType, boolean marked) {
         // Get the associated tag's name, or null if there isn't one.
         String tagName = markType.getTagName();
 
-        try (Realm realm = Realm.getDefaultInstance()) {
-            // If we have an associated tag, we can just use our add/remove tags methods to help us do this, since they
-            // handle updating the mark for us as well.
-            if (tagName != null) {
-                RTag tag = realm.where(RTag.class).equalTo("name", tagName).findFirst();
-                if (marked) addTagsToBooks(books, Collections.singletonList(tag));
-                else removeTagsFromBooks(books, Collections.singletonList(tag));
-                return;
-            }
-
-            // Otherwise, loop through the books and just set the mark's new value.
-            realm.beginTransaction();
-            for (RBook book : books) {
-                if (markType == MarkType.NEW) book.isNew = marked;
-                else if (markType == MarkType.UPDATED) book.isUpdated = marked;
-            }
-            realm.commitTransaction();
+        // If we have an associated tag, we can just use our add/remove tags methods to help us do this, since they
+        // handle updating the mark for us as well.
+        if (tagName != null) {
+            RTag tag = realm.where(RTag.class).equalTo("name", tagName).findFirst();
+            if (marked) addTagsToBooks(realm, books, Collections.singletonList(tag));
+            else removeTagsFromBooks(realm, books, Collections.singletonList(tag));
+            return;
         }
+
+        // Otherwise, loop through the books and just set the mark's new value.
+        realm.beginTransaction();
+        for (RBook book : books) {
+            if (markType == MarkType.NEW) book.isNew = marked;
+            else if (markType == MarkType.UPDATED) book.isUpdated = marked;
+        }
+        realm.commitTransaction();
     }
 
     /**
      * Open the book's real file in an application which will allow the user to read it. This will also put the book at
      * the top of the recents list.
-     * @param book Book to open.
+     * @param realm Instance of Realm to use.
+     * @param book  Book to open.
      */
-    public static void openBookUsingIntent(RBook book) {
-        openBookUsingIntent(book, -1);
+    public static void openBookUsingIntent(Realm realm, RBook book) {
+        openBookUsingIntent(realm, book, -1);
     }
 
     /**
      * Open the book's real file in an application which will allow the user to read it. This will also put the book at
      * the top of the recents list.
+     * @param realm       Instance of Realm to use.
      * @param book        Book to open.
-     * @param posToUpdate If not {@code -1}, then an {@link com.bkromhout.minerva.events.ActionEvent} will be fired
-     *                    after the external app is called.
+     * @param posToUpdate If not {@code -1}, then an {@link ActionEvent} will be fired
      */
-    public static void openBookUsingIntent(RBook book, int posToUpdate) {
+    public static void openBookUsingIntent(Realm realm, RBook book, int posToUpdate) {
         if (!Util.checkForStoragePermAndFireEventIfNeeded(R.id.action_execute_deferred)) {
             //Defer this action while we ask for permission.
-            setDeferredAction(params -> openBookUsingIntent((RBook) params[0], (int) params[1]), book, posToUpdate);
+            setDeferredAction(params ->
+                    openBookUsingIntent(realm, (RBook) params[0], (int) params[1]), book, posToUpdate);
             return;
         }
 
@@ -307,7 +305,7 @@ public class ActionHelper {
         newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION |
                 Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
-        try (Realm realm = Realm.getDefaultInstance()) {
+        try {
             // Try to open the book file in the app of the user's choice.
             // TODO Animate the clicked view to fill the screen as a transition out??
             Minerva.get().startActivity(newIntent);
@@ -343,40 +341,39 @@ public class ActionHelper {
     /**
      * Delete {@code books} from Realm, along with any {@link RBookListItem}s which may exist for them, and their cover
      * images if they have them. Optionally delete the real files they were imported from as well.
+     * @param realm           Instance of Realm to use.
      * @param books           Books to delete.
      * @param deleteRealFiles If true, also delete the books' corresponding files.
      */
-    public static void deleteBooks(Collection<RBook> books, boolean deleteRealFiles) {
+    public static void deleteBooks(Realm realm, Collection<RBook> books, boolean deleteRealFiles) {
         // Null checks.
         if (books == null || books.isEmpty()) return;
 
         // If deleteRealFiles is true, check permissions before doing anything.
         if (deleteRealFiles && !Util.checkForStoragePermAndFireEventIfNeeded(R.id.action_execute_deferred)) {
             //noinspection unchecked    Defer this action while we ask for permission.
-            setDeferredAction(params -> deleteBooks((Collection<RBook>) params[0], true), books);
+            setDeferredAction(params -> deleteBooks(realm, (Collection<RBook>) params[0], true), books);
             return;
         }
 
         List<String> relPaths = new ArrayList<>(books.size());
         // Delete what we created.
-        try (Realm realm = Realm.getDefaultInstance()) {
-            realm.executeTransaction(tRealm -> {
-                for (RBook book : books) {
-                    // Delete any RBookListItems which may exist for these books.
-                    tRealm.where(RBookListItem.class)
-                          .contains("book.relPath", book.relPath)
-                          .findAll()
-                          .deleteAllFromRealm();
-                    // Get the relative path of the book, in case we wish to delete the real files too.
-                    String relPath = book.relPath;
-                    relPaths.add(relPath);
-                    // Be sure to delete the cover file, if we have one.
-                    if (book.hasCoverImage) DataUtils.deleteCoverImage(relPath);
-                    // Delete the actual RBook from Realm.
-                    book.deleteFromRealm();
-                }
-            });
-        }
+        realm.executeTransaction(tRealm -> {
+            for (RBook book : books) {
+                // Delete any RBookListItems which may exist for these books.
+                tRealm.where(RBookListItem.class)
+                      .contains("book.relPath", book.relPath)
+                      .findAll()
+                      .deleteAllFromRealm();
+                // Get the relative path of the book, in case we wish to delete the real files too.
+                String relPath = book.relPath;
+                relPaths.add(relPath);
+                // Be sure to delete the cover file, if we have one.
+                if (book.hasCoverImage) DataUtils.deleteCoverImage(relPath);
+                // Delete the actual RBook from Realm.
+                book.deleteFromRealm();
+            }
+        });
 
         // If the user wants us to, also try to delete the corresponding files from the device.
         if (deleteRealFiles) {
@@ -467,46 +464,46 @@ public class ActionHelper {
 
     /**
      * Moves the given {@link RBookListItem}s to the start of {@code bookList}.
+     * @param realm       Instance of Realm to use.
      * @param bookList    Book list which owns {@code itemsToMove}.
      * @param itemsToMove Items to move. Items must already exist in Realm and be owned by {@code bookList}.
      */
-    public static void moveItemsToStart(RBookList bookList, List<RBookListItem> itemsToMove) {
+    public static void moveItemsToStart(Realm realm, RBookList bookList, List<RBookListItem> itemsToMove) {
         bookList.throwIfSmartList();
         if (itemsToMove == null || itemsToMove.isEmpty()) return;
-        try (Realm realm = Realm.getDefaultInstance()) {
-            realm.executeTransaction(tRealm -> {
-                // Get the next first open position.
-                Long nextFirstPos = bookList.listItems.where().min("pos").longValue() - C.LIST_ITEM_GAP;
-                // Loop through itemsToMove backwards and move those items to the start of this list.
-                for (int i = itemsToMove.size() - 1; i >= 0; i--) {
-                    itemsToMove.get(i).pos = nextFirstPos;
-                    nextFirstPos -= C.LIST_ITEM_GAP;
-                }
-            });
-        }
+
+        realm.executeTransaction(tRealm -> {
+            // Get the next first open position.
+            Long nextFirstPos = bookList.listItems.where().min("pos").longValue() - C.LIST_ITEM_GAP;
+            // Loop through itemsToMove backwards and move those items to the start of this list.
+            for (int i = itemsToMove.size() - 1; i >= 0; i--) {
+                itemsToMove.get(i).pos = nextFirstPos;
+                nextFirstPos -= C.LIST_ITEM_GAP;
+            }
+        });
     }
 
     /**
      * Moves the given {@link RBookListItem}s to the end of {@code bookList}.
+     * @param realm       Instance of Realm to use.
      * @param bookList    Book list which owns {@code itemsToMove}.
      * @param itemsToMove Items to move. Items must already exist in Realm and be owned by {@code bookList}.
      */
-    public static void moveItemsToEnd(RBookList bookList, List<RBookListItem> itemsToMove) {
+    public static void moveItemsToEnd(Realm realm, RBookList bookList, List<RBookListItem> itemsToMove) {
         bookList.throwIfSmartList();
         if (itemsToMove == null || itemsToMove.isEmpty()) return;
-        try (Realm realm = Realm.getDefaultInstance()) {
-            realm.executeTransaction(tRealm -> {
-                // Get the next last open position.
-                Long nextLastPos = bookList.nextPos;
-                // Loop through itemsToMove and move those items to the end of this list.
-                for (RBookListItem item : itemsToMove) {
-                    item.pos = nextLastPos;
-                    nextLastPos += C.LIST_ITEM_GAP;
-                }
-                // Set bookList's nextPos.
-                bookList.nextPos = nextLastPos;
-            });
-        }
+
+        realm.executeTransaction(tRealm -> {
+            // Get the next last open position.
+            Long nextLastPos = bookList.nextPos;
+            // Loop through itemsToMove and move those items to the end of this list.
+            for (RBookListItem item : itemsToMove) {
+                item.pos = nextLastPos;
+                nextLastPos += C.LIST_ITEM_GAP;
+            }
+            // Set bookList's nextPos.
+            bookList.nextPos = nextLastPos;
+        });
     }
 
     /*

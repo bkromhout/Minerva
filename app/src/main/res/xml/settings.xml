@@ -7,6 +7,11 @@
                 android:key="@string/key_lib_dir"/>
 
         <CheckBoxPreference
+                android:title="@string/title_detect_moved"
+                android:summary="@string/summary_detect_moved"
+                android:defaultValue="true"/>
+
+        <CheckBoxPreference
                 android:title="@string/title_auto_import"
                 android:summary="@string/summary_auto_import"
                 android:key="@string/key_auto_import"/>

@@ -123,7 +123,7 @@ public class BookListCardAdapter extends RealmRecyclerViewAdapter<RBookList, Rec
         if (!bookList.isValid()) return;
 
         // Visually distinguish selected cards during multi-select mode.
-        vh.cardView.setActivated(selectedPositions.contains(position));
+        vh.cardView.setActivated(isSelected(position));
 
         vh.content.setOnTouchListener((v, event) -> {
             // Pass this into our ripple touch listener so that we still get touch feedback.

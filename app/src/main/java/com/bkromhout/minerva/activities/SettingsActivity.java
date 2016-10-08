@@ -124,6 +124,10 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
          * Preferences.
          */
         private final Prefs prefs = Minerva.prefs();
+        /**
+         * Instance of Realm.
+         */
+        private Realm realm;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -168,6 +172,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
         @Override
         public void onStart() {
             super.onStart();
+            realm = Realm.getDefaultInstance();
             EventBus.getDefault().register(this);
         }
 
@@ -188,6 +193,10 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
         @Override
         public void onStop() {
             super.onStop();
+            if (realm != null) {
+                realm.close();
+                realm = null;
+            }
             EventBus.getDefault().unregister(this);
         }
 
@@ -321,7 +330,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
                             prefs.putUpdatedBookTag(null);
                         }
                         // Remove tag from books.
-                        ActionHelper.replaceMarkTagOnBooks(markType, oldTagName, null);
+                        ActionHelper.replaceMarkTagOnBooks(realm, markType, oldTagName, null);
                     })
                     .itemsCallback((dialog, itemView, which, text) -> {
                         String oldTagName = null;
@@ -334,7 +343,7 @@ public class SettingsActivity extends PermCheckingActivity implements FolderChoo
                             prefs.putUpdatedBookTag(text.toString());
                         }
                         // Replace tag on books.
-                        ActionHelper.replaceMarkTagOnBooks(markType, oldTagName, text.toString());
+                        ActionHelper.replaceMarkTagOnBooks(realm, markType, oldTagName, text.toString());
                     })
                     .show();
         }

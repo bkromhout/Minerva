@@ -348,7 +348,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
                 return true;
             case R.id.action_delete:
                 Dialogs.confirmCheckBoxDialog(getContext(), R.string.title_delete_books, R.string.prompt_delete_books,
-                        R.string.prompt_delete_from_device_too, R.string.info_delete_from_device_permanent,
+                        R.string.prompt_delete_from_device_too,
                         R.string.action_delete, R.id.action_delete);
                 return true;
             default:
@@ -374,14 +374,14 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
                 break;
             case R.id.action_mark_as:
                 int whichMark = (int) event.getData();
-                ActionHelper.markBooks(selectedItems, whichMark < 2 ? MarkType.NEW : MarkType.UPDATED,
-                        whichMark % 2 == 0);
+                ActionHelper.markBooks(realm, selectedItems,
+                        whichMark < 2 ? MarkType.NEW : MarkType.UPDATED, whichMark % 2 == 0);
                 break;
             case R.id.action_re_import:
                 ActionHelper.reImportBooks(selectedItems);
                 break;
             case R.id.action_delete:
-                ActionHelper.deleteBooks(selectedItems, (boolean) event.getData());
+                ActionHelper.deleteBooks(realm, selectedItems, (boolean) event.getData());
                 break;
         }
         if (actionMode != null) actionMode.finish();
@@ -434,7 +434,7 @@ public class LibraryFragment extends Fragment implements ActionMode.Callback, Bu
         switch (event.getType()) {
             case NORMAL:
                 // Open the book file.
-                ActionHelper.openBookUsingIntent(book);
+                ActionHelper.openBookUsingIntent(realm, book);
                 break;
             case LONG:
                 // Start multi-select.

@@ -21,6 +21,8 @@ public class Prefs {
     private static final String RATE_ME_COUNT_DOWN = "rate_me_count_down";
     // Settings
     public static final String LIB_DIR = Minerva.get().getString(R.string.key_lib_dir);
+    private static final String DETECT_MOVED = Minerva.get().getString(R.string.key_detect_moved);
+    public static final String DUPE_HANDLING = Minerva.get().getString(R.string.key_dupe_handling);
     private static final String LIB_AUTO_IMPORT = Minerva.get().getString(R.string.key_auto_import);
     public static final String NEW_BOOK_TAG = Minerva.get().getString(R.string.key_new_tag);
     public static final String UPDATED_BOOK_TAG = Minerva.get().getString(R.string.key_updated_tag);
@@ -153,6 +155,23 @@ public class Prefs {
      */
     public void putLibDir(String libDir) {
         prefs.edit().putString(LIB_DIR, libDir).apply();
+    }
+
+    /**
+     * Get the boolean telling us whether or not to try and detect moved files during import.
+     * @param defValue The default value to return if nothing is set.
+     * @return Detect moved boolean.
+     */
+    public boolean shouldDetectMoved(boolean defValue) {
+        return prefs.getBoolean(DETECT_MOVED, defValue);
+    }
+
+    /**
+     * Put the detect moved boolean.
+     * @param detectMoved Detect moved boolean.
+     */
+    public void putDetectMoved(boolean detectMoved) {
+        prefs.edit().putBoolean(DETECT_MOVED, detectMoved).apply();
     }
 
     /**

@@ -14,6 +14,7 @@ import com.bkromhout.minerva.realm.RTag;
 import com.bkromhout.minerva.ui.SnackKiosk;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.exceptions.RealmFileException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.comparator.NameFileComparator;
@@ -81,7 +82,7 @@ public class BackupUtils {
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.writeCopyTo(backupFile);
             SnackKiosk.snack(R.string.sb_db_backup_success, Snackbar.LENGTH_SHORT);
-        } catch (IOException e) {
+        } catch (RealmFileException e) {
             Timber.e(e, "Failed to back up Minerva's database to \"%s\".", backupFile.getAbsolutePath());
             SnackKiosk.snack(R.string.sb_db_backup_fail, Snackbar.LENGTH_SHORT);
         }
@@ -154,7 +155,7 @@ public class BackupUtils {
         dbRestoreState = DBRestoreState.STARTING;
 
         // Handle current Realm files.
-        RealmConfiguration config = new RealmConfiguration.Builder(minerva).name(Minerva.REALM_FILE_NAME).build();
+        RealmConfiguration config = new RealmConfiguration.Builder().name(Minerva.REALM_FILE_NAME).build();
         File currDb = new File(config.getPath());
         if (currDb.exists()) {
             try {
@@ -193,7 +194,7 @@ public class BackupUtils {
 
         Minerva minerva = Minerva.get();
         File filesDir = minerva.getFilesDir();
-        RealmConfiguration config = new RealmConfiguration.Builder(minerva).name(Minerva.REALM_FILE_NAME).build();
+        RealmConfiguration config = new RealmConfiguration.Builder().name(Minerva.REALM_FILE_NAME).build();
         File currDb = new File(config.getPath());
         File restoreDb = new File(filesDir, RESTORE_NAME);
         File tempDb = new File(filesDir, TEMP_NAME);

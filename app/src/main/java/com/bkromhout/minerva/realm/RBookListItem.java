@@ -50,10 +50,15 @@ public class RBookListItem extends RealmObject implements UIDModel {
      * @param book       {@link RBook} that this list item refers to.
      */
     public RBookListItem(Realm realm, RBookList owningList, RBook book) {
+        this(owningList, book, owningList.getThenIncrementNextPos(realm),
+                UniqueIdFactory.getInstance().nextId(RBookListItem.class));
+    }
+
+    RBookListItem(RBookList owningList, RBook book, long pos, long uniqueId) {
         this.owningList = owningList;
         this.book = book;
-        this.pos = owningList.getThenIncrementNextPos(realm);
-        this.uniqueId = UniqueIdFactory.getInstance().nextId(RBookListItem.class);
+        this.pos = pos;
+        this.uniqueId = uniqueId;
     }
 
     @Override

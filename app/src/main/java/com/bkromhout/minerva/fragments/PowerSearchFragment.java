@@ -296,7 +296,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
                 return true;
             case R.id.action_delete:
                 Dialogs.confirmCheckBoxDialog(getContext(), R.string.title_delete_books, R.string.prompt_delete_books,
-                        R.string.prompt_delete_from_device_too, R.string.info_delete_from_device_permanent,
+                        R.string.prompt_delete_from_device_too,
                         R.string.action_delete, R.id.action_delete);
                 return true;
             default:
@@ -319,14 +319,14 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
                 break;
             case R.id.action_mark_as:
                 int whichMark = (int) event.getData();
-                ActionHelper.markBooks(getSelectedBooks(), whichMark < 2 ? MarkType.NEW : MarkType.UPDATED,
-                        whichMark % 2 == 0);
+                ActionHelper.markBooks(realm, getSelectedBooks(),
+                        whichMark < 2 ? MarkType.NEW : MarkType.UPDATED, whichMark % 2 == 0);
                 break;
             case R.id.action_re_import:
                 ActionHelper.reImportBooks(getSelectedBooks());
                 break;
             case R.id.action_delete:
-                ActionHelper.deleteBooks(getSelectedBooks(), (boolean) event.getData());
+                ActionHelper.deleteBooks(realm, getSelectedBooks(), (boolean) event.getData());
                 break;
             case R.id.action_new_smart_list:
                 ActionHelper.createNewSmartList(realm, (String) event.getData(), ruq);
@@ -399,7 +399,7 @@ public class PowerSearchFragment extends Fragment implements ActionMode.Callback
         switch (event.getType()) {
             case NORMAL:
                 // Open the book file.
-                ActionHelper.openBookUsingIntent(book);
+                ActionHelper.openBookUsingIntent(realm, book);
                 break;
             case LONG:
                 // Start multi-select.

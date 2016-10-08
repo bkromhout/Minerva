@@ -30,13 +30,13 @@ public class RBook extends RealmObject implements UIDModel {
     /**
      * A unique long value.
      */
-    @Index
+    @PrimaryKey
     @Hide
     public long uniqueId;
     /**
      * Path to book file (relative to library directory).
      */
-    @PrimaryKey
+    @Index
     @Required
     @VisibleAs(string = "Relative Path")
     public String relPath;
@@ -204,15 +204,39 @@ public class RBook extends RealmObject implements UIDModel {
     }
 
     /**
+     * Updates this {@link RBook} with the given {@code otherBook}'s data. This method is typically called if we detect
+     * that a file has been moved/renamed based on its hash.
+     * <p>
+     * IMPORTANT: Only call this method from within a Realm transaction. ({@code realm} will be checked to enforce
+     * this!)
+     * @param realm The Realm instance handling the transaction that this call is within.
+     * @param otherBook {@link RBook} to copy new {@link #relPath} from.
+     */
+    public void updateBasedOnHash(Realm realm, RBook otherBook) {
+        if (realm == null || otherBook == null) throw new IllegalArgumentException("realm, otherBook cannot be null.");
+        if (!realm.isInTransaction())
+            throw new IllegalStateException("You must call this method from within a Realm transaction.");
+
+        // Always update the last import date.
+        this.lastImportDate = otherBook.lastImportDate;
+        // Delete the cover image since it's based on the relative path.
+        if (this.hasCoverImage) DataUtils.deleteCoverImage(this.relPath);
+
+        this.relPath = otherBook.relPath;
+    }
+
+    /**
      * Update this {@link RBook} with the given {@code otherBook}'s data. However, we only copy the data that was read
      * from the book's file, not the data which we've filled in.
+     * <p>
+     * The calling of this method implies that this {@link RBook}'s {@link #relPath} matches that of {@code otherBook}.
      * <p>
      * IMPORTANT: Only call this method from within a Realm transaction. ({@code realm} will be checked to enforce
      * this!)
      * @param realm     The Realm instance handling the transaction that this call is within.
      * @param otherBook {@link RBook} to copy data from.
      */
-    public void updateFromOtherRBook(Realm realm, RBook otherBook) {
+    public void updateBasedOnRelPath(Realm realm, RBook otherBook) {
         if (realm == null || otherBook == null) throw new IllegalArgumentException("realm, otherBook cannot be null.");
         if (!realm.isInTransaction())
             throw new IllegalStateException("You must call this method from within a Realm transaction.");

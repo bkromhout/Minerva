@@ -139,7 +139,7 @@ public class Importer {
     /**
      * List of {@link RBook}s that have been created from book files.
      */
-    private Queue<RBook> bookQueue;
+    private LinkedList<RBook> bookQueue;
     /**
      * List of relative paths for which we didn't find files during re-import.
      */
@@ -519,15 +519,37 @@ public class Importer {
         realm = Realm.getDefaultInstance();
         realm.executeTransactionAsync(
                 bgRealm -> {
+                    // Detect files which have been moved, if our current settings say we should.
+                    if (Minerva.prefs().shouldDetectMoved(true)) {
+                        // Use an iterator, because we want to remove books which have moved.
+                        Iterator<RBook> bi = bookQueue.iterator();
+                        while (bi.hasNext()) {
+                            RBook book = bi.next();
+                            // Try to find an existing RBook whose hash matches, but only return it if its relPath
+                            // doesn't match.
+                            RBook existingBook = bgRealm.where(RBook.class)
+                                                        .equalTo("hash", book.hash)
+                                                        .notEqualTo("relPath", book.relPath)
+                                                        .findFirst();
+
+                            // If we found one, update the relPath of the existing RBook, then discard the "new"
+                            // RBook from the queue.
+                            if (existingBook != null) {
+                                existingBook.updateBasedOnHash(bgRealm, book);
+                                bi.remove();
+                            }
+                        }
+                    }
+
+                    // Detect files which have been updated, and are at the same path.
                     for (RBook book : bookQueue) {
-                        // Try to find existing RBook before adding a new one.
+                        // Try to find existing RBook by its relative path before adding a new one.
                         RBook existingBook = bgRealm.where(RBook.class)
                                                     .equalTo("relPath", book.relPath)
                                                     .findFirst();
 
-                        // If we have an existing RBook for this file, just update the fields which we read from the
-                        // file. If we don't have one, create one.
-                        if (existingBook != null) existingBook.updateFromOtherRBook(bgRealm, book);
+                        // If we found one, just update the fields which we read from the file.
+                        if (existingBook != null) existingBook.updateBasedOnRelPath(bgRealm, book);
                         else bgRealm.copyToRealmOrUpdate(book);
                     }
 
@@ -549,7 +571,7 @@ public class Importer {
                                                            .endGroup()
                                                            .findAll();
                         // Add the new tag to those books.
-                        ActionHelper.addTagsToBooks(books, Collections.singletonList(tag));
+                        ActionHelper.addTagsToBooks(bgRealm, books, Collections.singletonList(tag));
                     }
 
                     tagName = MarkType.UPDATED.getTagName();
@@ -568,7 +590,7 @@ public class Importer {
                                                            .endGroup()
                                                            .findAll();
                         // Add the updated tag to those books.
-                        ActionHelper.addTagsToBooks(books, Collections.singletonList(tag));
+                        ActionHelper.addTagsToBooks(bgRealm, books, Collections.singletonList(tag));
                     }
                 },
                 this::importFinished,

@@ -94,6 +94,7 @@
     <string name="title_remove_books">Remove Books</string>
     <string name="prompt_remove_from_list">Remove the selected books from this list?</string>
     <string name="prompt_remove_from_recents">Remove the selected books from the recents list?</string>
+    <string name="book_removed">Book removed</string>
 
     <!-- Actions name strings for actions without many associated strings (i.e., they're more "standalone"), or whose
          associated strings are contained to one area of the app and thus are in another part of this file. -->
@@ -371,8 +372,11 @@
     <!-- ******************************** Settings Activity ******************************** -->
     <string name="title_activity_settings">@string/settings</string>
 
-    <string name="cat_title_library">Library</string>
+    <string name="cat_title_library">Library &amp; Import</string>
     <string name="title_lib_dir">Library Folder</string>
+    <string name="title_detect_moved">Try to Detect Moved Files</string>
+    <string name="summary_detect_moved">Attempt to prevent duplicate library items by detecting moved files</string>
+    <string name="title_dupe_handling">Duplicate Handling</string>
     <string name="title_auto_import">Auto-Import</string>
     <string name="summary_auto_import">Run a full import when the app starts</string>
 

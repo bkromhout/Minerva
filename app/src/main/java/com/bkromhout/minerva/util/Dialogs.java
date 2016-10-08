@@ -8,9 +8,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.RatingBar;
-import android.widget.TextView;
 import butterknife.ButterKnife;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bkromhout.minerva.Minerva;
@@ -71,35 +69,24 @@ public class Dialogs {
     /**
      * Same as {@link #simpleConfirmDialog(Context, int, int, int, int)}, but adds a single check box which allows for
      * additional input.
-     * @param ctx             Context to use.
-     * @param title           String resource to use for title.
-     * @param text            String resource to use for text.
-     * @param checkBoxText    String resource to use for the checkbox.
-     * @param checkedInfoText String resource to use for red text shown when checkbox is checked.
-     * @param posText         String resource to use for positive button text.
-     * @param actionId        Action ID to send if Yes is clicked.
+     * @param ctx          Context to use.
+     * @param title        String resource to use for title.
+     * @param text         String resource to use for text.
+     * @param checkBoxText String resource to use for the checkbox.
+     * @param posText      String resource to use for positive button text.
+     * @param actionId     Action ID to send if Yes is clicked.
      */
     public static void confirmCheckBoxDialog(final Context ctx, @StringRes final int title, @StringRes final int text,
-                                             @StringRes final int checkBoxText, @StringRes final int checkedInfoText,
+                                             @StringRes final int checkBoxText,
                                              @StringRes final int posText, @IdRes final int actionId) {
-        @SuppressLint("InflateParams")
-        View view = LayoutInflater.from(ctx).inflate(R.layout.dialog_yes_no_checkbox, null);
-        final TextView content = ButterKnife.findById(view, R.id.content);
-        final CheckBox checkBox = ButterKnife.findById(view, R.id.checkbox);
-        final TextView checkedInfo = ButterKnife.findById(view, R.id.checked_info);
-        content.setText(text);
-        checkBox.setText(checkBoxText);
-        // Show checkedInfo text when checkbox is checked.
-        if (checkedInfoText != -1) checkBox.setOnCheckedChangeListener((buttonView, isChecked) ->
-                checkedInfo.setText(isChecked ? checkedInfoText : R.string.empty));
-
         new MaterialDialog.Builder(ctx)
                 .title(title)
-                .customView(view, false)
+                .content(text)
+                .checkBoxPromptRes(checkBoxText, false, null)
                 .positiveText(posText)
                 .negativeText(R.string.cancel)
                 .onPositive((dialog, which) ->
-                        EventBus.getDefault().post(new ActionEvent(actionId, checkBox.isChecked())))
+                        EventBus.getDefault().post(new ActionEvent(actionId, dialog.isPromptCheckBoxChecked())))
                 .show();
     }
 
@@ -269,9 +256,10 @@ public class Dialogs {
                         Minerva.get().getString(emptyText))
                 .positiveText(R.string.dismiss);
         // Conditionally show the "Open Query Builder" button.
-        if (showBuilderBtn) builder.neutralText(R.string.action_open_query_builder)
-                                   .onNeutral((dialog, which) -> EventBus.getDefault().post(
-                                           new ActionEvent(R.id.action_open_query_builder, null, posToUpdate)));
+        if (showBuilderBtn)
+            builder.neutralText(R.string.action_open_query_builder)
+                   .onNeutral((dialog, which) -> EventBus.getDefault().post(
+                           new ActionEvent(R.id.action_open_query_builder, null, posToUpdate)));
         // Show the dialog.
         builder.show();
     }

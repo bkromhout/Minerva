@@ -57,7 +57,7 @@ public class RBookTest {
         assertThat(book1.isUpdated(), is(false));
 
         realm.beginTransaction();
-        book1.updateFromOtherRBook(realm, book2);
+        book1.updateBasedOnRelPath(realm, book2);
         realm.commitTransaction();
         assertThat(book1.isUpdated(), is(false));
     }
@@ -76,7 +76,7 @@ public class RBookTest {
         assertThat(book1.isUpdated(), is(false));
 
         realm.beginTransaction();
-        book1.updateFromOtherRBook(realm, book2);
+        book1.updateBasedOnRelPath(realm, book2);
         realm.commitTransaction();
         assertThat(book1.isUpdated(), is(true));
     }

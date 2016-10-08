@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -21,10 +22,7 @@ import com.bkromhout.minerva.Minerva;
 import com.bkromhout.minerva.Prefs;
 import com.bkromhout.minerva.R;
 import com.bkromhout.minerva.activities.TaggingActivity;
-import com.bkromhout.minerva.adapters.BaseBookCardAdapter;
-import com.bkromhout.minerva.adapters.BookCardAdapter;
-import com.bkromhout.minerva.adapters.BookCardCompactAdapter;
-import com.bkromhout.minerva.adapters.BookCardNoCoverAdapter;
+import com.bkromhout.minerva.adapters.*;
 import com.bkromhout.minerva.data.ActionHelper;
 import com.bkromhout.minerva.enums.BookCardType;
 import com.bkromhout.minerva.enums.MainFrag;
@@ -50,7 +48,7 @@ import java.util.List;
  * Fragment in charge of showing recently opened books.
  */
 public class RecentFragment extends Fragment implements ActionMode.Callback, FastScrollHandleStateListener,
-        SnackKiosk.Snacker {
+        SnackKiosk.Snacker, SwipeHandler {
     // Views.
     @BindView(R.id.coordinator)
     CoordinatorLayout coordinator;
@@ -148,6 +146,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
                      .findAllSorted("lastReadDate", Sort.DESCENDING);
         adapter = makeAdapter();
         recyclerView.setFastScrollHandleStateListener(this);
+        recyclerView.setSwipe(true);
         recyclerView.setAdapter(adapter);
     }
 
@@ -219,6 +218,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
         mode.getMenuInflater().inflate(R.menu.recent_action_mode, menu);
+        recyclerView.setSwipe(false);
         adapter.setSelectionMode(true);
         // Change status bar color to be dark to correspond to dark toolbar color.
         getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getActivity(), R.color.grey900));
@@ -238,6 +238,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
         getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark));
         adapter.clearSelections();
         actionMode = null;
+        recyclerView.setSwipe(true);
     }
 
     @Override
@@ -293,7 +294,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
                 return true;
             case R.id.action_delete:
                 Dialogs.confirmCheckBoxDialog(getContext(), R.string.title_delete_books, R.string.prompt_delete_books,
-                        R.string.prompt_delete_from_device_too, R.string.info_delete_from_device_permanent,
+                        R.string.prompt_delete_from_device_too,
                         R.string.action_delete, R.id.action_delete);
                 return true;
             default:
@@ -327,8 +328,8 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
                 break;
             case R.id.action_mark_as:
                 int whichMark = (int) event.getData();
-                ActionHelper.markBooks(selectedItems, whichMark < 2 ? MarkType.NEW : MarkType.UPDATED,
-                        whichMark % 2 == 0);
+                ActionHelper.markBooks(realm, selectedItems,
+                        whichMark < 2 ? MarkType.NEW : MarkType.UPDATED, whichMark % 2 == 0);
                 break;
             case R.id.action_add_to_list:
                 ActionHelper.addBooksToList(realm, selectedItems, (String) event.getData());
@@ -343,7 +344,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
                 });
                 break;
             case R.id.action_delete:
-                ActionHelper.deleteBooks(selectedItems, (boolean) event.getData());
+                ActionHelper.deleteBooks(realm, selectedItems, (boolean) event.getData());
                 break;
         }
         if (actionMode != null) actionMode.finish();
@@ -396,7 +397,7 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
         switch (event.getType()) {
             case NORMAL:
                 // Open the book file.
-                ActionHelper.openBookUsingIntent(book, event.getLayoutPosition());
+                ActionHelper.openBookUsingIntent(realm, book, event.getLayoutPosition());
                 break;
             case LONG:
                 // Start multi-select.
@@ -410,12 +411,34 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
     }
 
     /**
+     * Called when one of the cards is swiped away. Removes the associated book from the recents list.
+     * @param uniqueId The unique ID of the item so that the correct {@link RBook} can be retrieved.
+     */
+    @Override
+    public void handleSwiped(long uniqueId) {
+        // Remove from recents.
+        realm.executeTransactionAsync(bgRealm ->
+                bgRealm.where(RBook.class).equalTo("uniqueId", uniqueId).findFirst().isInRecents = false);
+
+        // Show snackbar with "Undo" button.
+        Snackbar undoSnackbar = Snackbar.make(coordinator, R.string.book_removed, Snackbar.LENGTH_LONG);
+        undoSnackbar.setAction(R.string.undo, view -> {
+            // Put back in recents if undo button is clicked.
+            try (Realm realm = Realm.getDefaultInstance()) {
+                realm.executeTransactionAsync(bgRealm ->
+                    bgRealm.where(RBook.class).equalTo("uniqueId", uniqueId).findFirst().isInRecents = true);
+            }
+        });
+        undoSnackbar.show();
+    }
+
+    /**
      * Open the most recently read book when the FAB is clicked.
      */
     @OnClick(R.id.fab)
     void onFabClick() {
         if (books != null && books.isValid() && !books.isEmpty())
-            ActionHelper.openBookUsingIntent(books.first());
+            ActionHelper.openBookUsingIntent(realm, books.first());
     }
 
     /**
@@ -426,17 +449,23 @@ public class RecentFragment extends Fragment implements ActionMode.Callback, Fas
     private BaseBookCardAdapter makeAdapter() {
         if (books == null || !books.isValid()) return null;
 
+        BaseBookCardAdapter adapter = null;
+
         // Create a new adapter based on the card type.
         switch (cardType) {
             case NORMAL:
-                return new BookCardAdapter(getActivity(), books);
+                adapter = new BookCardAdapter(getActivity(), books);
+                break;
             case NO_COVER:
-                return new BookCardNoCoverAdapter(getActivity(), books);
+                adapter = new BookCardNoCoverAdapter(getActivity(), books);
+                break;
             case COMPACT:
-                return new BookCardCompactAdapter(getActivity(), books);
-            default:
-                return null;
+                adapter = new BookCardCompactAdapter(getActivity(), books);
+                break;
         }
+
+        adapter.setSwipeHandler(this);
+        return adapter;
     }
 
     /**

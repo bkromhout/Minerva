@@ -3,6 +3,8 @@
     <!-- This file contains non-translatable strings ONLY!! -->
     <!-- Preference keys. -->
     <string name="key_lib_dir">library_dir</string>
+    <string name="key_detect_moved">detect_moved</string>
+    <string name="key_dupe_handling">dupe_handling</string>
     <string name="key_auto_import">auto_import</string>
     <string name="key_new_tag">new_book_tag_name</string>
     <string name="key_updated_tag">updated_book_tag_name</string>
