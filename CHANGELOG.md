@@ -3,6 +3,7 @@
 ## 1.1.0
 * Swipe book cards to remove them from recents and normal lists
 * Add books in lists to other (normal) lists
+* Added option to try and detect moved files when importing
 * Updated libraries
 
 ## 1.0.1
